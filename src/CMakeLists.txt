@@ -1,22 +1,48 @@
-# Builds all spire related subprojects.
-# Includes batch renderer and standalone viewer.
 
-CMAKE_MINIMUM_REQUIRED(VERSION 2.8 FATAL_ERROR)
+set (Renderer_Root_Dir "${CMAKE_CURRENT_SOURCE_DIR}")
 
-PROJECT(BuildAll)
+find_package(OpenGL REQUIRED)
 
-########################################################################
-# Find and configure Git
+if (UNIX)
+  set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x")
+  # Super strict settings.
+  #set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -pedantic -Werror")
+endif (UNIX)
 
-FIND_PACKAGE(Git)
-IF(NOT GIT_FOUND)
-  MESSAGE(FATAL_ERROR "Git not found.")
-ENDIF()
+if (APPLE)
+  set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libc++")
+endif (APPLE)
 
-########################################################################
-# Configure Spire external project
-# NOTE: We should eventually ONLY use the renderer, not all of SCIRUN.
+# Include OpenGL headers
+include_directories(${OPENGL_INCLUDE_DIRS})
 
-ExternalProject_Add(Spire
+# Globbing has some downsides; but the advantages outweigh the
+# disadvantages.
+file (GLOB Source_Root
+  "*.cpp"
+  "*.h"
+  )
 
+file (GLOB Source_High
+  "high/*.cpp"
+  "high/*.h"
+  )
+
+file (GLOB Source_Low
+  "low/*.cpp"
+  "low/*.h"
+  )
+
+file (GLOB Source_Caching
+  "caching/*.cpp"
+  "caching/*.h"
+  )
+
+add_library(Renderer
+  ${Source_Root}
+  ${Source_High}
+  ${Source_Low}
+  ${Source_Caching}
+  )
+target_link_libraries(Renderer ${OPENGL_LIBRARIES})
 

@@ -1,0 +1,16 @@
+Each pipe is made to be self contained. They are considered to be rendering pipelines. A list of the pipelines are given below; many are experimental and probably won't be implemented.
+
+The shared directory contains common code / shaders that are shared between different pipes. This directory is meant to grow as the number of pipes increases and similarities between the pipes arise.
+
+* StuPipe               - Barren renderer. Basic opaque / no z-write alpha pass. No frustum culling or spatial partitioning.
+* NAC                   - Non-alpha-correct renderer. Frustum culling and spatial partitioning present.
+|-* Depth Peel          - BASELINE - Uses depth peeling on the entire scene. Frustum culling and spatial partitioning inherited from NAC.
+|-* Obj Alpha Sort      - Basic object sorting (small effort).
+|-* Tri Alpha sort      - Basic triangle sorting (large effort).
+|-* Composite GPU Clip  - NAC built as composite renderer. By virtue of rendering in AABB's, this will be "more" alpha correct than NAC.
+  |-* Comp Depth        - Depth peeling composite renderer.
+  |-* Comp slice sort   - 
+  \-* Comp Tri sort     - Triangle sorting composite renderer.
+|-* Composite Tree Clip - CPU tree clipping.
+\-* Composite Z-clip    - Using the multiple render targets to constrain composite regions.
+
