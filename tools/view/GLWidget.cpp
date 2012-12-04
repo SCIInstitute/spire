@@ -29,7 +29,7 @@
 /// \author James Hughes
 /// \date   September 2012
 
-#include "SpireGLWidget.h"
+#include "GLWidget.h"
 
 GLWidget::GLWidget(const QGLFormat& format) :
     QGLWidget(format),
