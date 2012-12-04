@@ -34,7 +34,7 @@
 GLWidget::GLWidget(const QGLFormat& format) :
     QGLWidget(format),
     mContext(this),
-    mGraphics(new Spire::Interface(&mContext, true))
+    mGraphics(new Spire::Interface(&mContext, true)) // Creates threaded spire
 {
   // We must disable auto buffer swap on the 'paintEvent'.
   setAutoBufferSwap(false);
