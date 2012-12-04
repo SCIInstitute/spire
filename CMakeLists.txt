@@ -38,11 +38,11 @@ file (GLOB Source_Caching
   "caching/*.h"
   )
 
-add_library(Renderer
+add_library(Spire
   ${Source_Root}
   ${Source_High}
   ${Source_Low}
   ${Source_Caching}
   )
-target_link_libraries(Renderer ${OPENGL_LIBRARIES})
+target_link_libraries(Spire ${OPENGL_LIBRARIES})
 

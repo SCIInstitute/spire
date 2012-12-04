@@ -18,6 +18,24 @@ else ()
 endif ()
 
 ########################################################################
+# Configure OpenGL
+find_package(OpenGL REQUIRED)
+set (QT_USE_QTOPENGL TRUE)
+
+########################################################################
+# Binary directories
+
+set (VIEWER_BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR})
+set (CMAKE_LIBRARY_OUTPUT_DIRECTORY ${VIEWER_BINARY_DIR}/lib CACHE INTERNAL "Single output directory for all libraries.")
+set (CMAKE_RUNTIME_OUTPUT_DIRECTORY ${VIEWER_BINARY_DIR} CACHE INTERNAL "Single output directory for all executables.")
+
+########################################################################
+# Required libraries
+
+# The 'spire' library.
+add_subdirectory(../.. ../../bin)
+
+########################################################################
 # Compiler settings
 
 if (UNIX)
@@ -48,6 +66,14 @@ QT4_WRAP_UI(UISource ${Forms})
 ########################################################################
 # Setup executable
 
-add_executable(spireview ${Sources} ${MocSource} ${UISource})
-target_link_libraries(spireview ${QT_LIBRARIES})
+add_executable(spireview 
+  ${Sources} 
+  ${MocSource} 
+  ${UISource})
+
+target_link_libraries(spireview 
+  Spire 
+  ${QT_OPENGL_LIBRARY}
+  ${OPENGL_LIBRARIES}
+  ${QT_LIBRARIES})
 

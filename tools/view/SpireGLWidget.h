@@ -36,8 +36,8 @@
 
 #include "GLContext.h"
 
-/// @Todo: Change this to the 'real' path to the renderer.
-#include "../srun/Renderer/Interface.h"
+// From spire
+#include "../../Interface.h"
 
 class GLWidget : public QGLWidget
 {

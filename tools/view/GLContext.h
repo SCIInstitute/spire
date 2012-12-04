@@ -34,8 +34,7 @@
 
 #include <QtOpenGL/QGLWidget>
 
-// Include spire interface. There has got to be a better way of indicating that
-// we are including spire.
+// Include spire interface.
 #include "../../Interface.h"
 
 /// Context that will be sent to spire.
