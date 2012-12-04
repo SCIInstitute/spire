@@ -1,5 +1,7 @@
-# Builds all spire related subprojects.
-# Includes batch renderer and standalone viewer.
+# Build the minimal Spire viewer.
+
+########################################################################
+# CMake version and project name
 
 cmake_minimum_required(VERSION 2.8 FATAL_ERROR)
 
@@ -14,7 +16,7 @@ find_package(Qt4 REQUIRED)
 if (QT_FOUND)
   include_directories(${QT_INCLUDE_DIR})
 else ()
-  message(FATAL_ERROR "QT 4.7 or greater is required to build SCIRun5Prototype")
+  message(FATAL_ERROR "QT 4.7 or greater is required to build Spire Viewer")
 endif ()
 
 ########################################################################
