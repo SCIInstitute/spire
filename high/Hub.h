@@ -43,6 +43,8 @@
 
 namespace Spire {
 
+class Log;
+
 /// Central hub for the renderer.
 /// Most managers will reference this class in some way.
 class Hub
@@ -70,19 +72,10 @@ public:
 
   /// Logging / diagnostic functions.
   /// @{
-
-  /// Logs a debug/verbose message.
-  void logDebug(const std::string& msg);
-
-  /// Logs a general message.
-  void logMessage(const std::string& msg);
-
-  /// Logs a warning.
-  void logWarning(const std::string& msg);
-
-  /// Logs an error.
-  void logError(const std::string& msg);
-
+  std::ostream& logDebug();
+  std::ostream& logMessage();
+  std::ostream& logWarning();
+  std::ostream& logError();
   /// @}
 
 private:
@@ -95,6 +88,9 @@ private:
   LogFunction               mLogFP;         ///< Logging function pointer.
   std::ofstream             mOutputFile;    ///< Output file to use when
                                             ///< logging output.
+
+  std::unique_ptr<Log>      mLog;           ///< Class to encapsulate logging
+                                            ///< functionality.
 };
 
 } // namespace Spire

@@ -30,6 +30,7 @@
 /// \date   October 2012
 
 #include <string>
+#include <sstream>
 
 #include "../Exceptions.h"
 
@@ -60,6 +61,7 @@ bool HubThread::isRendererThreadRunning()
 //------------------------------------------------------------------------------
 void HubThread::createRendererThread()
 {
+  mHub->logMessage() << "Creating renderer thread." << std::endl;
   if (isRendererThreadRunning() == true)
     throw ThreadException("Cannot create new renderer thread; a renderer "
                           "thread is currently running.");
@@ -70,6 +72,7 @@ void HubThread::createRendererThread()
 //------------------------------------------------------------------------------
 void HubThread::killRendererThread()
 {
+  mHub->logMessage() << "Killing rendering thread." << std::endl;
   if (isRendererThreadRunning() == false)
     throw ThreadException("Cannot kill renderer thread; the thread is not "
                           "currently running.");

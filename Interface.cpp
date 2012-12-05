@@ -56,11 +56,18 @@ Interface::Interface(Context* context, bool createThread) :
 //------------------------------------------------------------------------------
 Interface::~Interface()
 {
+  mHub->logMessage() << "Shutting down interface." << std::endl;
+
   // If the renderer thread is running, attempt to shut it down and join it.
   if (mHubThread->isRendererThreadRunning())
+  {
+    mHub->logMessage() << "Terminating rendering thread." << std::endl; 
     mHubThread->killRendererThread();
+  }
 
-  // Manually destroy the Hub and HubThread classes...
+  // Manualy destroy these classes for now (this will be changed to shared 
+  // pointers).
+  mHub->logMessage() << "Destroying rendering hub." << std::endl; 
   delete mHub;
   delete mHubThread;
 }
