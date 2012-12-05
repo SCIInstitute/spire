@@ -27,13 +27,12 @@
 */
 
 /// \author James Hughes
-/// \date   September 2012
+/// \date   October 2012
 
 #include <sstream>
 #include <thread>
 
 #include "Hub.h"
-#include "Log.h"
 
 namespace Spire {
 
@@ -52,14 +51,11 @@ Hub::Hub(Context* context, LogFunction logFn) :
                        std::placeholders::_1, std::placeholders::_2);
 #endif
   }
-
-  mLog = std::unique_ptr<Log>(new Log(mLogFP));
 }
 
 //------------------------------------------------------------------------------
 Hub::~Hub()
 {
-  logMessage() << "Terminating spire output." << std::endl;
   if (mOutputFile.is_open())
     mOutputFile.close();
 }
@@ -75,35 +71,20 @@ void Hub::oneTimeGLInit()
   const GLubyte* vendor     = glGetString(GL_VENDOR);
   const GLubyte* renderer   = glGetString(GL_RENDERER);
   const GLubyte* versionl   = glGetString(GL_VERSION);
+  std::stringstream s;
 
-  logMessage() << "OpenGL initialization. Running on a " << vendor << " " 
-               << renderer << " with OpenGL version " << versionl << std::endl
-               << "GL made current on thread " << std::this_thread::get_id()
-               << std::endl;
+  s << "OpenGL initialization. Running on a "
+    << vendor << " " << renderer << " with OpenGL version " << versionl;
+  logMessage(s.str());
 
-	GLint tmp;
-  logDebug() << "Hardware specific attributes" << std::endl;
-  logDebug() << "+Programmable:" << std::endl;
-
-	glGetIntegerv(GL_MAX_TEXTURE_UNITS, &tmp);
-  logDebug() << "  Texture Units: " << tmp << std::endl;
-
-  logDebug() << "+Fixed function (transient):" << std::endl;
-	glGetIntegerv(GL_MAX_MODELVIEW_STACK_DEPTH, &tmp);
-  logDebug() << "  Model view stack depth: " << tmp << std::endl;
-	
-	glGetIntegerv(GL_MAX_PROJECTION_STACK_DEPTH, &tmp);
-  logDebug() << "  Projection stack depth: " << tmp << std::endl;
-	
-	glGetIntegerv(GL_MAX_TEXTURE_STACK_DEPTH, &tmp);
-  logDebug() << "  Texture stack depth: " << tmp << std::endl;
-
-  /// TODO: Add GPU memory checks using GL_NVX_gpu_memory_info for NVIDIA
-  ///       and GL_ATI_meminfo for ATI.
-
-  // Pulled from Tuvok
+  s.str("");
+  s << "GL made current on thread " << std::this_thread::get_id();
+  logMessage(s.str());
+  
+  // Pulled from Tuvok.
   //const bool bOpenGLSO12     = atof((const char*)versionl) >= 1.2;
   //const bool bOpenGLSO20     = atof((const char*)versionl) >= 2.0;
+
 }
 
 //------------------------------------------------------------------------------
@@ -117,52 +98,51 @@ void Hub::doFrame()
 }
 
 //------------------------------------------------------------------------------
-std::ostream& Hub::logDebug()
+void Hub::logDebug(const std::string& msg)
 {
-  return mLog->getDebugStream();
+  mLogFP(msg, Interface::LOG_DEBUG);
+}
+ 
+//------------------------------------------------------------------------------
+void Hub::logMessage(const std::string& msg)
+{
+  mLogFP(msg, Interface::LOG_MESSAGE);
 }
 
 //------------------------------------------------------------------------------
-std::ostream& Hub::logMessage()
+void Hub::logWarning(const std::string& msg)
 {
-  return mLog->getMessageStream();
+  mLogFP(msg, Interface::LOG_WARNING);
 }
 
 //------------------------------------------------------------------------------
-std::ostream& Hub::logWarning()
+void Hub::logError(const std::string& msg)
 {
-  return mLog->getWarningStream();
+  mLogFP(msg, Interface::LOG_ERROR);
 }
-
-//------------------------------------------------------------------------------
-std::ostream& Hub::logError()
-{
-  return mLog->getErrorStream();
-}
-
 
 //------------------------------------------------------------------------------
 void Hub::logFunction(const std::string& msg, Interface::LOG_LEVEL level)
 {
+  // std::endl will flush the buffer.
   switch (level)
   {
     case Interface::LOG_DEBUG:
-      mOutputFile << "Debug:   " << msg;
+      mOutputFile << "Debug: " << msg << std::endl;
       break;
 
     case Interface::LOG_MESSAGE:
-      mOutputFile << "General: " << msg;
+      mOutputFile << "General: " << msg << std::endl;
       break;
 
     case Interface::LOG_WARNING:
-      mOutputFile << "Warning: " << msg;
+      mOutputFile << "Warning: " << msg << std::endl;
       break;
 
     case Interface::LOG_ERROR:
-      mOutputFile << "Error:   " << msg;
+      mOutputFile << "Error: " << msg << std::endl;
       break;
   }
-  mOutputFile.flush();
 }
 
 } // end of namespace Spire
