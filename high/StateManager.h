@@ -161,6 +161,7 @@ public:
   /// @{
   void setDepthTestEnable(bool value, bool force = false);
   void setDepthFunc(DEPTH_FUNC value, bool force = false);
+  void setCullState(STATE_CULL value, bool force = false);
   void setCullFaceEnable(bool value, bool force = false);
   void setBlendEnable(bool value, bool force = false);
   void setBlendEquation(BLEND_EQ value, bool force = false);

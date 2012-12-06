@@ -160,20 +160,20 @@ void StateManager::apply(const GPUState& state, bool force)
 {
   GL_CHECK();
 
-  setEnableDepthTest(state.enableDepthTest, bForce);
-  setDepthFunc(state.depthFunc, bForce);
-  setEnableCullFace(state.enableCullFace, bForce);
-  setCullState(state.cullState, bForce);
-  setEnableBlend(state.enableBlend, bForce);
-  setEnableScissor(state.enableScissor, bForce);
-  setEnableLighting(state.enableLighting, bForce);
-  setEnableColorMaterial(state.enableColorMaterial, bForce);
+  setEnableDepthTest(state.enableDepthTest, force);
+  setDepthFunc(state.depthFunc, force);
+  setEnableCullFace(state.enableCullFace, force);
+  setCullState(state.cullState, force);
+  setEnableBlend(state.enableBlend, force);
+  setEnableScissor(state.enableScissor, force);
+  setEnableLighting(state.enableLighting, force);
+  setEnableColorMaterial(state.enableColorMaterial, force);
 
   // Do this by hand to avoid the redundant glActiveTexture calls
   /// \todo Grab the maximum number of texture units and use that instead...
   for (size_t i = 0; i < getMaxTextureUnits();  i++) 
   {
-    if (bForce || state.enableTex[i] != m_InternalState.enableTex[i]) 
+    if (force || state.enableTex[i] != m_InternalState.enableTex[i]) 
     {
       glActiveTexture(GLenum(GL_TEXTURE0+i));
       m_InternalState.enableTex[i] = state.enableTex[i];
@@ -201,11 +201,11 @@ void StateManager::apply(const GPUState& state, bool force)
   mInternalState.activeTexUnit = state.activeTexUnit;
   glActiveTexture(GLenum(GL_TEXTURE0 + m_InternalState.activeTexUnit));
 
-  setDepthMask(state.depthMask, bForce);
-  setColorMask(state.colorMask, bForce);
-  setBlendEquation(state.blendEquation, bForce);
-  setBlendFunction(state.blendFuncSrc, state.blendFuncDst, bForce);
-  setLineWidth(state.lineWidth, bForce);
+  setDepthMask(state.depthMask, force);
+  setColorMask(state.colorMask, force);
+  setBlendEquation(state.blendEquation, force);
+  setBlendFunction(state.blendFuncSrc, state.blendFuncDst, force);
+  setLineWidth(state.lineWidth, force);
 
   GL_CHECK();
 }
@@ -273,41 +273,116 @@ GPUState StateManager::getStateFromOpenGL() const
 //------------------------------------------------------------------------------
 void StateManager::setBlendEnable(bool value, bool force)
 {
+  if (force || value != mInternalState.mBlendEnable)
+  {
+    mInternalState.mBlendEnable = value;
+    if (mInternalState.mBlendEnable)
+    {
+      glEnable(GL_BLEND);
+    }
+    else
+    {
+      glDisable(GL_BLEND);
+    }
 }
 
 //------------------------------------------------------------------------------
 void StateManager::setBlendEquation(BLEND_EQ value, bool force)
 {
+  if (force || value != mInternalState.mBlendEquation)
+  {
+    mInternalState.mBlendEquation = value;
+    glBlendEquation(BLEND_EQUATIONToGL(mInternalState.mBlendEquation));
+  }
 }
 
 //------------------------------------------------------------------------------
 void StateManager::setBlendFunction(BLEND_FUNC src, BLEND_FUNC dest, force)
 {
+  if (   force 
+      || src != mInternalState.mBlendFuncSrc 
+      || dest != mInternalState.mBlendFuncDst)
+  {
+    mInternalState.mBlendFuncSrc = src;
+    mInternalState.mBlendFuncDst = dest;
+    glBlendFunc( BLEND_FUNCToGL(mInternalState.mBlendFuncSrc), 
+                 BLEND_FUNCToGL(mInternalState.mBlendFuncDst) );
+  }
 }
 
 //------------------------------------------------------------------------------
 void StateManager::setColorMask(bool mask, bool force)
 {
+  if (force || value != mInternalState.mColorMask)
+  {
+    mInternalState.mColorMask = value;
+    GLboolean b = mInternalState.mColorMask ? 1 : 0;
+    glColorMask(b,b,b,b);
+  }
+}
+
+//------------------------------------------------------------------------------
+void StateManager::setCullState(STATE_CULL value, bool force)
+{
+  if (force || value != mInternalState.mCullState)
+  {
+    mInternalState.mCullState = value;
+    glCullFace((mInternalState.mCullState == CULL_FRONT) ? GL_FRONT : GL_BACK);
+  }
 }
 
 //------------------------------------------------------------------------------
 void StateManager::setCullFaceEnable(bool value, bool force)
 {
+  if (force || value != mInternalState.mCullFaceEnable)
+  {
+    m_InternalState.mCullFaceEnable = value;
+    if (m_InternalState.mCullFaceEnable )
+    {
+      glEnable(GL_CULL_FACE);
+    }
+    else
+    {
+      glDisable(GL_CULL_FACE);
+    }
+  }
 }
 
 //------------------------------------------------------------------------------
 void StateManager::setDepthFunc(DEPTH_FUNC value, bool force)
 {
+  if (force || value != mInternalState.mDepthFunc)
+  {
+    mInternalState.mDepthFunc = value;
+    glDepthFunc( DEPTH_FUNCToGL(mInternalState.mDepthFunc ) );
+  }
 }
 
 //------------------------------------------------------------------------------
 void StateManager::setDepthMask(bool value, bool force)
 {
+  if (force || value != mInternalState.mDepthMask)
+  {
+    mInternalState.mDepthMask = value;
+    glDepthMask(mInternalState.mDepthMask ? 1 : 0);
+  }
 }
 
 //------------------------------------------------------------------------------
 void StateManager::setDepthTestEnable(bool value, bool force)
 {
+  if (force || value != mInternalState.mDepthTestEnable)
+  {
+    mInternalState.mDepthTestEnable = value;
+    if (m_InternalState.mDepthTestEnable )
+    {
+      glEnable(GL_DEPTH_TEST);
+    }
+    else
+    {
+      glDisable(GL_DEPTH_TEST);
+    }
+  }
 }
 
 
