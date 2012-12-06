@@ -32,6 +32,7 @@
 #include <sstream>
 #include <thread>
 
+#include "Common.h"
 #include "Hub.h"
 #include "Log.h"
 

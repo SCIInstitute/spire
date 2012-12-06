@@ -35,7 +35,7 @@
 namespace Spire {
 
 //------------------------------------------------------------------------------
-GLenum BLEND_FUNCToGL(const BLEND_FUNC& func)
+GLenum BLEND_FUNCToGL(BLEND_FUNC func)
 {
   switch (func) 
   {
@@ -55,7 +55,7 @@ GLenum BLEND_FUNCToGL(const BLEND_FUNC& func)
 }
 
 //------------------------------------------------------------------------------
-BLEND_FUNC GLToBLEND_FUNC(const GLenum& func) 
+BLEND_FUNC GLToBLEND_FUNC(GLenum func) 
 {
   switch (func) 
   {
@@ -75,7 +75,7 @@ BLEND_FUNC GLToBLEND_FUNC(const GLenum& func)
 }
 
 //------------------------------------------------------------------------------
-GLenum BLEND_EQToGL(const BLEND_EQUATION& func) 
+GLenum BLEND_EQToGL(BLEND_EQ func) 
 {
   switch (func) 
   {
@@ -148,7 +148,7 @@ StateManager::~StateManager()
 }
 
 //------------------------------------------------------------------------------
-int StateManager::getMaxTextureUnits()
+int StateManager::getMaxTextureUnits() const
 {
   GLint tmp;
   glGetIntegerv(GL_MAX_TEXTURE_UNITS, &tmp);
@@ -160,24 +160,21 @@ void StateManager::apply(const GPUState& state, bool force)
 {
   GL_CHECK();
 
-  setEnableDepthTest(state.enableDepthTest, force);
-  setDepthFunc(state.depthFunc, force);
-  setEnableCullFace(state.enableCullFace, force);
-  setCullState(state.cullState, force);
-  setEnableBlend(state.enableBlend, force);
-  setEnableScissor(state.enableScissor, force);
-  setEnableLighting(state.enableLighting, force);
-  setEnableColorMaterial(state.enableColorMaterial, force);
+  setDepthTestEnable(state.mDepthTestEnable, force);
+  setDepthFunc(state.mDepthFunc, force);
+  setCullFaceEnable(state.mCullFaceEnable, force);
+  setCullState(state.mCullState, force);
+  setBlendEnable(state.mBlendEnable, force);
 
   // Do this by hand to avoid the redundant glActiveTexture calls
   /// \todo Grab the maximum number of texture units and use that instead...
   for (size_t i = 0; i < getMaxTextureUnits();  i++) 
   {
-    if (force || state.enableTex[i] != m_InternalState.enableTex[i]) 
+    if (force || state.mTexEnable[i] != mInternalState.mTexEnable[i]) 
     {
       glActiveTexture(GLenum(GL_TEXTURE0+i));
-      m_InternalState.enableTex[i] = state.enableTex[i];
-      switch (m_InternalState.enableTex[i]) {
+      mInternalState.mTexEnable[i] = state.mTexEnable[i];
+      switch (mInternalState.mTexEnable[i]) {
         case TEX_1D:      glDisable(GL_TEXTURE_2D);
                           glDisable(GL_TEXTURE_3D);
                           glDisable(GL_TEXTURE_CUBE_MAP);
@@ -198,14 +195,13 @@ void StateManager::apply(const GPUState& state, bool force)
       }
     }
   }
-  mInternalState.activeTexUnit = state.activeTexUnit;
-  glActiveTexture(GLenum(GL_TEXTURE0 + m_InternalState.activeTexUnit));
+  mInternalState.mTexActiveUnit = state.mTexActiveUnit;
+  glActiveTexture(GLenum(GL_TEXTURE0 + mInternalState.mTexActiveUnit));
 
-  setDepthMask(state.depthMask, force);
-  setColorMask(state.colorMask, force);
-  setBlendEquation(state.blendEquation, force);
-  setBlendFunction(state.blendFuncSrc, state.blendFuncDst, force);
-  setLineWidth(state.lineWidth, force);
+  setDepthMask(state.mDepthMask, force);
+  setColorMask(state.mColorMask, force);
+  setBlendEquation(state.mBlendEquation, force);
+  setBlendFunction(state.mBlendFuncSrc, state.mBlendFuncDst, force);
 
   GL_CHECK();
 }
@@ -251,23 +247,25 @@ GPUState StateManager::getStateFromOpenGL() const
   }
   GLboolean	 b;
   glGetBooleanv(GL_DEPTH_WRITEMASK, &b);
-  state.depthMask = b != 0;
+  state.mDepthMask = b != 0;
 
   GLboolean	 col[4];
   glGetBooleanv(GL_COLOR_WRITEMASK, col);
-  state.colorMask = col[0] != 0;  
+  state.mColorMask = col[0] != 0;  
 
   GLint src, dest;
   glGetIntegerv(GL_BLEND_SRC, &src);
   glGetIntegerv(GL_BLEND_DST, &dest);
-  state.blendFuncSrc = GLToBLEND_FUNC(src);
-  state.blendFuncDst = GLToBLEND_FUNC(dest);
+  state.mBlendFuncSrc = GLToBLEND_FUNC(src);
+  state.mBlendFuncDst = GLToBLEND_FUNC(dest);
 
   GLint equation;
   glGetIntegerv(GL_BLEND_EQUATION_RGB, &equation); 
   state.mBlendEquation = GLToBLEND_EQ(equation);
 
   GL_CHECK();
+  
+  return state;
 }
 
 //------------------------------------------------------------------------------
@@ -284,6 +282,7 @@ void StateManager::setBlendEnable(bool value, bool force)
     {
       glDisable(GL_BLEND);
     }
+  }
 }
 
 //------------------------------------------------------------------------------
@@ -292,12 +291,12 @@ void StateManager::setBlendEquation(BLEND_EQ value, bool force)
   if (force || value != mInternalState.mBlendEquation)
   {
     mInternalState.mBlendEquation = value;
-    glBlendEquation(BLEND_EQUATIONToGL(mInternalState.mBlendEquation));
+    glBlendEquation(BLEND_EQToGL(mInternalState.mBlendEquation));
   }
 }
 
 //------------------------------------------------------------------------------
-void StateManager::setBlendFunction(BLEND_FUNC src, BLEND_FUNC dest, force)
+void StateManager::setBlendFunction(BLEND_FUNC src, BLEND_FUNC dest, bool force)
 {
   if (   force 
       || src != mInternalState.mBlendFuncSrc 
@@ -313,9 +312,9 @@ void StateManager::setBlendFunction(BLEND_FUNC src, BLEND_FUNC dest, force)
 //------------------------------------------------------------------------------
 void StateManager::setColorMask(bool mask, bool force)
 {
-  if (force || value != mInternalState.mColorMask)
+  if (force || mask != mInternalState.mColorMask)
   {
-    mInternalState.mColorMask = value;
+    mInternalState.mColorMask = mask;
     GLboolean b = mInternalState.mColorMask ? 1 : 0;
     glColorMask(b,b,b,b);
   }
@@ -336,8 +335,8 @@ void StateManager::setCullFaceEnable(bool value, bool force)
 {
   if (force || value != mInternalState.mCullFaceEnable)
   {
-    m_InternalState.mCullFaceEnable = value;
-    if (m_InternalState.mCullFaceEnable )
+    mInternalState.mCullFaceEnable = value;
+    if (mInternalState.mCullFaceEnable )
     {
       glEnable(GL_CULL_FACE);
     }
@@ -374,7 +373,7 @@ void StateManager::setDepthTestEnable(bool value, bool force)
   if (force || value != mInternalState.mDepthTestEnable)
   {
     mInternalState.mDepthTestEnable = value;
-    if (m_InternalState.mDepthTestEnable )
+    if (mInternalState.mDepthTestEnable )
     {
       glEnable(GL_DEPTH_TEST);
     }

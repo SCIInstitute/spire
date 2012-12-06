@@ -36,9 +36,6 @@
 #include <fstream>
 #include <functional>
 
-// Only if on a Mac!
-#include <OpenGL/gl.h>
-
 #include "../Interface.h"
 
 namespace Spire {

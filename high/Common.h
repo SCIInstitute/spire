@@ -29,8 +29,19 @@
 /// \author James Hughes
 /// \date   December 2012
 
-#ifndef HIGH_COMMON_H
-#define HIGH_COMMON_H
+#ifndef SPIRE_HIGH_COMMON_H
+#define SPIRE_HIGH_COMMON_H
+
+#include <cstddef>
+
+// OpenGL headers
+#ifdef USING_OSX
+#include <OpenGL/gl.h>
+//#elif USING_LINUX
+//#elif USING_WINDOWS
+#else
+#error OpenGL headers not defined for this platform.
+#endif
 
 namespace Spire
 {
@@ -55,3 +66,4 @@ namespace Spire
 
 } // namespace Spire
 
+#endif

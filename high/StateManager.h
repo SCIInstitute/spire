@@ -29,8 +29,8 @@
 /// \author James Hughes
 /// \date   December 2012
 
-#ifndef HIGH_STATEMANAGER_H
-#define HIGH_STATEMANAGER_H
+#ifndef SPIRE_HIGH_STATEMANAGER_H
+#define SPIRE_HIGH_STATEMANAGER_H
 
 namespace Spire
 {
@@ -103,12 +103,12 @@ public:
       mBlendEnable(false),
       mBlendEquation(BE_FUNC_ADD),
       mBlendFuncSrc(BF_ONE_MINUS_DST_ALPHA),
-      mBlendFuncDst(DF_ONE),
-      mActiveTexUnit(0),
+      mBlendFuncDst(BF_ONE),
+      mTexActiveUnit(0),
       mDepthMask(true),
-      mColorMask(true),
+      mColorMask(true)
   {
-    for (size_t i = 0; i < StateTUCount; i++) mTexEnable[i] = TEX_NONE;
+    for (size_t i = 0; i < MAX_TEXTURE_UNITS ; i++) mTexEnable[i] = TEX_NONE;
   }
   virtual ~GPUState() {}
 
@@ -117,25 +117,25 @@ public:
   // state manager.
 
   bool        mDepthTestEnable;
-  DEPTH_FUNC  mDepthFunction;
+  DEPTH_FUNC  mDepthFunc;
 
   bool        mCullFaceEnable;
   STATE_CULL  mCullState;
 
   bool        mBlendEnable;
-  BLEND_EQ    mBlendEq;
+  BLEND_EQ    mBlendEquation;
   BLEND_FUNC  mBlendFuncSrc;
   BLEND_FUNC  mBlendFuncDst;
 
-  size_t      mTexActiveUnit;
   bool        mDepthMask;
   bool        mColorMask;
 
+  size_t      mTexActiveUnit;
   STATE_TEX   mTexEnable[MAX_TEXTURE_UNITS];
 };
 
 /// Manages OpenGL state. Provides something of an abstraction layer on top
-/// of OpenGL. This class can easily be made a pure virtual base class, upon 
+/// of OpenGL. This class can easily be made a pure virtual base class upon 
 /// which DX and OpenGL could sit.
 class StateManager
 {
@@ -165,13 +165,13 @@ public:
   void setCullFaceEnable(bool value, bool force = false);
   void setBlendEnable(bool value, bool force = false);
   void setBlendEquation(BLEND_EQ value, bool force = false);
-  void setBlendFunction(BLEND_FUNC src, BLEND_FUNC dest, force = false);
+  void setBlendFunction(BLEND_FUNC src, BLEND_FUNC dest, bool force = false);
   void setDepthMask(bool value, bool force = false);
   void setColorMask(bool mask, bool force = false);
   /// @}
 
   /// Returns the maximum number of supported texture units.
-  int getMaxTextureUnits();
+  int getMaxTextureUnits() const;
 
 protected:
   GPUState mInternalState;
