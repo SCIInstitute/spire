@@ -27,15 +27,14 @@ set (QT_USE_QTOPENGL TRUE)
 ########################################################################
 # Binary directories
 
-set (VIEWER_BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR})
-set (CMAKE_LIBRARY_OUTPUT_DIRECTORY ${VIEWER_BINARY_DIR}/lib CACHE INTERNAL "Single output directory for all libraries.")
-set (CMAKE_RUNTIME_OUTPUT_DIRECTORY ${VIEWER_BINARY_DIR} CACHE INTERNAL "Single output directory for all executables.")
+set (VIEWER_BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR}/viewer)
+set (SPIRE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../..)
 
 ########################################################################
 # Required libraries
 
 # The 'spire' library.
-add_subdirectory(../.. ../../bin)
+add_subdirectory(${SPIRE_DIR} ${SPIRE_DIR}/bin/spire)
 
 ########################################################################
 # Compiler settings
@@ -53,7 +52,7 @@ add_definitions(${QT_DEFINITIONS})
 
 # Since moc and UIC happen outside of the source tree, we need to
 # add the binary directory to the include path.
-include_directories("${CMAKE_CURRENT_BINARY_DIR}")
+include_directories("${CMAKE_CURRENT_BINARY_DIR} ${SPIRE_DIR}")
 
 ########################################################################
 # Setup source
