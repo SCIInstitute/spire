@@ -29,7 +29,7 @@ endif (UNIX)
 
 # For GTest to work properly
 add_definitions(-DGTEST_USE_OWN_TR1_TUPLE=1)
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/3rdParty/gtest/include)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/3rdParty/gtest/include ${CMAKE_CURRENT_SOURCE_DIR})
 
 ########################################################################
 # ThirdParty libraries
@@ -58,7 +58,7 @@ include(FindSubversion)
 #  )
 
 # Google Test
-add_subdirectory(3rdParty/gtest)
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/3rdParty/gtest)
 
 ########################################################################
 # Source

@@ -25,16 +25,15 @@ find_package(OpenGL REQUIRED)
 set (QT_USE_QTOPENGL TRUE)
 
 ########################################################################
-# Binary directories
+# Common Variables
 
-set (VIEWER_BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR}/viewer)
-set (SPIRE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../..)
+set (BASE_SPIRE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../..)
 
 ########################################################################
 # Required libraries
 
 # The 'spire' library.
-add_subdirectory(${SPIRE_DIR} ${SPIRE_DIR}/bin/spire)
+add_subdirectory(${BASE_SPIRE_DIR}/Spire ${BASE_SPIRE_DIR}/bin/spire)
 
 ########################################################################
 # Compiler settings
@@ -52,7 +51,7 @@ add_definitions(${QT_DEFINITIONS})
 
 # Since moc and UIC happen outside of the source tree, we need to
 # add the binary directory to the include path.
-include_directories("${CMAKE_CURRENT_BINARY_DIR} ${SPIRE_DIR}")
+include_directories("${CMAKE_CURRENT_BINARY_DIR}" "${BASE_SPIRE_DIR}" )
 
 ########################################################################
 # Setup source

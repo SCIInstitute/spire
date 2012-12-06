@@ -37,7 +37,7 @@
 #include "GLContext.h"
 
 // From spire
-#include "../../Interface.h"
+#include "Spire/Interface.h"
 
 class GLWidget : public QGLWidget
 {

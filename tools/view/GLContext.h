@@ -35,7 +35,7 @@
 #include <QtOpenGL/QGLWidget>
 
 // Include spire interface.
-#include "../../Interface.h"
+#include "Spire/Interface.h"
 
 /// Context that will be sent to spire.
 class GLContext : public Spire::Context
