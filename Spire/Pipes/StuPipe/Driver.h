@@ -27,25 +27,33 @@
 */
 
 /// \author James Hughes
-/// \date   November 2012
+/// \date   December 2012
 
-#include "High/Log.h"
+#ifndef SPIRE_PIPES_STUPIPE_DRIVER_H
+#define SPIRE_PIPES_STUPIPE_DRIVER_H
+
+#include "Pipes/PipeDriver.h"
+#include "High/GPUStateManager.h"
 
 namespace Spire {
+namespace StuPipe {
 
-//------------------------------------------------------------------------------
-Log::Log(Hub::LogFunction logFunction) :
-    mDebugStream(logFunction, Interface::LOG_DEBUG),
-    mMessageStream(logFunction, Interface::LOG_MESSAGE),
-    mWarningStream(logFunction, Interface::LOG_WARNING),
-    mErrorStream(logFunction, Interface::LOG_ERROR)
+/// StuPipe's driver, primary entrance point to the pipe.
+class Driver : public PipeDriver
 {
-}
+public:
 
-//------------------------------------------------------------------------------
-Log::~Log()
-{
-}
+  Driver(Hub& hub);
+  virtual ~Driver();
+  
+  virtual void doFrame();
 
+protected:
 
-} // end of namespace Spire
+  GPUState  mInitialState;
+};
+
+} // namespace StuPipe 
+} // namespace Spire 
+
+#endif 

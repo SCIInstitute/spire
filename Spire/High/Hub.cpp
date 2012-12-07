@@ -33,15 +33,18 @@
 #include <thread>
 
 #include "Common.h"
-#include "Hub.h"
-#include "Log.h"
+#include "High/Hub.h"
+#include "High/Log.h"
+
+#include "Pipes/StuPipe/Driver.h"
 
 namespace Spire {
 
 //------------------------------------------------------------------------------
 Hub::Hub(Context* context, LogFunction logFn) :
     mContext(context),
-    mLogFP(logFn)
+    mLogFP(logFn),
+    mPipe(new StuPipe::Driver(*this))
 {
   if (mLogFP == nullptr)
   {
@@ -110,9 +113,18 @@ void Hub::oneTimeGLInit()
 //------------------------------------------------------------------------------
 void Hub::doFrame()
 {
+  // When we get here, it has already been determined that a frame needs to be
+  // redrawn.
+
+  // Question: How do we split up the pipes? Does everything happen in the
+  // stupipe, when we route through the stupipe? It almost appears that it has
+  // to. Should we just build the pipe and see where it leads us to?
+
   // Rudimentary doFrame...
   glClearColor(0.0, 0.0, 0.0, 0.0);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+  mPipe->doFrame();
 
   mContext->swapBuffers();
 }

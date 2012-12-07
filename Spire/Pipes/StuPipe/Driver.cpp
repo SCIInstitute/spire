@@ -29,41 +29,36 @@
 /// \author James Hughes
 /// \date   December 2012
 
-#ifndef SPIRE_HIGH_COMMON_H
-#define SPIRE_HIGH_COMMON_H
+#include "Common.h"
+#include "Driver.h"
 
-#include <cstddef>
+namespace Spire { 
+namespace StuPipe {
 
-// OpenGL headers
-#ifdef USING_OSX
-#include <OpenGL/gl.h>
-//#elif USING_LINUX
-//#elif USING_WINDOWS
-#else
-#error OpenGL headers not defined for this platform.
-#endif
-
-namespace Spire
+//------------------------------------------------------------------------------
+Driver::Driver(Hub& hub) :
+    PipeDriver(hub)
 {
+  mInitialState.mDepthTestEnable = true;
+  mInitialState.mCullFaceEnable = false;  // Todo: Set to true for geometry.
+                                          // Should not be true for volumes.
+}
 
-#ifdef _DEBUG
-# define GL_CHECK()                                                    \
-  do {                                                                 \
-    GLenum glerr;                                                      \
-    unsigned int iCounter = 0;                                         \
-    while((glerr = glGetError()) != GL_NO_ERROR) {                     \
-      T_ERROR("GL error before line %u (%s): %s (%#x)",                \
-              __LINE__, __FILE__,                                      \
-              gluErrorString(glerr),                                   \
-              static_cast<unsigned>(glerr));                           \
-      iCounter++;                                                      \
-      if (iCounter > MAX_GL_ERROR_COUNT) break;                        \
-    }                                                                  \
-  } while(0)
-#else
-# define GL_CHECK() 
-#endif
+//------------------------------------------------------------------------------
+Driver::~Driver()
+{
+}
 
-} // namespace Spire
+//------------------------------------------------------------------------------
+void Driver::doFrame()
+{
+  // Clear the screen
+  glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+  glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 
-#endif
+  // Force a known GPU state
+  mHub.getGPUStateManager().apply(mInitialState, true);
+
+}
+
+} } // end of namespace Spire::Pipes::StuPipe

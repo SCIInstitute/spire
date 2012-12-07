@@ -32,7 +32,7 @@
 #ifndef SPIRE_HIGH_LOG_H
 #define SPIRE_HIGH_LOG_H
 
-#include "Hub.h"
+#include "High/Hub.h"
 #include <sstream>
 
 namespace Spire {

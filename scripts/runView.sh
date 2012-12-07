@@ -1,2 +1,2 @@
 #!/bin/bash
-../bin/spireview
+../bin/viewer/spireview

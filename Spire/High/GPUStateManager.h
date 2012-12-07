@@ -29,8 +29,8 @@
 /// \author James Hughes
 /// \date   December 2012
 
-#ifndef SPIRE_HIGH_STATEMANAGER_H
-#define SPIRE_HIGH_STATEMANAGER_H
+#ifndef SPIRE_HIGH_GPUSTATEMANAGER_H
+#define SPIRE_HIGH_GPUSTATEMANAGER_H
 
 namespace Spire
 {
@@ -48,12 +48,20 @@ enum STATE_TEX
 };
 
 /// Front or back face culling.
-enum STATE_CULL {
+enum STATE_CULL 
+{
   CULL_FRONT,
   CULL_BACK
 };
 
-enum BLEND_FUNC {
+enum CULL_ORDER
+{
+  ORDER_CCW,
+  ORDER_CW
+};
+
+enum BLEND_FUNC 
+{
   BF_ZERO,
   BF_ONE,
   BF_SRC_COLOR,
@@ -98,8 +106,9 @@ public:
   GPUState() :
       mDepthTestEnable(true),
       mDepthFunc(DF_LESS),
-      mCullFaceEnable(true),
+      mCullFaceEnable(false),
       mCullState(CULL_BACK),
+      mCullOrder(ORDER_CCW),
       mBlendEnable(false),
       mBlendEquation(BE_FUNC_ADD),
       mBlendFuncSrc(BF_ONE_MINUS_DST_ALPHA),
@@ -121,6 +130,7 @@ public:
 
   bool        mCullFaceEnable;
   STATE_CULL  mCullState;
+  CULL_ORDER  mCullOrder;
 
   bool        mBlendEnable;
   BLEND_EQ    mBlendEquation;
@@ -137,11 +147,11 @@ public:
 /// Manages OpenGL state. Provides something of an abstraction layer on top
 /// of OpenGL. This class can easily be made a pure virtual base class upon 
 /// which DX and OpenGL could sit.
-class StateManager
+class GPUStateManager
 {
 public:
-  StateManager();
-  virtual ~StateManager();
+  GPUStateManager();
+  virtual ~GPUStateManager();
   
   /// Applies 'state'.
   /// Unless force == true, takes into consideration the currently known GPU 
@@ -163,6 +173,7 @@ public:
   void setDepthFunc(DEPTH_FUNC value, bool force = false);
   void setCullState(STATE_CULL value, bool force = false);
   void setCullFaceEnable(bool value, bool force = false);
+  void setCullFrontFaceOrder(CULL_ORDER val, bool force = false);
   void setBlendEnable(bool value, bool force = false);
   void setBlendEquation(BLEND_EQ value, bool force = false);
   void setBlendFunction(BLEND_FUNC src, BLEND_FUNC dest, bool force = false);

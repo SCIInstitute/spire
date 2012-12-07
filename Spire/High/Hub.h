@@ -36,11 +36,13 @@
 #include <fstream>
 #include <functional>
 
-#include "../Interface.h"
+#include "Interface.h"
+#include "High/GPUStateManager.h"
 
 namespace Spire {
 
 class Log;
+class PipeDriver;
 
 /// Central hub for the renderer.
 /// Most managers will reference this class in some way.
@@ -75,6 +77,9 @@ public:
   std::ostream& logError();
   /// @}
 
+  /// Retrieves the GPU state manager.
+  GPUStateManager& getGPUStateManager()   {return mGPUStateManager;}
+
 private:
 
   /// Generalized log function which writes output to mOutputFile.
@@ -88,8 +93,13 @@ private:
 
   std::unique_ptr<Log>      mLog;           ///< Class to encapsulate logging
                                             ///< functionality.
+
+  GPUStateManager           mGPUStateManager;///< GPU state manager.
+
+  std::shared_ptr<PipeDriver> mPipe;        ///< Current rendering pipe.
 };
 
 } // namespace Spire
 
 #endif // SPIRE_HIGH_HUB_H
+

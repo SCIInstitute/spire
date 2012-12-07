@@ -32,10 +32,11 @@
 #include <string>
 #include <sstream>
 
-#include "../Exceptions.h"
+#include "Common.h"
+#include "Exceptions.h"
 
-#include "Hub.h"
-#include "HubThread.h"
+#include "High/Hub.h"
+#include "High/HubThread.h"
 
 namespace Spire {
 

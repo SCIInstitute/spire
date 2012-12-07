@@ -30,9 +30,33 @@
 /// \date   December 2012
 
 #include "Common.h"
-#include "StateManager.h"
+#include "High/GPUStateManager.h"
 
 namespace Spire {
+
+// All of these functions can be made into a 2D array (mimicing a 1-1 function).
+
+//------------------------------------------------------------------------------
+GLenum CULL_ORDERToGL(CULL_ORDER order)
+{
+  switch (order)
+  {
+    case ORDER_CCW:                 return GL_CCW;                    break;
+    case ORDER_CW:                  return GL_CW;                     break;
+  }
+  return GL_CCW;  // CCW is GL's default
+}
+
+//------------------------------------------------------------------------------
+CULL_ORDER GLToCULL_ORDER(GLenum order)
+{
+  switch (order)
+  {
+    case GL_CCW:                    return ORDER_CCW;                 break;
+    case GL_CW:                     return ORDER_CW;                  break;
+  }
+  return ORDER_CCW;
+}
 
 //------------------------------------------------------------------------------
 GLenum BLEND_FUNCToGL(BLEND_FUNC func)
@@ -138,17 +162,17 @@ DEPTH_FUNC GLToDEPTH_FUNC(const GLenum& func)
 
 
 //------------------------------------------------------------------------------
-StateManager::StateManager()
+GPUStateManager::GPUStateManager()
 {
 }
 
 //------------------------------------------------------------------------------
-StateManager::~StateManager()
+GPUStateManager::~GPUStateManager()
 {
 }
 
 //------------------------------------------------------------------------------
-int StateManager::getMaxTextureUnits() const
+int GPUStateManager::getMaxTextureUnits() const
 {
   GLint tmp;
   glGetIntegerv(GL_MAX_TEXTURE_UNITS, &tmp);
@@ -156,7 +180,7 @@ int StateManager::getMaxTextureUnits() const
 }
 
 //------------------------------------------------------------------------------
-void StateManager::apply(const GPUState& state, bool force)
+void GPUStateManager::apply(const GPUState& state, bool force)
 {
   GL_CHECK();
 
@@ -165,6 +189,7 @@ void StateManager::apply(const GPUState& state, bool force)
   setCullFaceEnable(state.mCullFaceEnable, force);
   setCullState(state.mCullState, force);
   setBlendEnable(state.mBlendEnable, force);
+  setCullFrontFaceOrder(state.mCullOrder, force);
 
   // Do this by hand to avoid the redundant glActiveTexture calls
   /// \todo Grab the maximum number of texture units and use that instead...
@@ -207,7 +232,7 @@ void StateManager::apply(const GPUState& state, bool force)
 }
 
 //------------------------------------------------------------------------------
-GPUState StateManager::getStateFromOpenGL() const
+GPUState GPUStateManager::getStateFromOpenGL() const
 {
   GL_CHECK();
 
@@ -224,6 +249,9 @@ GPUState StateManager::getStateFromOpenGL() const
   state.mCullState                    = (e == GL_FRONT) ? CULL_FRONT : CULL_BACK;
 
   state.mBlendEnable                  = glIsEnabled(GL_BLEND) != 0;
+
+  glGetIntegerv(GL_FRONT_FACE, &e);
+  state.mCullOrder                    = GLToCULL_ORDER(e);
 
   for(size_t i=0; i < getMaxTextureUnits(); ++i)
   {
@@ -269,7 +297,7 @@ GPUState StateManager::getStateFromOpenGL() const
 }
 
 //------------------------------------------------------------------------------
-void StateManager::setBlendEnable(bool value, bool force)
+void GPUStateManager::setBlendEnable(bool value, bool force)
 {
   if (force || value != mInternalState.mBlendEnable)
   {
@@ -286,7 +314,7 @@ void StateManager::setBlendEnable(bool value, bool force)
 }
 
 //------------------------------------------------------------------------------
-void StateManager::setBlendEquation(BLEND_EQ value, bool force)
+void GPUStateManager::setBlendEquation(BLEND_EQ value, bool force)
 {
   if (force || value != mInternalState.mBlendEquation)
   {
@@ -296,7 +324,8 @@ void StateManager::setBlendEquation(BLEND_EQ value, bool force)
 }
 
 //------------------------------------------------------------------------------
-void StateManager::setBlendFunction(BLEND_FUNC src, BLEND_FUNC dest, bool force)
+void GPUStateManager::setBlendFunction(BLEND_FUNC src, BLEND_FUNC dest, 
+                                       bool force)
 {
   if (   force 
       || src != mInternalState.mBlendFuncSrc 
@@ -310,7 +339,7 @@ void StateManager::setBlendFunction(BLEND_FUNC src, BLEND_FUNC dest, bool force)
 }
 
 //------------------------------------------------------------------------------
-void StateManager::setColorMask(bool mask, bool force)
+void GPUStateManager::setColorMask(bool mask, bool force)
 {
   if (force || mask != mInternalState.mColorMask)
   {
@@ -321,7 +350,7 @@ void StateManager::setColorMask(bool mask, bool force)
 }
 
 //------------------------------------------------------------------------------
-void StateManager::setCullState(STATE_CULL value, bool force)
+void GPUStateManager::setCullState(STATE_CULL value, bool force)
 {
   if (force || value != mInternalState.mCullState)
   {
@@ -331,12 +360,12 @@ void StateManager::setCullState(STATE_CULL value, bool force)
 }
 
 //------------------------------------------------------------------------------
-void StateManager::setCullFaceEnable(bool value, bool force)
+void GPUStateManager::setCullFaceEnable(bool value, bool force)
 {
   if (force || value != mInternalState.mCullFaceEnable)
   {
     mInternalState.mCullFaceEnable = value;
-    if (mInternalState.mCullFaceEnable )
+    if (mInternalState.mCullFaceEnable)
     {
       glEnable(GL_CULL_FACE);
     }
@@ -348,17 +377,27 @@ void StateManager::setCullFaceEnable(bool value, bool force)
 }
 
 //------------------------------------------------------------------------------
-void StateManager::setDepthFunc(DEPTH_FUNC value, bool force)
+void GPUStateManager::setCullFrontFaceOrder(CULL_ORDER value, bool force)
 {
-  if (force || value != mInternalState.mDepthFunc)
+  if (force || value != mInternalState.mCullOrder)
   {
-    mInternalState.mDepthFunc = value;
-    glDepthFunc( DEPTH_FUNCToGL(mInternalState.mDepthFunc ) );
+    mInternalState.mCullOrder = value;
+    glFrontFace(CULL_ORDERToGL(mInternalState.mCullOrder));
   }
 }
 
 //------------------------------------------------------------------------------
-void StateManager::setDepthMask(bool value, bool force)
+void GPUStateManager::setDepthFunc(DEPTH_FUNC value, bool force)
+{
+  if (force || value != mInternalState.mDepthFunc)
+  {
+    mInternalState.mDepthFunc = value;
+    glDepthFunc(DEPTH_FUNCToGL(mInternalState.mDepthFunc));
+  }
+}
+
+//------------------------------------------------------------------------------
+void GPUStateManager::setDepthMask(bool value, bool force)
 {
   if (force || value != mInternalState.mDepthMask)
   {
@@ -368,7 +407,7 @@ void StateManager::setDepthMask(bool value, bool force)
 }
 
 //------------------------------------------------------------------------------
-void StateManager::setDepthTestEnable(bool value, bool force)
+void GPUStateManager::setDepthTestEnable(bool value, bool force)
 {
   if (force || value != mInternalState.mDepthTestEnable)
   {

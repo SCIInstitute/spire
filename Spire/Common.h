@@ -27,25 +27,43 @@
 */
 
 /// \author James Hughes
-/// \date   November 2012
+/// \date   December 2012
 
-#include "High/Log.h"
+#ifndef SPIRE_COMMON_H
+#define SPIRE_COMMON_H
 
-namespace Spire {
+#include <cstddef>
 
-//------------------------------------------------------------------------------
-Log::Log(Hub::LogFunction logFunction) :
-    mDebugStream(logFunction, Interface::LOG_DEBUG),
-    mMessageStream(logFunction, Interface::LOG_MESSAGE),
-    mWarningStream(logFunction, Interface::LOG_WARNING),
-    mErrorStream(logFunction, Interface::LOG_ERROR)
+// OpenGL headers
+#ifdef USING_OSX
+#include <OpenGL/gl.h>
+//#elif USING_LINUX
+//#elif USING_WINDOWS
+#else
+#error OpenGL headers not defined for this platform.
+#endif
+
+namespace Spire
 {
-}
 
-//------------------------------------------------------------------------------
-Log::~Log()
-{
-}
+#ifdef _DEBUG
+# define GL_CHECK()                                                    \
+  do {                                                                 \
+    GLenum glerr;                                                      \
+    unsigned int iCounter = 0;                                         \
+    while((glerr = glGetError()) != GL_NO_ERROR) {                     \
+      T_ERROR("GL error before line %u (%s): %s (%#x)",                \
+              __LINE__, __FILE__,                                      \
+              gluErrorString(glerr),                                   \
+              static_cast<unsigned>(glerr));                           \
+      iCounter++;                                                      \
+      if (iCounter > MAX_GL_ERROR_COUNT) break;                        \
+    }                                                                  \
+  } while(0)
+#else
+# define GL_CHECK() 
+#endif
 
+} // namespace Spire
 
-} // end of namespace Spire
+#endif

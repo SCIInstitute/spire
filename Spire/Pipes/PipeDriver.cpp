@@ -27,25 +27,17 @@
 */
 
 /// \author James Hughes
-/// \date   November 2012
+/// \date   December 2012
 
-#include "High/Log.h"
+#include "Common.h"
+#include "PipeDriver.h"
 
-namespace Spire {
+namespace Spire
+{
 
-//------------------------------------------------------------------------------
-Log::Log(Hub::LogFunction logFunction) :
-    mDebugStream(logFunction, Interface::LOG_DEBUG),
-    mMessageStream(logFunction, Interface::LOG_MESSAGE),
-    mWarningStream(logFunction, Interface::LOG_WARNING),
-    mErrorStream(logFunction, Interface::LOG_ERROR)
+PipeDriver::PipeDriver(Hub& hub) :
+    mHub(hub)
 {
 }
-
-//------------------------------------------------------------------------------
-Log::~Log()
-{
-}
-
 
 } // end of namespace Spire

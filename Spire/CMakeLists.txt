@@ -71,18 +71,25 @@ file (GLOB Source_Root
   )
 
 file (GLOB Source_High
-  "high/*.cpp"
-  "high/*.h"
+  "High/*.cpp"
+  "High/*.h"
   )
 
 file (GLOB Source_Low
-  "low/*.cpp"
-  "low/*.h"
+  "Low/*.cpp"
+  "Low/*.h"
   )
 
 file (GLOB Source_Caching
-  "caching/*.cpp"
-  "caching/*.h"
+  "Caching/*.cpp"
+  "Caching/*.h"
+  )
+
+file (GLOB Source_Pipes
+  "Pipes/*.cpp"
+  "Pipes/*.h"
+  "Pipes/StuPipe/*.cpp"
+  "Pipes/StuPipe/*.h"
   )
 
 ########################################################################
@@ -93,6 +100,7 @@ add_library(Spire
   ${Source_High}
   ${Source_Low}
   ${Source_Caching}
+  ${Source_Pipes}
   )
 target_link_libraries(Spire ${OPENGL_LIBRARIES})
 

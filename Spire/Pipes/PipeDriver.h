@@ -27,25 +27,33 @@
 */
 
 /// \author James Hughes
-/// \date   November 2012
+/// \date   December 2012
 
-#include "High/Log.h"
+#ifndef SPIRE_PIPES_PIPEDRIVER_H
+#define SPIRE_PIPES_PIPEDRIVER_H
 
-namespace Spire {
+#include "High/Hub.h"
 
-//------------------------------------------------------------------------------
-Log::Log(Hub::LogFunction logFunction) :
-    mDebugStream(logFunction, Interface::LOG_DEBUG),
-    mMessageStream(logFunction, Interface::LOG_MESSAGE),
-    mWarningStream(logFunction, Interface::LOG_WARNING),
-    mErrorStream(logFunction, Interface::LOG_ERROR)
+namespace Spire
 {
-}
 
-//------------------------------------------------------------------------------
-Log::~Log()
+/// Abstract base class for the Drivers controlling each of the rendering
+/// pipelines.
+class PipeDriver
 {
-}
+public:
 
+  PipeDriver(Hub& hub);
+  virtual ~PipeDriver() {}
+  
+  /// Instructs the derived class to render a frame.
+  virtual void doFrame() = 0;
 
-} // end of namespace Spire
+protected:
+
+  Hub&    mHub;           ///< Hub of the rendering system.
+};
+
+} // namespace Spire
+
+#endif 
