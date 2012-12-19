@@ -76,7 +76,7 @@ public:
   void addAttribute(const std::string& attribName, bool isHalfFloat = false);
 
   /// If 'attrib' is contained herein, returns true.
-  bool hasAttrib(const std::string& attribName) const;
+  bool hasAttribute(const std::string& attribName) const;
 
   /// Binds attributes to the shader indicated by parameter 'program'.
   void bindAttributes(GLuint program);
@@ -86,7 +86,7 @@ public:
   size_t calculateStride() const;
 
   /// Returns the number of common attributes.
-  size_t calculateNumCommon(const ShaderAttributes& compare) const;
+  size_t calculateNumCommonAttributes(const ShaderAttributes& compare) const;
 
   /// Returns true if the given ShaderAttributes class would satisfy the 
   /// requirements of the current ShaderAttributes class.
@@ -107,11 +107,11 @@ private:
 
   /// Returns true if the attribute array contains a reference to 'index'.
   /// This is the index into the array in ShaderAttributeMan.
-  bool hasIndex(size_t attributeIndex) const;
+  bool hasIndex(size_t targetIndex) const;
 
   /// Reference to the attribute manager.
   /// The attribute manager is queried regarding available attributes.
-  ShaderAttributeMan&               mAttributeMan;
+  const ShaderAttributeMan&         mAttributeMan;
 
   /// Contains indices to attributes in ShaderAttributeMan, sorted (ascending).
   std::vector<AttribSpecificData>   mAttributes;
@@ -126,10 +126,10 @@ public:
   virtual ~ShaderAttributeMan();
 
   /// Seed value to use when hashing strings for comparison purposes.
-  const uint32_t MURMUR_SEED_VALUE = 0x9783f23d;
+  static const uint32_t MURMUR_SEED_VALUE = 0x9783f23d;
 
   /// Whenever an attribute has this index, it is not known how to handle it.
-  const size_t UNKNOWN_ATTRIBUTE_INDEX = 0;
+  static const size_t UNKNOWN_ATTRIBUTE_INDEX = 0;
 
   /// Adds a new attribute to the system. Automatically assigns it an internal
   /// index based on when it was added.

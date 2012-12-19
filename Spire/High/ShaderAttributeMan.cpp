@@ -30,6 +30,7 @@
 /// \date   December 2012
 
 #include "ShaderAttributeMan.h"
+#include "MurmurHash3.h"
 
 namespace Spire {
 
@@ -113,7 +114,7 @@ void ShaderAttributeMan::addAttribute(const std::string& codeName,
 
 //------------------------------------------------------------------------------
 std::tuple<bool, size_t> 
-ShaderAttributeMan::findAttributeWithName(const std::string& codeName)
+ShaderAttributeMan::findAttributeWithName(const std::string& codeName) const
 {
   // Hash the string, search for the hash, then proceed with string compares
   // to check for collisions.
@@ -138,19 +139,19 @@ ShaderAttributeMan::findAttributeWithName(const std::string& codeName)
 uint32_t ShaderAttributeMan::hashString(const std::string& str)
 {
   uint32_t hashOut = 0;
-  MurmurHash_x86_32(
-      static_cast<const void*>(codeName.c_str()),
-      static_cast<int>(codeName.size()),
+  MurmurHash3_x86_32(
+      static_cast<const void*>(str.c_str()),
+      static_cast<int>(str.size()),
       MURMUR_SEED_VALUE,
       static_cast<void*>(&hashOut));
   return hashOut;
 }
 
 //------------------------------------------------------------------------------
-AttribState ShaderAttributeMan::getAttributeAtIndex(size_t index)
+AttribState ShaderAttributeMan::getAttributeAtIndex(size_t index) const
 {
   if (index >= mAttributes.size())
-    throw std::range_error();
+    throw std::range_error("Index greater than size of mAttributes.");
 
   return mAttributes[index];
 }
@@ -162,27 +163,27 @@ AttribState ShaderAttributeMan::getAttributeAtIndex(size_t index)
 //------------------------------------------------------------------------------
 AttribState ShaderAttributes::getAttribute(size_t index) const
 {
-  return mAttributeMan->getAttributeAtIndex(index);
+  return mAttributeMan.getAttributeAtIndex(index);
 }
 
 //------------------------------------------------------------------------------
-int ShaderAttributes::getNumAttributes() const
+size_t ShaderAttributes::getNumAttributes() const
 {
   return mAttributes.size();
 }
 
 //------------------------------------------------------------------------------
-bool ShaderAttributes::doesContainAttrib(const std::string& attribName) const
+bool ShaderAttributes::hasAttribute(const std::string& attribName) const
 {
   uint32_t hash = ShaderAttributeMan::hashString(attribName);
 
   for (auto it = mAttributes.begin(); it != mAttributes.end(); ++it)
   {
     AttribState state = getAttribute(it->index);
-    if (state->nameHash == hash)
+    if (state.nameHash == hash)
     {
       // Check for hash collisions
-      if (codeName == state->codeName)
+      if (attribName == state.codeName)
       {
         return true;
       }
@@ -196,12 +197,12 @@ bool ShaderAttributes::doesContainAttrib(const std::string& attribName) const
 bool ShaderAttributes::doesSatisfyShader(const ShaderAttributes& compare) const
 {
   // Not possible to satisfy shader if there are any unknown attributes.
-  if (    compare.doesContainAttrib(ShaderAttributeMan::UNKNOWN_ATTRIBUTE_INDEX)
-      ||  doesCantainAttrib(ShaderAttributeMan::UNKNOWN_ATTRIBUTE_INDEX))
+  if (    compare.hasAttribute(ShaderAttributeMan::UNKNOWN_ATTRIBUTE_INDEX)
+      ||  hasAttribute(ShaderAttributeMan::UNKNOWN_ATTRIBUTE_INDEX))
     return false;
 
   // Compare number of common attributes and the size of our attribute array.
-  int numCommonAttribs = this->calcNumCommonAttributes(compare);
+  int numCommonAttribs = calculateNumCommonAttributes(compare);
   return (numCommonAttribs == mAttributes.size());
 }
 
@@ -222,12 +223,12 @@ size_t ShaderAttributes::calculateStride() const
 void ShaderAttributes::addAttribute(const std::string& attribName, 
                                     bool isHalfFloat)
 {
-  std::tuple<bool,size_t> ret = mAttributeMan->findAttributeWithName(attribName);
+  std::tuple<bool,size_t> ret = mAttributeMan.findAttributeWithName(attribName);
   if (std::get<0>(ret))
   {
     AttribSpecificData attribData;
     attribData.index = std::get<1>(ret);
-    attribData.isHalfFloat = isHalfFLoat;
+    attribData.isHalfFloat = isHalfFloat;
     mAttributes.push_back(attribData);
 
     // Re-sort the array.
@@ -245,37 +246,24 @@ void ShaderAttributes::addAttribute(const std::string& attribName,
 //------------------------------------------------------------------------------
 size_t ShaderAttributes::getFullAttributeSize(const AttribSpecificData& attrib) const
 {
-  size_t ret = 0;
-  AttribState state = mAttributeMan->getAttribute(attirb.index);
-  switch (attrib.type)
+  AttribState state = mAttributeMan.getAttributeAtIndex(attrib.index);
+  if (attrib.isHalfFloat)
   {
-    case ATTRIB_FLOAT:
-      ret = state.size;
-      break;
-
-    case ATTRIB_HALF_FLOAT:
-      ret = state.halfFloatSize;
-      break;
-
-    case ATTRIB_DOUBLE:
-      throw std::exception("Unimplemented.");
-      break;
-
-    default:
-      throw std::invalid_argument("Attribute type not a valid enumeration value.");
-      break;
+    return state.size;
   }
-
-  return ret;
+  else
+  {
+    return state.halfFloatSize;
+  }
 }
 
 //------------------------------------------------------------------------------
 void ShaderAttributes::bindAttributes(GLuint program)
 {
-  int attribIndex = 0;
+  int i = 0;
   for (auto it = mAttributes.begin(); it != mAttributes.end(); ++it)
   {
-    if (it->index != mAttributeMan::UNKNOWN_ATTRIBUTE_INDEX)
+    if (it->index != ShaderAttributeMan::UNKNOWN_ATTRIBUTE_INDEX)
     {
       AttribState attrib = getAttribute(it->index);
       glBindAttribLocation(program, i, attrib.codeName.c_str());
@@ -285,7 +273,7 @@ void ShaderAttributes::bindAttributes(GLuint program)
 }
 
 //------------------------------------------------------------------------------
-int ShaderAttributes::calculateNumCommon(const ShaderAttributes& compare) const
+size_t ShaderAttributes::calculateNumCommonAttributes(const ShaderAttributes& compare) const
 {
   int numCommon = 0;
 
@@ -300,7 +288,7 @@ int ShaderAttributes::calculateNumCommon(const ShaderAttributes& compare) const
 }
 
 //------------------------------------------------------------------------------
-bool ShaderAttributes::hasIndex(size_t targetIndex)
+bool ShaderAttributes::hasIndex(size_t targetIndex) const
 {
   // Could perform a binary search here...
   for (auto it = mAttributes.begin(); it != mAttributes.end(); ++it)
