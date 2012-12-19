@@ -37,10 +37,17 @@
 // OpenGL headers
 #ifdef USING_OSX
 #include <OpenGL/gl.h>
+#elif USING_IOS
+#define OPENGL_ES 1
 //#elif USING_LINUX
 //#elif USING_WINDOWS
 #else
 #error OpenGL headers not defined for this platform.
+#endif
+
+// Utility definitions for non-ES OpenGL implementations.
+#ifndef OPENGL_ES
+#define GL_HALF_FLOAT_OES GL_FLOAT
 #endif
 
 namespace Spire
