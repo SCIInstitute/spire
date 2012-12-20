@@ -160,7 +160,7 @@ TEST_F(ShaderAttributeManInvolved, addingAttributes)
 class ShaderAttributeCollectionTests : public testing::Test
 {
 protected:
-  ShaderAttributeManInvolved() :
+  ShaderAttributeCollectionTests() :
       mAttribMan(true),
       mCol1(mAttribMan),
       mCol2(mAttribMan),
@@ -204,14 +204,34 @@ TEST_F(ShaderAttributeCollectionTests, primaryTest)
 {
   AttribState state;
 
+  // Check first attribute and most of its values.
   ASSERT_NO_THROW(state = mCol1.getAttribute(0));
   EXPECT_EQ("at1", state.codeName);
-  EXPECT_EQ(mAttribMan.hashString(attribName), state.nameHash);
-  EXPECT_EQ(2, state.numComponents);
-  EXPECT_EQ(true, state.normalize);
-  EXPECT_EQ(sizeof(char) * 2, state.size);
-  EXPECT_EQ(sizeof(char) * 2, state.halfFloatSize);
-  EXPECT_EQ(GL_UNSIGNED_BYTE, state.type);
+  EXPECT_EQ(3, state.numComponents);
+  EXPECT_EQ(false, state.normalize);
+  EXPECT_EQ(sizeof(float) * 3, state.size);
+  EXPECT_EQ(sizeof(float) * 3, state.halfFloatSize);
+  EXPECT_EQ(GL_FLOAT, state.type);
+
+  // Now just check that the attributes are in the expected order.
+  ASSERT_NO_THROW(state = mCol1.getAttribute(1));
+  EXPECT_EQ("at3", state.codeName);
+
+  ASSERT_NO_THROW(state = mCol2.getAttribute(0));
+  EXPECT_EQ("at1", state.codeName);
+  ASSERT_NO_THROW(state = mCol2.getAttribute(1));
+  EXPECT_EQ("at2", state.codeName);
+  ASSERT_NO_THROW(state = mCol2.getAttribute(2));
+  EXPECT_EQ("at3", state.codeName);
+
+  ASSERT_NO_THROW(state = mCol3.getAttribute(0));
+  EXPECT_EQ("at1", state.codeName);
+  ASSERT_NO_THROW(state = mCol3.getAttribute(1));
+  EXPECT_EQ("at2", state.codeName);
+  ASSERT_NO_THROW(state = mCol3.getAttribute(2));
+  EXPECT_EQ("at3", state.codeName);
+  ASSERT_NO_THROW(state = mCol3.getAttribute(3));
+  EXPECT_EQ("at4", state.codeName);
 }
 
 }

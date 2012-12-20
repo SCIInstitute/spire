@@ -176,7 +176,10 @@ AttribState ShaderAttributeMan::getAttributeAtIndex(size_t index) const
 //------------------------------------------------------------------------------
 AttribState ShaderAttributeCollection::getAttribute(size_t index) const
 {
-  return mAttributeMan.getAttributeAtIndex(index);
+  if (index >= mAttributes.size())
+    throw std::range_error("Index greater than size of mAttributes.");
+
+  return mAttributeMan.getAttributeAtIndex(mAttributes[index].index);
 }
 
 //------------------------------------------------------------------------------
@@ -192,7 +195,7 @@ bool ShaderAttributeCollection::hasAttribute(const std::string& attribName) cons
 
   for (auto it = mAttributes.begin(); it != mAttributes.end(); ++it)
   {
-    AttribState state = getAttribute(it->index);
+    AttribState state = mAttributeMan.getAttributeAtIndex(it->index);
     if (state.nameHash == hash)
     {
       // Check for hash collisions
@@ -278,7 +281,7 @@ void ShaderAttributeCollection::bindAttributes(GLuint program)
   {
     if (it->index != ShaderAttributeMan::UNKNOWN_ATTRIBUTE_INDEX)
     {
-      AttribState attrib = getAttribute(it->index);
+      AttribState attrib = mAttributeMan.getAttributeAtIndex(it->index);
       glBindAttribLocation(program, i, attrib.codeName.c_str());
     }
     ++i;
