@@ -34,53 +34,58 @@
 
 namespace Spire {
 
+const std::string ShaderAttributeMan::UNKNOWN_NAME = "_unknown_";
+
 //------------------------------------------------------------------------------
-ShaderAttributeMan::ShaderAttributeMan()
+ShaderAttributeMan::ShaderAttributeMan(bool addDefaultAttributes)
 {
   // Unknown attribute (attribute at 0 index).
-  addAttribute("_unknown_", 1, false, sizeof(float), sizeof(short), GL_FLOAT,
+  addAttribute(UNKNOWN_NAME, 1, false, sizeof(float), sizeof(short), GL_FLOAT,
                GL_HALF_FLOAT_OES);
 
-  // Default attributes.
-  addAttribute("a_pos", 3, false, 
-               sizeof(float) * 3, sizeof(short) * 3 + sizeof(short),
-               GL_FLOAT, GL_HALF_FLOAT_OES);
-  addAttribute("a_normal", 3, false, 
-               sizeof(float) * 3, sizeof(short) * 3 + sizeof(short),
-               GL_FLOAT, GL_HALF_FLOAT_OES);
-  addAttribute("a_texCoord0", 2, false, 
-               sizeof(float) * 2, sizeof(short) * 2,
-               GL_FLOAT, GL_HALF_FLOAT_OES);
-  addAttribute("a_texCoord1", 2, false, 
-               sizeof(float) * 2, sizeof(short) * 2,
-               GL_FLOAT, GL_HALF_FLOAT_OES);
-  addAttribute("a_texCoord2", 2, false, 
-               sizeof(float) * 2, sizeof(short) * 2,
-               GL_FLOAT, GL_HALF_FLOAT_OES);
-  addAttribute("a_texCoord3", 2, false, 
-               sizeof(float) * 2, sizeof(short) * 2,
-               GL_FLOAT, GL_HALF_FLOAT_OES);
-  addAttribute("a_color", 4, true, 
-               sizeof(char) * 4, sizeof(char) * 4,
-               GL_UNSIGNED_BYTE, GL_UNSIGNED_BYTE);
-  addAttribute("a_tangent", 3, false, 
-               sizeof(float) * 3, sizeof(short) * 3 + sizeof(short),
-               GL_FLOAT, GL_HALF_FLOAT_OES);
-  addAttribute("a_binormal", 3, false, 
-               sizeof(float) * 3, sizeof(short) * 3 + sizeof(short),
-               GL_FLOAT, GL_HALF_FLOAT_OES);
-  addAttribute("a_generalPos", 3, false, 
-               sizeof(float) * 3, sizeof(float) * 3,
-               GL_FLOAT, GL_FLOAT);
-  addAttribute("a_generalNormal", 3, false, 
-               sizeof(float) * 3, sizeof(float) * 3,
-               GL_FLOAT, GL_FLOAT);
-  addAttribute("a_generalUV", 2, false, 
-               sizeof(float) * 2, sizeof(float) * 2,
-               GL_FLOAT, GL_FLOAT);
-  addAttribute("a_generalFloat", 1, false, 
-               sizeof(float) * 1, sizeof(float) * 1,
-               GL_FLOAT, GL_FLOAT);
+  // Add default attributes if requested.
+  if (addDefaultAttributes)
+  {
+    addAttribute("a_pos", 3, false, 
+                 sizeof(float) * 3, sizeof(short) * 3 + sizeof(short),
+                 GL_FLOAT, GL_HALF_FLOAT_OES);
+    addAttribute("a_normal", 3, false, 
+                 sizeof(float) * 3, sizeof(short) * 3 + sizeof(short),
+                 GL_FLOAT, GL_HALF_FLOAT_OES);
+    addAttribute("a_texCoord0", 2, false, 
+                 sizeof(float) * 2, sizeof(short) * 2,
+                 GL_FLOAT, GL_HALF_FLOAT_OES);
+    addAttribute("a_texCoord1", 2, false, 
+                 sizeof(float) * 2, sizeof(short) * 2,
+                 GL_FLOAT, GL_HALF_FLOAT_OES);
+    addAttribute("a_texCoord2", 2, false, 
+                 sizeof(float) * 2, sizeof(short) * 2,
+                 GL_FLOAT, GL_HALF_FLOAT_OES);
+    addAttribute("a_texCoord3", 2, false, 
+                 sizeof(float) * 2, sizeof(short) * 2,
+                 GL_FLOAT, GL_HALF_FLOAT_OES);
+    addAttribute("a_color", 4, true, 
+                 sizeof(char) * 4, sizeof(char) * 4,
+                 GL_UNSIGNED_BYTE, GL_UNSIGNED_BYTE);
+    addAttribute("a_tangent", 3, false, 
+                 sizeof(float) * 3, sizeof(short) * 3 + sizeof(short),
+                 GL_FLOAT, GL_HALF_FLOAT_OES);
+    addAttribute("a_binormal", 3, false, 
+                 sizeof(float) * 3, sizeof(short) * 3 + sizeof(short),
+                 GL_FLOAT, GL_HALF_FLOAT_OES);
+    addAttribute("a_generalPos", 3, false, 
+                 sizeof(float) * 3, sizeof(float) * 3,
+                 GL_FLOAT, GL_FLOAT);
+    addAttribute("a_generalNormal", 3, false, 
+                 sizeof(float) * 3, sizeof(float) * 3,
+                 GL_FLOAT, GL_FLOAT);
+    addAttribute("a_generalUV", 2, false, 
+                 sizeof(float) * 2, sizeof(float) * 2,
+                 GL_FLOAT, GL_FLOAT);
+    addAttribute("a_generalFloat", 1, false, 
+                 sizeof(float) * 1, sizeof(float) * 1,
+                 GL_FLOAT, GL_FLOAT);
+  }
 }
 
 //------------------------------------------------------------------------------
@@ -161,19 +166,19 @@ AttribState ShaderAttributeMan::getAttributeAtIndex(size_t index) const
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-AttribState ShaderAttributes::getAttribute(size_t index) const
+AttribState ShaderAttributeCollection::getAttribute(size_t index) const
 {
   return mAttributeMan.getAttributeAtIndex(index);
 }
 
 //------------------------------------------------------------------------------
-size_t ShaderAttributes::getNumAttributes() const
+size_t ShaderAttributeCollection::getNumAttributes() const
 {
   return mAttributes.size();
 }
 
 //------------------------------------------------------------------------------
-bool ShaderAttributes::hasAttribute(const std::string& attribName) const
+bool ShaderAttributeCollection::hasAttribute(const std::string& attribName) const
 {
   uint32_t hash = ShaderAttributeMan::hashString(attribName);
 
@@ -194,7 +199,7 @@ bool ShaderAttributes::hasAttribute(const std::string& attribName) const
 }
 
 //------------------------------------------------------------------------------
-bool ShaderAttributes::doesSatisfyShader(const ShaderAttributes& compare) const
+bool ShaderAttributeCollection::doesSatisfyShader(const ShaderAttributeCollection& compare) const
 {
   // Not possible to satisfy shader if there are any unknown attributes.
   if (    compare.hasAttribute(ShaderAttributeMan::UNKNOWN_ATTRIBUTE_INDEX)
@@ -208,7 +213,7 @@ bool ShaderAttributes::doesSatisfyShader(const ShaderAttributes& compare) const
 
 
 //------------------------------------------------------------------------------
-size_t ShaderAttributes::calculateStride() const
+size_t ShaderAttributeCollection::calculateStride() const
 {
   size_t stride = 0;
   for (auto it = mAttributes.begin(); it != mAttributes.end(); ++it)
@@ -220,7 +225,7 @@ size_t ShaderAttributes::calculateStride() const
 }
 
 //------------------------------------------------------------------------------
-void ShaderAttributes::addAttribute(const std::string& attribName, 
+void ShaderAttributeCollection::addAttribute(const std::string& attribName, 
                                     bool isHalfFloat)
 {
   std::tuple<bool,size_t> ret = mAttributeMan.findAttributeWithName(attribName);
@@ -244,7 +249,7 @@ void ShaderAttributes::addAttribute(const std::string& attribName,
 }
 
 //------------------------------------------------------------------------------
-size_t ShaderAttributes::getFullAttributeSize(const AttribSpecificData& attrib) const
+size_t ShaderAttributeCollection::getFullAttributeSize(const AttribSpecificData& attrib) const
 {
   AttribState state = mAttributeMan.getAttributeAtIndex(attrib.index);
   if (attrib.isHalfFloat)
@@ -258,7 +263,7 @@ size_t ShaderAttributes::getFullAttributeSize(const AttribSpecificData& attrib) 
 }
 
 //------------------------------------------------------------------------------
-void ShaderAttributes::bindAttributes(GLuint program)
+void ShaderAttributeCollection::bindAttributes(GLuint program)
 {
   int i = 0;
   for (auto it = mAttributes.begin(); it != mAttributes.end(); ++it)
@@ -273,7 +278,7 @@ void ShaderAttributes::bindAttributes(GLuint program)
 }
 
 //------------------------------------------------------------------------------
-size_t ShaderAttributes::calculateNumCommonAttributes(const ShaderAttributes& compare) const
+size_t ShaderAttributeCollection::calculateNumCommonAttributes(const ShaderAttributeCollection& compare) const
 {
   int numCommon = 0;
 
@@ -288,7 +293,7 @@ size_t ShaderAttributes::calculateNumCommonAttributes(const ShaderAttributes& co
 }
 
 //------------------------------------------------------------------------------
-bool ShaderAttributes::hasIndex(size_t targetIndex) const
+bool ShaderAttributeCollection::hasIndex(size_t targetIndex) const
 {
   // Could perform a binary search here...
   for (auto it = mAttributes.begin(); it != mAttributes.end(); ++it)

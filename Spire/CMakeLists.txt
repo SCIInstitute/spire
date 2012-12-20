@@ -27,9 +27,7 @@ if (UNIX)
   #set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -pedantic -Werror")
 endif (UNIX)
 
-# For GTest to work properly
-add_definitions(-DGTEST_USE_OWN_TR1_TUPLE=1)
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/3rdParty/gtest/include ${CMAKE_CURRENT_SOURCE_DIR})
+include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 
 ########################################################################
 # ThirdParty libraries
@@ -56,9 +54,6 @@ include(FindSubversion)
 #  SVN_TRUST_CERT 1
 #  SOURCE_DIR ${TuvokSourceDir}
 #  )
-
-# Google Test
-add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/3rdParty/gtest)
 
 ########################################################################
 # Source

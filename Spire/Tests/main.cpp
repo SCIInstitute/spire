@@ -29,7 +29,6 @@
 /// \author James Hughes
 /// \date   December 2012
 
-#include "main.h"
 #include "gtest/gtest.h"
 
 int main(int argc, char **argv)

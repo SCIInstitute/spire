@@ -58,10 +58,10 @@ struct AttribState
 /// Shader attrtibutes class used to sort and compare shader input attributes.
 /// \todo Should make this mechanism more general and allow arbitrary binding 
 ///       of shader attributes.
-class ShaderAttributes
+class ShaderAttributeCollection
 {
 public:
-  ShaderAttributes(const ShaderAttributeMan& man) :
+  ShaderAttributeCollection(const ShaderAttributeMan& man) :
       mAttributeMan(man)
   {}
 
@@ -86,11 +86,11 @@ public:
   size_t calculateStride() const;
 
   /// Returns the number of common attributes.
-  size_t calculateNumCommonAttributes(const ShaderAttributes& compare) const;
+  size_t calculateNumCommonAttributes(const ShaderAttributeCollection& compare) const;
 
-  /// Returns true if the given ShaderAttributes class would satisfy the 
-  /// requirements of the current ShaderAttributes class.
-  bool doesSatisfyShader(const ShaderAttributes& compare) const;
+  /// Returns true if the given ShaderAttributeCollection class would satisfy the 
+  /// requirements of the current ShaderAttributeCollection class.
+  bool doesSatisfyShader(const ShaderAttributeCollection& compare) const;
 
 private:
 
@@ -122,7 +122,7 @@ private:
 class ShaderAttributeMan
 {
 public:
-  ShaderAttributeMan();
+  ShaderAttributeMan(bool addDefaultAttributes = true);
   virtual ~ShaderAttributeMan();
 
   /// Seed value to use when hashing strings for comparison purposes.
@@ -130,6 +130,9 @@ public:
 
   /// Whenever an attribute has this index, it is not known how to handle it.
   static const size_t UNKNOWN_ATTRIBUTE_INDEX = 0;
+
+  /// The name of the unknown value.
+  static const std::string UNKNOWN_NAME;
 
   /// Adds a new attribute to the system. Automatically assigns it an internal
   /// index based on when it was added.
@@ -155,6 +158,11 @@ public:
   /// If no attribute is found at 'index', or if the 'index' is invalid, an
   /// exception is thrown.
   AttribState getAttributeAtIndex(size_t index) const;
+
+  /// Returns the number of attributes currently in the attribute array.
+  /// Will always be >= 1, because the unknown attribute is always the first
+  /// attribute in the array.
+  size_t getNumAttributes() const   {return mAttributes.size();}
 
   /// Hashes 'str' into a uint32_t using murmur hash.
   /// Uses MURMUR_SEED_VALUE.
