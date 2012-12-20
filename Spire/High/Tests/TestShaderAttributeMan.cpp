@@ -30,9 +30,10 @@
 /// \date   December 2012
 
 #include <gtest/gtest.h>
+#include "Common.h"
+#include "Exceptions.h"
 #include "High/MurmurHash3.h"
 #include "High/ShaderAttributeMan.h"
-#include "Exceptions.h"
 
 using namespace Spire;
 
@@ -154,5 +155,63 @@ TEST_F(ShaderAttributeManInvolved, addingAttributes)
 
   EXPECT_EQ(beginSize + 2, mAttribMan.getNumAttributes());
 }
-  
+
+//------------------------------------------------------------------------------
+class ShaderAttributeCollectionTests : public testing::Test
+{
+protected:
+  ShaderAttributeManInvolved() :
+      mAttribMan(true),
+      mCol1(mAttribMan),
+      mCol2(mAttribMan),
+      mCol3(mAttribMan)
+  {}
+
+  virtual void SetUp()
+  {
+    mAttribMan.addAttribute("at1", 3, false, sizeof(float)*3, sizeof(float)*3,
+                            GL_FLOAT, GL_FLOAT);
+    mAttribMan.addAttribute("at2", 3, false, sizeof(float)*3, sizeof(float)*3,
+                            GL_FLOAT, GL_FLOAT);
+    mAttribMan.addAttribute("at3", 1, false, sizeof(float), sizeof(float),
+                            GL_FLOAT, GL_FLOAT);
+    mAttribMan.addAttribute("at4", 4, false, sizeof(char)*4, sizeof(char)*4,
+                            GL_UNSIGNED_BYTE, GL_UNSIGNED_BYTE);
+
+    mCol1.addAttribute("at1");
+    mCol1.addAttribute("at3");
+
+    /// The following are purposefully out-of-order
+    mCol2.addAttribute("at1");
+    mCol2.addAttribute("at3");
+    mCol2.addAttribute("at2");
+
+    mCol3.addAttribute("at4");
+    mCol3.addAttribute("at1");
+    mCol3.addAttribute("at3");
+    mCol3.addAttribute("at2");
+  }
+  virtual void TearDown() {}
+
+  ShaderAttributeMan          mAttribMan;
+  ShaderAttributeCollection   mCol1;
+  ShaderAttributeCollection   mCol2;
+  ShaderAttributeCollection   mCol3;
+};
+
+//------------------------------------------------------------------------------
+TEST_F(ShaderAttributeCollectionTests, primaryTest)
+{
+  AttribState state;
+
+  ASSERT_NO_THROW(state = mCol1.getAttribute(0));
+  EXPECT_EQ("at1", state.codeName);
+  EXPECT_EQ(mAttribMan.hashString(attribName), state.nameHash);
+  EXPECT_EQ(2, state.numComponents);
+  EXPECT_EQ(true, state.normalize);
+  EXPECT_EQ(sizeof(char) * 2, state.size);
+  EXPECT_EQ(sizeof(char) * 2, state.halfFloatSize);
+  EXPECT_EQ(GL_UNSIGNED_BYTE, state.type);
+}
+
 }
