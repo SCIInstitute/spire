@@ -31,6 +31,7 @@
 
 #include "ShaderAttributeMan.h"
 #include "MurmurHash3.h"
+#include "Exceptions.h"
 
 namespace Spire {
 
@@ -105,11 +106,7 @@ void ShaderAttributeMan::addAttribute(const std::string& codeName,
   attrib.numComponents  = numComponents;
   attrib.normalize      = normalize;
   attrib.size           = size;
-#ifdef OPENGL_ES
   attrib.halfFloatSize  = halfFloatSize;
-#else
-  attrib.halfFloatSize  = size;
-#endif
   attrib.type           = type;
   attrib.halfFloatType  = halfFloatType;
   attrib.nameHash       = hashString(codeName);
@@ -138,6 +135,17 @@ ShaderAttributeMan::findAttributeWithName(const std::string& codeName) const
   }
 
   return std::make_tuple(false, 0);
+}
+
+//------------------------------------------------------------------------------
+AttribState 
+ShaderAttributeMan::getAttributeWithName(const std::string& codeName) const
+{
+  std::tuple<bool, size_t> attIndex = findAttributeWithName(codeName);
+  if (std::get<0>(attIndex) == false)
+    throw NotFound("Unable to find attribute with name.");
+
+  return getAttributeAtIndex(std::get<1>(attIndex));
 }
 
 //------------------------------------------------------------------------------

@@ -154,6 +154,10 @@ public:
   ///         then size_t will be NULL.
   std::tuple<bool,size_t> findAttributeWithName(const std::string& codeName) const;
 
+  /// Same as findAttributeWithName, except an exception is thrown instead
+  /// of returning false when an attribute with the specified name does not exist.
+  AttribState getAttributeWithName(const std::string& codeName) const;
+
   /// Returns the attibute at the specified index.
   /// If no attribute is found at 'index', or if the 'index' is invalid, an
   /// exception is thrown.

@@ -32,6 +32,7 @@
 #include <gtest/gtest.h>
 #include "High/MurmurHash3.h"
 #include "High/ShaderAttributeMan.h"
+#include "Exceptions.h"
 
 using namespace Spire;
 
@@ -78,6 +79,8 @@ TEST(ShaderAttributeManBasic, TestUnknownExceptions)
       std::range_error);
 
   std::string bogusName = "someName";
+  EXPECT_THROW(attribMan.getAttributeWithName(bogusName), NotFound);
+
   EXPECT_EQ(false, std::get<0>(attribMan.findAttributeWithName(bogusName)));
   EXPECT_EQ(0, std::get<1>(attribMan.findAttributeWithName(bogusName)));
 }
@@ -85,27 +88,71 @@ TEST(ShaderAttributeManBasic, TestUnknownExceptions)
 //------------------------------------------------------------------------------
 TEST(ShaderAttributeManBasic, TestDefaultAttributes)
 {
-  
+  ShaderAttributeMan attribMan(true);
+
+  EXPECT_LE(1, attribMan.getNumAttributes());
 }
 
 //------------------------------------------------------------------------------
 class ShaderAttributeManInvolved : public testing::Test
 {
 protected:
+  ShaderAttributeManInvolved() :
+      mAttribMan(true)
+  {}
 
-  virtual void SetUp()
-  {
-    
-  }
+  virtual void SetUp()    {}
+  virtual void TearDown() {}
 
   ShaderAttributeMan  mAttribMan;
 };
 
 //------------------------------------------------------------------------------
-TEST_F(ShaderAttributeManInvolved, findingAttributes)
+TEST_F(ShaderAttributeManInvolved, addingAttributes)
 {
-  // When using a test fixture, it is the same as deriving from the fixture class.
-  
-}
+  // When using a test fixture it is the same as deriving from the fixture class.
+  size_t beginSize = mAttribMan.getNumAttributes();
 
+  // Add attributes and ensure that they have been appropriately added.
+  std::string attribName = "att1";
+  mAttribMan.addAttribute(attribName, 3, false, 
+                          sizeof(float) * 3, sizeof(short) * 3 + sizeof(short),
+                          GL_FLOAT, GL_HALF_FLOAT_OES);
+
+  // This test uses a different method of obtaining the attribute than the
+  // next attribute. This uses findAttributeWithName, while the other uses
+  // getAttributeWithName and expects that no exceptions are thrown.
+  AttribState state;
+  std::tuple<bool, size_t> attIndex = mAttribMan.findAttributeWithName(attribName);
+  ASSERT_EQ(true, std::get<0>(attIndex));
+  state = mAttribMan.getAttributeAtIndex(std::get<1>(attIndex));
+  EXPECT_EQ(beginSize, state.index);
+  EXPECT_EQ(attribName, state.codeName);
+  EXPECT_EQ(mAttribMan.hashString(attribName), state.nameHash);
+  EXPECT_EQ(3, state.numComponents);
+  EXPECT_EQ(false, state.normalize);
+  EXPECT_EQ(sizeof(float) * 3, state.size);
+  EXPECT_EQ(sizeof(short) * 3 + sizeof(short), state.halfFloatSize);
+  EXPECT_EQ(GL_FLOAT, state.type);
+  EXPECT_EQ(GL_HALF_FLOAT_OES, state.halfFloatType);
+
+
+  attribName = "att2";
+  mAttribMan.addAttribute(attribName, 2, true, 
+                          sizeof(char) * 2, sizeof(char) * 2,
+                          GL_UNSIGNED_BYTE, GL_UNSIGNED_BYTE);
+  ASSERT_NO_THROW(state = mAttribMan.getAttributeWithName(attribName));
+  EXPECT_EQ(beginSize + 1, state.index);
+  EXPECT_EQ(attribName, state.codeName);
+  EXPECT_EQ(mAttribMan.hashString(attribName), state.nameHash);
+  EXPECT_EQ(2, state.numComponents);
+  EXPECT_EQ(true, state.normalize);
+  EXPECT_EQ(sizeof(char) * 2, state.size);
+  EXPECT_EQ(sizeof(char) * 2, state.halfFloatSize);
+  EXPECT_EQ(GL_UNSIGNED_BYTE, state.type);
+  EXPECT_EQ(GL_UNSIGNED_BYTE, state.halfFloatType);
+
+  EXPECT_EQ(beginSize + 2, mAttribMan.getNumAttributes());
+}
+  
 }

@@ -56,6 +56,14 @@ public:
   virtual ~ThreadException() noexcept {}
 };
 
+class NotFound : virtual public Exception
+{
+public:
+  NotFound() : Exception(std::string("unknown error")) {}
+  NotFound(std::string e) : Exception(e) {}
+  virtual ~NotFound() noexcept {}
+};
+
 } // namespace Spire
 
 #endif // SPIRE_EXCEPTIONS_H
