@@ -65,14 +65,29 @@ public:
       mAttributeMan(man)
   {}
 
+  struct AttribSpecificData
+  {
+    bool        isHalfFloat;    ///< True if we should be using a half-float 
+                                ///< representation of the data.
+    AttribState attrib;         ///< The values in this variable are either an
+                                ///< exact replica of the shader attribute at
+                                ///< 'index' in ShaderAttributeMan, or has index
+                                ///< UNKNOWN_ATTRIBUTE_INDEX and is populated
+                                ///< with known data about the attribute.
+  };
+
   /// Retrieves the attribute at 'index' from ShaderAttributeMan.
-  AttribState getAttribute(size_t index) const;
+  AttribSpecificData getAttribute(size_t index) const;
 
   /// Retrieves number of attributes stored in mAttributes.
   size_t getNumAttributes() const;
 
-  /// Adds an attribute. The attribute is sorted based on the enumeration
-  /// values in SHADER_ATTRIBUTE_TYPE.
+  /// Adds an attribute. This function attempts to find the attribute in
+  /// mAttributeMan, and if found, copies all of its AttribState data.
+  /// If not found, then the attribute is added with index = UNKNOWN_ATTRIBUTE_INDEX,
+  /// and it's codeName / nameHash components populated appropriately. The rest 
+  /// of the AttribState structure is 0 and GL_FLOAT. Also, if the attribute
+  /// is not found, then a warning is produced.
   void addAttribute(const std::string& attribName, bool isHalfFloat = false);
 
   /// If 'attrib' is contained herein, returns true.
@@ -92,14 +107,9 @@ public:
   /// requirements of the current ShaderAttributeCollection class.
   bool doesSatisfyShader(const ShaderAttributeCollection& compare) const;
 
+
 private:
 
-  struct AttribSpecificData
-  {
-    bool    isHalfFloat;    ///< True if we should be using a half-float 
-                            ///< representation of the data.
-    size_t  index;          ///< Index in mAttributeMan's array.
-  };
 
   /// Retrieves the full (including padding) size of the attribute
   /// in the vertex buffer.

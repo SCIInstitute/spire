@@ -34,18 +34,61 @@
 namespace Spire {
 
 //------------------------------------------------------------------------------
-Log::Log(Hub::LogFunction logFunction) :
+Log::Log(const Hub::LogFunction& logFunction) :
     mDebugStream(logFunction, Interface::LOG_DEBUG),
     mMessageStream(logFunction, Interface::LOG_MESSAGE),
     mWarningStream(logFunction, Interface::LOG_WARNING),
     mErrorStream(logFunction, Interface::LOG_ERROR)
-{
+{  if (logFunction == nullptr)
+  {
+#ifndef WIN32
+    std::stringstream osFilename;
+    osFilename << "/tmp/SpireLog";//_" << std::this_thread::get_id();
+    mOutputFile.open(osFilename.str());
+    Hub::LogFunction fun = std::bind(&Log::logFunction, this,
+                                     std::placeholders::_1, 
+                                     std::placeholders::_2);
+
+    // Reset all of the streams' logging functions.
+    mDebugStream.setLogFunction(fun);
+    mMessageStream.setLogFunction(fun);
+    mWarningStream.setLogFunction(fun);
+    mErrorStream.setLogFunction(fun);
+#endif
+  }
+
 }
 
 //------------------------------------------------------------------------------
 Log::~Log()
 {
+  getMessageStream() << "Destroying spire logging class." << std::endl;
+  if (mOutputFile.is_open())
+    mOutputFile.close();
 }
 
+//------------------------------------------------------------------------------
+void Log::logFunction(const std::string& msg, Interface::LOG_LEVEL level)
+{
+  switch (level)
+  {
+    case Interface::LOG_DEBUG:
+      mOutputFile << "Debug:   " << msg;
+      break;
+
+    case Interface::LOG_MESSAGE:
+      mOutputFile << "General: " << msg;
+      break;
+
+    case Interface::LOG_WARNING:
+      mOutputFile << "Warning: " << msg;
+      break;
+
+    case Interface::LOG_ERROR:
+      mOutputFile << "Error:   " << msg;
+      break;
+  }
+  mOutputFile.flush();
+}
 
 } // end of namespace Spire

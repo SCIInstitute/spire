@@ -44,7 +44,7 @@ public:
   ShaderAsset(const std::string& name);
   virtual ~ShaderAsset();
 
-  GLuint            glID;		      ///< GL ID of the asset. Shader program ID.
+  GLuint            glID;		      ///< Shader program ID.
 
   //ShaderUniforms    uniforms;     ///< Uniforms used in the shader.
   //ShaderAttributes  attributes;   ///< Attributes used in the shader.

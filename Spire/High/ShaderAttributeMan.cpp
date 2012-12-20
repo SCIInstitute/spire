@@ -174,12 +174,12 @@ AttribState ShaderAttributeMan::getAttributeAtIndex(size_t index) const
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-AttribState ShaderAttributeCollection::getAttribute(size_t index) const
+AttribSpecificData ShaderAttributeCollection::getAttribute(size_t index) const
 {
   if (index >= mAttributes.size())
     throw std::range_error("Index greater than size of mAttributes.");
 
-  return mAttributeMan.getAttributeAtIndex(mAttributes[index].index);
+  return mAttributes[index];
 }
 
 //------------------------------------------------------------------------------
@@ -195,7 +195,7 @@ bool ShaderAttributeCollection::hasAttribute(const std::string& attribName) cons
 
   for (auto it = mAttributes.begin(); it != mAttributes.end(); ++it)
   {
-    AttribState state = mAttributeMan.getAttributeAtIndex(it->index);
+    AttribState state = it->attrib;
     if (state.nameHash == hash)
     {
       // Check for hash collisions
@@ -243,14 +243,14 @@ void ShaderAttributeCollection::addAttribute(const std::string& attribName,
   if (std::get<0>(ret))
   {
     AttribSpecificData attribData;
-    attribData.index = std::get<1>(ret);
+    attribData.index = mAttributeMan.getAttributeAtIndex(std::get<1>(ret));
     attribData.isHalfFloat = isHalfFloat;
     mAttributes.push_back(attribData);
 
     // Re-sort the array.
     sort(mAttributes.begin(), mAttributes.end(),
          [] (const AttribSpecificData& a, const AttribSpecificData& b) 
-          { return a.index < b.index; });
+          { return a.attrib.index < b.attrib.index; });
   }
   else
   {
@@ -279,9 +279,9 @@ void ShaderAttributeCollection::bindAttributes(GLuint program)
   int i = 0;
   for (auto it = mAttributes.begin(); it != mAttributes.end(); ++it)
   {
-    if (it->index != ShaderAttributeMan::UNKNOWN_ATTRIBUTE_INDEX)
+    if (it->attrib.index != ShaderAttributeMan::UNKNOWN_ATTRIBUTE_INDEX)
     {
-      AttribState attrib = mAttributeMan.getAttributeAtIndex(it->index);
+      AttribState attrib = it->attrib;
       glBindAttribLocation(program, i, attrib.codeName.c_str());
     }
     ++i;
@@ -296,7 +296,7 @@ size_t ShaderAttributeCollection::calculateNumCommonAttributes(const ShaderAttri
   // This check could be done much faster since both arrays are sorted.
   for (auto it = mAttributes.begin(); it != mAttributes.end(); ++it)
   {
-    if (compare.hasIndex(it->index))
+    if (compare.hasIndex(it->attrib.index))
       ++numCommon;
   }
 
@@ -309,7 +309,7 @@ bool ShaderAttributeCollection::hasIndex(size_t targetIndex) const
   // Could perform a binary search here...
   for (auto it = mAttributes.begin(); it != mAttributes.end(); ++it)
   {
-    if (targetIndex == it->index)
+    if (targetIndex == it->attrib.index)
       return true;
   }
 

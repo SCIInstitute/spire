@@ -205,7 +205,7 @@ TEST_F(ShaderAttributeCollectionTests, primaryTest)
   AttribState state;
 
   // Check first attribute and most of its values.
-  ASSERT_NO_THROW(state = mCol1.getAttribute(0));
+  ASSERT_NO_THROW(state = mCol1.getAttribute(0).attrib);
   EXPECT_EQ("at1", state.codeName);
   EXPECT_EQ(3, state.numComponents);
   EXPECT_EQ(false, state.normalize);
@@ -214,23 +214,23 @@ TEST_F(ShaderAttributeCollectionTests, primaryTest)
   EXPECT_EQ(GL_FLOAT, state.type);
 
   // Now just check that the attributes are in the expected order.
-  ASSERT_NO_THROW(state = mCol1.getAttribute(1));
+  ASSERT_NO_THROW(state = mCol1.getAttribute(1).attrib);
   EXPECT_EQ("at3", state.codeName);
 
-  ASSERT_NO_THROW(state = mCol2.getAttribute(0));
+  ASSERT_NO_THROW(state = mCol2.getAttribute(0).attrib);
   EXPECT_EQ("at1", state.codeName);
-  ASSERT_NO_THROW(state = mCol2.getAttribute(1));
+  ASSERT_NO_THROW(state = mCol2.getAttribute(1).attrib);
   EXPECT_EQ("at2", state.codeName);
-  ASSERT_NO_THROW(state = mCol2.getAttribute(2));
+  ASSERT_NO_THROW(state = mCol2.getAttribute(2).attrib);
   EXPECT_EQ("at3", state.codeName);
 
-  ASSERT_NO_THROW(state = mCol3.getAttribute(0));
+  ASSERT_NO_THROW(state = mCol3.getAttribute(0).attrib);
   EXPECT_EQ("at1", state.codeName);
-  ASSERT_NO_THROW(state = mCol3.getAttribute(1));
+  ASSERT_NO_THROW(state = mCol3.getAttribute(1).attrib);
   EXPECT_EQ("at2", state.codeName);
-  ASSERT_NO_THROW(state = mCol3.getAttribute(2));
+  ASSERT_NO_THROW(state = mCol3.getAttribute(2).attrib);
   EXPECT_EQ("at3", state.codeName);
-  ASSERT_NO_THROW(state = mCol3.getAttribute(3));
+  ASSERT_NO_THROW(state = mCol3.getAttribute(3).attrib);
   EXPECT_EQ("at4", state.codeName);
 }
 

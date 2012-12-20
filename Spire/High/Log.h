@@ -34,6 +34,13 @@
 
 #include "High/Hub.h"
 #include <sstream>
+#include <atomic>
+#include <thread>
+
+// In the future, when there are multiple spire threads, use a mutex to
+// protect calls to a vector that stores std::this_thread::get_id()s
+// and their associated Logging instances.
+//#include <mutex>
 
 namespace Spire {
 
@@ -43,20 +50,24 @@ namespace Spire {
 class Log
 {
 public:
-  Log(Hub::LogFunction logFunction);
+  Log(const Hub::LogFunction& logFunction);
   virtual ~Log();
-  
-  /// Retrieves the debug stream.
+
+  /// Retrieves the respective stream
+  /// @{
   std::ostream& getDebugStream()   {return mDebugStream;}
-
-  /// Retrieves the message stream.
   std::ostream& getMessageStream() {return mMessageStream;}
-  
-  /// Retrieves the warning stream.
   std::ostream& getWarningStream() {return mWarningStream;}
-
-  /// Retrieves the error stream.
   std::ostream& getErrorStream()   {return mErrorStream;}
+  /// @}
+
+  /// Retrieves the respective stream using a simple/hacky thread_local
+  /// storage mechanism. Currently, logging is supported for only 1 thread.
+  /// Will return false if a safe stream does not exist (not paired).
+  /// @{
+  
+  /// @}
+
 
 private:
 
@@ -69,6 +80,11 @@ private:
         mBuf(fun, level)
     {}
 
+    void setLogFunction(const Hub::LogFunction& fun)
+    {
+      mBuf.setLogFunction(fun);
+    }
+
   private:
     /// This class override's stringbuf's virtual 'sync' method.
     class CustomStringBuf : public std::stringbuf
@@ -78,6 +94,11 @@ private:
           mLogFun(fun),
           mLevel(level)
       {}
+      
+      void setLogFunction(const Hub::LogFunction& fun)
+      {
+        mLogFun = fun;
+      }
 
     protected:
       virtual int sync()
@@ -99,11 +120,25 @@ private:
     CustomStringBuf   mBuf;
   };
 
+  /// Generalized log function which writes output to mOutputFile.
+  void logFunction(const std::string& msg, Interface::LOG_LEVEL level);
+
   /// The various streams.
-  CustomStream     mDebugStream;
-  CustomStream     mMessageStream;
-  CustomStream     mWarningStream;
-  CustomStream     mErrorStream;
+  CustomStream      mDebugStream;
+  CustomStream      mMessageStream;
+  CustomStream      mWarningStream;
+  CustomStream      mErrorStream;
+
+  std::ofstream     mOutputFile;      ///< Output file to use when
+                                      ///< logging output.
+
+  /// True if a thread has paired with this logger.
+  static std::atomic<bool> mHasPairedThread;
+  /// The ID of the thread that has paired with the logger.
+  static std::thread::id   mPairedThreadID;
+  /// 'Singleton' instance of the logger. Should be turned into a vector
+  /// if we want multiple instances.
+  static Log*              mLog;
 };
 
 } // namespace Spire 

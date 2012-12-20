@@ -38,34 +38,22 @@
 
 #include "Pipes/StuPipe/Driver.h"
 
+static int __thread testing = 0;
+
 namespace Spire {
 
 //------------------------------------------------------------------------------
 Hub::Hub(Context* context, LogFunction logFn) :
     mContext(context),
-    mLogFP(logFn),
-    mPipe(new StuPipe::Driver(*this))
+    mPipe(new StuPipe::Driver(*this)),
+    mLog(new Log(logFn))
 {
-  if (mLogFP == nullptr)
-  {
-#ifndef WIN32
-    std::stringstream osFilename;
-    osFilename << "/tmp/SpireLog";//_" << std::this_thread::get_id();
-    mOutputFile.open(osFilename.str());
-    mLogFP = std::bind(&Hub::logFunction, this,
-                       std::placeholders::_1, std::placeholders::_2);
-#endif
-  }
 
-  mLog = std::unique_ptr<Log>(new Log(mLogFP));
 }
 
 //------------------------------------------------------------------------------
 Hub::~Hub()
 {
-  logMessage() << "Terminating spire output." << std::endl;
-  if (mOutputFile.is_open())
-    mOutputFile.close();
 }
 
 //------------------------------------------------------------------------------
@@ -151,31 +139,6 @@ std::ostream& Hub::logWarning()
 std::ostream& Hub::logError()
 {
   return mLog->getErrorStream();
-}
-
-
-//------------------------------------------------------------------------------
-void Hub::logFunction(const std::string& msg, Interface::LOG_LEVEL level)
-{
-  switch (level)
-  {
-    case Interface::LOG_DEBUG:
-      mOutputFile << "Debug:   " << msg;
-      break;
-
-    case Interface::LOG_MESSAGE:
-      mOutputFile << "General: " << msg;
-      break;
-
-    case Interface::LOG_WARNING:
-      mOutputFile << "Warning: " << msg;
-      break;
-
-    case Interface::LOG_ERROR:
-      mOutputFile << "Error:   " << msg;
-      break;
-  }
-  mOutputFile.flush();
 }
 
 } // end of namespace Spire

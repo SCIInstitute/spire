@@ -44,6 +44,8 @@ namespace Spire {
 class Log;
 class PipeDriver;
 
+/// Using thread local storage ONLY for logging purposes, nothing else.
+
 /// Central hub for the renderer.
 /// Most managers will reference this class in some way.
 class Hub
@@ -82,21 +84,10 @@ public:
 
 private:
 
-  /// Generalized log function which writes output to mOutputFile.
-  void logFunction(const std::string& msg, Interface::LOG_LEVEL level);
-
-  Context*                  mContext;       ///< Context to use when performing
-                                            ///< low level ops.
-  LogFunction               mLogFP;         ///< Logging function pointer.
-  std::ofstream             mOutputFile;    ///< Output file to use when
-                                            ///< logging output.
-
-  std::unique_ptr<Log>      mLog;           ///< Class to encapsulate logging
-                                            ///< functionality.
-
-  GPUStateManager           mGPUStateManager;///< GPU state manager.
-
-  std::shared_ptr<PipeDriver> mPipe;        ///< Current rendering pipe.
+  std::unique_ptr<Log>        mLog;             ///< Spire logging class.
+  Context*                    mContext;         ///< Rendering context.
+  GPUStateManager             mGPUStateManager; ///< GPU state manager.
+  std::shared_ptr<PipeDriver> mPipe;            ///< Current rendering pipe.
 };
 
 } // namespace Spire
