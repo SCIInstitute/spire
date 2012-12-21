@@ -68,18 +68,21 @@ Log::Log(const Hub::LogFunction& logFunction) :
     // No thread has paired, we are free to pair.
     mPairedThreadID = std::this_thread::get_id();
     mLog = this;
+
+    message() << "================================================================================" << std::endl;
+    message() << "Spire logging - Paired with thread " << std::this_thread::get_id() << std::endl;
+    message() << "================================================================================" << std::endl;
   }
   else
   {
     // Do nothing, since another thread has paired.
   }
-
 }
 
 //------------------------------------------------------------------------------
 Log::~Log()
 {
-  getMessageStream() << "Destroying spire logging class." << std::endl;
+  message() << "Destroying spire logging class." << std::endl;
   if (mOutputFile.is_open())
     mOutputFile.close();
 

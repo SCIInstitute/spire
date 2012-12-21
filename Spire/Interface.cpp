@@ -33,71 +33,29 @@
 #include "Interface.h"
 #include "Exceptions.h"
 #include "High/Hub.h"
-#include "High/HubThread.h"
+#include "High/Log.h"
 
 namespace Spire {
 
 //------------------------------------------------------------------------------
 Interface::Interface(Context* context, bool createThread) :
-    mHub(new Hub(context, Hub::LogFunction())),
-    mHubThread(new HubThread(mHub))
+    mHub(new Hub(context, Hub::LogFunction(), createThread))
 {
-  if (createThread)
-  {
-    // Unknown whether there is support for this on other compilers...
-    mHubThread->createRendererThread();
-  }
-  else
-  {
-    mHub->oneTimeGLInit();
-  }
 }
 
 //------------------------------------------------------------------------------
 Interface::~Interface()
 {
-  mHub->logMessage() << "Shutting down interface." << std::endl;
-
-  // If the renderer thread is running, attempt to shut it down and join it.
-  if (mHubThread->isRendererThreadRunning())
-  {
-    mHub->logMessage() << "Terminating rendering thread." << std::endl; 
-    mHubThread->killRendererThread();
-  }
-
-  // Manualy destroy these classes for now (this will be changed to shared 
-  // pointers).
-  mHub->logMessage() << "Destroying rendering hub." << std::endl; 
-  delete mHub;
-  delete mHubThread;
 }
 
 //------------------------------------------------------------------------------
 void Interface::doFrame()
 {
-  if (mHubThread->isRendererThreadRunning())
+  if (mHub->isRendererThreadRunning())
     throw ThreadException("You cannot call doFrame when the renderer is "
                           "running in a separate thread.");
 
   mHub->doFrame();
-}
-
-//------------------------------------------------------------------------------
-void Interface::killRendererThread()
-{
-  mHubThread->killRendererThread();
-}
-
-//------------------------------------------------------------------------------
-void Interface::createRendererThread()
-{
-  mHubThread->createRendererThread();
-}
-
-//------------------------------------------------------------------------------
-bool Interface::isRendererThreadRunning()
-{
-  return mHubThread->isRendererThreadRunning();
 }
 
 

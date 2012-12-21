@@ -35,6 +35,8 @@
 #include <iostream>
 #include <fstream>
 #include <functional>
+#include <thread>
+#include <atomic>
 
 #include "Interface.h"
 #include "High/GPUStateManager.h"
@@ -57,37 +59,58 @@ public:
       LogFunction;
 
   /// @todo Make context a shared_ptr
-  Hub(Context* context, LogFunction logFn);
+  Hub(Context* context, LogFunction logFn, bool useThread);
   virtual ~Hub();
 
   /// One-time initialization of the renderer.
   /// Called by the rendering thread, or the thread where this Interface class
   /// was created (called automatically from interface's constructor in the 
   /// latter case).
-  void oneTimeGLInit();
+  void oneTimeInitOnThread();
 
   /// If anything in the scene has changed, then calling this will render
   /// a new frame and swap the buffers. If the scene was not modified, then this
   /// function does nothing.
   void doFrame();
 
-  /// Logging / diagnostic functions.
-  /// @{
-  std::ostream& logDebug();
-  std::ostream& logMessage();
-  std::ostream& logWarning();
-  std::ostream& logError();
-  /// @}
-
   /// Retrieves the GPU state manager.
   GPUStateManager& getGPUStateManager()   {return mGPUStateManager;}
 
+  /// Returns true if the rendering thread is currently running.
+  bool isRendererThreadRunning();
+
 private:
 
+  LogFunction                 mLogFun;          ///< Log function.
   std::unique_ptr<Log>        mLog;             ///< Spire logging class.
   Context*                    mContext;         ///< Rendering context.
   GPUStateManager             mGPUStateManager; ///< GPU state manager.
   std::shared_ptr<PipeDriver> mPipe;            ///< Current rendering pipe.
+
+
+  // Threading variables / functions
+
+  /// Rendering thread function
+  void rendererThread();
+
+  /// Terminates the rendering thread. After this call, you will be able to
+  /// re-issue context->makeCurrent() and call doFrame manually.
+  /// killRendererThread WILL block until the rendering thread has finished.
+  /// This is to ensure makeCurrent will not be called again before the thread 
+  /// has terminated.
+  void killRendererThread();
+
+  /// Creates a rendering thread. 
+  /// There must not be a rendering thread already running.
+  void createRendererThread();
+
+
+  std::thread               mThread;        ///< The renderer thread.
+  std::atomic<bool>         mThreadKill;    ///< If true, the renderer thread
+                                            ///< will attempt to finish what it
+                                            ///< is doing and terminate.
+  std::atomic<bool>         mThreadRunning; ///< True if the rendering thread
+                                            ///< is currently running.
 };
 
 } // namespace Spire

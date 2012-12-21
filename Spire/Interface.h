@@ -33,10 +33,6 @@
 #define SPIRE_INTERFACE_H
 
 #include <string>
-//#include <memory>
-//#include <thread>
-//#include <atomic>
-//#include <functional>
 
 #include "Context.h"
 
@@ -86,25 +82,6 @@ public:
   // THREAD SAFE
   //============================================================================
 
-  /// Functions that are thread safe.
-  /// @{
-
-  /// Terminates the rendering thread. After this call, you will be able to
-  /// re-issue context->makeCurrent() and call doFrame manually.
-  /// killRendererThread WILL block until the rendering thread has finished.
-  /// This is to ensure makeCurrent will not be called again before the thread 
-  /// has terminated.
-  void killRendererThread();
-
-  /// Creates a rendering thread. 
-  /// There must not be a rendering thread already running.
-  void createRendererThread();
-
-  /// Returns true if the rendering thread is currently running.
-  bool isRendererThreadRunning();
-
-  /// @}
-
   //============================================================================
   // NOT THREAD SAFE
   //============================================================================
@@ -131,11 +108,7 @@ public:
 
 private:
 
-  /// @todo Make mHub a unique_ptr.
-  Hub*        mHub;           ///< Rendering hub.
-
-  /// @todo Make this a unique_ptr.
-  HubThread*  mHubThread;     ///< Runs Hub on a separate thread.
+  std::unique_ptr<Hub>  mHub;           ///< Rendering hub.
 };
 
 } // namespace spire

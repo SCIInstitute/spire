@@ -33,6 +33,8 @@
 #include <thread>
 
 #include "Common.h"
+#include "Exceptions.h"
+
 #include "High/Hub.h"
 #include "High/Log.h"
 
@@ -43,22 +45,39 @@ static int __thread testing = 0;
 namespace Spire {
 
 //------------------------------------------------------------------------------
-Hub::Hub(Context* context, LogFunction logFn) :
+Hub::Hub(Context* context, LogFunction logFn, bool useThread) :
     mContext(context),
     mPipe(new StuPipe::Driver(*this)),
-    mLog(new Log(logFn))
+    mLogFun(logFn),
+    mThreadKill(false),
+    mThreadRunning(false)
 {
-
+  if (useThread)
+  {
+    createRendererThread();    
+  }
+  else
+  {
+    oneTimeInitOnThread();
+  }
 }
 
 //------------------------------------------------------------------------------
 Hub::~Hub()
 {
+  if (isRendererThreadRunning())
+  {
+    killRendererThread();
+  }
 }
 
 //------------------------------------------------------------------------------
-void Hub::oneTimeGLInit()
+void Hub::oneTimeInitOnThread()
 {
+  // Construct the logger now that we are on the appropriate thread.
+  mLog = std::unique_ptr<Log>(new Log(mLogFun));
+
+  // OpenGL initialization
   mContext->makeCurrent();
 
   // Initialize OpenGL
@@ -68,27 +87,27 @@ void Hub::oneTimeGLInit()
   const GLubyte* renderer   = glGetString(GL_RENDERER);
   const GLubyte* versionl   = glGetString(GL_VERSION);
 
-  logMessage() << "OpenGL initialization. Running on a " << vendor << " " 
-               << renderer << " with OpenGL version " << versionl << std::endl
-               << "GL made current on thread " << std::this_thread::get_id()
-               << std::endl;
+  Log::message() << "OpenGL initialization. Running on a " << vendor << " " 
+                 << renderer << " with OpenGL version " << versionl << std::endl
+                 << "GL made current on thread " << std::this_thread::get_id()
+                 << std::endl;
 
 	GLint tmp;
-  logDebug() << "Hardware specific attributes" << std::endl;
-  logDebug() << "+Programmable:" << std::endl;
+  Log::debug() << "Hardware specific attributes" << std::endl;
+  Log::debug() << "+Programmable:" << std::endl;
 
 	glGetIntegerv(GL_MAX_TEXTURE_UNITS, &tmp);
-  logDebug() << "  Texture Units: " << tmp << std::endl;
+  Log::debug() << "  Texture Units: " << tmp << std::endl;
 
-  logDebug() << "+Fixed function (transient):" << std::endl;
+  Log::debug() << "+Fixed function (transient):" << std::endl;
 	glGetIntegerv(GL_MAX_MODELVIEW_STACK_DEPTH, &tmp);
-  logDebug() << "  Model view stack depth: " << tmp << std::endl;
+  Log::debug() << "  Model view stack depth: " << tmp << std::endl;
 	
 	glGetIntegerv(GL_MAX_PROJECTION_STACK_DEPTH, &tmp);
-  logDebug() << "  Projection stack depth: " << tmp << std::endl;
+  Log::debug() << "  Projection stack depth: " << tmp << std::endl;
 	
 	glGetIntegerv(GL_MAX_TEXTURE_STACK_DEPTH, &tmp);
-  logDebug() << "  Texture stack depth: " << tmp << std::endl;
+  Log::debug() << "  Texture stack depth: " << tmp << std::endl;
 
   /// TODO: Add GPU memory checks using GL_NVX_gpu_memory_info for NVIDIA
   ///       and GL_ATI_meminfo for ATI.
@@ -118,27 +137,61 @@ void Hub::doFrame()
 }
 
 //------------------------------------------------------------------------------
-std::ostream& Hub::logDebug()
+bool Hub::isRendererThreadRunning()
 {
-  return mLog->getDebugStream();
+  return mThreadRunning.load();
 }
 
 //------------------------------------------------------------------------------
-std::ostream& Hub::logMessage()
+void Hub::createRendererThread()
 {
-  return mLog->getMessageStream();
+  if (isRendererThreadRunning() == true)
+    throw ThreadException("Cannot create new renderer thread; a renderer "
+                          "thread is currently running.");
+
+  mThread = std::thread(&Hub::rendererThread, this);
 }
 
 //------------------------------------------------------------------------------
-std::ostream& Hub::logWarning()
+void Hub::killRendererThread()
 {
-  return mLog->getWarningStream();
+  if (isRendererThreadRunning() == false)
+    throw ThreadException("Cannot kill renderer thread; the thread is not "
+                          "currently running.");
+
+  // The following join statement could possibly throw a system_error if 
+  // mThread.get_id() == std::thread::id()
+  mThreadKill.store(true);
+  mThread.join();
 }
 
 //------------------------------------------------------------------------------
-std::ostream& Hub::logError()
+void Hub::rendererThread()
 {
-  return mLog->getErrorStream();
+  mThreadRunning.store(true);
+
+  // Cannot log anything until this is called.
+  oneTimeInitOnThread();
+
+  Log::message() << "Started rendering thread" << std::endl;
+
+  while (mThreadKill.load() == false)
+  {
+    doFrame();
+    /// @todo Add logic to determine how long we should sleep for...
+    ///       This will be highly dependent on how long it took to render the
+    ///       last frame, and if we are in the middle of compositing the final
+    ///       frame together.
+    std::chrono::milliseconds dur(10);
+    std::this_thread::sleep_for(dur);
+  }
+
+  Log::message() << "Terminating rendering thread" << std::endl;
+
+  // Hub should really be destroyed here... mHub should be a part of HubThread.
+  // Create hub non-threaded class.
+
+  mThreadRunning.store(false);
 }
 
-} // end of namespace Spire
+}
