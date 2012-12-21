@@ -33,6 +33,11 @@
 
 namespace Spire {
 
+std::atomic<bool>         Log::mHasPairedThread(false);
+std::thread::id           Log::mPairedThreadID;
+Log*                      Log::mLog(nullptr);
+std::ostream              Log::mCNull(0); // See: http://stackoverflow.com/questions/6240950/platform-independent-dev-null-in-c 
+
 //------------------------------------------------------------------------------
 Log::Log(const Hub::LogFunction& logFunction) :
     mDebugStream(logFunction, Interface::LOG_DEBUG),
@@ -57,6 +62,18 @@ Log::Log(const Hub::LogFunction& logFunction) :
 #endif
   }
 
+  // Check to see if any thread has paired.
+  if (mHasPairedThread.exchange(true) == false)
+  {
+    // No thread has paired, we are free to pair.
+    mPairedThreadID = std::this_thread::get_id();
+    mLog = this;
+  }
+  else
+  {
+    // Do nothing, since another thread has paired.
+  }
+
 }
 
 //------------------------------------------------------------------------------
@@ -65,6 +82,68 @@ Log::~Log()
   getMessageStream() << "Destroying spire logging class." << std::endl;
   if (mOutputFile.is_open())
     mOutputFile.close();
+
+  if (    mHasPairedThread.load() == true 
+      &&  mPairedThreadID == std::this_thread::get_id())
+  {
+    mHasPairedThread.store(false);
+  }
+}
+
+//------------------------------------------------------------------------------
+std::ostream& Log::debug()
+{
+  if (    mHasPairedThread.load() == true 
+      &&  mPairedThreadID == std::this_thread::get_id())
+  {
+    return mLog->mDebugStream;
+  }
+  else
+  {
+    return mCNull;
+  }
+}
+
+//------------------------------------------------------------------------------
+std::ostream& Log::message()
+{
+  if (    mHasPairedThread.load() == true 
+      &&  mPairedThreadID == std::this_thread::get_id())
+  {
+    return mLog->mMessageStream;
+  }
+  else
+  {
+    return mCNull;
+  }
+}
+
+//------------------------------------------------------------------------------
+std::ostream& Log::warning()
+{
+  if (    mHasPairedThread.load() == true 
+      &&  mPairedThreadID == std::this_thread::get_id())
+  {
+    return mLog->mWarningStream;
+  }
+  else
+  {
+    return mCNull;
+  }
+}
+
+//------------------------------------------------------------------------------
+std::ostream& Log::error()
+{
+  if (    mHasPairedThread.load() == true 
+      &&  mPairedThreadID == std::this_thread::get_id())
+  {
+    return mLog->mErrorStream;
+  }
+  else
+  {
+    return mCNull;
+  }
 }
 
 //------------------------------------------------------------------------------

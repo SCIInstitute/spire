@@ -174,7 +174,8 @@ AttribState ShaderAttributeMan::getAttributeAtIndex(size_t index) const
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-AttribSpecificData ShaderAttributeCollection::getAttribute(size_t index) const
+ShaderAttributeCollection::AttribSpecificData 
+ShaderAttributeCollection::getAttribute(size_t index) const
 {
   if (index >= mAttributes.size())
     throw std::range_error("Index greater than size of mAttributes.");
@@ -243,7 +244,7 @@ void ShaderAttributeCollection::addAttribute(const std::string& attribName,
   if (std::get<0>(ret))
   {
     AttribSpecificData attribData;
-    attribData.index = mAttributeMan.getAttributeAtIndex(std::get<1>(ret));
+    attribData.attrib = mAttributeMan.getAttributeAtIndex(std::get<1>(ret));
     attribData.isHalfFloat = isHalfFloat;
     mAttributes.push_back(attribData);
 
@@ -260,10 +261,10 @@ void ShaderAttributeCollection::addAttribute(const std::string& attribName,
 }
 
 //------------------------------------------------------------------------------
-size_t ShaderAttributeCollection::getFullAttributeSize(const AttribSpecificData& attrib) const
+size_t ShaderAttributeCollection::getFullAttributeSize(const AttribSpecificData& att) const
 {
-  AttribState state = mAttributeMan.getAttributeAtIndex(attrib.index);
-  if (attrib.isHalfFloat)
+  AttribState state = att.attrib;
+  if (att.isHalfFloat)
   {
     return state.size;
   }

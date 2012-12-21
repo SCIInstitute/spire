@@ -65,7 +65,14 @@ public:
   /// storage mechanism. Currently, logging is supported for only 1 thread.
   /// Will return false if a safe stream does not exist (not paired).
   /// @{
-  
+  //static std::ostream& getThreadDebugStream();
+  //static std::ostream& getThreadMessageStream();
+  //static std::ostream& getThreadWarningStream();
+  //static std::ostream& getThreadErrorStream();
+  static std::ostream& debug();
+  static std::ostream& message();
+  static std::ostream& warning();
+  static std::ostream& error();
   /// @}
 
 
@@ -132,13 +139,21 @@ private:
   std::ofstream     mOutputFile;      ///< Output file to use when
                                       ///< logging output.
 
+  /// @todo Add thread local storage for platforms that support it instead of
+  ///       using this hack.
+  ///       Linux (USING_LINUX) and Windows (USING_WIN) both support this.
+  ///       Clang does not currently support it.
+
   /// True if a thread has paired with this logger.
-  static std::atomic<bool> mHasPairedThread;
-  /// The ID of the thread that has paired with the logger.
-  static std::thread::id   mPairedThreadID;
+  static std::atomic<bool>          mHasPairedThread;
+  /// The ID of the thread that has paired with the logger
+  /// Should this be volatile?
+  static std::thread::id            mPairedThreadID;
   /// 'Singleton' instance of the logger. Should be turned into a vector
   /// if we want multiple instances.
-  static Log*              mLog;
+  static Log*                       mLog;
+  /// Null output stream.
+  static std::ostream               mCNull;
 };
 
 } // namespace Spire 
