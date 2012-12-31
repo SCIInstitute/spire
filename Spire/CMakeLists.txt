@@ -85,6 +85,9 @@ if (UNIX)
 
   endif (APPLE)
 
+  # Ensure we can link against libTuvok.a
+  set(TUVOK_LIB ${TuvokBinaryDir}/Build/libTuvok.a)
+
 else (UNIX)
   if (WIN32)
 
@@ -104,8 +107,9 @@ ExternalProject_Add(ThirdParty_Tuvok
   SOURCE_DIR ${TuvokSourceDir}
   BINARY_DIR ${TuvokBinaryDir}
   CONFIGURE_COMMAND ${TuvokConfigureStep}
-  BUILD_COMMAND "${TuvokMakeStep}"
+  BUILD_COMMAND ${TuvokMakeStep}
   )
+
 
 ########################################################################
 # Source
@@ -149,5 +153,6 @@ add_library(Spire
   ${Source_Caching}
   ${Source_Pipes}
   )
-target_link_libraries(Spire ${OPENGL_LIBRARIES})
+add_dependencies(Spire ThirdParty_Tuvok)
+target_link_libraries(Spire ${OPENGL_LIBRARIES} ${TUVOK_LIB})
 
