@@ -1,6 +1,14 @@
 # Builds the spire library and all of its dependencies.
 #set (RENDERER_ROOT_DIR "${CMAKE_CURRENT_SOURCE_DIR}")
 
+
+########################################################################
+# CMake configuration
+
+CMAKE_MINIMUM_REQUIRED(VERSION 2.8 FATAL_ERROR)
+
+INCLUDE(ExternalProject)
+
 ########################################################################
 # OpenGL configuration
 
@@ -9,6 +17,21 @@ find_package(OpenGL REQUIRED)
 
 # Include OpenGL headers
 include_directories(${OPENGL_INCLUDE_DIRS})
+
+########################################################################
+# QT configuration
+
+# The only reason we need QT is so that we can compile Tuvok...
+# Tuvok's build system needs to be updated in the future so that it can
+# use builders other than QT. There is no reason to have a QT dependency
+# just for generating a makefile for Tuvok.
+SET(QT_MIN_VERSION "4.7.0")
+FIND_PACKAGE(Qt4 REQUIRED)
+
+IF(QT_FOUND)
+ELSE()
+  MESSAGE(FATAL_ERROR "QT 4.7 or greater is required to build Spire (for Tuvok)")
+ENDIF()
 
 ########################################################################
 # Compiler settings
@@ -47,17 +70,42 @@ include(FindSubversion)
 
 # Tuvok
 # See: http://cmake.org/cmake/help/v2.8.8/cmake.html#module:ExternalProject
-#set(TuvokSourceDir "${CMAKE_CURRENT_SOURCE_DIR}/3rdParty/Tuvok")
-#set(TuvokBinaryDir "${CMAKE_CURRENT_BINARY_DIR}/3rdParty/Tuvok")
+set(TuvokSourceDir "${CMAKE_CURRENT_SOURCE_DIR}/3rdParty/Tuvok")
+set(TuvokBinaryDir "${CMAKE_CURRENT_BINARY_DIR}/3rdParty/Tuvok")
 
+if (UNIX)
+
+  if (APPLE)
+    # TODO: Get rid of unsupported macx/clang when we switch to qt5.
+    # Note: There are no quotes around the command. If there were,
+    #       sh would interpret it as a file
+    set(TuvokConfigureStep ${QT_QMAKE_EXECUTABLE} -spec unsupported/macx-clang QMAKE_CONFIG+='release' QMAKE_CFLAGS='-O2' QMAKE_CXXFLAGS='-O2' QMAKE_LFLAGS='' -recursive ${TuvokSourceDir}/Tuvok.pro)
+    set(TuvokMakeStep make -j2)
+  else (APPLE)
+
+  endif (APPLE)
+
+else (UNIX)
+  if (WIN32)
+
+  else (WIN32)
+    MESSAGE(FATAL_ERROR "Unknown platform.")
+  endif (WIN32)
+endif (UNIX)
+
+# Note: The build/configure command will vary based on platform!
 # Specify appropriate Tuvok SVN revision when we get a stable version.
 # BUILD_COMMAND "scripts/oneshot-debug.sh"
-#ExternalProject_Add(ThirdParty_Tuvok
-#  PREFIX ${TuvokBinaryDir}
-#  SVN_REPOSITORY "https://gforge.sci.utah.edu/svn/Tuvok"
-#  SVN_TRUST_CERT 1
-#  SOURCE_DIR ${TuvokSourceDir}
-#  )
+ExternalProject_Add(ThirdParty_Tuvok
+  PREFIX ${TuvokBinaryDir}
+  SVN_REPOSITORY "https://gforge.sci.utah.edu/svn/Tuvok"
+  SVN_TRUST_CERT 1
+  DOWNLOAD_DIR "${CMAKE_CURRENT_BINARY_DIR}/download/Tuvok"
+  SOURCE_DIR ${TuvokSourceDir}
+  BINARY_DIR ${TuvokBinaryDir}
+  CONFIGURE_COMMAND ${TuvokConfigureStep}
+  BUILD_COMMAND "${TuvokMakeStep}"
+  )
 
 ########################################################################
 # Source
