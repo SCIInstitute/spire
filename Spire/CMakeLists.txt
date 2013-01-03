@@ -15,9 +15,6 @@ INCLUDE(ExternalProject)
 # Find OpenGL
 find_package(OpenGL REQUIRED)
 
-# Include OpenGL headers
-include_directories(${OPENGL_INCLUDE_DIRS})
-
 ########################################################################
 # QT configuration
 
@@ -54,10 +51,12 @@ else (UNIX)
   endif (WIN32)
 endif (UNIX)
 
-include_directories(${CMAKE_CURRENT_SOURCE_DIR})
+include_directories(${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/3rdParty ${OPENGL_INCLUDE_DIRS})
 
 ########################################################################
 # ThirdParty libraries
+
+# TODO: Need a switch to compile without Tuvok.
 
 # Git (for checking out external projects).
 find_package(Git)
@@ -109,7 +108,6 @@ ExternalProject_Add(ThirdParty_Tuvok
   CONFIGURE_COMMAND ${TuvokConfigureStep}
   BUILD_COMMAND ${TuvokMakeStep}
   )
-
 
 ########################################################################
 # Source

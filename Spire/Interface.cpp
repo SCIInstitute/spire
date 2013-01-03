@@ -58,5 +58,5 @@ void Interface::doFrame()
   mHub->doFrame();
 }
 
-
 } // end of namespace Renderer
+
