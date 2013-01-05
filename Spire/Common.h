@@ -50,6 +50,9 @@
 #define GL_HALF_FLOAT_OES GL_FLOAT
 #endif
 
+// Any ubiquitous header files.
+#include "High/Math.h"
+
 namespace Spire
 {
 
