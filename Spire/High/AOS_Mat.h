@@ -17,8 +17,7 @@ subject to the following restrictions:
 #ifndef _VECTORMATH_MAT_AOS_CPP_H
 #define _VECTORMATH_MAT_AOS_CPP_H
 
-namespace Vectormath {
-namespace Aos {
+namespace Vector {
 
 //-----------------------------------------------------------------------------
 // Constants
@@ -1633,7 +1632,6 @@ inline const Matrix3 crossMatrixMul( const Vector3 & vec, const Matrix3 & mat )
     return Matrix3( cross( vec, mat.getCol0() ), cross( vec, mat.getCol1() ), cross( vec, mat.getCol2() ) );
 }
 
-} // namespace Aos
-} // namespace Vectormath
+} // namespace Vector
 
 #endif

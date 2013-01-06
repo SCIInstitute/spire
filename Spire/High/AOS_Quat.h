@@ -25,8 +25,7 @@ subject to the following restrictions:
 
 #endif
 
-namespace Vectormath {
-namespace Aos {
+namespace Vector {
 
 inline Quat::Quat( const Quat & quat )
 {
@@ -427,7 +426,6 @@ inline void print( const Quat & quat, const char * name )
 
 #endif
 
-} // namespace Aos
-} // namespace Vectormath
+} // namespace Vector
 
 #endif

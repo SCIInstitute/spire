@@ -68,16 +68,22 @@ public:
   /// latter case).
   void oneTimeInitOnThread();
 
+  /// Returns true if the rendering thread is currently running.
+  bool isRendererThreadRunning() const;
+
   /// If anything in the scene has changed, then calling this will render
   /// a new frame and swap the buffers. If the scene was not modified, then this
   /// function does nothing.
   void doFrame();
 
   /// Retrieves the GPU state manager.
-  GPUStateManager& getGPUStateManager()   {return mGPUStateManager;}
+  GPUStateManager& getGPUStateManager()         {return mGPUStateManager;}
 
-  /// Returns true if the rendering thread is currently running.
-  bool isRendererThreadRunning();
+  /// Retrieves the actual screen width in pixels.
+  size_t getActualScreenWidth() const           {return mPixScreenWidth;}
+
+  /// Retrieves the actual screen width in pixels.
+  size_t getActualScreenHeight() const          {return mPixScreenHeight;}
 
 private:
 
@@ -86,7 +92,6 @@ private:
   Context*                    mContext;         ///< Rendering context.
   GPUStateManager             mGPUStateManager; ///< GPU state manager.
   std::shared_ptr<PipeDriver> mPipe;            ///< Current rendering pipe.
-
 
   // Threading variables / functions
 
@@ -105,12 +110,15 @@ private:
   void createRendererThread();
 
 
-  std::thread               mThread;        ///< The renderer thread.
-  std::atomic<bool>         mThreadKill;    ///< If true, the renderer thread
+  std::thread             mThread;          ///< The renderer thread.
+  std::atomic<bool>       mThreadKill;      ///< If true, the renderer thread
                                             ///< will attempt to finish what it
                                             ///< is doing and terminate.
-  std::atomic<bool>         mThreadRunning; ///< True if the rendering thread
+  std::atomic<bool>       mThreadRunning;   ///< True if the rendering thread
                                             ///< is currently running.
+
+  size_t                  mPixScreenWidth;  ///< Actual screen width in pxels.
+  size_t                  mPixScreenHeight; ///< Actual screen height in pixels.
 };
 
 } // namespace Spire

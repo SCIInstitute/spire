@@ -50,7 +50,9 @@ Hub::Hub(Context* context, LogFunction logFn, bool useThread) :
     mPipe(new StuPipe::Driver(*this)),
     mLogFun(logFn),
     mThreadKill(false),
-    mThreadRunning(false)
+    mThreadRunning(false),
+    mPixScreenWidth(640),
+    mPixScreenHeight(480)
 {
   if (useThread)
   {
@@ -137,7 +139,7 @@ void Hub::doFrame()
 }
 
 //------------------------------------------------------------------------------
-bool Hub::isRendererThreadRunning()
+bool Hub::isRendererThreadRunning() const
 {
   return mThreadRunning.load();
 }

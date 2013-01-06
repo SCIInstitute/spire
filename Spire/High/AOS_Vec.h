@@ -30,8 +30,7 @@ subject to the following restrictions:
 
 #endif
 
-namespace Vectormath {
-namespace Aos {
+namespace Vector {
 
 inline Vector3::Vector3( const Vector3 & vec )
 {
@@ -1420,7 +1419,6 @@ inline void print( const Point3 & pnt, const char * name )
 
 #endif
 
-} // namespace Aos
-} // namespace Vectormath
+} // namespace Vector
 
 #endif

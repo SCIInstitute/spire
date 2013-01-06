@@ -23,9 +23,7 @@ subject to the following restrictions:
 #include <stdio.h>
 #endif
 
-namespace Vectormath {
-
-namespace Aos {
+namespace Vector {
 
 //-----------------------------------------------------------------------------
 // Forward Declarations
@@ -1867,8 +1865,7 @@ inline void print( const Transform3 & tfrm, const char * name );
 
 #endif
 
-} // namespace Aos
-} // namespace Vectormath
+} // namespace Vector
 
 #include "AOS_Vec.h"
 #include "AOS_Quat.h"
