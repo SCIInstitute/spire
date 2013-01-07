@@ -146,9 +146,9 @@ class ShaderUniformCollectionTests : public testing::Test
 protected:
   ShaderUniformCollectionTests() :
       mUniformMan(true),
-      mCol1(mUniformMan, 0),
-      mCol2(mUniformMan, 0),
-      mCol3(mUniformMan, 0)
+      mCol1(mUniformMan, ShaderUniformCollection::getInvalidProgramHandle()),
+      mCol2(mUniformMan, ShaderUniformCollection::getInvalidProgramHandle()),
+      mCol3(mUniformMan, ShaderUniformCollection::getInvalidProgramHandle())
   {}
 
   virtual void SetUp()
@@ -173,7 +173,7 @@ protected:
   }
   virtual void TearDown() {}
 
-  ShaderUniformMan            mUniformMan;
+  ShaderUniformMan          mUniformMan;
   ShaderUniformCollection   mCol1;
   ShaderUniformCollection   mCol2;
   ShaderUniformCollection   mCol3;
@@ -192,21 +192,23 @@ TEST_F(ShaderUniformCollectionTests, primaryTest)
   ASSERT_NO_THROW(state = mCol1.getUniform(1).uniform);
   EXPECT_EQ("at3", state.codeName);
 
+  // Unlike the attribute manager, we do not sort the values in the uniform
+  // manager.
   ASSERT_NO_THROW(state = mCol2.getUniform(0).uniform);
   EXPECT_EQ("at1", state.codeName);
   ASSERT_NO_THROW(state = mCol2.getUniform(1).uniform);
-  EXPECT_EQ("at2", state.codeName);
-  ASSERT_NO_THROW(state = mCol2.getUniform(2).uniform);
   EXPECT_EQ("at3", state.codeName);
+  ASSERT_NO_THROW(state = mCol2.getUniform(2).uniform);
+  EXPECT_EQ("at2", state.codeName);
 
   ASSERT_NO_THROW(state = mCol3.getUniform(0).uniform);
-  EXPECT_EQ("at1", state.codeName);
+  EXPECT_EQ("at4", state.codeName);
   ASSERT_NO_THROW(state = mCol3.getUniform(1).uniform);
-  EXPECT_EQ("at2", state.codeName);
+  EXPECT_EQ("at1", state.codeName);
   ASSERT_NO_THROW(state = mCol3.getUniform(2).uniform);
   EXPECT_EQ("at3", state.codeName);
   ASSERT_NO_THROW(state = mCol3.getUniform(3).uniform);
-  EXPECT_EQ("at4", state.codeName);
+  EXPECT_EQ("at2", state.codeName);
 }
 
 }

@@ -134,11 +134,10 @@ void ShaderUniformCollection::addUniform(const std::string& uniformName)
     // I thought about writing a mock for the OpenGL interface, but that would
     // likely be a waist of time considering the utilities available on each
     // platform for testing OpenGL.
-#ifndef SPIRE_IS_TESTING
-    uniformData.uniformLoc = glGetUniformLocation(mProgram, uniformName.c_str());
-#else
-    uniformData.uniformLoc = 0;
-#endif
+    if (getInvalidProgramHandle() != mProgram)
+      uniformData.uniformLoc = glGetUniformLocation(mProgram, uniformName.c_str());
+    else
+      uniformData.uniformLoc = 0;
     mUniforms.push_back(uniformData);
   }
 }

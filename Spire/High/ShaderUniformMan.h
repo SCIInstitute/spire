@@ -64,6 +64,8 @@ public:
     UniformState  uniform;    ///< Uniform state.
   };
 
+  static constexpr GLint getInvalidProgramHandle()  {return static_cast<GLint>(0);}
+
   /// Adds a uniform with the specified name.
   /// Also queries the OpenGL shader program for the position of the uniform.
   void addUniform(const std::string& uniformName);
