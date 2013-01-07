@@ -32,6 +32,7 @@
 #ifndef SPIRE_HIGH_SHADERMAN_H
 #define SPIRE_HIGH_SHADERMAN_H
 
+#include "Common.h"
 #include "BaseAssetMan.h"
 
 namespace Spire
@@ -41,8 +42,8 @@ namespace Spire
 class ShaderAsset : public BaseAsset
 {
 public:
-  ShaderAsset(const std::string& name);
-  virtual ~ShaderAsset();
+  ShaderAsset(const std::string& name) : BaseAsset(name) {}
+  virtual ~ShaderAsset() {}
 
   GLuint            glID;		      ///< Shader program ID.
 
@@ -56,6 +57,10 @@ class ShaderMan : public BaseAssetMan
 public:
   ShaderMan();
   virtual ~ShaderMan();
+
+  /// Loads and returns a shader asset. If the shader is already loaded,
+  /// a reference to that shader is returned instead of reloading it.
+  std::shared_ptr<ShaderAsset> loadShader(const std::string& shaderFile);
 
 private:
   

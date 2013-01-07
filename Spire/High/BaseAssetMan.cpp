@@ -52,14 +52,14 @@ void BaseAssetMan::addAsset(std::shared_ptr<BaseAsset> asset)
 
 //------------------------------------------------------------------------------
 void BaseAssetMan::holdAsset(std::shared_ptr<BaseAsset> asset, 
-                             int64_t absTimeToHold)
+                             std::chrono::milliseconds absTimeToHold)
 {
   asset->setAbsTimeToHold(absTimeToHold);
   mHeldAssets.push(asset);
 }
 
 //------------------------------------------------------------------------------
-void BaseAssetMan::updateOrphanedAssets(int64_t absTime)
+void BaseAssetMan::updateOrphanedAssets(std::chrono::milliseconds absTime)
 {
   // Check the first held asset and if it is less than the absolute time,
   // release it and continue.

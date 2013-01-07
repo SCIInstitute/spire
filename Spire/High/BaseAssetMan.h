@@ -36,6 +36,7 @@
 #include <vector>
 #include <list>
 #include <queue>
+#include <chrono>
 
 namespace Spire
 {
@@ -47,17 +48,17 @@ public:
   BaseAsset(const std::string& name);
   virtual ~BaseAsset();
 
-  void setAbsTimeToHold(int64_t holdTime) {mAbsHoldTime = holdTime;}
-  int64_t getAbsTimeHeld()                {return mAbsHoldTime;}
+  void setAbsTimeToHold(std::chrono::milliseconds holdTime) {mAbsHoldTime = holdTime;}
+  std::chrono::milliseconds getAbsTimeHeld()                {return mAbsHoldTime;}
 
 private:
 
-  uint32_t        mNameHash;    ///< Hash representing this name.
-  std::string     mName;        ///< Name of the asset.
+  uint32_t                  mNameHash;    ///< Hash representing this name.
+  std::string               mName;        ///< Name of the asset.
 
-  int64_t         mAbsHoldTime; ///< Absolute holding time for this object.
-                                ///< Used for sorting in the held assets
-                                ///< priority queue.
+  std::chrono::milliseconds mAbsHoldTime; ///< Absolute holding time for this object.
+                                          ///< Used for sorting in the held assets
+                                          ///< priority queue.
 
   /// Seed to be used when hashing mName.
   static constexpr uint32_t getHashSeed()   {return 238929797;}
@@ -75,7 +76,7 @@ public:
   /// Removes any orphaned assets from the assets array and updates the held
   /// assets priority queue.
   /// \param  absTime     Current absolute time in milliseconds.
-  void updateOrphanedAssets(int64_t absTime);
+  void updateOrphanedAssets(std::chrono::milliseconds absTime);
 
   /// Holds a reference to an asset for a specified amount of time. 
   /// This helps keep the asset persistent even though the asset may not have
@@ -83,7 +84,8 @@ public:
   /// \param  asset           Pointer to the asset
   /// \param  absReleaseTime  Absolute time when this asset will be released 
   ///                         in milliseconds.
-  void holdAsset(std::shared_ptr<BaseAsset> asset, int64_t absReleaseTime);
+  void holdAsset(std::shared_ptr<BaseAsset> asset, 
+                 std::chrono::milliseconds absReleaseTime);
 
 protected:
 
