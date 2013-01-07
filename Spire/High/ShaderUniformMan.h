@@ -52,19 +52,19 @@ struct UniformState
 class ShaderUniformCollection
 {
 public:
-  ShaderUniformCollection(const ShaderUniformMan& man, GLint program) :
+  ShaderUniformCollection(const ShaderUniformMan& man, GLuint program) :
       mUniformMan(man),
       mProgram(program)
   {}
 
   struct UniformSpecificData
   {
-    GLint         uniformLoc; ///< Shader uniform location as returned by
+    GLuint        uniformLoc; ///< Shader uniform location as returned by
                               ///< glGetUniformLocation.
     UniformState  uniform;    ///< Uniform state.
   };
 
-  static constexpr GLint getInvalidProgramHandle()  {return static_cast<GLint>(0);}
+  static constexpr GLuint getInvalidProgramHandle()  {return static_cast<GLuint>(0);}
 
   /// Adds a uniform with the specified name.
   /// Also queries the OpenGL shader program for the position of the uniform.
@@ -93,7 +93,7 @@ private:
   const ShaderUniformMan&           mUniformMan;
 
   /// GL shader program 
-  GLint                             mProgram;
+  GLuint                            mProgram;
 };
 
 /// Shader uniform manager.
