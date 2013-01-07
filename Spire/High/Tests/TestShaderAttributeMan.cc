@@ -46,12 +46,12 @@ TEST(ShaderAttributeManBasic, TestUnknownAttribute)
 
   ASSERT_EQ(1, attribMan.getNumAttributes());
 
-  std::string unknownName = ShaderAttributeMan::UNKNOWN_NAME;
+  std::string unknownName = ShaderAttributeMan::getUnknownName();
   AttribState state;
 
   // Test function return values.
   EXPECT_NO_THROW(state = attribMan.getAttributeAtIndex(
-          ShaderAttributeMan::UNKNOWN_ATTRIBUTE_INDEX));
+          ShaderAttributeMan::getUnknownAttributeIndex()));
   EXPECT_EQ(true, std::get<0>(attribMan.findAttributeWithName(unknownName)));
   EXPECT_EQ(0, std::get<1>(attribMan.findAttributeWithName(unknownName)));
 
@@ -60,7 +60,7 @@ TEST(ShaderAttributeManBasic, TestUnknownAttribute)
   MurmurHash3_x86_32(
       static_cast<const void*>(unknownName.c_str()),
       static_cast<int>(unknownName.size()),
-      ShaderAttributeMan::MURMUR_SEED_VALUE,
+      ShaderAttributeMan::getMurmurSeedValue(),
       static_cast<void*>(&hashOut));
   EXPECT_EQ(hashOut, state.nameHash);
   EXPECT_EQ(hashOut, attribMan.hashString(unknownName));

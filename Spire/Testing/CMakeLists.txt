@@ -38,7 +38,7 @@ if (UNIX)
 
 endif ()
 
-add_definitions(-DGTEST_USE_OWN_TR1_TUPLE=1 -DSPIRE_IS_TESTING)
+add_definitions(-DGTEST_USE_OWN_TR1_TUPLE=1)
 include_directories(${BASE_SPIRE_DIR}/Spire/3rdParty/gtest/include ${BASE_SPIRE_DIR}/Spire)
 
 ########################################################################

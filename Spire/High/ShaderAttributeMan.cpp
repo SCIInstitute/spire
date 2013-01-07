@@ -35,14 +35,12 @@
 
 namespace Spire {
 
-const std::string ShaderAttributeMan::UNKNOWN_NAME = "_unknown_";
-
 //------------------------------------------------------------------------------
 ShaderAttributeMan::ShaderAttributeMan(bool addDefaultAttributes)
 {
   // Unknown attribute (attribute at 0 index).
-  addAttribute(UNKNOWN_NAME, 1, false, sizeof(float), sizeof(short), GL_FLOAT,
-               GL_HALF_FLOAT_OES);
+  addAttribute(getUnknownName(), 1, false, sizeof(float), sizeof(short),
+               GL_FLOAT, GL_HALF_FLOAT_OES);
 
   // Add default attributes if requested.
   if (addDefaultAttributes)
@@ -155,7 +153,7 @@ uint32_t ShaderAttributeMan::hashString(const std::string& str)
   MurmurHash3_x86_32(
       static_cast<const void*>(str.c_str()),
       static_cast<int>(str.size()),
-      MURMUR_SEED_VALUE,
+      getMurmurSeedValue(),
       static_cast<void*>(&hashOut));
   return hashOut;
 }
@@ -214,8 +212,8 @@ bool ShaderAttributeCollection::hasAttribute(const std::string& attribName) cons
 bool ShaderAttributeCollection::doesSatisfyShader(const ShaderAttributeCollection& compare) const
 {
   // Not possible to satisfy shader if there are any unknown attributes.
-  if (    compare.hasAttribute(ShaderAttributeMan::UNKNOWN_ATTRIBUTE_INDEX)
-      ||  hasAttribute(ShaderAttributeMan::UNKNOWN_ATTRIBUTE_INDEX))
+  if (    compare.hasIndex(ShaderAttributeMan::getUnknownAttributeIndex())
+      ||  hasIndex(ShaderAttributeMan::getUnknownAttributeIndex()))
     return false;
 
   // Compare number of common attributes and the size of our attribute array.
@@ -280,7 +278,7 @@ void ShaderAttributeCollection::bindAttributes(GLuint program)
   int i = 0;
   for (auto it = mAttributes.begin(); it != mAttributes.end(); ++it)
   {
-    if (it->attrib.index != ShaderAttributeMan::UNKNOWN_ATTRIBUTE_INDEX)
+    if (it->attrib.index != ShaderAttributeMan::getUnknownAttributeIndex())
     {
       AttribState attrib = it->attrib;
       glBindAttribLocation(program, i, attrib.codeName.c_str());

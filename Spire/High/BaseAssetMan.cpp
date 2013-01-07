@@ -98,7 +98,7 @@ BaseAsset::BaseAsset(const std::string& name) :
 {
   MurmurHash3_x86_32(
       static_cast<const void*>(name.c_str()), static_cast<int>(name.size()),
-      mHashSeed, static_cast<void*>(&mNameHash));
+      getHashSeed(), static_cast<void*>(&mNameHash));
 }
 
 //------------------------------------------------------------------------------

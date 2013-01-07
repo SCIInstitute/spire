@@ -60,7 +60,7 @@ private:
                                 ///< priority queue.
 
   /// Seed to be used when hashing mName.
-  static const uint32_t mHashSeed = 238929797;
+  static constexpr uint32_t getHashSeed()   {return 238929797;}
 
 };
 
