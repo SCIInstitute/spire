@@ -29,25 +29,11 @@
 /// \author James Hughes
 /// \date   January 2013
 
-#include "ShaderMan.h"
+#include "Common.h"
 
 namespace Spire {
 
-//------------------------------------------------------------------------------
-ShaderMan::ShaderMan()
-{
-}
+/// \todo Make a fake of BaseAssetMan and use it to test.
+///       We should test timings, add, remove, and find.
 
-//------------------------------------------------------------------------------
-ShaderMan::~ShaderMan()
-{
-}
-
-//------------------------------------------------------------------------------
-std::shared_ptr<ShaderAsset> ShaderMan::loadShader(const std::string& shaderFile)
-{
-  // Attempt to find the asset.
-}
-
-
-} 
+} // end of namespace Spire

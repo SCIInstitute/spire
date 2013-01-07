@@ -48,8 +48,18 @@ public:
   BaseAsset(const std::string& name);
   virtual ~BaseAsset();
 
+  /// Sets the absolute time at which the reference to this asset will be 
+  /// dropped in BaseAssetMan.
   void setAbsTimeToHold(std::chrono::milliseconds holdTime) {mAbsHoldTime = holdTime;}
+
+  /// Retrieves the time at which the reference to this asset will be dropped.
   std::chrono::milliseconds getAbsTimeHeld()                {return mAbsHoldTime;}
+
+  /// Retrieves a hashed representation of the current string.
+  static uint32_t hashString(const std::string& string);
+
+  uint32_t getNameHash() const                              {return mNameHash;}
+  std::string getName() const                               {return mName;}
 
 private:
 
@@ -88,6 +98,10 @@ public:
                  std::chrono::milliseconds absReleaseTime);
 
 protected:
+
+  /// Attempts to find the asset with the name given.
+  /// If no asset is found a null shared_ptr is returned.
+  std::shared_ptr<BaseAsset> findAsset(const std::string& str) const;
 
   /// Adds an asset onto the asset list.
   /// No reference will be held to the asset -- it will be assigned to a weak
