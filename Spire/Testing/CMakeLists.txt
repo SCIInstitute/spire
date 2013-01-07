@@ -38,7 +38,7 @@ if (UNIX)
 
 endif ()
 
-add_definitions(-DGTEST_USE_OWN_TR1_TUPLE=1)
+add_definitions(-DGTEST_USE_OWN_TR1_TUPLE=1 -DSPIRE_IS_TESTING)
 include_directories(${BASE_SPIRE_DIR}/Spire/3rdParty/gtest/include ${BASE_SPIRE_DIR}/Spire)
 
 ########################################################################
@@ -56,24 +56,24 @@ file (GLOB Source_Root
   )
 
 file (GLOB Source_High
-  "../High/Tests/*.cpp"
+  "../High/Tests/*.cc"
   "../High/Tests/*.h"
   )
 
 file (GLOB Source_Low
-  "../Low/Tests/*.cpp"
+  "../Low/Tests/*.cc"
   "../Low/Tests/*.h"
   )
 
 file (GLOB Source_Caching
-  "../Caching/Tests/*.cpp"
+  "../Caching/Tests/*.cc"
   "../Caching/Tests/*.h"
   )
 
 file (GLOB Source_Pipes
-  "../Pipes/Tests/*.cpp"
+  "../Pipes/Tests/*.cc"
   "../Pipes/Tests/*.h"
-  "../Pipes/StuPipe/Tests/*.cpp"
+  "../Pipes/StuPipe/Tests/*.cc"
   "../Pipes/StuPipe/Tests/*.h"
   )
 
