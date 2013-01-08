@@ -29,7 +29,12 @@
 /// \author James Hughes
 /// \date   January 2013
 
+#include <fstream>
+
+#include "Common.h"
 #include "ShaderMan.h"
+#include "Exceptions.h"
+#include "High/Log.h"
 
 namespace Spire {
 
@@ -44,10 +49,98 @@ ShaderMan::~ShaderMan()
 }
 
 //------------------------------------------------------------------------------
-std::shared_ptr<ShaderAsset> ShaderMan::loadShader(const std::string& shaderFile)
+std::shared_ptr<ShaderAsset> ShaderMan::loadShader(const std::string& shaderFile,
+                                                   GLenum shaderType)
 {
-  // Attempt to find the asset.
+  std::shared_ptr<BaseAsset> asset = findAsset(shaderFile);
+  if (asset == nullptr)
+  {
+    // Load a new shader.
+    std::shared_ptr<ShaderAsset> shaderAsset(new ShaderAsset(shaderFile, shaderType));
+
+    // Add the asset to BaseAssetMan's internal weak_ptr list.
+    addAsset(std::dynamic_pointer_cast<BaseAsset>(shaderAsset));
+    return shaderAsset;
+  }
+  else
+  {
+    return std::dynamic_pointer_cast<ShaderAsset>(asset);
+  }
 }
 
+//------------------------------------------------------------------------------
+ShaderAsset::ShaderAsset(const std::string& filename, GLenum shaderType) :
+    BaseAsset(filename),
+    mHasValidShader(false)
+{
+  std::ifstream file(filename, std::ios_base::in);
+  if (file.is_open() == false)
+  {
+    Log::message() << "Failed to open shader " << filename << "\n";
+    throw NotFound("Failed to find shader.");
+  }
+
+  // Size std::string appropriately before reading file.
+  std::string fileContents;
+  file.seekg(0, std::ios::end);
+  fileContents.resize(file.tellg());
+  file.seekg(0, std::ios::beg);
+
+  // Extra parenthesis are essential to avoid the most vexing parse.
+  fileContents.assign( (std::istreambuf_iterator<char>(file)), 
+                        std::istreambuf_iterator<char>());
+  
+  // Now compile the shader file.
+  GLuint  shader;
+  GLint   compiled;
+
+  // Create the shader object.
+  shader = glCreateShader(shaderType);
+  if (0 == shader)
+  {
+    Log::message() << "Failed to create shader of type: " << shaderType << "\n";
+    throw GLError("Unable to construct shader.");
+  }
+
+  const char* cFileContents = fileContents.c_str();
+  glShaderSource(shader, 1, &cFileContents, NULL);
+  GL_CHECK();
+
+  glCompileShader(shader);
+
+  // Check compilation status.
+  if (!compiled)
+  {
+    GLint infoLen = 0;
+  
+    glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &infoLen);
+    if (infoLen > 1)
+    {
+      char* infoLog = new char[infoLen];
+
+      glGetShaderInfoLog(shader, infoLen, NULL, infoLog);
+      Log::error() << "Error compiling shader:\n" << infoLog << "\n";
+
+      delete[] infoLog;
+    }
+
+    glDeleteShader(shader);
+
+    throw GLError("Failed to compile shader.");
+  }
+
+  mHasValidShader = true;
+  glID = shader;
+}
+
+//------------------------------------------------------------------------------
+ShaderAsset::~ShaderAsset()
+{
+  if (mHasValidShader)  
+  {
+    glDeleteShader(glID);
+    mHasValidShader = false;
+  }
+}
 
 } 

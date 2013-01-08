@@ -42,13 +42,18 @@ namespace Spire
 class ShaderAsset : public BaseAsset
 {
 public:
-  ShaderAsset(const std::string& name) : BaseAsset(name) {}
-  virtual ~ShaderAsset() {}
+  ShaderAsset(const std::string& name, GLenum shaderType);
+  virtual ~ShaderAsset();
+
+  bool isValid()    {return mHasValidShader;}
 
   GLuint            glID;		      ///< Shader program ID.
 
   //ShaderUniforms    uniforms;     ///< Uniforms used in the shader.
   //ShaderAttributes  attributes;   ///< Attributes used in the shader.
+protected:
+
+  bool              mHasValidShader;
 };
 
 /// Shader manager.
@@ -60,7 +65,8 @@ public:
 
   /// Loads and returns a shader asset. If the shader is already loaded,
   /// a reference to that shader is returned instead of reloading it.
-  std::shared_ptr<ShaderAsset> loadShader(const std::string& shaderFile);
+  std::shared_ptr<ShaderAsset> loadShader(const std::string& shaderFile,
+                                          GLenum shaderType);
 
 private:
   
