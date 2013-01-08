@@ -45,9 +45,9 @@ ShaderUniformMan::ShaderUniformMan(bool addDefaultUniforms)
   if (addDefaultUniforms)
   {
     addUniform("uProj");
-    addUniform("uViewProj");
-    addUniform("uWorldViewProj");
-    addUniform("uWorldView");
+    addUniform("uProjIV");
+    addUniform("uProjIVWorld");
+    addUniform("uColor");
     addUniform("uDirLight");
   }
 }

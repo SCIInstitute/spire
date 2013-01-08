@@ -47,43 +47,43 @@ ShaderAttributeMan::ShaderAttributeMan(bool addDefaultAttributes)
   // Add default attributes if requested.
   if (addDefaultAttributes)
   {
-    addAttribute("a_pos", 3, false, 
+    addAttribute("aPos", 3, false, 
                  sizeof(float) * 3, sizeof(short) * 3 + sizeof(short),
                  GL_FLOAT, GL_HALF_FLOAT_OES);
-    addAttribute("a_normal", 3, false, 
+    addAttribute("aNormal", 3, false, 
                  sizeof(float) * 3, sizeof(short) * 3 + sizeof(short),
                  GL_FLOAT, GL_HALF_FLOAT_OES);
-    addAttribute("a_texCoord0", 2, false, 
+    addAttribute("aTexCoord0", 2, false, 
                  sizeof(float) * 2, sizeof(short) * 2,
                  GL_FLOAT, GL_HALF_FLOAT_OES);
-    addAttribute("a_texCoord1", 2, false, 
+    addAttribute("aTexCoord1", 2, false, 
                  sizeof(float) * 2, sizeof(short) * 2,
                  GL_FLOAT, GL_HALF_FLOAT_OES);
-    addAttribute("a_texCoord2", 2, false, 
+    addAttribute("aTexCoord2", 2, false, 
                  sizeof(float) * 2, sizeof(short) * 2,
                  GL_FLOAT, GL_HALF_FLOAT_OES);
-    addAttribute("a_texCoord3", 2, false, 
+    addAttribute("aTexCoord3", 2, false, 
                  sizeof(float) * 2, sizeof(short) * 2,
                  GL_FLOAT, GL_HALF_FLOAT_OES);
-    addAttribute("a_color", 4, true, 
+    addAttribute("aColor", 4, true, 
                  sizeof(char) * 4, sizeof(char) * 4,
                  GL_UNSIGNED_BYTE, GL_UNSIGNED_BYTE);
-    addAttribute("a_tangent", 3, false, 
+    addAttribute("aTangent", 3, false, 
                  sizeof(float) * 3, sizeof(short) * 3 + sizeof(short),
                  GL_FLOAT, GL_HALF_FLOAT_OES);
-    addAttribute("a_binormal", 3, false, 
+    addAttribute("aBinormal", 3, false, 
                  sizeof(float) * 3, sizeof(short) * 3 + sizeof(short),
                  GL_FLOAT, GL_HALF_FLOAT_OES);
-    addAttribute("a_generalPos", 3, false, 
+    addAttribute("aGenPos", 3, false, 
                  sizeof(float) * 3, sizeof(float) * 3,
                  GL_FLOAT, GL_FLOAT);
-    addAttribute("a_generalNormal", 3, false, 
+    addAttribute("aGenNormal", 3, false, 
                  sizeof(float) * 3, sizeof(float) * 3,
                  GL_FLOAT, GL_FLOAT);
-    addAttribute("a_generalUV", 2, false, 
+    addAttribute("aGenUV", 2, false, 
                  sizeof(float) * 2, sizeof(float) * 2,
                  GL_FLOAT, GL_FLOAT);
-    addAttribute("a_generalFloat", 1, false, 
+    addAttribute("aGenFloat", 1, false, 
                  sizeof(float) * 1, sizeof(float) * 1,
                  GL_FLOAT, GL_FLOAT);
   }

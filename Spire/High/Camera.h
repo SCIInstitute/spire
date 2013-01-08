@@ -77,7 +77,7 @@ public:
 
 private:
 
-	M44		                mPIV;         ///< Projection * Inverse View transformation.
+  M44                   mPIV;         ///< Projection * Inverse View transformation.
   M44                   mIV;          ///< Inverse view transformation.
   M44                   mV;           ///< View matrix.
   M44                   mP;           ///< Projection transformation.

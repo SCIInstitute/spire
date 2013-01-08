@@ -59,6 +59,12 @@ void Driver::doFrame()
   // Force a known GPU state
   mHub.getGPUStateManager().apply(mInitialState, true);
 
+  // Go ahead and render a simple triangle.
+
+  // Render a latvolume...
+
+  // Render a volume...
+
 }
 
-} } // end of namespace Spire::Pipes::StuPipe
+} } // end of namespace Spire::StuPipe
