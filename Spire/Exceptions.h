@@ -64,6 +64,13 @@ public:
   virtual ~NotFound() noexcept {}
 };
 
+class GLError : virtual public Exception
+{
+public:
+  GLError() : Exception(std::string("unknown error")) {}
+  GLError(std::string e) : Exception(e) {}
+  virtual ~GLError() noexcept {}
+};
 } // namespace Spire
 
 #endif // SPIRE_EXCEPTIONS_H
