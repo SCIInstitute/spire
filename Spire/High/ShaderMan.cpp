@@ -39,16 +39,6 @@
 namespace Spire {
 
 //------------------------------------------------------------------------------
-ShaderMan::ShaderMan()
-{
-}
-
-//------------------------------------------------------------------------------
-ShaderMan::~ShaderMan()
-{
-}
-
-//------------------------------------------------------------------------------
 std::shared_ptr<ShaderAsset> ShaderMan::loadShader(const std::string& shaderFile,
                                                    GLenum shaderType)
 {
@@ -59,7 +49,10 @@ std::shared_ptr<ShaderAsset> ShaderMan::loadShader(const std::string& shaderFile
     std::shared_ptr<ShaderAsset> shaderAsset(new ShaderAsset(shaderFile, shaderType));
 
     // Add the asset to BaseAssetMan's internal weak_ptr list.
-    addAsset(std::dynamic_pointer_cast<BaseAsset>(shaderAsset));
+    asset = std::dynamic_pointer_cast<BaseAsset>(shaderAsset);
+    addAsset(asset);
+    holdAsset(asset, getDefaultHoldTime());
+
     return shaderAsset;
   }
   else

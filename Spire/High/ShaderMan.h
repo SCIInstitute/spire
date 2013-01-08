@@ -45,28 +45,37 @@ public:
   ShaderAsset(const std::string& name, GLenum shaderType);
   virtual ~ShaderAsset();
 
-  bool isValid()    {return mHasValidShader;}
+  bool isValid() const          {return mHasValidShader;}
+  GLuint getShaderID() const    {return glID;}
 
-  GLuint            glID;		      ///< Shader program ID.
-
-  //ShaderUniforms    uniforms;     ///< Uniforms used in the shader.
-  //ShaderAttributes  attributes;   ///< Attributes used in the shader.
 protected:
 
-  bool              mHasValidShader;
+  GLuint            glID;		          ///< Shader ID.
+  bool              mHasValidShader;  ///< True if we have a valid shader ID.
 };
 
 /// Shader manager.
 class ShaderMan : public BaseAssetMan
 {
 public:
-  ShaderMan();
-  virtual ~ShaderMan();
+  ShaderMan()           {}
+  virtual ~ShaderMan()  {}
 
   /// Loads and returns a shader asset. If the shader is already loaded,
   /// a reference to that shader is returned instead of reloading it.
   std::shared_ptr<ShaderAsset> loadShader(const std::string& shaderFile,
                                           GLenum shaderType);
+
+  /// This class implements a *default* hold time for all assets.
+  /// Typically when compiling / linking a shader program, the shaders are
+  /// no longer needed after the compile / link process. As such, 
+  /// ShaderProgramMan does not keep shared_ptr references to each of the
+  /// shader assets hanging around. This default time will prevent the system
+  /// from constantly freeing and reloading the same shaders.
+  static constexpr std::chrono::milliseconds getDefaultHoldTime() 
+  {
+    return std::chrono::milliseconds(50);
+  }
 
 private:
   

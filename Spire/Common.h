@@ -52,6 +52,7 @@
 
 // Any ubiquitous header files.
 #include "High/Math.h"
+#include "High/Log.h"
 
 #ifdef _DEBUG
 # define GL_CHECK()                                                       \

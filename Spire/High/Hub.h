@@ -40,6 +40,8 @@
 
 #include "Interface.h"
 #include "High/GPUStateManager.h"
+#include "High/ShaderMan.h"
+#include "High/ShaderProgramMan.h"
 
 namespace Spire {
 
@@ -79,6 +81,9 @@ public:
   /// Retrieves the GPU state manager.
   GPUStateManager& getGPUStateManager()         {return mGPUStateManager;}
 
+  /// Retrieves shader manager.
+  ShaderMan& getShaderManager()                 {return mShaderMan;}
+
   /// Retrieves the actual screen width in pixels.
   size_t getActualScreenWidth() const           {return mPixScreenWidth;}
 
@@ -91,6 +96,7 @@ private:
   std::unique_ptr<Log>        mLog;             ///< Spire logging class.
   Context*                    mContext;         ///< Rendering context.
   GPUStateManager             mGPUStateManager; ///< GPU state manager.
+  ShaderMan                   mShaderMan;       ///< Shader manager.
   std::shared_ptr<PipeDriver> mPipe;            ///< Current rendering pipe.
 
   // Threading variables / functions
