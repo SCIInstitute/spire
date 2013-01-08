@@ -53,26 +53,25 @@
 // Any ubiquitous header files.
 #include "High/Math.h"
 
-namespace Spire
-{
-
 #ifdef _DEBUG
-# define GL_CHECK()                                                    \
-  do {                                                                 \
-    GLenum glerr;                                                      \
-    unsigned int iCounter = 0;                                         \
-    while((glerr = glGetError()) != GL_NO_ERROR) {                     \
-      T_ERROR("GL error before line %u (%s): %s (%#x)",                \
-              __LINE__, __FILE__,                                      \
-              gluErrorString(glerr),                                   \
-              static_cast<unsigned>(glerr));                           \
-      iCounter++;                                                      \
-      if (iCounter > MAX_GL_ERROR_COUNT) break;                        \
-    }                                                                  \
+# define GL_CHECK()                                                       \
+  do {                                                                    \
+    GLenum glerr;                                                         \
+    unsigned int iCounter = 0;                                            \
+    while((glerr = glGetError()) != GL_NO_ERROR) {                        \
+      Log::error() << "GL error before line " << __LINE __ << "("         \
+                   << __FILE__ << "): " << glerr << " ("                  \
+                   << gluErrorString(glerr) << ")";                       \
+      iCounter++;                                                         \
+      if (iCounter > MAX_GL_ERROR_COUNT) break;                           \
+    }                                                                     \
   } while(0)
 #else
 # define GL_CHECK() 
 #endif
+
+namespace Spire
+{
 
 } // namespace Spire
 
