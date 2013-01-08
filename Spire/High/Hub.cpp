@@ -40,8 +40,6 @@
 
 #include "Pipes/StuPipe/Driver.h"
 
-static int __thread testing = 0;
-
 namespace Spire {
 
 //------------------------------------------------------------------------------
