@@ -3,7 +3,7 @@
 
    The MIT License
 
-   Copyright (c) 2012 Scientific Computing and Imaging Institute,
+   Copyright (c) 2013 Scientific Computing and Imaging Institute,
    University of Utah.
 
 
@@ -26,15 +26,23 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifdef GL_FRAGMENT_PRECISION_HIGH
-   precision highp float;
-#else
-   precision mediump float;
-#endif
+/// \author James Hughes
+/// \date   January 2013
 
-varying vec4	fColor
+#ifndef SPIRE_STUPIPE_TESTUNIFORMCOLOR_H
+#define SPIRE_STUPIPE_TESTUNIFORMCOLOR_H
 
-void main( void )
+namespace Spire {
+
+/// Tests the uniformColor fragment shader.
+class TestUniformColor
 {
-	gl_FragColor 		= fColor
-}
+public:
+  TestUniformColor();
+  virtual ~TestUniformColor();
+  
+};
+
+} // namespace Spire 
+
+#endif 

@@ -42,6 +42,8 @@ Driver::Driver(Hub& hub) :
   mInitialState.mDepthTestEnable = true;
   mInitialState.mCullFaceEnable = false;  // Todo: Set to true for geometry.
                                           // Should not be true for volumes.
+
+  // Create VBO with test data in it.
 }
 
 //------------------------------------------------------------------------------
