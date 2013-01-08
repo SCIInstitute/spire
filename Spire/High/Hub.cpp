@@ -38,7 +38,7 @@
 #include "High/Hub.h"
 #include "High/Log.h"
 
-#include "Pipes/StuPipe/Driver.h"
+#include "StuPipe/Driver.h"
 
 namespace Spire {
 

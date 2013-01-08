@@ -137,10 +137,8 @@ file (GLOB Source_Caching
   )
 
 file (GLOB Source_Pipes
-  "Pipes/*.cpp"
-  "Pipes/*.h"
-  "Pipes/StuPipe/*.cpp"
-  "Pipes/StuPipe/*.h"
+  "StuPipe/*.cpp"
+  "StuPipe/*.h"
   )
 
 ########################################################################

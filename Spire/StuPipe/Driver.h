@@ -32,7 +32,7 @@
 #ifndef SPIRE_PIPES_STUPIPE_DRIVER_H
 #define SPIRE_PIPES_STUPIPE_DRIVER_H
 
-#include "Pipes/PipeDriver.h"
+#include "High/PipeDriver.h"
 #include "High/GPUStateManager.h"
 
 namespace Spire {
