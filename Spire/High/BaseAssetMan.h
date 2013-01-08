@@ -38,8 +38,7 @@
 #include <queue>
 #include <chrono>
 
-namespace Spire
-{
+namespace Spire {
 
 /// Derive all of your assets from this class.
 class BaseAsset

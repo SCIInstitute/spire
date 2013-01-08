@@ -35,8 +35,7 @@
 #include "Common.h"
 #include "BaseAssetMan.h"
 
-namespace Spire
-{
+namespace Spire {
 
 /// Shader asset.
 class ShaderAsset : public BaseAsset

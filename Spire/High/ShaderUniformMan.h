@@ -36,8 +36,7 @@
 #include <vector>
 #include <string>
 
-namespace Spire
-{
+namespace Spire {
 
 class ShaderUniformMan;
 

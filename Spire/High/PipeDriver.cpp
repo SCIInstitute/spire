@@ -32,8 +32,7 @@
 #include "Common.h"
 #include "PipeDriver.h"
 
-namespace Spire
-{
+namespace Spire {
 
 PipeDriver::PipeDriver(Hub& hub) :
     mHub(hub)

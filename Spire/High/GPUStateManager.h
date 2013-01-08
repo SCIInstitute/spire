@@ -32,8 +32,7 @@
 #ifndef SPIRE_HIGH_GPUSTATEMANAGER_H
 #define SPIRE_HIGH_GPUSTATEMANAGER_H
 
-namespace Spire
-{
+namespace Spire {
 
 #define MAX_TEXTURE_UNITS 12
 #define MIN_TEXTURE_UNITS 4

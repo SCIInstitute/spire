@@ -34,8 +34,7 @@
 
 #include "High/Hub.h"
 
-namespace Spire
-{
+namespace Spire {
 
 /// Abstract base class for the Drivers controlling each of the rendering
 /// pipelines.

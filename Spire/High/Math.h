@@ -35,8 +35,7 @@
 // Include Sony's vector-math library.
 #include "AOS_VectorMath.h"
 
-namespace Spire
-{
+namespace Spire {
 
 //constexpr double pi() { return std::atan(1)*4; }
 constexpr double  PI_D  = 3.141592653589793238462;

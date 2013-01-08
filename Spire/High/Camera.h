@@ -32,8 +32,7 @@
 #ifndef SPIRE_HIGH_CAMERA_H
 #define SPIRE_HIGH_CAMERA_H
 
-namespace Spire
-{
+namespace Spire {
 
 /// Basic camera.
 class Camera

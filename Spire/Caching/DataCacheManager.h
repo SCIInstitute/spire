@@ -32,7 +32,7 @@
 #ifndef SPIRE_CACHING_DATACACHEMANAGER_H
 #define SPIRE_CACHING_DATACACHEMANAGER_H
 
-namespace spire {
+namespace Spire {
 
 /// Used for efficient retrieval of objects.
 /// Based on the current viewing angle, we can efficiently composite from

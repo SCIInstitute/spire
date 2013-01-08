@@ -36,8 +36,7 @@
 #include "High/ShaderAttributeMan.h"
 #include "High/ShaderUniformMan.h"
 
-namespace Spire
-{
+namespace Spire {
 
 class ShaderProgramAsset : public BaseAsset
 {

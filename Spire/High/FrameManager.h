@@ -29,7 +29,7 @@
 #ifndef SPIRE_HIGH_FRAMEMANAGER_H
 #define SPIRE_HIGH_FRAMEMANAGER_H
 
-namespace spire {
+namespace Spire {
 
 /// Manages the current frame.
 /// Attempts to intelligently tune scenes so that they run in real-time treating
