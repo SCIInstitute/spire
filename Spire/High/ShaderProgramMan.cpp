@@ -29,8 +29,10 @@
 /// \author James Hughes
 /// \date   January 2013
 
-#include "ShaderProgramMan.h"
+#include "Common.h"
 #include "Exceptions.h"
+
+#include "High/ShaderProgramMan.h"
 
 namespace Spire {
 
@@ -42,7 +44,7 @@ ShaderProgramMan::loadProgram(const std::string& programName,
   std::shared_ptr<BaseAsset> asset = findAsset(programName);
   if (asset == nullptr)
   {
-    std::shared_ptr<ShaderProgramAsset> program(new ShaderProgramAsset(
+    std::shared_ptr<ShaderProgramAsset> program(new ShaderProgramAsset(mHub,
             programName, shaders));
 
     // Add the asset
@@ -58,7 +60,11 @@ ShaderProgramMan::loadProgram(const std::string& programName,
 
 //------------------------------------------------------------------------------
 ShaderProgramAsset::ShaderProgramAsset(Hub& hub, const std::string& name,
-                      const std::list<std::tuple<std::string, GLenum>>& shaders)
+                      const std::list<std::tuple<std::string, GLenum>>& shaders) :
+    BaseAsset(name),
+    mHub(hub),
+    mAttributes(mHub.getShaderAttributeManager()),
+    mUniforms(mHub.getShaderUniformManager())
 {
   GLuint program = glCreateProgram();
   if (0 == program)
@@ -77,13 +83,81 @@ ShaderProgramAsset::ShaderProgramAsset(Hub& hub, const std::string& name,
     glAttachShader(program, shader->getShaderID());
   }
 
-  // Now sync up program attributes (uniforms do not play a part in linking).
+  // Link the program
+  glLinkProgram(program);
+
+  // ATTRIBUTES
+  {
+    // Check the active attributes.
+    GLint activeAttributes;
+    glGetProgramiv(program, GL_ACTIVE_ATTRIBUTES, &activeAttributes);
+
+    const int maxAttribNameSize = 1024;
+    char attributeName[maxAttribNameSize];
+    for (int i = 0; i < activeAttributes; i++)
+    {
+      GLsizei charsWritten = 0;
+      GLint attribSize;
+      GLenum type;
+      glGetActiveAttrib(program, i, maxAttribNameSize, &charsWritten,
+          &attribSize, &type, attributeName);
+
+      try
+      {
+        mAttributes.addAttribute(attributeName);
+      }
+      catch (ShaderAttributeNotFound& e)
+      {
+        Log::error() << "Unable to find attribute: ''" << attributeName << "'"
+                     << " in ShaderAttributeMan.\n";
+      }
+    }
+  }
+
+  // Now sync up program attributes
+  mAttributes.bindAttributes(program);
+
+  // UNIFORMS
+  {
+    // Check the active uniforms.
+    GLint activeUniforms;
+    glGetProgramiv(program, GL_ACTIVE_UNIFORMS, &activeUniforms);
+
+    const int maxUniformNameSize = 1024;
+    char uniformName[maxUniformNameSize];
+    for (int i = 0; i < activeUniforms; i++)
+    {
+      GLsizei charsWritten = 0;
+      GLint uniformSize;
+      GLenum type;
+      glGetActiveUniform(program, i, maxUniformNameSize, &charsWritten,
+          &uniformSize, &type, uniformName);
+
+      try
+      {
+        mUniforms.addUniform(uniformName);
+      }
+      catch (ShaderUniformNotFound& e)
+      {
+        Log::warning() << "Unable to find uniform: '" << uniformName << "'"
+                       << " in ShaderUniformMan.\n";
+      }
+    }
+  }
+
+  mHasValidProgram = true;
 }
 
 //------------------------------------------------------------------------------
 ShaderProgramAsset::~ShaderProgramAsset()
 {
+  if (mHasValidProgram)
+  {
+    glDeleteProgram(glProgramID);
+    mHasValidProgram = false;
+  }
 }
 
 
-} } // end of namespace Spire::High
+} // end of namespace Spire
+

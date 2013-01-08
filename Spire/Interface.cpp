@@ -39,7 +39,7 @@ namespace Spire {
 
 //------------------------------------------------------------------------------
 Interface::Interface(Context* context, bool createThread) :
-    mHub(new Hub(context, Hub::LogFunction(), createThread))
+    mHub(new Hub(context, LogFunction(), createThread))
 {
 }
 

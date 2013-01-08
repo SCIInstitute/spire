@@ -52,9 +52,9 @@ struct UniformState
 class ShaderUniformCollection
 {
 public:
-  ShaderUniformCollection(const ShaderUniformMan& man, GLuint program) :
+  ShaderUniformCollection(const ShaderUniformMan& man) :
       mUniformMan(man),
-      mProgram(program)
+      mProgram(getInvalidProgramHandle())
   {}
 
   struct UniformSpecificData
@@ -65,6 +65,9 @@ public:
   };
 
   static constexpr GLuint getInvalidProgramHandle()  {return static_cast<GLuint>(0);}
+
+  /// Sets the shader program to check the uniforms against.
+  void setShaderProgram(GLuint program);
 
   /// Adds a uniform with the specified name.
   /// Also queries the OpenGL shader program for the position of the uniform.
@@ -114,6 +117,8 @@ public:
 
   /// Adds a new uniform to the system. Automatically assigns it an internal
   /// index based on when it was added.
+  /// A ShaderUniformNotFound exception will be thrown if the uniform is not
+  /// found in the ShaderUniformMan.
   /// \param codeName       Name of the uniform in the shader code.
   void addUniform(const std::string& codeName);
 

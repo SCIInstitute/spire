@@ -29,9 +29,11 @@
 /// \author James Hughes
 /// \date   December 2012
 
-#include "ShaderAttributeMan.h"
-#include "MurmurHash3.h"
+#include "Common.h"
 #include "Exceptions.h"
+
+#include "High/ShaderAttributeMan.h"
+#include "High/MurmurHash3.h"
 
 namespace Spire {
 
@@ -254,7 +256,7 @@ void ShaderAttributeCollection::addAttribute(const std::string& attribName,
   else
   {
     // We did not find the attribute in the attribute manager.
-    throw std::invalid_argument("Unable to find attribute with specified name.");
+    throw ShaderAttributeNotFound(attribName);
   }
 }
 

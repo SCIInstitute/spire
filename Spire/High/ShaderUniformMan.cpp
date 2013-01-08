@@ -29,9 +29,11 @@
 /// \author James Hughes
 /// \date   January 2013
 
-#include "ShaderUniformMan.h"
-#include "MurmurHash3.h"
+#include "Common.h"
 #include "Exceptions.h"
+
+#include "High/ShaderUniformMan.h"
+#include "High/MurmurHash3.h"
 
 namespace Spire {
 
@@ -139,6 +141,10 @@ void ShaderUniformCollection::addUniform(const std::string& uniformName)
     else
       uniformData.uniformLoc = 0;
     mUniforms.push_back(uniformData);
+  }
+  else
+  {
+    throw ShaderUniformNotFound(uniformName);
   }
 }
 

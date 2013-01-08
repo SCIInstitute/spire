@@ -146,9 +146,9 @@ class ShaderUniformCollectionTests : public testing::Test
 protected:
   ShaderUniformCollectionTests() :
       mUniformMan(true),
-      mCol1(mUniformMan, ShaderUniformCollection::getInvalidProgramHandle()),
-      mCol2(mUniformMan, ShaderUniformCollection::getInvalidProgramHandle()),
-      mCol3(mUniformMan, ShaderUniformCollection::getInvalidProgramHandle())
+      mCol1(mUniformMan),
+      mCol2(mUniformMan),
+      mCol3(mUniformMan)
   {}
 
   virtual void SetUp()

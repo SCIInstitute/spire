@@ -56,12 +56,8 @@ class Hub
 {
 public:
 
-  /// @todo This typedef should go in Interface.h.
-  typedef std::function<void (const std::string&, Interface::LOG_LEVEL level)> 
-      LogFunction;
-
   /// @todo Make context a shared_ptr
-  Hub(Context* context, LogFunction logFn, bool useThread);
+  Hub(Context* context, Interface::LogFunction logFn, bool useThread);
   virtual ~Hub();
 
   /// One-time initialization of the renderer.
@@ -79,24 +75,32 @@ public:
   void doFrame();
 
   /// Retrieves the GPU state manager.
-  GPUStateManager& getGPUStateManager()         {return mGPUStateManager;}
+  GPUStateManager& getGPUStateManager()           {return mGPUStateManager;}
 
   /// Retrieves shader manager.
-  ShaderMan& getShaderManager()                 {return mShaderMan;}
+  ShaderMan& getShaderManager()                   {return mShaderMan;}
+
+  /// Retrieves shader attribute manager.
+  ShaderAttributeMan& getShaderAttributeManager() {return mShaderAttributes;}
+
+  /// Retrieves shader uniform manager.
+  ShaderUniformMan& getShaderUniformManager()     {return mShaderUniforms;}
 
   /// Retrieves the actual screen width in pixels.
-  size_t getActualScreenWidth() const           {return mPixScreenWidth;}
+  size_t getActualScreenWidth() const             {return mPixScreenWidth;}
 
   /// Retrieves the actual screen width in pixels.
-  size_t getActualScreenHeight() const          {return mPixScreenHeight;}
+  size_t getActualScreenHeight() const            {return mPixScreenHeight;}
 
 private:
 
-  LogFunction                 mLogFun;          ///< Log function.
+  Interface::LogFunction      mLogFun;          ///< Log function.
   std::unique_ptr<Log>        mLog;             ///< Spire logging class.
   Context*                    mContext;         ///< Rendering context.
   GPUStateManager             mGPUStateManager; ///< GPU state manager.
   ShaderMan                   mShaderMan;       ///< Shader manager.
+  ShaderAttributeMan          mShaderAttributes;///< Shader attribute manager.
+  ShaderUniformMan            mShaderUniforms;  ///< Shader attribute manager.
   std::shared_ptr<PipeDriver> mPipe;            ///< Current rendering pipe.
 
   // Threading variables / functions

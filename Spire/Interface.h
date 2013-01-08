@@ -57,10 +57,8 @@ public:
     LOG_ERROR,    ///< Error.
   };
 
-  /// Log function type definition.
-  /// @todo re-expose logFunction.
-  //typedef std::function<void (const std::string&, LOG_LEVEL level)> 
-  //    LogFunction;
+  typedef std::function<void (const std::string&, Interface::LOG_LEVEL level)> 
+      LogFunction;
 
   /// Constructs an interface to the renderer.
   /// \param  createThread  If true, then a thread will be created in which the

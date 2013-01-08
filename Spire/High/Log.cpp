@@ -39,7 +39,7 @@ Log*                      Log::mLog(nullptr);
 std::ostream              Log::mCNull(0); // See: http://stackoverflow.com/questions/6240950/platform-independent-dev-null-in-c 
 
 //------------------------------------------------------------------------------
-Log::Log(const Hub::LogFunction& logFunction) :
+Log::Log(const Interface::LogFunction& logFunction) :
     mDebugStream(logFunction, Interface::LOG_DEBUG),
     mMessageStream(logFunction, Interface::LOG_MESSAGE),
     mWarningStream(logFunction, Interface::LOG_WARNING),
@@ -50,9 +50,9 @@ Log::Log(const Hub::LogFunction& logFunction) :
     std::stringstream osFilename;
     osFilename << "/tmp/SpireLog";//_" << std::this_thread::get_id();
     mOutputFile.open(osFilename.str());
-    Hub::LogFunction fun = std::bind(&Log::logFunction, this,
-                                     std::placeholders::_1, 
-                                     std::placeholders::_2);
+    Interface::LogFunction fun = std::bind(&Log::logFunction, this,
+                                           std::placeholders::_1, 
+                                           std::placeholders::_2);
 
     // Reset all of the streams' logging functions.
     mDebugStream.setLogFunction(fun);

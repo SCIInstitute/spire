@@ -43,7 +43,7 @@
 namespace Spire {
 
 //------------------------------------------------------------------------------
-Hub::Hub(Context* context, LogFunction logFn, bool useThread) :
+Hub::Hub(Context* context, Interface::LogFunction logFn, bool useThread) :
     mContext(context),
     mPipe(new StuPipe::Driver(*this)),
     mLogFun(logFn),

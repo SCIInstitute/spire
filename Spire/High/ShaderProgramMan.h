@@ -32,8 +32,9 @@
 #ifndef SPIRE_HIGH_SHADERPROGRAMMAN_H
 #define SPIRE_HIGH_SHADERPROGRAMMAN_H
 
-#include "Common.h"
 #include "BaseAssetMan.h"
+#include "High/ShaderAttributeMan.h"
+#include "High/ShaderUniformMan.h"
 
 namespace Spire
 {
@@ -50,10 +51,13 @@ public:
 
 protected:
 
-  bool      mHasValidProgram;
-  GLuint    glProgramID;
+  bool                      mHasValidProgram; ///< True if glProgramID is valid.
+  GLuint                    glProgramID;      ///< GL program ID.
 
-  Hub&      mHub;
+  Hub&                      mHub;             ///< Reference to render hub.
+
+  ShaderAttributeCollection mAttributes;      ///< All program attributes.
+  ShaderUniformCollection   mUniforms;        ///< All program uniforms.
 };
 
 /// Management of fully linked GL shader programs.

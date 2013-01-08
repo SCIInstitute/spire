@@ -72,7 +72,7 @@ public:
   /// ShaderProgramMan does not keep shared_ptr references to each of the
   /// shader assets hanging around. This default time will prevent the system
   /// from constantly freeing and reloading the same shaders.
-  static constexpr std::chrono::milliseconds getDefaultHoldTime() 
+  static const std::chrono::milliseconds getDefaultHoldTime() 
   {
     return std::chrono::milliseconds(50);
   }
