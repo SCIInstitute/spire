@@ -42,6 +42,7 @@
 #include "High/GPUStateManager.h"
 #include "High/ShaderMan.h"
 #include "High/ShaderProgramMan.h"
+#include "High/Camera.h"
 
 namespace Spire {
 
@@ -86,6 +87,12 @@ public:
   /// Retrieves shader uniform manager.
   ShaderUniformMan& getShaderUniformManager()     {return mShaderUniforms;}
 
+  /// Retrieves the shader program manager.
+  ShaderProgramMan& getShaderProgramManager()     {return mShaderProgramMan;}
+
+  /// Retrieves the default camera.
+  Camera& getCamera()                             {return mCamera;}
+
   /// Retrieves the actual screen width in pixels.
   size_t getActualScreenWidth() const             {return mPixScreenWidth;}
 
@@ -99,8 +106,10 @@ private:
   Context*                    mContext;         ///< Rendering context.
   GPUStateManager             mGPUStateManager; ///< GPU state manager.
   ShaderMan                   mShaderMan;       ///< Shader manager.
+  ShaderProgramMan            mShaderProgramMan;///< Shader program manager.
   ShaderAttributeMan          mShaderAttributes;///< Shader attribute manager.
   ShaderUniformMan            mShaderUniforms;  ///< Shader attribute manager.
+  Camera                      mCamera;          ///< Basic GL Camera (this should not be here... move in the future)
   std::shared_ptr<PipeDriver> mPipe;            ///< Current rendering pipe.
 
   // Threading variables / functions

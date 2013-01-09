@@ -46,7 +46,15 @@ public:
                      const std::list<std::tuple<std::string, GLenum>>& shaders);
   virtual ~ShaderProgramAsset();
 
-  GLuint getProgramID() const   {return glProgramID;}
+  /// Compiled/Linked GL program ID.
+  GLuint getProgramID() const                             {return glProgramID;}
+
+  /// Shader attribute collection.
+  const ShaderAttributeCollection& getAttributes() const  {return mAttributes;}
+
+  /// Shader uniform collection.
+  const ShaderUniformCollection& getUniforms() const      {return mUniforms;}
+
 
 protected:
 

@@ -37,7 +37,7 @@
 namespace Spire {
 
 //------------------------------------------------------------------------------
-Camera::Camera(std::shared_ptr<Hub> hub) :
+Camera::Camera(Hub& hub) :
     mTrafoSeq(0),
     mPerspective(true),
     mFOV(getDefaultFOVY()),
@@ -71,8 +71,8 @@ void Camera::setAsPerspective()
 {
   mPerspective = true;
 
-  float aspect = static_cast<float>(mHub->getActualScreenWidth()) / 
-                 static_cast<float>(mHub->getActualScreenHeight());
+  float aspect = static_cast<float>(mHub.getActualScreenWidth()) / 
+                 static_cast<float>(mHub.getActualScreenHeight());
   mP = M44::perspective(mFOV, aspect, mZNear, mZFar);
 
   // Rotate about the Y axis by 180 degrees. Many perspective matrices

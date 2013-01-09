@@ -45,12 +45,13 @@ namespace Spire {
 //------------------------------------------------------------------------------
 Hub::Hub(Context* context, Interface::LogFunction logFn, bool useThread) :
     mContext(context),
-    mPipe(new StuPipe::Driver(*this)),
     mLogFun(logFn),
     mThreadKill(false),
     mThreadRunning(false),
     mPixScreenWidth(640),
-    mPixScreenHeight(480)
+    mPixScreenHeight(480),
+    mShaderProgramMan(*this),
+    mCamera(*this)
 {
   if (useThread)
   {
@@ -115,6 +116,9 @@ void Hub::oneTimeInitOnThread()
   // Pulled from Tuvok
   //const bool bOpenGLSO12     = atof((const char*)versionl) >= 1.2;
   //const bool bOpenGLSO20     = atof((const char*)versionl) >= 2.0;
+
+  Log::debug() << "Creating render pipeline." << std::endl;
+  mPipe = std::shared_ptr<PipeDriver>(new StuPipe::Driver(*this));
 }
 
 //------------------------------------------------------------------------------

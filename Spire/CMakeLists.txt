@@ -137,6 +137,7 @@ file (GLOB Source_Caching
   )
 
 file (GLOB Source_Pipes
+  "Shaders/Tests/*.cpp"
   "StuPipe/*.cpp"
   "StuPipe/*.h"
   )

@@ -37,13 +37,12 @@ namespace StuPipe {
 
 //------------------------------------------------------------------------------
 Driver::Driver(Hub& hub) :
-    PipeDriver(hub)
+    PipeDriver(hub),
+    mUniformColorTest(hub)
 {
   mInitialState.mDepthTestEnable = true;
   mInitialState.mCullFaceEnable = false;  // Todo: Set to true for geometry.
                                           // Should not be true for volumes.
-
-  // Create VBO with test data in it.
 }
 
 //------------------------------------------------------------------------------
@@ -62,6 +61,7 @@ void Driver::doFrame()
   mHub.getGPUStateManager().apply(mInitialState, true);
 
   // Go ahead and render a simple triangle.
+  mUniformColorTest.doFrame();
 
   // Render a latvolume...
 

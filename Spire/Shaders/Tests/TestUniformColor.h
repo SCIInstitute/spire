@@ -34,13 +34,25 @@
 
 namespace Spire {
 
-/// Tests the uniformColor fragment shader.
+class ShaderProgramAsset;
+
+/// Tests the UniformColor.* shaders.
 class TestUniformColor
 {
 public:
-  TestUniformColor();
+  TestUniformColor(Hub& hub);
   virtual ~TestUniformColor();
   
+  void doFrame();
+
+private:
+
+  GLuint              mVertexBuffer;
+  GLuint              mIndexBuffer;
+
+  Hub&                mHub;
+
+  std::shared_ptr<ShaderProgramAsset>  mShader;
 };
 
 } // namespace Spire 

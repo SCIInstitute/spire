@@ -58,7 +58,7 @@ public:
 
   struct UniformSpecificData
   {
-    GLuint        uniformLoc; ///< Shader uniform location as returned by
+    GLint         uniformLoc; ///< Shader uniform location as returned by
                               ///< glGetUniformLocation.
     UniformState  uniform;    ///< Uniform state.
   };

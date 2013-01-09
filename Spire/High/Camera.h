@@ -38,7 +38,7 @@ namespace Spire {
 class Camera
 {
 public:
-  Camera(std::shared_ptr<Hub> hub);
+  Camera(Hub& hub);
   virtual ~Camera();
 
   // V  = View matrix
@@ -89,7 +89,7 @@ private:
   float                 mZNear;       ///< Position of near plane along view vec.
   float                 mZFar;        ///< Position of far plane along view vec.
 
-  std::shared_ptr<Hub>  mHub;
+  Hub&                  mHub;
 };
 
 } // namespace Spire
