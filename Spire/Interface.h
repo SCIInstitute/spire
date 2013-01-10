@@ -33,6 +33,7 @@
 #define SPIRE_INTERFACE_H
 
 #include <string>
+#include <vector>
 
 #include "Context.h"
 
@@ -61,6 +62,7 @@ public:
       LogFunction;
 
   /// Constructs an interface to the renderer.
+  /// \param  shaderDirs    A list of directories to search for shader files.
   /// \param  createThread  If true, then a thread will be created in which the
   ///                       renderer will run. The renderer will do it's best
   ///                       to manage time allocation and only use cycles
@@ -72,7 +74,8 @@ public:
   /// @todo Re-enabled shared_ptr context when SCIRun5 adopts C++11.
   //Interface(std::shared_ptr<Context> context, bool createThread, 
   //          LogFunction logFP = LogFunction());
-  Interface(Context* context, bool createThread);
+  Interface(Context* context, const std::vector<std::string>& shaderDirs,
+            bool createThread, LogFunction logFP = LogFunction());
   virtual ~Interface();
 
 

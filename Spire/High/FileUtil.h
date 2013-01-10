@@ -3,7 +3,7 @@
 
    The MIT License
 
-   Copyright (c) 2012 Scientific Computing and Imaging Institute,
+   Copyright (c) 2013 Scientific Computing and Imaging Institute,
    University of Utah.
 
 
@@ -26,9 +26,25 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-varying vec4	fColor;
+/// \author James Hughes
+/// \date   January 2013
+/// \brief  These functions exist primarily to locate shader files.
+///         Inherits heavily from the SysTools library in IV3D's Tuvok.
+///         There is currently no wstring implementation.
 
-void main()
+#ifndef SPIRE_HIGH_FILEUTIL_H
+#define SPIRE_HIGH_FILEUTIL_H
+
+namespace Spire
 {
-	gl_FragColor 		= fColor;
-}
+
+std::string findFileInDirs(const std::string& file,
+                           const std::vector<std::string>& strDirs,
+                           bool subdirs);
+bool fileExists(const std::string& strFileName);
+std::vector<std::string> getSubDirList(const std::string& dir);
+std::string getCurrentWorkingDir();
+
+} // namespace Spire
+
+#endif 

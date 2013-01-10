@@ -41,7 +41,7 @@ namespace Spire {
 class ShaderAsset : public BaseAsset
 {
 public:
-  ShaderAsset(const std::string& name, GLenum shaderType);
+  ShaderAsset(Hub& hub, const std::string& name, GLenum shaderType);
   virtual ~ShaderAsset();
 
   bool isValid() const          {return mHasValidShader;}
@@ -51,14 +51,15 @@ protected:
 
   GLuint            glID;		          ///< Shader ID.
   bool              mHasValidShader;  ///< True if we have a valid shader ID.
+  Hub&              mHub;             ///< Hub
 };
 
 /// Shader manager.
 class ShaderMan : public BaseAssetMan
 {
 public:
-  ShaderMan()           {}
-  virtual ~ShaderMan()  {}
+  ShaderMan(Hub& hub) : mHub(hub)   {}
+  virtual ~ShaderMan()              {}
 
   /// Loads and returns a shader asset. If the shader is already loaded,
   /// a reference to that shader is returned instead of reloading it.
@@ -78,6 +79,7 @@ public:
 
 private:
   
+  Hub&      mHub;
 };
 
 } // namespace Spire

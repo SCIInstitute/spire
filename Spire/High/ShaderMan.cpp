@@ -35,6 +35,7 @@
 #include "ShaderMan.h"
 #include "Exceptions.h"
 #include "High/Log.h"
+#include "High/FileUtil.h"
 
 namespace Spire {
 
@@ -46,7 +47,8 @@ std::shared_ptr<ShaderAsset> ShaderMan::loadShader(const std::string& shaderFile
   if (asset == nullptr)
   {
     // Load a new shader.
-    std::shared_ptr<ShaderAsset> shaderAsset(new ShaderAsset(shaderFile, shaderType));
+    std::shared_ptr<ShaderAsset> shaderAsset(
+        new ShaderAsset(mHub, shaderFile, shaderType));
 
     // Add the asset to BaseAssetMan's internal weak_ptr list.
     asset = std::dynamic_pointer_cast<BaseAsset>(shaderAsset);
@@ -62,14 +64,19 @@ std::shared_ptr<ShaderAsset> ShaderMan::loadShader(const std::string& shaderFile
 }
 
 //------------------------------------------------------------------------------
-ShaderAsset::ShaderAsset(const std::string& filename, GLenum shaderType) :
+ShaderAsset::ShaderAsset(Hub& hub, const std::string& filename, 
+                         GLenum shaderType) :
     BaseAsset(filename),
-    mHasValidShader(false)
+    mHasValidShader(false),
+    mHub(hub)
 {
-  std::ifstream file(filename, std::ios_base::in);
+  std::string targetFilename = findFileInDirs(filename, hub.getShaderDirs(),
+                                              false);
+  const std::vector<std::string> dirs(hub.getShaderDirs());
+  std::ifstream file(targetFilename, std::ios_base::in);
   if (file.is_open() == false)
   {
-    Log::message() << "Failed to open shader " << filename << "\n";
+    Log::message() << "Failed to open shader " << filename << std::endl;
     throw NotFound("Failed to find shader.");
   }
 
@@ -101,6 +108,9 @@ ShaderAsset::ShaderAsset(const std::string& filename, GLenum shaderType) :
 
   glCompileShader(shader);
 
+  // Check the compile status
+  glGetShaderiv(shader, GL_COMPILE_STATUS, &compiled);
+
   // Check compilation status.
   if (!compiled)
   {
@@ -112,7 +122,8 @@ ShaderAsset::ShaderAsset(const std::string& filename, GLenum shaderType) :
       char* infoLog = new char[infoLen];
 
       glGetShaderInfoLog(shader, infoLen, NULL, infoLog);
-      Log::error() << "Error compiling shader:\n" << infoLog << "\n";
+      Log::error() << "Error compiling '" << filename << "':" << std::endl << infoLog 
+                   << std::endl;
 
       delete[] infoLog;
     }

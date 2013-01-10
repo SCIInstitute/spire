@@ -37,22 +37,31 @@
 
 #include "High/Hub.h"
 #include "High/Log.h"
+#include "High/FileUtil.h"
 
 #include "StuPipe/Driver.h"
 
 namespace Spire {
 
 //------------------------------------------------------------------------------
-Hub::Hub(Context* context, Interface::LogFunction logFn, bool useThread) :
-    mContext(context),
+Hub::Hub(Context* context, const std::vector<std::string>& shaderDirs, 
+         Interface::LogFunction logFn, bool useThread) :
     mLogFun(logFn),
+    mContext(context),
+    mShaderMan(*this),
     mThreadKill(false),
     mThreadRunning(false),
     mPixScreenWidth(640),
     mPixScreenHeight(480),
     mShaderProgramMan(*this),
-    mCamera(*this)
+    mCamera(*this),
+    mShaderDirs(shaderDirs)
 {
+  // Add default relative shader directory.
+  std::string workingDay = getCurrentWorkingDir();
+  workingDay += "/Shaders";
+  mShaderDirs.push_back(workingDay);
+
   if (useThread)
   {
     createRendererThread();    

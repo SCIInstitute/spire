@@ -42,15 +42,15 @@ namespace Spire {
 TestUniformColor::TestUniformColor(Hub& hub) :
     mHub(hub)
 {
-  Log::message() << "Testing UniformColor shader.\n";
+  Log::message() << "Testing UniformColor shader." << std::endl;
 
   // Create VBO.
-  float vertexData[] = {0.0f, 0.0f, 0.0f, 
+  float vertexData[] = {0.0f, 0.0f, 1.0f,
                         1.0f, 0.0f, 0.0f,
                         0.0f, 1.0f, 0.0f};
   glGenBuffers(1, &mVertexBuffer);
   glBindBuffer(GL_ARRAY_BUFFER, mVertexBuffer);
-  Log::message() << "VBO data size: " << sizeof(vertexData) << ".\n";
+  Log::message() << "VBO data size: " << sizeof(vertexData) << std::endl;
   glBufferData(GL_ARRAY_BUFFER, sizeof(vertexData), vertexData, GL_STATIC_DRAW);
 
   // Create index buffer.

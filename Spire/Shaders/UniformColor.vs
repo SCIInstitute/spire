@@ -38,6 +38,6 @@ varying vec4    fColor;
 
 void main( void )
 {
-  gl_Position = uProjIVWorld * vec4(a_pos, 1.0);
+  gl_Position = uProjIVWorld * vec4(aPos, 1.0);
   fColor      = uColor;
 }

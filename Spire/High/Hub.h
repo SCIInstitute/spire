@@ -58,7 +58,8 @@ class Hub
 public:
 
   /// @todo Make context a shared_ptr
-  Hub(Context* context, Interface::LogFunction logFn, bool useThread);
+  Hub(Context* context, const std::vector<std::string>& shaderDirs, 
+      Interface::LogFunction logFn, bool useThread);
   virtual ~Hub();
 
   /// One-time initialization of the renderer.
@@ -99,6 +100,8 @@ public:
   /// Retrieves the actual screen width in pixels.
   size_t getActualScreenHeight() const            {return mPixScreenHeight;}
 
+  const std::vector<std::string>& getShaderDirs() const {return mShaderDirs;}
+
 private:
 
   Interface::LogFunction      mLogFun;          ///< Log function.
@@ -110,6 +113,7 @@ private:
   ShaderAttributeMan          mShaderAttributes;///< Shader attribute manager.
   ShaderUniformMan            mShaderUniforms;  ///< Shader attribute manager.
   Camera                      mCamera;          ///< Basic GL Camera (this should not be here... move in the future)
+  std::vector<std::string>    mShaderDirs;      ///< Shader directories to search.
   std::shared_ptr<PipeDriver> mPipe;            ///< Current rendering pipe.
 
   // Threading variables / functions

@@ -155,19 +155,23 @@ void Log::logFunction(const std::string& msg, Interface::LOG_LEVEL level)
   switch (level)
   {
     case Interface::LOG_DEBUG:
-      mOutputFile << "Debug:   " << msg;
+      //mOutputFile << "Debug:   " << msg;
+      mOutputFile << msg;
       break;
 
     case Interface::LOG_MESSAGE:
-      mOutputFile << "General: " << msg;
+      //mOutputFile << "General: " << msg;
+      mOutputFile << msg;
       break;
 
     case Interface::LOG_WARNING:
-      mOutputFile << "Warning: " << msg;
+      //mOutputFile << "Warning: " << msg;
+      mOutputFile << msg;
       break;
 
     case Interface::LOG_ERROR:
-      mOutputFile << "Error:   " << msg;
+      //mOutputFile << "Error:   " << msg;
+      mOutputFile << msg;
       break;
   }
   mOutputFile.flush();
