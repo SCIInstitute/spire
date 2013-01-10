@@ -86,6 +86,30 @@ ShaderProgramAsset::ShaderProgramAsset(Hub& hub, const std::string& name,
   // Link the program
   glLinkProgram(program);
 
+	// Check the link status 
+	GLint linked;
+	glGetProgramiv(program, GL_LINK_STATUS, &linked);
+	if (!linked)
+	{
+		GLint infoLen = 0;
+		glGetProgramiv(program, GL_INFO_LOG_LENGTH, &infoLen);
+
+		if (infoLen > 1)
+		{
+			char* infoLog = (char*)malloc(sizeof(char) * infoLen);
+
+			glGetProgramInfoLog(program, infoLen, NULL, infoLog);
+      Log::error() << "Error linking program:" << std::endl;
+      Log::error() << infoLog << std::endl;
+
+			free (infoLog);
+		}
+
+		glDeleteProgram(program);
+
+    throw GLError("Failed to link shader.");
+	}
+
   // ATTRIBUTES
   {
     // Check the active attributes.

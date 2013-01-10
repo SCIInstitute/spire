@@ -44,10 +44,17 @@ TestUniformColor::TestUniformColor(Hub& hub) :
 {
   Log::message() << "Testing UniformColor shader." << std::endl;
 
+  // Construct a list of appropriate shaders.
+  std::list<std::tuple<std::string, GLenum>> shaders = {
+    {"UniformColor.vs", GL_VERTEX_SHADER},
+    {"UniformColor.fs", GL_FRAGMENT_SHADER} };
+
+  mShader = mHub.getShaderProgramManager().loadProgram("UniformColor", shaders);
+
   // Create VBO.
-  float vertexData[] = {0.0f, -1.0f, -1.0f,
-                        1.0f, -1.0f, 0.0f,
-                        0.0f, -1.0f, 0.0f};
+  float vertexData[] = {1.0f, -1.0f, -1.0f,
+                        -1.0f, -1.0f, -2.0f,
+                        -1.0f, 1.0f, -3.0f};
   glGenBuffers(1, &mVertexBuffer);
   glBindBuffer(GL_ARRAY_BUFFER, mVertexBuffer);
   glBufferData(GL_ARRAY_BUFFER, sizeof(vertexData), vertexData, GL_STATIC_DRAW);
@@ -63,14 +70,6 @@ TestUniformColor::TestUniformColor(Hub& hub) :
 
   GL_CHECK();
 
-  // Construct a list of appropriate shaders.
-  std::list<std::tuple<std::string, GLenum>> shaders = {
-    {"UniformColor.vs", GL_VERTEX_SHADER},
-    {"UniformColor.fs", GL_FRAGMENT_SHADER} };
-
-  mShader = mHub.getShaderProgramManager().loadProgram("UniformColor", shaders);
-
-  GL_CHECK();
 }
 
 //------------------------------------------------------------------------------
