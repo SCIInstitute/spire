@@ -140,7 +140,7 @@ ShaderProgramAsset::ShaderProgramAsset(Hub& hub, const std::string& name,
       catch (ShaderUniformNotFound& e)
       {
         Log::warning() << "Unable to find uniform: '" << uniformName << "'"
-                       << " in ShaderUniformMan.\n";
+                       << " in ShaderUniformMan." << std::endl;
       }
     }
   }

@@ -45,12 +45,14 @@ TestUniformColor::TestUniformColor(Hub& hub) :
   Log::message() << "Testing UniformColor shader." << std::endl;
 
   // Create VBO.
-  float vertexData[] = {0.0f, 0.0f, 1.0f,
-                        1.0f, 0.0f, 0.0f,
-                        0.0f, 1.0f, 0.0f};
+  float vertexData[] = {0.0f, -1.0f, -1.0f,
+                        1.0f, -1.0f, 0.0f,
+                        0.0f, -1.0f, 0.0f};
   glGenBuffers(1, &mVertexBuffer);
   glBindBuffer(GL_ARRAY_BUFFER, mVertexBuffer);
   glBufferData(GL_ARRAY_BUFFER, sizeof(vertexData), vertexData, GL_STATIC_DRAW);
+
+  GL_CHECK();
 
   // Create index buffer.
   uint16_t elementData[] = {0, 1, 2};
@@ -59,12 +61,16 @@ TestUniformColor::TestUniformColor(Hub& hub) :
   glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(elementData), elementData,
                GL_STATIC_DRAW);
 
+  GL_CHECK();
+
   // Construct a list of appropriate shaders.
   std::list<std::tuple<std::string, GLenum>> shaders = {
     {"UniformColor.vs", GL_VERTEX_SHADER},
     {"UniformColor.fs", GL_FRAGMENT_SHADER} };
 
   mShader = mHub.getShaderProgramManager().loadProgram("UniformColor", shaders);
+
+  GL_CHECK();
 }
 
 //------------------------------------------------------------------------------
@@ -80,6 +86,8 @@ void TestUniformColor::doFrame()
 
   glBindBuffer(GL_ARRAY_BUFFER, mVertexBuffer);
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mIndexBuffer);
+
+  GL_CHECK();
 
   // Obtain the first attribute in the shader (should be position).
   AttribState pos = mHub.getShaderAttributeManager().getAttributeWithName("aPos");
@@ -104,12 +112,15 @@ void TestUniformColor::doFrame()
                         static_cast<const GLvoid*>(&offset));
   offset += pos.size; // This does nothing, but would help if there was another
                       // attribute in the vbo.
+  GL_CHECK();
 
   // Setup the program state.
   glUseProgram(program);
 
   GLint unifLoc;
   GLfloat tmpGLMat[16];
+
+  GL_CHECK();
 
   // Projection * Inverse View * World transformation.
   M44 PIV = cam.getWorldToProjection();
@@ -118,12 +129,16 @@ void TestUniformColor::doFrame()
   M44toArray16(PIV, tmpGLMat);
   glUniformMatrix4fv(unifLoc, 1, GL_FALSE, tmpGLMat);
 
+  GL_CHECK();
+
   // Color setup
-  GLfloat color[4] = {0.0f, 1.0f, 0.0f, 1.0f};
+  GLfloat color[4] = {1.0f, 1.0f, 1.0f, 1.0f};
   unifLoc = glGetUniformLocation(program, "uColor");
   glUniform4fv(unifLoc, 1, color);
 
   glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_SHORT, 0);
+
+  GL_CHECK();
 }
 
 } // end of namespace Spire
