@@ -146,6 +146,7 @@ ShaderProgramAsset::ShaderProgramAsset(Hub& hub, const std::string& name,
   }
 
   mHasValidProgram = true;
+  glProgramID = program;
 }
 
 //------------------------------------------------------------------------------
