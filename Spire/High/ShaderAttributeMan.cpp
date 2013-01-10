@@ -264,7 +264,7 @@ void ShaderAttributeCollection::addAttribute(const std::string& attribName,
 size_t ShaderAttributeCollection::getFullAttributeSize(const AttribSpecificData& att) const
 {
   AttribState state = att.attrib;
-  if (att.isHalfFloat)
+  if (!att.isHalfFloat)
   {
     return state.size;
   }
