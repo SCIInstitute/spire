@@ -99,6 +99,9 @@ void TestUniformColor::doFrame()
   if (attribs.hasAttribute(pos.codeName) == false)
     throw GLError("Unable to find appropriate shader position attribute.");
 
+  // Setup shader.
+  glUseProgram(program);
+
   GLsizei stride = static_cast<GLsizei>(attribs.calculateStride());
   size_t offset = 0;
 
@@ -113,13 +116,9 @@ void TestUniformColor::doFrame()
                       // attribute in the vbo.
   GL_CHECK();
 
-  // Setup the program state.
-  glUseProgram(program);
 
   GLint unifLoc;
   GLfloat tmpGLMat[16];
-
-  GL_CHECK();
 
   // Projection * Inverse View * World transformation.
   M44 PIV = cam.getWorldToProjection();

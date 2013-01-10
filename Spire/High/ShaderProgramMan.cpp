@@ -138,9 +138,6 @@ ShaderProgramAsset::ShaderProgramAsset(Hub& hub, const std::string& name,
     }
   }
 
-  // Now sync up program attributes
-  mAttributes.bindAttributes(program);
-
   // UNIFORMS
   {
     // Check the active uniforms.
