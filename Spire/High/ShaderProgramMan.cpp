@@ -96,13 +96,13 @@ ShaderProgramAsset::ShaderProgramAsset(Hub& hub, const std::string& name,
 
 		if (infoLen > 1)
 		{
-			char* infoLog = (char*)malloc(sizeof(char) * infoLen);
+      char* infoLog = new char[infoLen];
 
 			glGetProgramInfoLog(program, infoLen, NULL, infoLog);
       Log::error() << "Error linking program:" << std::endl;
       Log::error() << infoLog << std::endl;
 
-			free (infoLog);
+      delete[] infoLog;
 		}
 
 		glDeleteProgram(program);
