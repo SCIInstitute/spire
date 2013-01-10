@@ -62,7 +62,7 @@
     while((glerr = glGetError()) != GL_NO_ERROR) {                        \
       Log::error() << "GL error before line " << __LINE __ << "("         \
                    << __FILE__ << "): " << glerr << " ("                  \
-                   << gluErrorString(glerr) << ")";                       \
+                   << gluErrorString(glerr) << ")" << std::endl;          \
       iCounter++;                                                         \
       if (iCounter > MAX_GL_ERROR_COUNT) break;                           \
     }                                                                     \
