@@ -18,6 +18,7 @@ subject to the following restrictions:
 #define _VECTORMATH_AOS_CPP_H
 
 #include <math.h>
+#include <sstream>
 
 #ifdef _VECTORMATH_DEBUG
 #include <stdio.h>
@@ -465,6 +466,10 @@ public:
     // Negate all elements of a 4-D vector
     // 
     inline const Vector4 operator -( ) const;
+
+    // Stream operator for output
+    //
+    friend inline std::ostream& operator<< (std::ostream& out, const Vector4& vec);
 
     // Construct x axis
     // 
@@ -1518,6 +1523,10 @@ public:
     // Perform compound assignment and multiplication by a 3x4 transformation matrix
     // 
     inline Matrix4 & operator *=( const Transform3 & tfrm );
+
+    // Matrix output to a stream
+    //
+    friend inline std::ostream& operator<< (std::ostream& out, const Matrix4& mat);
 
     // Construct an identity 4x4 matrix
     // 
