@@ -40,12 +40,12 @@ namespace Spire {
 // Internal format conversion to GL representation.
 // 
 //----------------------------------------------------------------------------------------
-void M44toArray16(const M44& in, GLfloat out[16]);
-void M33toArray9(const M33& in, GLfloat out[9]);
-void V3toArray3(const V3& in, GLfloat out[3]);
-void V3toArray4(const V3& in, GLfloat out[4]);
-void V4toArray3(const V4& in, GLfloat out[3]);
-void V4toArray4(const V4& in, GLfloat out[4]);
+void M44toArray16(const M44& in, GLfloat* out);
+void M33toArray9(const M33& in, GLfloat* out);
+void V3toArray3(const V3& in, GLfloat* out);
+void V3toArray4(const V3& in, GLfloat* out);
+void V4toArray3(const V4& in, GLfloat* out);
+void V4toArray4(const V4& in, GLfloat* out);
 
 
 } // namespace Spire 

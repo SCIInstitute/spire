@@ -50,7 +50,6 @@ TestUniformColor::TestUniformColor(Hub& hub) :
                         0.0f, 1.0f, 0.0f};
   glGenBuffers(1, &mVertexBuffer);
   glBindBuffer(GL_ARRAY_BUFFER, mVertexBuffer);
-  Log::message() << "VBO data size: " << sizeof(vertexData) << std::endl;
   glBufferData(GL_ARRAY_BUFFER, sizeof(vertexData), vertexData, GL_STATIC_DRAW);
 
   // Create index buffer.

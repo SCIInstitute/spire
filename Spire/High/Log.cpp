@@ -69,6 +69,7 @@ Log::Log(const Interface::LogFunction& logFunction) :
     mPairedThreadID = std::this_thread::get_id();
     mLog = this;
 
+    message() << std::endl;
     message() << "================================================================================" << std::endl;
     message() << "Spire logging - Paired with thread " << std::this_thread::get_id() << std::endl;
     message() << "================================================================================" << std::endl;
