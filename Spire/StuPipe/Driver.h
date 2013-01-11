@@ -53,8 +53,6 @@ protected:
 
   GPUState          mInitialState;
   TestUniformColor  mUniformColorTest;
-
-  M44 mView;
 };
 
 } // namespace StuPipe 

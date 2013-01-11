@@ -65,10 +65,6 @@ void Driver::doFrame()
   // Force a known GPU state
   mHub.getGPUStateManager().apply(mInitialState, true);
 
-  //M44 rot = M44::rotationX(PI / 50.0f);
-  //mView = mView * rot;
-  //mHub.getCamera()->setViewTransform(mView);
-
   // Go ahead and render a simple triangle.
   mUniformColorTest.doFrame();
 
