@@ -1119,6 +1119,15 @@ inline void print( const Matrix4 & mat, const char * name )
 
 #endif
 
+inline std::ostream& operator<< (std::ostream& out, const Matrix4& mat)
+{
+  out << mat.getRow(0) << std::endl;
+  out << mat.getRow(1) << std::endl;
+  out << mat.getRow(2) << std::endl;
+  out << mat.getRow(3) << std::endl;
+  return out;
+}
+
 inline Transform3::Transform3( const Transform3 & tfrm )
 {
     mCol0 = tfrm.mCol0;

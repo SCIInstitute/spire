@@ -107,8 +107,10 @@ void TestUniformColor::doFrame()
 
   // Manually bind attribute locations (this can also be done through
   // ShaderAttributeCollection::bindAttributes)
-  glBindAttribLocation(program, 0, pos.codeName.c_str());
-  glVertexAttribPointer(0, 
+  GLuint attribPos = glGetAttribLocation(program, "aPos");
+  glEnableVertexAttribArray(attribPos);
+  glBindAttribLocation(program, attribPos, pos.codeName.c_str());
+  glVertexAttribPointer(attribPos,
                         static_cast<GLint>(pos.numComponents), pos.type,
                         static_cast<GLboolean>(pos.normalize), stride,
                         static_cast<const GLvoid*>(&offset));

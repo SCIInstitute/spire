@@ -1030,6 +1030,15 @@ inline void print( const Vector4 & vec, const char * name )
 
 #endif
 
+inline std::ostream& operator<< (std::ostream& out, const Vector4& vec)
+{
+  out << "(" << vec.getX()
+      << "," << vec.getY()
+      << "," << vec.getZ()
+      << "," << vec.getW() << ")";
+  return out;
+}
+
 inline Point3::Point3( const Point3 & pnt )
 {
     mX = pnt.mX;
