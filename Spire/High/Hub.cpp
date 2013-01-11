@@ -140,10 +140,6 @@ void Hub::doFrame()
   // stupipe, when we route through the stupipe? It almost appears that it has
   // to. Should we just build the pipe and see where it leads us to?
 
-  // Rudimentary doFrame...
-  glClearColor(0.0, 0.0, 0.0, 0.0);
-  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
   mPipe->doFrame();
 
   mContext->swapBuffers();
