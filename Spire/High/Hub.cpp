@@ -61,8 +61,6 @@ Hub::Hub(Context* context, const std::vector<std::string>& shaderDirs,
   workingDay += "/Shaders";
   mShaderDirs.push_back(workingDay);
 
-  mCamera = std::shared_ptr<Camera>(new Camera(*this));
-
   if (useThread)
   {
     createRendererThread();    
@@ -71,6 +69,7 @@ Hub::Hub(Context* context, const std::vector<std::string>& shaderDirs,
   {
     oneTimeInitOnThread();
   }
+
 }
 
 //------------------------------------------------------------------------------
@@ -127,6 +126,10 @@ void Hub::oneTimeInitOnThread()
   //const bool bOpenGLSO12     = atof((const char*)versionl) >= 1.2;
   //const bool bOpenGLSO20     = atof((const char*)versionl) >= 2.0;
 
+  // Setup camera
+  mCamera = std::shared_ptr<Camera>(new Camera(*this));
+
+  // Setup rendering pipeline
   Log::debug() << "Creating render pipeline." << std::endl;
   mPipe = std::shared_ptr<PipeDriver>(new StuPipe::Driver(*this));
 }

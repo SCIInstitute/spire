@@ -142,6 +142,7 @@ ShaderAsset::~ShaderAsset()
 {
   if (mHasValidShader)  
   {
+    Log::message() << "Deleting shader asset" << std::endl;
     glDeleteShader(glID);
     mHasValidShader = false;
   }

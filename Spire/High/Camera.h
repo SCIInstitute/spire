@@ -70,7 +70,7 @@ public:
   /// Default camera settings
   /// @{
   static constexpr float getDefaultFOVY()   {return 32.0f * (PI / 18.0f);}
-  static constexpr float getDefaultZNear()  {return 1.0f;}
+  static constexpr float getDefaultZNear()  {return 0.1f;}
   static constexpr float getDefaultZFar()   {return 1350.0f;}
   /// @}
 

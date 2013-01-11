@@ -44,7 +44,7 @@ TestUniformColor::TestUniformColor(Hub& hub) :
 {
   Log::message() << "Testing UniformColor shader." << std::endl;
 
-  // Construct a list of appropriate shaders.
+  // Build shader program using C++11 initializer lists.
   std::list<std::tuple<std::string, GLenum>> shaders = {
     {"UniformColor.vs", GL_VERTEX_SHADER},
     {"UniformColor.fs", GL_FRAGMENT_SHADER} };
@@ -52,24 +52,20 @@ TestUniformColor::TestUniformColor(Hub& hub) :
   mShader = mHub.getShaderProgramManager().loadProgram("UniformColor", shaders);
 
   // Create VBO.
-  float vertexData[] = {1.0f, -1.0f, -1.0f,
-                        -1.0f, -1.0f, -2.0f,
-                        -1.0f, 1.0f, -3.0f};
+  GLfloat vertexData[] = {-1.0f,  1.0f, 10.0f,
+                           1.0f,  1.0f, 10.0f,
+                          -1.0f, -1.0f, 10.0f,
+                           1.0f, -1.0f, 10.0f};
   glGenBuffers(1, &mVertexBuffer);
   glBindBuffer(GL_ARRAY_BUFFER, mVertexBuffer);
   glBufferData(GL_ARRAY_BUFFER, sizeof(vertexData), vertexData, GL_STATIC_DRAW);
 
-  GL_CHECK();
-
   // Create index buffer.
-  uint16_t elementData[] = {0, 1, 2};
+  uint16_t elementData[] = {0, 1, 2, 3};
   glGenBuffers(1, &mIndexBuffer);
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mIndexBuffer);
   glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(elementData), elementData,
                GL_STATIC_DRAW);
-
-  GL_CHECK();
-
 }
 
 //------------------------------------------------------------------------------
@@ -82,11 +78,6 @@ void TestUniformColor::doFrame()
 {
   GLuint program = mShader->getProgramID();
   std::shared_ptr<Camera> cam = mHub.getCamera();
-
-  glBindBuffer(GL_ARRAY_BUFFER, mVertexBuffer);
-  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mIndexBuffer);
-
-  GL_CHECK();
 
   // Obtain the first attribute in the shader (should be position).
   AttribState pos = mHub.getShaderAttributeManager().getAttributeWithName("aPos");
@@ -102,64 +93,55 @@ void TestUniformColor::doFrame()
   // Setup shader.
   glUseProgram(program);
 
+  glBindBuffer(GL_ARRAY_BUFFER, mVertexBuffer);
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mIndexBuffer);
+
   GLsizei stride = static_cast<GLsizei>(attribs.calculateStride());
-  size_t offset = 0;
 
   // Manually bind attribute locations (this can also be done through
   // ShaderAttributeCollection::bindAttributes)
+  // We can also set the index of the attribute.
   GLuint attribPos = glGetAttribLocation(program, "aPos");
   glEnableVertexAttribArray(attribPos);
-  glBindAttribLocation(program, attribPos, pos.codeName.c_str());
   glVertexAttribPointer(attribPos,
-                        static_cast<GLint>(pos.numComponents), pos.type,
-                        static_cast<GLboolean>(pos.normalize), stride,
-                        static_cast<const GLvoid*>(&offset));
-  offset += pos.size; // This does nothing, but would help if there was another
-                      // attribute in the vbo.
-  GL_CHECK();
-
+                        static_cast<GLint>(pos.numComponents),
+                        pos.type, static_cast<GLboolean>(pos.normalize),
+                        stride, NULL); 
+  // The NULL pointer is critical. Would normally use this pointer as an offset
+  // when dealing with multiple attributes in the same buffer.
 
   GLint unifLoc;
   GLfloat tmpGLMat[16];
 
   // Projection * Inverse View * World transformation.
   M44 PIV = cam->getWorldToProjection();
-  /// \todo Add a rotation about the y axis.
   unifLoc = glGetUniformLocation(program, "uProjIVWorld");
   M44toArray16(PIV, tmpGLMat);
   glUniformMatrix4fv(unifLoc, 1, GL_FALSE, tmpGLMat);
 
-  GL_CHECK();
-
   // Color setup
-  GLfloat color[4] = {1.0f, 1.0f, 1.0f, 1.0f};
+  GLfloat color[4] = {1.0f, 0.0f, 1.0f, 1.0f};
   unifLoc = glGetUniformLocation(program, "uColor");
   glUniform4fv(unifLoc, 1, color);
 
-  glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_SHORT, 0);
+  glDrawElements(GL_TRIANGLE_STRIP, 4, GL_UNSIGNED_SHORT, 0);
+  //glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
-  GL_CHECK();
+
+  // Now draw the same thing without buffers...
+  glBindBuffer(GL_ARRAY_BUFFER, 0);
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+
+  GLfloat vVertices[] = {
+    -0.5f,  0.5f,  0.5f,  // TL
+     0.5f,  0.5f,  0.5f,  // TR
+    -0.5f, -0.5f,  0.5f,  // BL
+     0.5f, -0.5f,  0.5f};	// BR
+
+	stride = sizeof(float) * 3;
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, stride, vVertices);
+	//glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 }
 
 } // end of namespace Spire
 
-//// The code below was meant to automatically place attributes in the correct
-//// positions. We don't need this kind of general mechanism yet.
-//  GLsizei stride = static_cast<GLsizei>(attribs.calculateStride());
-//  size_t offset = 0;
-//
-//  uint32_t nameHash = 0;
-//  for (size_t i = 0; i < attribs.getNumAttributes(); ++i)
-//  {
-//    /// \todo Want constexpr string hashing mechanism.
-//    ///       That way we can use a case statement.
-//    nameHash = attribs.getAttribute(i).attrib.nameHash;
-//    if (nameHash == pos.nameHash)
-//    {
-//      
-//    }
-//    else
-//    {
-//
-//    }
-//  }

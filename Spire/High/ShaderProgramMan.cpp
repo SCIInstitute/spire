@@ -138,6 +138,9 @@ ShaderProgramAsset::ShaderProgramAsset(Hub& hub, const std::string& name,
     }
   }
 
+  // Now sync up program attributes
+  //mAttributes.bindAttributes(program);
+
   // UNIFORMS
   {
     // Check the active uniforms.
@@ -175,6 +178,7 @@ ShaderProgramAsset::~ShaderProgramAsset()
 {
   if (mHasValidProgram)
   {
+    Log::message() << "Deleting shader program asset" << std::endl;
     glDeleteProgram(glProgramID);
     mHasValidProgram = false;
   }

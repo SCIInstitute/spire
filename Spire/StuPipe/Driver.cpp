@@ -43,6 +43,11 @@ Driver::Driver(Hub& hub) :
   mInitialState.mDepthTestEnable = true;
   mInitialState.mCullFaceEnable = false;  // Todo: Set to true for geometry.
                                           // Should not be true for volumes.
+  mView = M44::identity();
+
+  glClearColor(0.3f, 0.0f, 0.3f, 1.0f);
+  glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
+
 }
 
 //------------------------------------------------------------------------------
@@ -54,11 +59,15 @@ Driver::~Driver()
 void Driver::doFrame()
 {
   // Clear the screen
-  glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+  glClearColor(0.3f, 0.0f, 0.3f, 1.0f);
   glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 
   // Force a known GPU state
   mHub.getGPUStateManager().apply(mInitialState, true);
+
+  //M44 rot = M44::rotationX(PI / 50.0f);
+  //mView = mView * rot;
+  //mHub.getCamera()->setViewTransform(mView);
 
   // Go ahead and render a simple triangle.
   mUniformColorTest.doFrame();
@@ -66,6 +75,7 @@ void Driver::doFrame()
   // Render a latvolume...
 
   // Render a volume...
+
 
 }
 

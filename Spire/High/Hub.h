@@ -92,7 +92,7 @@ public:
   ShaderProgramMan& getShaderProgramManager()     {return mShaderProgramMan;}
 
   /// Retrieves the default camera.
-  Camera& getCamera()                             {return mCamera;}
+  std::shared_ptr<Camera> getCamera()             {return mCamera;}
 
   /// Retrieves the actual screen width in pixels.
   size_t getActualScreenWidth() const             {return mPixScreenWidth;}
