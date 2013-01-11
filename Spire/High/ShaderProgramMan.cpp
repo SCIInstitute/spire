@@ -178,7 +178,6 @@ ShaderProgramAsset::~ShaderProgramAsset()
 {
   if (mHasValidProgram)
   {
-    Log::message() << "Deleting shader program asset" << std::endl;
     glDeleteProgram(glProgramID);
     mHasValidProgram = false;
   }
