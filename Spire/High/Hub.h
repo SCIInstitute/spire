@@ -112,7 +112,7 @@ private:
   ShaderProgramMan            mShaderProgramMan;///< Shader program manager.
   ShaderAttributeMan          mShaderAttributes;///< Shader attribute manager.
   ShaderUniformMan            mShaderUniforms;  ///< Shader attribute manager.
-  Camera                      mCamera;          ///< Basic GL Camera (this should not be here... move in the future)
+  std::shared_ptr<Camera>     mCamera;          ///< Basic GL Camera (this should not be here... move in the future)
   std::vector<std::string>    mShaderDirs;      ///< Shader directories to search.
   std::shared_ptr<PipeDriver> mPipe;            ///< Current rendering pipe.
 

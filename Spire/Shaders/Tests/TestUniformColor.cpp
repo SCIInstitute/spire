@@ -81,7 +81,7 @@ TestUniformColor::~TestUniformColor()
 void TestUniformColor::doFrame()
 {
   GLuint program = mShader->getProgramID();
-  Camera cam = mHub.getCamera();
+  std::shared_ptr<Camera> cam = mHub.getCamera();
 
   glBindBuffer(GL_ARRAY_BUFFER, mVertexBuffer);
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mIndexBuffer);
@@ -121,7 +121,7 @@ void TestUniformColor::doFrame()
   GLfloat tmpGLMat[16];
 
   // Projection * Inverse View * World transformation.
-  M44 PIV = cam.getWorldToProjection();
+  M44 PIV = cam->getWorldToProjection();
   /// \todo Add a rotation about the y axis.
   unifLoc = glGetUniformLocation(program, "uProjIVWorld");
   M44toArray16(PIV, tmpGLMat);

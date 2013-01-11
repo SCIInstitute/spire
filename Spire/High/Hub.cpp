@@ -54,13 +54,14 @@ Hub::Hub(Context* context, const std::vector<std::string>& shaderDirs,
     mPixScreenWidth(640),
     mPixScreenHeight(480),
     mShaderProgramMan(*this),
-    mCamera(*this),
     mShaderDirs(shaderDirs)
 {
   // Add default relative shader directory.
   std::string workingDay = getCurrentWorkingDir();
   workingDay += "/Shaders";
   mShaderDirs.push_back(workingDay);
+
+  mCamera = std::shared_ptr<Camera>(new Camera(*this));
 
   if (useThread)
   {
