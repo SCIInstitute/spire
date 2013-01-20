@@ -43,7 +43,7 @@ Driver::Driver(Hub& hub) :
   mInitialState.mDepthTestEnable = true;
   mInitialState.mCullFaceEnable = false;  // Todo: Set to true for geometry.
                                           // Should not be true for volumes.
-  mView = M44::identity();
+  //mView = M44::identity();
 
   glClearColor(0.3f, 0.0f, 0.3f, 1.0f);
   glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
@@ -71,7 +71,6 @@ void Driver::doFrame()
   // Render a latvolume...
 
   // Render a volume...
-
 
 }
 
