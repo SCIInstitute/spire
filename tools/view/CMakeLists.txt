@@ -7,7 +7,6 @@ cmake_minimum_required(VERSION 2.8 FATAL_ERROR)
 
 project(SpireViewer)
 
-
 ########################################################################
 # Function
 # Use the following function to sort / organize shader files.
@@ -113,7 +112,7 @@ set (BASE_SPIRE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../..)
 # Required libraries
 
 # The 'spire' library.
-add_subdirectory(${BASE_SPIRE_DIR}/Spire ${BASE_SPIRE_DIR}/bin/spire)
+add_subdirectory(${BASE_SPIRE_DIR}/Spire ${CMAKE_CURRENT_BINARY_DIR}/spire)
 
 ########################################################################
 # Compiler settings
@@ -124,6 +123,7 @@ endif ()
 
 if (APPLE)
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libc++")
+  set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -stdlib=libc++")
 endif ()
 
 include(${QT_USE_FILE})
@@ -145,8 +145,8 @@ QT4_WRAP_UI(UISource ${Forms})
 
 ########################################################################
 # Copy shaders to the target directory
-configure_file(${BASE_SPIRE_DIR}/Spire/Shaders/UniformColor.vs ${CMAKE_CURRENT_BINARY_DIR}/Shaders/UniformColor.vs)
-configure_file(${BASE_SPIRE_DIR}/Spire/Shaders/UniformColor.fs ${CMAKE_CURRENT_BINARY_DIR}/Shaders/UniformColor.fs)
+configure_file(${BASE_SPIRE_DIR}/Spire/Shaders/UniformColor.vs ${CMAKE_CURRENT_BINARY_DIR}/bin/Shaders/UniformColor.vs)
+configure_file(${BASE_SPIRE_DIR}/Spire/Shaders/UniformColor.fs ${CMAKE_CURRENT_BINARY_DIR}/bin/Shaders/UniformColor.fs)
 
 ########################################################################
 # Setup executable
