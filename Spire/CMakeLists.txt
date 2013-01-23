@@ -87,27 +87,31 @@ if (UNIX)
   # Ensure we can link against libTuvok.a
   set(TUVOK_LIB ${TuvokBinaryDir}/Build/libTuvok.a)
 
+  # Note: The build/configure command will vary based on platform!
+  # Specify appropriate Tuvok SVN revision when we get a stable version.
+  # BUILD_COMMAND "scripts/oneshot-debug.sh"
+  ExternalProject_Add(ThirdParty_Tuvok
+    PREFIX ${TuvokBinaryDir}
+    SVN_REPOSITORY "https://gforge.sci.utah.edu/svn/Tuvok"
+    SVN_TRUST_CERT 1
+    DOWNLOAD_DIR "${CMAKE_CURRENT_BINARY_DIR}/download/Tuvok"
+    SOURCE_DIR ${TuvokSourceDir}
+    BINARY_DIR ${TuvokBinaryDir}
+    CONFIGURE_COMMAND ${TuvokConfigureStep}
+    BUILD_COMMAND ${TuvokMakeStep}
+    )
+
 else (UNIX)
   if (WIN32)
+    
+    # TODO Figure out how to build Tuvok with the sln files on windows OR
+    #      fix tuvok so that it uses qmake to generate the sln files, just
+    #      like unix.
 
   else (WIN32)
     MESSAGE(FATAL_ERROR "Unknown platform.")
   endif (WIN32)
 endif (UNIX)
-
-# Note: The build/configure command will vary based on platform!
-# Specify appropriate Tuvok SVN revision when we get a stable version.
-# BUILD_COMMAND "scripts/oneshot-debug.sh"
-ExternalProject_Add(ThirdParty_Tuvok
-  PREFIX ${TuvokBinaryDir}
-  SVN_REPOSITORY "https://gforge.sci.utah.edu/svn/Tuvok"
-  SVN_TRUST_CERT 1
-  DOWNLOAD_DIR "${CMAKE_CURRENT_BINARY_DIR}/download/Tuvok"
-  SOURCE_DIR ${TuvokSourceDir}
-  BINARY_DIR ${TuvokBinaryDir}
-  CONFIGURE_COMMAND ${TuvokConfigureStep}
-  BUILD_COMMAND ${TuvokMakeStep}
-  )
 
 ########################################################################
 # Source
