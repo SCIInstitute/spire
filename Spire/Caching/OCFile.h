@@ -32,7 +32,7 @@
 #ifndef SPIRE_CACHING_OCFILE_H
 #define SPIRE_CACHING_OCFILE_H
 
-namespace spire {
+namespace Spire {
 
 /// Experimental out-of-core in-file paging system.
 /// See OCFileSystem description.

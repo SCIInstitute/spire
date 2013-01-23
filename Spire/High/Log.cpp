@@ -39,7 +39,7 @@ Log*                      Log::mLog(nullptr);
 std::ostream              Log::mCNull(0); // See: http://stackoverflow.com/questions/6240950/platform-independent-dev-null-in-c 
 
 //------------------------------------------------------------------------------
-Log::Log(const Hub::LogFunction& logFunction) :
+Log::Log(const Interface::LogFunction& logFunction) :
     mDebugStream(logFunction, Interface::LOG_DEBUG),
     mMessageStream(logFunction, Interface::LOG_MESSAGE),
     mWarningStream(logFunction, Interface::LOG_WARNING),
@@ -50,9 +50,9 @@ Log::Log(const Hub::LogFunction& logFunction) :
     std::stringstream osFilename;
     osFilename << "/tmp/SpireLog";//_" << std::this_thread::get_id();
     mOutputFile.open(osFilename.str());
-    Hub::LogFunction fun = std::bind(&Log::logFunction, this,
-                                     std::placeholders::_1, 
-                                     std::placeholders::_2);
+    Interface::LogFunction fun = std::bind(&Log::logFunction, this,
+                                           std::placeholders::_1, 
+                                           std::placeholders::_2);
 
     // Reset all of the streams' logging functions.
     mDebugStream.setLogFunction(fun);
@@ -69,6 +69,7 @@ Log::Log(const Hub::LogFunction& logFunction) :
     mPairedThreadID = std::this_thread::get_id();
     mLog = this;
 
+    message() << std::endl;
     message() << "================================================================================" << std::endl;
     message() << "Spire logging - Paired with thread " << std::this_thread::get_id() << std::endl;
     message() << "================================================================================" << std::endl;
@@ -155,19 +156,23 @@ void Log::logFunction(const std::string& msg, Interface::LOG_LEVEL level)
   switch (level)
   {
     case Interface::LOG_DEBUG:
-      mOutputFile << "Debug:   " << msg;
+      //mOutputFile << "Debug:   " << msg;
+      mOutputFile << msg;
       break;
 
     case Interface::LOG_MESSAGE:
-      mOutputFile << "General: " << msg;
+      //mOutputFile << "General: " << msg;
+      mOutputFile << msg;
       break;
 
     case Interface::LOG_WARNING:
-      mOutputFile << "Warning: " << msg;
+      //mOutputFile << "Warning: " << msg;
+      mOutputFile << msg;
       break;
 
     case Interface::LOG_ERROR:
-      mOutputFile << "Error:   " << msg;
+      //mOutputFile << "Error:   " << msg;
+      mOutputFile << msg;
       break;
   }
   mOutputFile.flush();

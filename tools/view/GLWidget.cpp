@@ -33,9 +33,14 @@
 
 GLWidget::GLWidget(const QGLFormat& format) :
     QGLWidget(format),
-    mContext(this),
-    mGraphics(new Spire::Interface(&mContext, true)) // Creates threaded spire
+    mContext(this)
 {
+  std::vector<std::string> shaderSearchDirs = {"Shaders"};
+
+  // Create a threaded spire renderer.
+  mGraphics = std::shared_ptr<Spire::Interface>(
+      new Spire::Interface(&mContext, shaderSearchDirs, true));
+
   // We must disable auto buffer swap on the 'paintEvent'.
   setAutoBufferSwap(false);
 }

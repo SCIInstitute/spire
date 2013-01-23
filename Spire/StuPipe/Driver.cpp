@@ -6,7 +6,7 @@
    Copyright (c) 2012 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,23 +26,52 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef SPIRE_HIGH_FRAMEMANAGER_H
-#define SPIRE_HIGH_FRAMEMANAGER_H
+/// \author James Hughes
+/// \date   December 2012
 
-namespace Spire {
+#include "Common.h"
+#include "Driver.h"
 
-/// Manages the current frame.
-/// Attempts to intelligently tune scenes so that they run in real-time treating
-/// LOD and composition rate as the independent variables to tune.
-class FrameManager
+namespace Spire { 
+namespace StuPipe {
+
+//------------------------------------------------------------------------------
+Driver::Driver(Hub& hub) :
+    PipeDriver(hub),
+    mUniformColorTest(hub)
 {
-public:
-  FrameManager();
-  virtual ~FrameManager();
+  mInitialState.mDepthTestEnable = true;
+  mInitialState.mCullFaceEnable = false;  // Todo: Set to true for geometry.
+                                          // Should not be true for volumes.
+  //mView = M44::identity();
 
-private:
-};
+  glClearColor(0.3f, 0.0f, 0.3f, 1.0f);
+  glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 
-} // namespace spire
+}
 
-#endif // SPIRE_HIGH_FRAMEMANAGER_H
+//------------------------------------------------------------------------------
+Driver::~Driver()
+{
+}
+
+//------------------------------------------------------------------------------
+void Driver::doFrame()
+{
+  // Clear the screen
+  glClearColor(0.3f, 0.0f, 0.3f, 1.0f);
+  glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
+
+  // Force a known GPU state
+  mHub.getGPUStateManager().apply(mInitialState, true);
+
+  // Go ahead and render a simple triangle.
+  mUniformColorTest.doFrame();
+
+  // Render a latvolume...
+
+  // Render a volume...
+
+}
+
+} } // end of namespace Spire::StuPipe

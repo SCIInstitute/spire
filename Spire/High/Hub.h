@@ -40,6 +40,9 @@
 
 #include "Interface.h"
 #include "High/GPUStateManager.h"
+#include "High/ShaderMan.h"
+#include "High/ShaderProgramMan.h"
+#include "High/Camera.h"
 
 namespace Spire {
 
@@ -54,12 +57,9 @@ class Hub
 {
 public:
 
-  /// @todo This typedef should go in Interface.h.
-  typedef std::function<void (const std::string&, Interface::LOG_LEVEL level)> 
-      LogFunction;
-
   /// @todo Make context a shared_ptr
-  Hub(Context* context, LogFunction logFn, bool useThread);
+  Hub(Context* context, const std::vector<std::string>& shaderDirs, 
+      Interface::LogFunction logFn, bool useThread);
   virtual ~Hub();
 
   /// One-time initialization of the renderer.
@@ -68,25 +68,53 @@ public:
   /// latter case).
   void oneTimeInitOnThread();
 
+  /// Returns true if the rendering thread is currently running.
+  bool isRendererThreadRunning() const;
+
   /// If anything in the scene has changed, then calling this will render
   /// a new frame and swap the buffers. If the scene was not modified, then this
   /// function does nothing.
   void doFrame();
 
   /// Retrieves the GPU state manager.
-  GPUStateManager& getGPUStateManager()   {return mGPUStateManager;}
+  GPUStateManager& getGPUStateManager()           {return mGPUStateManager;}
 
-  /// Returns true if the rendering thread is currently running.
-  bool isRendererThreadRunning();
+  /// Retrieves shader manager.
+  ShaderMan& getShaderManager()                   {return mShaderMan;}
+
+  /// Retrieves shader attribute manager.
+  ShaderAttributeMan& getShaderAttributeManager() {return mShaderAttributes;}
+
+  /// Retrieves shader uniform manager.
+  ShaderUniformMan& getShaderUniformManager()     {return mShaderUniforms;}
+
+  /// Retrieves the shader program manager.
+  ShaderProgramMan& getShaderProgramManager()     {return mShaderProgramMan;}
+
+  /// Retrieves the default camera.
+  std::shared_ptr<Camera> getCamera()             {return mCamera;}
+
+  /// Retrieves the actual screen width in pixels.
+  size_t getActualScreenWidth() const             {return mPixScreenWidth;}
+
+  /// Retrieves the actual screen width in pixels.
+  size_t getActualScreenHeight() const            {return mPixScreenHeight;}
+
+  const std::vector<std::string>& getShaderDirs() const {return mShaderDirs;}
 
 private:
 
-  LogFunction                 mLogFun;          ///< Log function.
+  Interface::LogFunction      mLogFun;          ///< Log function.
   std::unique_ptr<Log>        mLog;             ///< Spire logging class.
   Context*                    mContext;         ///< Rendering context.
   GPUStateManager             mGPUStateManager; ///< GPU state manager.
+  ShaderMan                   mShaderMan;       ///< Shader manager.
+  ShaderProgramMan            mShaderProgramMan;///< Shader program manager.
+  ShaderAttributeMan          mShaderAttributes;///< Shader attribute manager.
+  ShaderUniformMan            mShaderUniforms;  ///< Shader attribute manager.
+  std::shared_ptr<Camera>     mCamera;          ///< Basic GL Camera (this should not be here... move in the future)
+  std::vector<std::string>    mShaderDirs;      ///< Shader directories to search.
   std::shared_ptr<PipeDriver> mPipe;            ///< Current rendering pipe.
-
 
   // Threading variables / functions
 
@@ -105,12 +133,15 @@ private:
   void createRendererThread();
 
 
-  std::thread               mThread;        ///< The renderer thread.
-  std::atomic<bool>         mThreadKill;    ///< If true, the renderer thread
+  std::thread             mThread;          ///< The renderer thread.
+  std::atomic<bool>       mThreadKill;      ///< If true, the renderer thread
                                             ///< will attempt to finish what it
                                             ///< is doing and terminate.
-  std::atomic<bool>         mThreadRunning; ///< True if the rendering thread
+  std::atomic<bool>       mThreadRunning;   ///< True if the rendering thread
                                             ///< is currently running.
+
+  size_t                  mPixScreenWidth;  ///< Actual screen width in pxels.
+  size_t                  mPixScreenHeight; ///< Actual screen height in pixels.
 };
 
 } // namespace Spire

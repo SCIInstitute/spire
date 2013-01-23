@@ -29,61 +29,61 @@
 /// \author James Hughes
 /// \date   December 2012
 
-#include "ShaderAttributeMan.h"
-#include "MurmurHash3.h"
+#include "Common.h"
 #include "Exceptions.h"
 
-namespace Spire {
+#include "High/ShaderAttributeMan.h"
+#include "High/MurmurHash3.h"
 
-const std::string ShaderAttributeMan::UNKNOWN_NAME = "_unknown_";
+namespace Spire {
 
 //------------------------------------------------------------------------------
 ShaderAttributeMan::ShaderAttributeMan(bool addDefaultAttributes)
 {
   // Unknown attribute (attribute at 0 index).
-  addAttribute(UNKNOWN_NAME, 1, false, sizeof(float), sizeof(short), GL_FLOAT,
-               GL_HALF_FLOAT_OES);
+  addAttribute(getUnknownName(), 1, false, sizeof(float), sizeof(short),
+               GL_FLOAT, GL_HALF_FLOAT_OES);
 
   // Add default attributes if requested.
   if (addDefaultAttributes)
   {
-    addAttribute("a_pos", 3, false, 
+    addAttribute("aPos", 3, false, 
                  sizeof(float) * 3, sizeof(short) * 3 + sizeof(short),
                  GL_FLOAT, GL_HALF_FLOAT_OES);
-    addAttribute("a_normal", 3, false, 
+    addAttribute("aNormal", 3, false, 
                  sizeof(float) * 3, sizeof(short) * 3 + sizeof(short),
                  GL_FLOAT, GL_HALF_FLOAT_OES);
-    addAttribute("a_texCoord0", 2, false, 
+    addAttribute("aTexCoord0", 2, false, 
                  sizeof(float) * 2, sizeof(short) * 2,
                  GL_FLOAT, GL_HALF_FLOAT_OES);
-    addAttribute("a_texCoord1", 2, false, 
+    addAttribute("aTexCoord1", 2, false, 
                  sizeof(float) * 2, sizeof(short) * 2,
                  GL_FLOAT, GL_HALF_FLOAT_OES);
-    addAttribute("a_texCoord2", 2, false, 
+    addAttribute("aTexCoord2", 2, false, 
                  sizeof(float) * 2, sizeof(short) * 2,
                  GL_FLOAT, GL_HALF_FLOAT_OES);
-    addAttribute("a_texCoord3", 2, false, 
+    addAttribute("aTexCoord3", 2, false, 
                  sizeof(float) * 2, sizeof(short) * 2,
                  GL_FLOAT, GL_HALF_FLOAT_OES);
-    addAttribute("a_color", 4, true, 
+    addAttribute("aColor", 4, true, 
                  sizeof(char) * 4, sizeof(char) * 4,
                  GL_UNSIGNED_BYTE, GL_UNSIGNED_BYTE);
-    addAttribute("a_tangent", 3, false, 
+    addAttribute("aTangent", 3, false, 
                  sizeof(float) * 3, sizeof(short) * 3 + sizeof(short),
                  GL_FLOAT, GL_HALF_FLOAT_OES);
-    addAttribute("a_binormal", 3, false, 
+    addAttribute("aBinormal", 3, false, 
                  sizeof(float) * 3, sizeof(short) * 3 + sizeof(short),
                  GL_FLOAT, GL_HALF_FLOAT_OES);
-    addAttribute("a_generalPos", 3, false, 
+    addAttribute("aGenPos", 3, false, 
                  sizeof(float) * 3, sizeof(float) * 3,
                  GL_FLOAT, GL_FLOAT);
-    addAttribute("a_generalNormal", 3, false, 
+    addAttribute("aGenNormal", 3, false, 
                  sizeof(float) * 3, sizeof(float) * 3,
                  GL_FLOAT, GL_FLOAT);
-    addAttribute("a_generalUV", 2, false, 
+    addAttribute("aGenUV", 2, false, 
                  sizeof(float) * 2, sizeof(float) * 2,
                  GL_FLOAT, GL_FLOAT);
-    addAttribute("a_generalFloat", 1, false, 
+    addAttribute("aGenFloat", 1, false, 
                  sizeof(float) * 1, sizeof(float) * 1,
                  GL_FLOAT, GL_FLOAT);
   }
@@ -155,7 +155,7 @@ uint32_t ShaderAttributeMan::hashString(const std::string& str)
   MurmurHash3_x86_32(
       static_cast<const void*>(str.c_str()),
       static_cast<int>(str.size()),
-      MURMUR_SEED_VALUE,
+      getMurmurSeedValue(),
       static_cast<void*>(&hashOut));
   return hashOut;
 }
@@ -214,8 +214,8 @@ bool ShaderAttributeCollection::hasAttribute(const std::string& attribName) cons
 bool ShaderAttributeCollection::doesSatisfyShader(const ShaderAttributeCollection& compare) const
 {
   // Not possible to satisfy shader if there are any unknown attributes.
-  if (    compare.hasAttribute(ShaderAttributeMan::UNKNOWN_ATTRIBUTE_INDEX)
-      ||  hasAttribute(ShaderAttributeMan::UNKNOWN_ATTRIBUTE_INDEX))
+  if (    compare.hasIndex(ShaderAttributeMan::getUnknownAttributeIndex())
+      ||  hasIndex(ShaderAttributeMan::getUnknownAttributeIndex()))
     return false;
 
   // Compare number of common attributes and the size of our attribute array.
@@ -256,7 +256,7 @@ void ShaderAttributeCollection::addAttribute(const std::string& attribName,
   else
   {
     // We did not find the attribute in the attribute manager.
-    throw std::invalid_argument("Unable to find attribute with specified name.");
+    throw ShaderAttributeNotFound(attribName);
   }
 }
 
@@ -264,7 +264,7 @@ void ShaderAttributeCollection::addAttribute(const std::string& attribName,
 size_t ShaderAttributeCollection::getFullAttributeSize(const AttribSpecificData& att) const
 {
   AttribState state = att.attrib;
-  if (att.isHalfFloat)
+  if (!att.isHalfFloat)
   {
     return state.size;
   }
@@ -280,7 +280,7 @@ void ShaderAttributeCollection::bindAttributes(GLuint program)
   int i = 0;
   for (auto it = mAttributes.begin(); it != mAttributes.end(); ++it)
   {
-    if (it->attrib.index != ShaderAttributeMan::UNKNOWN_ATTRIBUTE_INDEX)
+    if (it->attrib.index != ShaderAttributeMan::getUnknownAttributeIndex())
     {
       AttribState attrib = it->attrib;
       glBindAttribLocation(program, i, attrib.codeName.c_str());

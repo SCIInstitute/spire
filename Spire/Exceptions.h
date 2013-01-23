@@ -64,6 +64,29 @@ public:
   virtual ~NotFound() noexcept {}
 };
 
+class GLError : virtual public Exception
+{
+public:
+  GLError() : Exception(std::string("unknown error")) {}
+  GLError(std::string e) : Exception(e) {}
+  virtual ~GLError() noexcept {}
+};
+
+class ShaderAttributeNotFound : virtual public NotFound
+{
+public:
+  ShaderAttributeNotFound() : NotFound(std::string("unknown error")) {}
+  ShaderAttributeNotFound(std::string e) : Exception(e) {}
+  virtual ~ShaderAttributeNotFound() noexcept {}
+};
+
+class ShaderUniformNotFound : virtual public NotFound
+{
+public:
+  ShaderUniformNotFound() : NotFound(std::string("unknown error")) {}
+  ShaderUniformNotFound(std::string e) : NotFound(e) {}
+  virtual ~ShaderUniformNotFound() noexcept {}
+};
 } // namespace Spire
 
 #endif // SPIRE_EXCEPTIONS_H

@@ -32,8 +32,9 @@
 #ifndef SPIRE_PIPES_STUPIPE_DRIVER_H
 #define SPIRE_PIPES_STUPIPE_DRIVER_H
 
-#include "Pipes/PipeDriver.h"
+#include "High/PipeDriver.h"
 #include "High/GPUStateManager.h"
+#include "Shaders/Tests/TestUniformColor.h"
 
 namespace Spire {
 namespace StuPipe {
@@ -50,7 +51,8 @@ public:
 
 protected:
 
-  GPUState  mInitialState;
+  GPUState          mInitialState;
+  TestUniformColor  mUniformColorTest;
 };
 
 } // namespace StuPipe 

@@ -3,7 +3,7 @@
 
    The MIT License
 
-   Copyright (c) 2012 Scientific Computing and Imaging Institute,
+   Copyright (c) 2013 Scientific Computing and Imaging Institute,
    University of Utah.
 
 
@@ -27,38 +27,30 @@
 */
 
 /// \author James Hughes
-/// \date   December 2012
+/// \date   January 2013
 
-#include "Common.h"
-#include "Driver.h"
+#ifndef SPIRE_HIGH_MATH_H
+#define SPIRE_HIGH_MATH_H
 
-namespace Spire { 
-namespace StuPipe {
+// Include Sony's vector-math library.
+#include "AOS_VectorMath.h"
 
-//------------------------------------------------------------------------------
-Driver::Driver(Hub& hub) :
-    PipeDriver(hub)
-{
-  mInitialState.mDepthTestEnable = true;
-  mInitialState.mCullFaceEnable = false;  // Todo: Set to true for geometry.
-                                          // Should not be true for volumes.
-}
+namespace Spire {
 
-//------------------------------------------------------------------------------
-Driver::~Driver()
-{
-}
+//constexpr double pi() { return std::atan(1)*4; }
+constexpr double  PI_D  = 3.141592653589793238462;
+constexpr float   PI    = 3.14159265358979f;
 
-//------------------------------------------------------------------------------
-void Driver::doFrame()
-{
-  // Clear the screen
-  glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-  glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
+// Typedef's for the vector math library.
+typedef Vector::Vector3    V3;
+typedef Vector::Vector4    V4;
+typedef Vector::Quat       Quat;
+typedef Vector::Matrix3    M33;
+typedef Vector::Matrix4    M44;
+typedef Vector::Transform3 Trafo3;
+typedef Vector::Point3     Point3;
 
-  // Force a known GPU state
-  mHub.getGPUStateManager().apply(mInitialState, true);
 
-}
+} // namespace spire
 
-} } // end of namespace Spire::Pipes::StuPipe
+#endif 

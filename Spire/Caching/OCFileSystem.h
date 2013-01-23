@@ -32,7 +32,7 @@
 #ifndef SPIRE_CACHING_OCFILESYSTEM_H
 #define SPIRE_CACHING_OCFILESYSTEM_H
 
-namespace spire {
+namespace Spire {
 
 /// Experimental out-of-core filesystem paging.
 /// Uses the filesystem to store object hashes in a hierarchical fashion.

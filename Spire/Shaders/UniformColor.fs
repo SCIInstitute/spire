@@ -26,18 +26,9 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-/// \author James Hughes
-/// \date   December 2012
+varying vec4	fColor;
 
-#include "Common.h"
-#include "PipeDriver.h"
-
-namespace Spire
+void main()
 {
-
-PipeDriver::PipeDriver(Hub& hub) :
-    mHub(hub)
-{
+	gl_FragColor 		= fColor;
 }
-
-} // end of namespace Spire

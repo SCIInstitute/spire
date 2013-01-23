@@ -37,21 +37,30 @@
 
 #include "High/Hub.h"
 #include "High/Log.h"
+#include "High/FileUtil.h"
 
-#include "Pipes/StuPipe/Driver.h"
-
-static int __thread testing = 0;
+#include "StuPipe/Driver.h"
 
 namespace Spire {
 
 //------------------------------------------------------------------------------
-Hub::Hub(Context* context, LogFunction logFn, bool useThread) :
-    mContext(context),
-    mPipe(new StuPipe::Driver(*this)),
+Hub::Hub(Context* context, const std::vector<std::string>& shaderDirs, 
+         Interface::LogFunction logFn, bool useThread) :
     mLogFun(logFn),
+    mContext(context),
+    mShaderMan(*this),
     mThreadKill(false),
-    mThreadRunning(false)
+    mThreadRunning(false),
+    mPixScreenWidth(640),
+    mPixScreenHeight(480),
+    mShaderProgramMan(*this),
+    mShaderDirs(shaderDirs)
 {
+  // Add default relative shader directory.
+  std::string workingDay = getCurrentWorkingDir();
+  workingDay += "/Shaders";
+  mShaderDirs.push_back(workingDay);
+
   if (useThread)
   {
     createRendererThread();    
@@ -60,6 +69,7 @@ Hub::Hub(Context* context, LogFunction logFn, bool useThread) :
   {
     oneTimeInitOnThread();
   }
+
 }
 
 //------------------------------------------------------------------------------
@@ -115,6 +125,13 @@ void Hub::oneTimeInitOnThread()
   // Pulled from Tuvok
   //const bool bOpenGLSO12     = atof((const char*)versionl) >= 1.2;
   //const bool bOpenGLSO20     = atof((const char*)versionl) >= 2.0;
+
+  // Setup camera
+  mCamera = std::shared_ptr<Camera>(new Camera(*this));
+
+  // Setup rendering pipeline
+  Log::debug() << "Creating render pipeline." << std::endl;
+  mPipe = std::shared_ptr<PipeDriver>(new StuPipe::Driver(*this));
 }
 
 //------------------------------------------------------------------------------
@@ -127,17 +144,13 @@ void Hub::doFrame()
   // stupipe, when we route through the stupipe? It almost appears that it has
   // to. Should we just build the pipe and see where it leads us to?
 
-  // Rudimentary doFrame...
-  glClearColor(0.0, 0.0, 0.0, 0.0);
-  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
   mPipe->doFrame();
 
   mContext->swapBuffers();
 }
 
 //------------------------------------------------------------------------------
-bool Hub::isRendererThreadRunning()
+bool Hub::isRendererThreadRunning() const
 {
   return mThreadRunning.load();
 }

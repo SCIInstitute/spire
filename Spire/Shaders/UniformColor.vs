@@ -6,7 +6,7 @@
    Copyright (c) 2012 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,23 +26,18 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef SPIRE_HIGH_FRAMEMANAGER_H
-#define SPIRE_HIGH_FRAMEMANAGER_H
+// Uniforms
+uniform mat4    uProjIVWorld;       // Projection * Inverse View * World XForm
+uniform vec4    uColor;             // Uniform color
 
-namespace Spire {
+// Attributes
+attribute vec3  aPos;
 
-/// Manages the current frame.
-/// Attempts to intelligently tune scenes so that they run in real-time treating
-/// LOD and composition rate as the independent variables to tune.
-class FrameManager
+// Outputs to the fragment shader.
+varying vec4    fColor;
+
+void main( void )
 {
-public:
-  FrameManager();
-  virtual ~FrameManager();
-
-private:
-};
-
-} // namespace spire
-
-#endif // SPIRE_HIGH_FRAMEMANAGER_H
+  gl_Position = uProjIVWorld * vec4(aPos, 1.0);
+  fColor      = uColor;
+}

@@ -89,12 +89,14 @@ if (UNIX)
 
   # Note: The build/configure command will vary based on platform!
   # Specify appropriate Tuvok SVN revision when we get a stable version.
-  # BUILD_COMMAND "scripts/oneshot-debug.sh"
+  # We set UPDATE_COMMAND to "" because we don't want to svn update everytime
+  # we build the project.
   ExternalProject_Add(ThirdParty_Tuvok
     PREFIX ${TuvokBinaryDir}
     SVN_REPOSITORY "https://gforge.sci.utah.edu/svn/Tuvok"
     SVN_TRUST_CERT 1
     DOWNLOAD_DIR "${CMAKE_CURRENT_BINARY_DIR}/download/Tuvok"
+    UPDATE_COMMAND ""
     SOURCE_DIR ${TuvokSourceDir}
     BINARY_DIR ${TuvokBinaryDir}
     CONFIGURE_COMMAND ${TuvokConfigureStep}
@@ -139,10 +141,9 @@ file (GLOB Source_Caching
   )
 
 file (GLOB Source_Pipes
-  "Pipes/*.cpp"
-  "Pipes/*.h"
-  "Pipes/StuPipe/*.cpp"
-  "Pipes/StuPipe/*.h"
+  "Shaders/Tests/*.cpp"
+  "StuPipe/*.cpp"
+  "StuPipe/*.h"
   )
 
 ########################################################################

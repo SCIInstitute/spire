@@ -36,8 +36,7 @@
 #include <vector>
 #include <string>
 
-namespace Spire
-{
+namespace Spire {
 
 class ShaderAttributeMan;
 
@@ -136,13 +135,13 @@ public:
   virtual ~ShaderAttributeMan();
 
   /// Seed value to use when hashing strings for comparison purposes.
-  static const uint32_t MURMUR_SEED_VALUE = 0x9783f23d;
+  static constexpr uint32_t getMurmurSeedValue()      {return 0x9783f23d;}
 
   /// Whenever an attribute has this index, it is not known how to handle it.
-  static const size_t UNKNOWN_ATTRIBUTE_INDEX = 0;
+  static constexpr size_t getUnknownAttributeIndex()  {return 0;}
 
   /// The name of the unknown value.
-  static const std::string UNKNOWN_NAME;
+  static constexpr const char* getUnknownName()       {return "_unknown_";}
 
   /// Adds a new attribute to the system. Automatically assigns it an internal
   /// index based on when it was added.

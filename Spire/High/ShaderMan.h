@@ -32,33 +32,54 @@
 #ifndef SPIRE_HIGH_SHADERMAN_H
 #define SPIRE_HIGH_SHADERMAN_H
 
+#include "Common.h"
 #include "BaseAssetMan.h"
 
-namespace Spire
-{
+namespace Spire {
 
 /// Shader asset.
 class ShaderAsset : public BaseAsset
 {
 public:
-  ShaderAsset(const std::string& name);
+  ShaderAsset(Hub& hub, const std::string& name, GLenum shaderType);
   virtual ~ShaderAsset();
 
-  GLuint            glID;		      ///< Shader program ID.
+  bool isValid() const          {return mHasValidShader;}
+  GLuint getShaderID() const    {return glID;}
 
-  //ShaderUniforms    uniforms;     ///< Uniforms used in the shader.
-  //ShaderAttributes  attributes;   ///< Attributes used in the shader.
+protected:
+
+  GLuint            glID;		          ///< Shader ID.
+  bool              mHasValidShader;  ///< True if we have a valid shader ID.
+  Hub&              mHub;             ///< Hub
 };
 
 /// Shader manager.
 class ShaderMan : public BaseAssetMan
 {
 public:
-  ShaderMan();
-  virtual ~ShaderMan();
+  ShaderMan(Hub& hub) : mHub(hub)   {}
+  virtual ~ShaderMan()              {}
+
+  /// Loads and returns a shader asset. If the shader is already loaded,
+  /// a reference to that shader is returned instead of reloading it.
+  std::shared_ptr<ShaderAsset> loadShader(const std::string& shaderFile,
+                                          GLenum shaderType);
+
+  /// This class implements a *default* hold time for all assets.
+  /// Typically when compiling / linking a shader program, the shaders are
+  /// no longer needed after the compile / link process. As such, 
+  /// ShaderProgramMan does not keep shared_ptr references to each of the
+  /// shader assets hanging around. This default time will prevent the system
+  /// from constantly freeing and reloading the same shaders.
+  static const std::chrono::milliseconds getDefaultHoldTime() 
+  {
+    return std::chrono::milliseconds(50);
+  }
 
 private:
   
+  Hub&      mHub;
 };
 
 } // namespace Spire

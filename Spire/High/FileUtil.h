@@ -3,7 +3,7 @@
 
    The MIT License
 
-   Copyright (c) 2012 Scientific Computing and Imaging Institute,
+   Copyright (c) 2013 Scientific Computing and Imaging Institute,
    University of Utah.
 
 
@@ -27,32 +27,23 @@
 */
 
 /// \author James Hughes
-/// \date   December 2012
+/// \date   January 2013
+/// \brief  These functions exist primarily to locate shader files.
+///         Inherits heavily from the SysTools library in IV3D's Tuvok.
+///         There is currently no wstring implementation.
 
-#ifndef SPIRE_PIPES_PIPEDRIVER_H
-#define SPIRE_PIPES_PIPEDRIVER_H
-
-#include "High/Hub.h"
+#ifndef SPIRE_HIGH_FILEUTIL_H
+#define SPIRE_HIGH_FILEUTIL_H
 
 namespace Spire
 {
 
-/// Abstract base class for the Drivers controlling each of the rendering
-/// pipelines.
-class PipeDriver
-{
-public:
-
-  PipeDriver(Hub& hub);
-  virtual ~PipeDriver() {}
-  
-  /// Instructs the derived class to render a frame.
-  virtual void doFrame() = 0;
-
-protected:
-
-  Hub&    mHub;           ///< Hub of the rendering system.
-};
+std::string findFileInDirs(const std::string& file,
+                           const std::vector<std::string>& strDirs,
+                           bool subdirs);
+bool fileExists(const std::string& strFileName);
+std::vector<std::string> getSubDirList(const std::string& dir);
+std::string getCurrentWorkingDir();
 
 } // namespace Spire
 

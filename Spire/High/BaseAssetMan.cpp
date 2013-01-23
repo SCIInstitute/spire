@@ -29,6 +29,8 @@
 /// \author James Hughes
 /// \date   December 2012
 
+#include <algorithm>
+
 #include "BaseAssetMan.h"
 #include "MurmurHash3.h"
 
@@ -52,14 +54,14 @@ void BaseAssetMan::addAsset(std::shared_ptr<BaseAsset> asset)
 
 //------------------------------------------------------------------------------
 void BaseAssetMan::holdAsset(std::shared_ptr<BaseAsset> asset, 
-                             int64_t absTimeToHold)
+                             std::chrono::milliseconds absTimeToHold)
 {
   asset->setAbsTimeToHold(absTimeToHold);
   mHeldAssets.push(asset);
 }
 
 //------------------------------------------------------------------------------
-void BaseAssetMan::updateOrphanedAssets(int64_t absTime)
+void BaseAssetMan::updateOrphanedAssets(std::chrono::milliseconds absTime)
 {
   // Check the first held asset and if it is less than the absolute time,
   // release it and continue.
@@ -88,6 +90,31 @@ void BaseAssetMan::updateOrphanedAssets(int64_t absTime)
 }
 
 //------------------------------------------------------------------------------
+std::shared_ptr<BaseAsset> 
+BaseAssetMan::findAsset(const std::string& str) const
+{
+  uint32_t targetHash = BaseAsset::hashString(str);
+  for (auto it = mAssets.begin(); it != mAssets.end(); ++it)
+  {
+    // std::weak_ptr::lock will construct an empty shared_ptr, not throw an
+    // exception, if the weak_ptr has expired (a common occurrence within this
+    // class...).
+    std::shared_ptr<BaseAsset> shader(it->lock());
+    if (shader != nullptr)
+    {
+      if (shader->getNameHash() == targetHash)
+      {
+        // Now check for hash collision.
+        if (shader->getName() == str)
+          return it->lock();
+      }
+    }
+  }
+  return std::shared_ptr<BaseAsset>(nullptr);
+}
+
+
+//------------------------------------------------------------------------------
 // Base Asset
 //------------------------------------------------------------------------------
 
@@ -96,14 +123,24 @@ BaseAsset::BaseAsset(const std::string& name) :
     mName(name),
     mAbsHoldTime(0)
 {
-  MurmurHash3_x86_32(
-      static_cast<const void*>(name.c_str()), static_cast<int>(name.size()),
-      mHashSeed, static_cast<void*>(&mNameHash));
+  mNameHash = hashString(name);
 }
 
 //------------------------------------------------------------------------------
 BaseAsset::~BaseAsset()
 {
+}
+
+//------------------------------------------------------------------------------
+uint32_t BaseAsset::hashString(const std::string& str)
+{
+  uint32_t hashOut;
+  MurmurHash3_x86_32(
+      static_cast<const void*>(str.c_str()),
+      static_cast<int>(str.size()),
+      getHashSeed(),
+      static_cast<void*>(&hashOut));
+  return hashOut;
 }
 
 } // end of namespace Spire

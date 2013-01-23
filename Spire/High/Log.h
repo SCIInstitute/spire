@@ -50,7 +50,7 @@ namespace Spire {
 class Log
 {
 public:
-  Log(const Hub::LogFunction& logFunction);
+  Log(const Interface::LogFunction& logFunction);
   virtual ~Log();
 
   /// Retrieves the respective stream
@@ -82,12 +82,12 @@ private:
   class CustomStream : public std::ostream
   {
   public:
-    CustomStream(const Hub::LogFunction& fun, Interface::LOG_LEVEL level) :
+    CustomStream(const Interface::LogFunction& fun, Interface::LOG_LEVEL level) :
         std::ostream(&mBuf),
         mBuf(fun, level)
     {}
 
-    void setLogFunction(const Hub::LogFunction& fun)
+    void setLogFunction(const Interface::LogFunction& fun)
     {
       mBuf.setLogFunction(fun);
     }
@@ -97,12 +97,12 @@ private:
     class CustomStringBuf : public std::stringbuf
     {
     public:
-      CustomStringBuf(Hub::LogFunction fun, Interface::LOG_LEVEL level) :
+      CustomStringBuf(Interface::LogFunction fun, Interface::LOG_LEVEL level) :
           mLogFun(fun),
           mLevel(level)
       {}
       
-      void setLogFunction(const Hub::LogFunction& fun)
+      void setLogFunction(const Interface::LogFunction& fun)
       {
         mLogFun = fun;
       }
@@ -120,7 +120,7 @@ private:
       }
 
     private:
-      Hub::LogFunction      mLogFun;
+      Interface::LogFunction      mLogFun;
       Interface::LOG_LEVEL  mLevel;
     };
 

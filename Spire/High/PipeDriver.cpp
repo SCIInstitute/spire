@@ -6,7 +6,7 @@
    Copyright (c) 2012 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,23 +26,17 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef SPIRE_HIGH_FRAMEMANAGER_H
-#define SPIRE_HIGH_FRAMEMANAGER_H
+/// \author James Hughes
+/// \date   December 2012
+
+#include "Common.h"
+#include "PipeDriver.h"
 
 namespace Spire {
 
-/// Manages the current frame.
-/// Attempts to intelligently tune scenes so that they run in real-time treating
-/// LOD and composition rate as the independent variables to tune.
-class FrameManager
+PipeDriver::PipeDriver(Hub& hub) :
+    mHub(hub)
 {
-public:
-  FrameManager();
-  virtual ~FrameManager();
+}
 
-private:
-};
-
-} // namespace spire
-
-#endif // SPIRE_HIGH_FRAMEMANAGER_H
+} // end of namespace Spire
