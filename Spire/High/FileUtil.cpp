@@ -73,6 +73,33 @@ std::string getFromResourceOnMac(const std::string& strFileName);
 std::string findFile(const std::string& file, bool subdirs);
 
 //------------------------------------------------------------------------------
+std::string removeExt(const std::string& fileName)
+{
+  size_t indexDot = fileName.find_last_of(".");
+  size_t indexSlash = std::max(int(fileName.find_last_of("\\")),int(fileName.find_last_of("/")));
+  if (indexDot == std::string::npos ||
+      (indexSlash != std::string::npos && indexDot < indexSlash))
+    return fileName;
+  return fileName.substr(0,indexDot);
+}
+
+//------------------------------------------------------------------------------
+std::string changeExt(const std::string& fileName, const std::string& newext)
+{
+  return removeExt(fileName)+ "." + newext;
+}
+
+//------------------------------------------------------------------------------
+std::string getExt(const std::string& fileName)
+{
+  size_t indexDot = fileName.find_last_of(".");
+  size_t indexSlash = std::max(int(fileName.find_last_of("\\")),int(fileName.find_last_of("/")));
+  if (indexDot == std::string::npos || (indexSlash != std::string::npos && indexDot < indexSlash)) return "";
+  std::string ext = fileName.substr(indexDot+1);
+  return ext;
+}
+
+//------------------------------------------------------------------------------
 std::string findFileInDirs(const std::string& file,
                            const std::vector<std::string>& strDirs,
                            bool subdirs)
@@ -230,10 +257,10 @@ std::string getFromResourceOnMac(const std::string& strFileName)
 {
 #ifdef SPIRE_USING_OSX
   CFStringRef cfFilename = CFStringCreateWithCString(
-      kCFAllocatorDefault, RemoveExt(GetFilename(strFileName)).c_str(), 
+      kCFAllocatorDefault, removeExt(getFilename(strFileName)).c_str(), 
       CFStringGetSystemEncoding());
   CFStringRef cfExt = CFStringCreateWithCString(
-      kCFAllocatorDefault, GetExt(GetFilename(strFileName)).c_str(),
+      kCFAllocatorDefault, getExt(getFilename(strFileName)).c_str(),
       CFStringGetSystemEncoding());
 
   CFURLRef imageURL = CFBundleCopyResourceURL(CFBundleGetMainBundle(), 
@@ -244,7 +271,7 @@ std::string getFromResourceOnMac(const std::string& strFileName)
                                               CFStringGetSystemEncoding());
   if (macPath != 0 && pathPtr != 0)
   {
-    string result = pathPtr;
+    std::string result = pathPtr;
     return result;
   }
   else

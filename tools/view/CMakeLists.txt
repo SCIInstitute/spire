@@ -145,8 +145,8 @@ QT4_WRAP_UI(UISource ${Forms})
 
 ########################################################################
 # Copy shaders to the target directory
-configure_file(${BASE_SPIRE_DIR}/Spire/Shaders/UniformColor.vs ${CMAKE_CURRENT_BINARY_DIR}/bin/Shaders/UniformColor.vs)
-configure_file(${BASE_SPIRE_DIR}/Spire/Shaders/UniformColor.fs ${CMAKE_CURRENT_BINARY_DIR}/bin/Shaders/UniformColor.fs)
+configure_file(${BASE_SPIRE_DIR}/Spire/Shaders/UniformColor.vs ${CMAKE_CURRENT_BINARY_DIR}/Shaders/UniformColor.vs)
+configure_file(${BASE_SPIRE_DIR}/Spire/Shaders/UniformColor.fs ${CMAKE_CURRENT_BINARY_DIR}/Shaders/UniformColor.fs)
 
 ########################################################################
 # Setup executable
@@ -155,6 +155,13 @@ add_executable(spireview
   ${Sources} 
   ${MocSource} 
   ${UISource})
+
+add_dependencies(spireview Spire)
+
+# Example of extracting a variable from another cmake dir:
+#get_directory_property(SPIRE_EXTRA_LIBS DIRECTORY ${BASE_SPIRE_DIR}/Spire DEFINITION OS_SPECIFIC_LIBS)
+#message( Dir: ${BASE_SPIRE_DIR}/Spire)
+#message( Libs: ${SPIRE_EXTRA_LIBS})
 
 target_link_libraries(spireview 
   Spire 

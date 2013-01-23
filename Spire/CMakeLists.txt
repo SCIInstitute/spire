@@ -29,9 +29,6 @@ endif()
 find_package(OpenGL REQUIRED)
 
 ########################################################################
-# QT configuration
-
-########################################################################
 # Compiler settings
 
 if(UNIX)
@@ -40,6 +37,10 @@ if(UNIX)
   if(APPLE)
     add_definitions(-DSPIRE_USING_OSX)
     set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libc++")
+
+    # We were using CoreFoundation to look up shaders in the bundle.
+    find_library(CORE_FOUNDATION_FRAMEWORK CoreFoundation)
+    set(OS_SPECIFIC_LIBS ${CORE_FOUNDATION_FRAMEWORK})
   else(APPLE)
     add_definitions(-DSPIRE_USING_LINUX)
   endif(APPLE)
@@ -170,5 +171,9 @@ add_library(Spire
   ${Source_Pipes}
   )
 add_dependencies(Spire ThirdParty_Tuvok)
-target_link_libraries(Spire ${OPENGL_LIBRARIES} ${TUVOK_LIB})
+target_link_libraries(
+  Spire
+  ${OPENGL_LIBRARIES}
+  ${TUVOK_LIB}
+  ${OS_SPECIFIC_LIBS})
 
