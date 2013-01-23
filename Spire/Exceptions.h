@@ -41,9 +41,9 @@ class Exception : virtual public std::exception
 public:
   Exception() {}
   Exception(std::string e) : mError(e) {}
-  virtual ~Exception() noexcept {}
+  virtual ~Exception() {}
 
-  virtual const char* what() const noexcept {return this->mError.c_str();}
+  virtual const char* what() const {return this->mError.c_str();}
 protected:
   std::string mError;
 };
@@ -53,7 +53,7 @@ class ThreadException : virtual public Exception
 public:
   ThreadException() : Exception(std::string("unknown error")) {}
   ThreadException(std::string e) : Exception(e) {}
-  virtual ~ThreadException() noexcept {}
+  virtual ~ThreadException() {}
 };
 
 class NotFound : virtual public Exception
@@ -61,7 +61,7 @@ class NotFound : virtual public Exception
 public:
   NotFound() : Exception(std::string("unknown error")) {}
   NotFound(std::string e) : Exception(e) {}
-  virtual ~NotFound() noexcept {}
+  virtual ~NotFound() {}
 };
 
 class GLError : virtual public Exception
@@ -69,7 +69,7 @@ class GLError : virtual public Exception
 public:
   GLError() : Exception(std::string("unknown error")) {}
   GLError(std::string e) : Exception(e) {}
-  virtual ~GLError() noexcept {}
+  virtual ~GLError() {}
 };
 
 class ShaderAttributeNotFound : virtual public NotFound
@@ -77,7 +77,7 @@ class ShaderAttributeNotFound : virtual public NotFound
 public:
   ShaderAttributeNotFound() : NotFound(std::string("unknown error")) {}
   ShaderAttributeNotFound(std::string e) : Exception(e) {}
-  virtual ~ShaderAttributeNotFound() noexcept {}
+  virtual ~ShaderAttributeNotFound() {}
 };
 
 class ShaderUniformNotFound : virtual public NotFound
@@ -85,7 +85,7 @@ class ShaderUniformNotFound : virtual public NotFound
 public:
   ShaderUniformNotFound() : NotFound(std::string("unknown error")) {}
   ShaderUniformNotFound(std::string e) : NotFound(e) {}
-  virtual ~ShaderUniformNotFound() noexcept {}
+  virtual ~ShaderUniformNotFound() {}
 };
 } // namespace Spire
 
