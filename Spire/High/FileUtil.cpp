@@ -38,7 +38,7 @@
 #include "High/Log.h"
 #include "FileUtil.h"
 
-#ifndef USING_WIN
+#ifndef SPIRE_USING_WIN
   #include <wchar.h>
   #include <sys/stat.h>
   #include <regex.h>
@@ -60,7 +60,7 @@
   #define LARGE_STAT(name,buffer) _stat64(name,buffer)
 #endif
 
-#ifdef USING_OSX
+#ifdef SPIRE_USING_OSX
   #include <CoreFoundation/CoreFoundation.h>
 #endif
 
@@ -77,7 +77,7 @@ std::string findFileInDirs(const std::string& file,
                            const std::vector<std::string>& strDirs,
                            bool subdirs)
 {
-#ifdef USING_OSX
+#ifdef SPIRE_USING_OSX
   if (fileExists(getFromResourceOnMac(file)))
   {
     std::string res = getFromResourceOnMac(file);
@@ -147,7 +147,7 @@ std::vector<std::string> getSubDirList(const std::string& dir)
   std::vector<std::string> subDirs;
   std::string rootdir;
 
-#ifdef USING_WIN
+#ifdef SPIRE_USING_WIN
   std::stringstream s;
   if (dir == "")
   {
@@ -228,7 +228,7 @@ std::vector<std::string> getSubDirList(const std::string& dir)
 //------------------------------------------------------------------------------
 std::string getFromResourceOnMac(const std::string& strFileName)
 {
-#ifdef DETECTED_OS_APPLE
+#ifdef SPIRE_USING_OSX
   CFStringRef cfFilename = CFStringCreateWithCString(
       kCFAllocatorDefault, RemoveExt(GetFilename(strFileName)).c_str(), 
       CFStringGetSystemEncoding());

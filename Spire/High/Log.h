@@ -141,7 +141,7 @@ private:
 
   /// @todo Add thread local storage for platforms that support it instead of
   ///       using this hack.
-  ///       Linux (USING_LINUX) and Windows (USING_WIN) both support this.
+  ///       Linux (SPIRE_USING_LINUX) and Windows (SPIRE_USING_WIN) both support this.
   ///       Clang does not currently support it.
 
   /// True if a thread has paired with this logger.

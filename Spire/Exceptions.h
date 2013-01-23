@@ -35,15 +35,23 @@
 
 namespace Spire {
 
+/// TODO: Get rid of these ifdefs when we switch to a visual studio that
+///       supports noexcept (VS 2010 and VS 2012 do not).
+#ifndef SPIRE_USING_WIN
+  #define SPIRE_NOEXCEPT noexcept
+#else
+  #define SPIRE_NOEXCEPT
+#endif
+
 // Basic Spire exception.
 class Exception : virtual public std::exception
 {
 public:
   Exception() {}
   Exception(std::string e) : mError(e) {}
-  virtual ~Exception() {}
+  virtual ~Exception() SPIRE_NOEXCEPT {}
+  virtual const char* what() const SPIRE_NOEXCEPT {return this->mError.c_str();}
 
-  virtual const char* what() const {return this->mError.c_str();}
 protected:
   std::string mError;
 };
@@ -53,7 +61,7 @@ class ThreadException : virtual public Exception
 public:
   ThreadException() : Exception(std::string("unknown error")) {}
   ThreadException(std::string e) : Exception(e) {}
-  virtual ~ThreadException() {}
+  virtual ~ThreadException() SPIRE_NOEXCEPT {}
 };
 
 class NotFound : virtual public Exception
@@ -61,7 +69,7 @@ class NotFound : virtual public Exception
 public:
   NotFound() : Exception(std::string("unknown error")) {}
   NotFound(std::string e) : Exception(e) {}
-  virtual ~NotFound() {}
+  virtual ~NotFound() SPIRE_NOEXCEPT {}
 };
 
 class GLError : virtual public Exception
@@ -69,7 +77,7 @@ class GLError : virtual public Exception
 public:
   GLError() : Exception(std::string("unknown error")) {}
   GLError(std::string e) : Exception(e) {}
-  virtual ~GLError() {}
+  virtual ~GLError() SPIRE_NOEXCEPT {}
 };
 
 class ShaderAttributeNotFound : virtual public NotFound
@@ -77,7 +85,7 @@ class ShaderAttributeNotFound : virtual public NotFound
 public:
   ShaderAttributeNotFound() : NotFound(std::string("unknown error")) {}
   ShaderAttributeNotFound(std::string e) : Exception(e) {}
-  virtual ~ShaderAttributeNotFound() {}
+  virtual ~ShaderAttributeNotFound() SPIRE_NOEXCEPT {}
 };
 
 class ShaderUniformNotFound : virtual public NotFound
@@ -85,7 +93,7 @@ class ShaderUniformNotFound : virtual public NotFound
 public:
   ShaderUniformNotFound() : NotFound(std::string("unknown error")) {}
   ShaderUniformNotFound(std::string e) : NotFound(e) {}
-  virtual ~ShaderUniformNotFound() {}
+  virtual ~ShaderUniformNotFound() SPIRE_NOEXCEPT {}
 };
 } // namespace Spire
 

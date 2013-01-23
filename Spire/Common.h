@@ -35,12 +35,13 @@
 #include <cstddef>
 
 // OpenGL headers
-#ifdef USING_OSX
+#ifdef SPIRE_USING_OSX
 #include <OpenGL/gl.h>
-#elif USING_IOS
+#elif SPIRE_USING_IOS
 #define OPENGL_ES 1
-//#elif USING_LINUX
-//#elif USING_WINDOWS
+//#elif SPIRE_USING_ANDROID
+//#elif SPIRE_USING_LINUX
+//#elif SPIRE_USING_WIN
 #else
 #error OpenGL headers not defined for this platform.
 #endif
