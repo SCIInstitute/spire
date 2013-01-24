@@ -68,10 +68,11 @@ public:
   V3 getEyePosition() const                 {return mV.getTranslation();}
 
   /// Default camera settings
+  /// \todo Switch back to constexpr
   /// @{
-  static constexpr float getDefaultFOVY()   {return 32.0f * (PI / 18.0f);}
-  static constexpr float getDefaultZNear()  {return 0.1f;}
-  static constexpr float getDefaultZFar()   {return 1350.0f;}
+  static float getDefaultFOVY()   {return 32.0f * (PI / 18.0f);}
+  static float getDefaultZNear()  {return 0.1f;}
+  static float getDefaultZFar()   {return 1350.0f;}
   /// @}
 
 private:

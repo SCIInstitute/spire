@@ -35,6 +35,7 @@
 #include "Common.h"
 #include <vector>
 #include <string>
+#include <tuple>
 
 namespace Spire {
 
@@ -135,13 +136,16 @@ public:
   virtual ~ShaderAttributeMan();
 
   /// Seed value to use when hashing strings for comparison purposes.
-  static constexpr uint32_t getMurmurSeedValue()      {return 0x9783f23d;}
+  /// \todo Change back to constexpr after switch to VS 2012
+  static uint32_t getMurmurSeedValue()      {return 0x9783f23d;}
 
   /// Whenever an attribute has this index, it is not known how to handle it.
-  static constexpr size_t getUnknownAttributeIndex()  {return 0;}
+  /// \todo Change back to constexpr after switch to VS 2012
+  static size_t getUnknownAttributeIndex()  {return 0;}
 
   /// The name of the unknown value.
-  static constexpr const char* getUnknownName()       {return "_unknown_";}
+  /// \todo Change back to constexpr after switch to VS 2012
+  static const char* getUnknownName()       {return "_unknown_";}
 
   /// Adds a new attribute to the system. Automatically assigns it an internal
   /// index based on when it was added.

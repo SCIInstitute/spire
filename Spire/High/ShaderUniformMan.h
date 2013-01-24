@@ -63,7 +63,8 @@ public:
     UniformState  uniform;    ///< Uniform state.
   };
 
-  static constexpr GLuint getInvalidProgramHandle()  {return static_cast<GLuint>(0);}
+  /// \todo Change back to constexpr
+  static const GLuint getInvalidProgramHandle()  {return static_cast<GLuint>(0);}
 
   /// Sets the shader program to check the uniforms against.
   void setShaderProgram(GLuint program);
@@ -106,12 +107,14 @@ public:
   virtual ~ShaderUniformMan();
 
   /// Seed value to use when hashing strings for comparison purposes.
-  static constexpr uint32_t getMurmurSeedValue()    {return 0x83abd272;}
+  /// \todo Change back to constexpr
+  static uint32_t getMurmurSeedValue()    {return 0x83abd272;}
 
   /// These two functions represent the unknown's index and name.
+  /// \todo Change back to constexpr
   /// @{
-  static constexpr size_t getUnknownUniformIndex()  {return 0;}
-  static constexpr const char* getUnknownName()     {return "_unknown_";}
+  static size_t getUnknownUniformIndex()  {return 0;}
+  static const char* getUnknownName()     {return "_unknown_";}
   /// @}
 
   /// Adds a new uniform to the system. Automatically assigns it an internal

@@ -36,7 +36,16 @@
 #include <vector>
 #include <list>
 #include <queue>
+#include <cstdint>
+#ifndef SPIRE_USING_WIN
 #include <chrono>
+#else
+namespace std {
+namespace chrono {
+  // Temporary hack until a switch to VS 2012
+  typedef uint64_t milliseconds;
+} }
+#endif
 
 namespace Spire {
 
@@ -70,7 +79,7 @@ private:
                                           ///< priority queue.
 
   /// Seed to be used when hashing mName.
-  static constexpr uint32_t getHashSeed()   {return 238929797;}
+  static const uint32_t getHashSeed()   {return 238929797;}
 
 };
 
