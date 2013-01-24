@@ -38,8 +38,16 @@ GLWidget::GLWidget(const QGLFormat& format) :
   std::vector<std::string> shaderSearchDirs = {"Shaders"};
 
   // Create a threaded spire renderer.
+#ifdef SPIRE_USE_STD_THREADS
   mGraphics = std::shared_ptr<Spire::Interface>(
       new Spire::Interface(&mContext, shaderSearchDirs, true));
+#else
+  mGraphics = std::shared_ptr<Spire::Interface>(
+      new Spire::Interface(&mContext, shaderSearchDirs, false));
+  mTimer = new QTimer(this);
+  connect(mTimer, SIGNAL(timeout()), this, SLOT(updateRenderer()));
+  mTimer->start(35);
+#endif
 
   // We must disable auto buffer swap on the 'paintEvent'.
   setAutoBufferSwap(false);
@@ -56,5 +64,11 @@ void GLWidget::closeEvent(QCloseEvent *evt)
   // Kill off the graphics thread.
   mGraphics.reset();
   QGLWidget::closeEvent(evt);
+}
+
+void GLWidget::updateRenderer()
+{
+  // Update the renderer.
+  mGraphics->doFrame();
 }
 

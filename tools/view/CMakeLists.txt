@@ -114,6 +114,12 @@ set (BASE_SPIRE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../..)
 # The 'spire' library.
 add_subdirectory(${BASE_SPIRE_DIR}/Spire ${CMAKE_CURRENT_BINARY_DIR}/spire)
 
+# Pull USE_STD_THREADS from the spire directory
+get_directory_property(USE_STD_THREADS DIRECTORY ${BASE_SPIRE_DIR}/Spire DEFINITION USE_STD_THREADS)
+if(USE_STD_THREADS)
+  add_definitions(-DSPIRE_USE_STD_THREADS)
+endif()
+
 ########################################################################
 # Compiler settings
 
@@ -137,7 +143,7 @@ include_directories("${CMAKE_CURRENT_BINARY_DIR}" "${BASE_SPIRE_DIR}" )
 # Setup source
 
 file (GLOB Sources "*.cpp")
-set (MocHeaders MainWindow.h)
+set (MocHeaders MainWindow.h GLWidget.h)
 set (Forms MainWindow.ui) 
 
 QT4_WRAP_CPP(MocSource ${MocHeaders})

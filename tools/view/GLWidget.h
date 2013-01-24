@@ -33,6 +33,7 @@
 #define SPIRE_GLWIDGET_H
 
 #include <QtOpenGL/QGLWidget>
+#include <QTimer.h>
 
 #include "GLContext.h"
 
@@ -41,6 +42,8 @@
 
 class GLWidget : public QGLWidget
 {
+  Q_OBJECT
+
 public:
   GLWidget(const QGLFormat& format);
 
@@ -48,10 +51,18 @@ protected:
   void resizeEvent(QResizeEvent *evt);
   void closeEvent(QCloseEvent *evt);
 
+protected slots:
+  void updateRenderer();
+
 private:
 
   GLContext                         mContext;
   std::shared_ptr<Spire::Interface> mGraphics;
+
+#ifndef SPIRE_USE_STD_THREADS
+  QTimer*                           mTimer;
+#endif
+
 };
 
 
