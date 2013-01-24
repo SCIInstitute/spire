@@ -160,6 +160,7 @@ file (GLOB Source_Pipes
   "StuPipe/*.h"
   )
 
+# TODO: Manage this per-platform. Most OpenGL ES platforms are *not* supported.
 set(Source_GLEW
   3rdParty/glew/src/glew.c)
 
