@@ -35,7 +35,8 @@ GLWidget::GLWidget(const QGLFormat& format) :
     QGLWidget(format),
     mContext(this)
 {
-  std::vector<std::string> shaderSearchDirs = {"Shaders"};
+  std::vector<std::string> shaderSearchDirs;
+  shaderSearchDirs.push_back("Shaders");
 
   // Create a threaded spire renderer.
 #ifdef SPIRE_USE_STD_THREADS

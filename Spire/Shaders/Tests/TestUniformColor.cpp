@@ -45,9 +45,12 @@ TestUniformColor::TestUniformColor(Hub& hub) :
   Log::message() << "Testing UniformColor shader." << std::endl;
 
   // Build shader program using C++11 initializer lists.
-  std::list<std::tuple<std::string, GLenum>> shaders = {
-    {"UniformColor.vs", GL_VERTEX_SHADER},
-    {"UniformColor.fs", GL_FRAGMENT_SHADER} };
+  /// \todo Change back to initializer lists once VS supports it.
+  std::list<std::tuple<std::string, GLenum>> shaders;
+  shaders.push_back(std::make_tuple("UniformColor.vs", GL_VERTEX_SHADER));
+  shaders.push_back(std::make_tuple("UniformColor.fs", GL_FRAGMENT_SHADER));
+  //  { {"UniformColor.vs", GL_VERTEX_SHADER},
+  //    {"UniformColor.fs", GL_FRAGMENT_SHADER} };
 
   mShader = mHub.getShaderProgramManager().loadProgram("UniformColor", shaders);
 
