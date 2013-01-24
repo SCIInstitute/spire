@@ -53,6 +53,7 @@
   typedef wchar_t WCHAR;
   typedef unsigned char CHAR;
 #else
+  #include <sys/stat.h>
   #include <shlwapi.h>
   #include <windows.h>
   #include <direct.h>
