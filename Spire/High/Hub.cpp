@@ -30,7 +30,6 @@
 /// \date   September 2012
 
 #include <sstream>
-#include <thread>
 
 #include "Common.h"
 #include "Exceptions.h"

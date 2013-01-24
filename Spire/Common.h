@@ -60,13 +60,13 @@
 #include "High/Math.h"
 #include "High/Log.h"
 
-#ifdef _DEBUG
+#ifdef SPIRE_DEBUG
 # define GL_CHECK()                                                       \
   do {                                                                    \
     GLenum glerr;                                                         \
     unsigned int iCounter = 0;                                            \
     while((glerr = glGetError()) != GL_NO_ERROR) {                        \
-      Log::error() << "GL error before line " << __LINE __ << "("         \
+      Log::error() << "GL error before line " << __LINE__ << "("          \
                    << __FILE__ << "): " << glerr << " ("                  \
                    << gluErrorString(glerr) << ")" << std::endl;          \
       iCounter++;                                                         \

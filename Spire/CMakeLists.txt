@@ -22,6 +22,10 @@ if(USE_STD_THREADS)
   add_definitions(-DSPIRE_USE_STD_THREADS)
 endif()
 
+if(CMAKE_BUILD_TYPE MATCHES DEBUG)
+  add_definitions(-DSPIRE_DEBUG)
+endif()
+
 ########################################################################
 # OpenGL configuration
 
