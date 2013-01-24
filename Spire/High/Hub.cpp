@@ -44,17 +44,19 @@
 namespace Spire {
 
 //------------------------------------------------------------------------------
-Hub::Hub(Context* context, const std::vector<std::string>& shaderDirs, 
+Hub::Hub(Context* context, const std::vector<std::string>& shaderDirs,
          Interface::LogFunction logFn, bool useThread) :
     mLogFun(logFn),
     mContext(context),
     mShaderMan(*this),
+    mShaderProgramMan(*this),
+    mShaderDirs(shaderDirs),
+#ifdef SPIRE_USE_STD_THREADS
     mThreadKill(false),
     mThreadRunning(false),
+#endif
     mPixScreenWidth(640),
-    mPixScreenHeight(480),
-    mShaderProgramMan(*this),
-    mShaderDirs(shaderDirs)
+    mPixScreenHeight(480)
 {
   // Add default relative shader directory.
   std::string workingDay = getCurrentWorkingDir();
@@ -63,7 +65,11 @@ Hub::Hub(Context* context, const std::vector<std::string>& shaderDirs,
 
   if (useThread)
   {
-    createRendererThread();    
+#ifdef SPIRE_USE_STD_THREADS
+    createRendererThread();
+#else
+    throw UnsupportedException("Spire compiled without std threads!");
+#endif
   }
   else
   {
@@ -97,7 +103,7 @@ void Hub::oneTimeInitOnThread()
   const GLubyte* renderer   = glGetString(GL_RENDERER);
   const GLubyte* versionl   = glGetString(GL_VERSION);
 
-  Log::message() << "OpenGL initialization. Running on a " << vendor << " " 
+  Log::message() << "OpenGL initialization. Running on a " << vendor << " "
                  << renderer << " with OpenGL version " << versionl << std::endl
                  << "GL made current on thread " << std::this_thread::get_id()
                  << std::endl;
@@ -112,10 +118,10 @@ void Hub::oneTimeInitOnThread()
   Log::debug() << "+Fixed function (transient):" << std::endl;
 	glGetIntegerv(GL_MAX_MODELVIEW_STACK_DEPTH, &tmp);
   Log::debug() << "  Model view stack depth: " << tmp << std::endl;
-	
+
 	glGetIntegerv(GL_MAX_PROJECTION_STACK_DEPTH, &tmp);
   Log::debug() << "  Projection stack depth: " << tmp << std::endl;
-	
+
 	glGetIntegerv(GL_MAX_TEXTURE_STACK_DEPTH, &tmp);
   Log::debug() << "  Texture stack depth: " << tmp << std::endl;
 
@@ -152,32 +158,44 @@ void Hub::doFrame()
 //------------------------------------------------------------------------------
 bool Hub::isRendererThreadRunning() const
 {
+#ifdef SPIRE_USE_STD_THREADS
   return mThreadRunning.load();
+#else
+  return false;
+#endif
 }
 
 //------------------------------------------------------------------------------
 void Hub::createRendererThread()
 {
+#ifdef SPIRE_USE_STD_THREADS
   if (isRendererThreadRunning() == true)
     throw ThreadException("Cannot create new renderer thread; a renderer "
                           "thread is currently running.");
 
   mThread = std::thread(&Hub::rendererThread, this);
+#else
+  throw UnsupportedException("Spire compiled without threading support. "
+                             "Cannot create render thread.");
+#endif
 }
 
 //------------------------------------------------------------------------------
 void Hub::killRendererThread()
 {
+#ifdef SPIRE_USE_STD_THREADS
   if (isRendererThreadRunning() == false)
     throw ThreadException("Cannot kill renderer thread; the thread is not "
                           "currently running.");
 
-  // The following join statement could possibly throw a system_error if 
+  // The following join statement could possibly throw a system_error if
   // mThread.get_id() == std::thread::id()
   mThreadKill.store(true);
   mThread.join();
+#endif
 }
 
+#ifdef SPIRE_USE_STD_THREADS
 //------------------------------------------------------------------------------
 void Hub::rendererThread()
 {
@@ -206,5 +224,6 @@ void Hub::rendererThread()
 
   mThreadRunning.store(false);
 }
+#endif
 
 }

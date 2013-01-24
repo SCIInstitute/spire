@@ -72,6 +72,14 @@ public:
   virtual ~NotFound() SPIRE_NOEXCEPT {}
 };
 
+class UnsupportedException : virtual public Exception
+{
+public:
+  UnsupportedException() : Exception(std::string("unknown error")) {}
+  UnsupportedException(std::string e) : Exception(e) {}
+  virtual ~UnsupportedException() SPIRE_NOEXCEPT {}
+};
+
 class GLError : virtual public Exception
 {
 public:
@@ -95,6 +103,7 @@ public:
   ShaderUniformNotFound(std::string e) : NotFound(e) {}
   virtual ~ShaderUniformNotFound() SPIRE_NOEXCEPT {}
 };
+
 } // namespace Spire
 
 #endif // SPIRE_EXCEPTIONS_H

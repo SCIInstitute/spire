@@ -35,8 +35,10 @@
 #include <iostream>
 #include <fstream>
 #include <functional>
+#ifdef SPIRE_USE_STD_THREADS
 #include <thread>
 #include <atomic>
+#endif
 
 #include "Interface.h"
 #include "High/GPUStateManager.h"
@@ -112,14 +114,12 @@ private:
   ShaderProgramMan            mShaderProgramMan;///< Shader program manager.
   ShaderAttributeMan          mShaderAttributes;///< Shader attribute manager.
   ShaderUniformMan            mShaderUniforms;  ///< Shader attribute manager.
-  std::shared_ptr<Camera>     mCamera;          ///< Basic GL Camera (this should not be here... move in the future)
+  std::shared_ptr<Camera>     mCamera;          ///< Basic GL Camera 
+                                                ///< (this should not be here... move in the future)
   std::vector<std::string>    mShaderDirs;      ///< Shader directories to search.
   std::shared_ptr<PipeDriver> mPipe;            ///< Current rendering pipe.
 
   // Threading variables / functions
-
-  /// Rendering thread function
-  void rendererThread();
 
   /// Terminates the rendering thread. After this call, you will be able to
   /// re-issue context->makeCurrent() and call doFrame manually.
@@ -132,7 +132,7 @@ private:
   /// There must not be a rendering thread already running.
   void createRendererThread();
 
-
+#ifdef SPIRE_USE_STD_THREADS
   std::thread             mThread;          ///< The renderer thread.
   std::atomic<bool>       mThreadKill;      ///< If true, the renderer thread
                                             ///< will attempt to finish what it
@@ -140,8 +140,13 @@ private:
   std::atomic<bool>       mThreadRunning;   ///< True if the rendering thread
                                             ///< is currently running.
 
+  /// Rendering thread
+  void rendererThread();
+#endif
+
   size_t                  mPixScreenWidth;  ///< Actual screen width in pxels.
   size_t                  mPixScreenHeight; ///< Actual screen height in pixels.
+  
 };
 
 } // namespace Spire
