@@ -54,6 +54,9 @@ if(UNIX)
 else(UNIX)
   if(WIN32)
     add_definitions(-DSPIRE_USING_WIN)
+    # GLEW Windows only: Since we are building a static library, we need
+    # to define GLEW_STATIC <url:http://glew.sourceforge.net/install.html#^define the GLEW_STATIC>
+    add_definitions(-DGLEW_STATIC)
   endif(WIN32)
 endif(UNIX)
 
