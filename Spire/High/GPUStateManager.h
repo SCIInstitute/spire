@@ -181,7 +181,7 @@ public:
   /// @}
 
   /// Returns the maximum number of supported texture units.
-  int getMaxTextureUnits() const;
+  size_t getMaxTextureUnits() const;
 
 protected:
   GPUState mInternalState;

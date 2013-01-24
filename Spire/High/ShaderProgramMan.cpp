@@ -130,7 +130,7 @@ ShaderProgramAsset::ShaderProgramAsset(Hub& hub, const std::string& name,
       {
         mAttributes.addAttribute(attributeName);
       }
-      catch (ShaderAttributeNotFound& e)
+      catch (ShaderAttributeNotFound&)
       {
         Log::error() << "Unable to find attribute: ''" << attributeName << "'"
                      << " in ShaderAttributeMan.\n";
@@ -161,7 +161,7 @@ ShaderProgramAsset::ShaderProgramAsset(Hub& hub, const std::string& name,
       {
         mUniforms.addUniform(uniformName);
       }
-      catch (ShaderUniformNotFound& e)
+      catch (ShaderUniformNotFound&)
       {
         Log::warning() << "Unable to find uniform: '" << uniformName << "'"
                        << " in ShaderUniformMan." << std::endl;

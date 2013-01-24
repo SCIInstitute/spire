@@ -172,11 +172,11 @@ GPUStateManager::~GPUStateManager()
 }
 
 //------------------------------------------------------------------------------
-int GPUStateManager::getMaxTextureUnits() const
+size_t GPUStateManager::getMaxTextureUnits() const
 {
   GLint tmp;
   glGetIntegerv(GL_MAX_TEXTURE_UNITS, &tmp);
-  return tmp;
+  return static_cast<size_t>(tmp);
 }
 
 //------------------------------------------------------------------------------

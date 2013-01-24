@@ -40,6 +40,11 @@
 
 #include "StuPipe/Driver.h"
 
+#ifdef SPIRE_USING_WIN
+  // Disable warning: 'this' used in a base member initializer list warning.
+  #pragma warning(disable:4355)
+#endif
+
 namespace Spire {
 
 //------------------------------------------------------------------------------

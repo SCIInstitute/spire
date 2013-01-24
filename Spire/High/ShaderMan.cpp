@@ -83,7 +83,7 @@ ShaderAsset::ShaderAsset(Hub& hub, const std::string& filename,
   // Size std::string appropriately before reading file.
   std::string fileContents;
   file.seekg(0, std::ios::end);
-  fileContents.resize(file.tellg());
+  fileContents.resize(static_cast<unsigned int>(file.tellg()));
   file.seekg(0, std::ios::beg);
 
   // Extra parenthesis are essential to avoid the most vexing parse.
