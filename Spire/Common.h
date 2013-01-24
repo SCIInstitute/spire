@@ -39,10 +39,13 @@
 #include <OpenGL/gl.h>
 #elif SPIRE_USING_IOS
 #define OPENGL_ES 1
+#elif SPIRE_USING_WIN
+#include <Windows.h>
+#include <gl/GL.h>
 //#elif SPIRE_USING_ANDROID
 //#elif SPIRE_USING_LINUX
-//#elif SPIRE_USING_WIN
 #else
+
 #error OpenGL headers not defined for this platform.
 #endif
 

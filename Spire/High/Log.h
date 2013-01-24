@@ -34,8 +34,10 @@
 
 #include "High/Hub.h"
 #include <sstream>
+#ifdef SPIRE_USE_STD_THREADS
 #include <atomic>
 #include <thread>
+#endif
 
 // In the future, when there are multiple spire threads, use a mutex to
 // protect calls to a vector that stores std::this_thread::get_id()s
@@ -144,6 +146,7 @@ private:
   ///       Linux (SPIRE_USING_LINUX) and Windows (SPIRE_USING_WIN) both support this.
   ///       Clang does not currently support it.
 
+#ifdef SPIRE_USE_STD_THREADS
   /// True if a thread has paired with this logger.
   static std::atomic<bool>          mHasPairedThread;
   /// The ID of the thread that has paired with the logger
@@ -151,6 +154,7 @@ private:
   static std::thread::id            mPairedThreadID;
   /// 'Singleton' instance of the logger. Should be turned into a vector
   /// if we want multiple instances.
+#endif
   static Log*                       mLog;
   /// Null output stream.
   static std::ostream               mCNull;

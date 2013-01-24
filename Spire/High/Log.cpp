@@ -33,8 +33,10 @@
 
 namespace Spire {
 
+#ifdef SPIRE_USE_STD_THREAD
 std::atomic<bool>         Log::mHasPairedThread(false);
 std::thread::id           Log::mPairedThreadID;
+#endif
 Log*                      Log::mLog(nullptr);
 std::ostream              Log::mCNull(0); // See: http://stackoverflow.com/questions/6240950/platform-independent-dev-null-in-c 
 
@@ -44,7 +46,8 @@ Log::Log(const Interface::LogFunction& logFunction) :
     mMessageStream(logFunction, Interface::LOG_MESSAGE),
     mWarningStream(logFunction, Interface::LOG_WARNING),
     mErrorStream(logFunction, Interface::LOG_ERROR)
-{  if (logFunction == nullptr)
+{
+  if (logFunction == nullptr)
   {
 #ifndef WIN32
     std::stringstream osFilename;
@@ -62,6 +65,7 @@ Log::Log(const Interface::LogFunction& logFunction) :
 #endif
   }
 
+#ifdef SPIRE_USE_STD_THREAD
   // Check to see if any thread has paired.
   if (mHasPairedThread.exchange(true) == false)
   {
@@ -78,6 +82,9 @@ Log::Log(const Interface::LogFunction& logFunction) :
   {
     // Do nothing, since another thread has paired.
   }
+#else
+  mLog = this;
+#endif
 }
 
 //------------------------------------------------------------------------------
@@ -87,16 +94,19 @@ Log::~Log()
   if (mOutputFile.is_open())
     mOutputFile.close();
 
+#ifdef SPIRE_USE_STD_THREAD
   if (    mHasPairedThread.load() == true 
       &&  mPairedThreadID == std::this_thread::get_id())
   {
     mHasPairedThread.store(false);
   }
+#endif
 }
 
 //------------------------------------------------------------------------------
 std::ostream& Log::debug()
 {
+#ifdef SPIRE_USE_STD_THREAD
   if (    mHasPairedThread.load() == true 
       &&  mPairedThreadID == std::this_thread::get_id())
   {
@@ -106,11 +116,16 @@ std::ostream& Log::debug()
   {
     return mCNull;
   }
+#else
+  // We will always be single threaded.
+  return mLog->mDebugStream;
+#endif
 }
 
 //------------------------------------------------------------------------------
 std::ostream& Log::message()
 {
+#ifdef SPIRE_USE_STD_THREAD
   if (    mHasPairedThread.load() == true 
       &&  mPairedThreadID == std::this_thread::get_id())
   {
@@ -120,11 +135,15 @@ std::ostream& Log::message()
   {
     return mCNull;
   }
+#else
+  return mLog->mMessageStream;
+#endif
 }
 
 //------------------------------------------------------------------------------
 std::ostream& Log::warning()
 {
+#ifdef SPIRE_USE_STD_THREAD
   if (    mHasPairedThread.load() == true 
       &&  mPairedThreadID == std::this_thread::get_id())
   {
@@ -134,11 +153,15 @@ std::ostream& Log::warning()
   {
     return mCNull;
   }
+#else
+  return mLog->mWarningStream;
+#endif
 }
 
 //------------------------------------------------------------------------------
 std::ostream& Log::error()
 {
+#ifdef SPIRE_USE_STD_THREAD
   if (    mHasPairedThread.load() == true 
       &&  mPairedThreadID == std::this_thread::get_id())
   {
@@ -148,6 +171,9 @@ std::ostream& Log::error()
   {
     return mCNull;
   }
+#else
+  return mLog->mErrorStream;
+#endif
 }
 
 //------------------------------------------------------------------------------

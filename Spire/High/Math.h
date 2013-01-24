@@ -38,8 +38,9 @@
 namespace Spire {
 
 //constexpr double pi() { return std::atan(1)*4; }
-constexpr double  PI_D  = 3.141592653589793238462;
-constexpr float   PI    = 3.14159265358979f;
+/// \TODO: Change const back to constexpr
+const double  PI_D  = 3.141592653589793238462;
+const float   PI    = 3.14159265358979f;
 
 // Typedef's for the vector math library.
 typedef Vector::Vector3    V3;
@@ -49,7 +50,6 @@ typedef Vector::Matrix3    M33;
 typedef Vector::Matrix4    M44;
 typedef Vector::Transform3 Trafo3;
 typedef Vector::Point3     Point3;
-
 
 } // namespace spire
 
