@@ -40,6 +40,7 @@
 #elif SPIRE_USING_IOS
 #define OPENGL_ES 1
 #elif SPIRE_USING_WIN
+#define NOMINMAX
 #include <Windows.h>
 #include <gl/GL.h>
 //#elif SPIRE_USING_ANDROID

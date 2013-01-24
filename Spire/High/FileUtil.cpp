@@ -34,6 +34,7 @@
 
 #include <vector>
 #include <string>
+#include <algorithm>
 
 #include "High/Log.h"
 #include "FileUtil.h"
