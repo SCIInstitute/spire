@@ -96,6 +96,13 @@ void Hub::oneTimeInitOnThread()
   // OpenGL initialization
   mContext->makeCurrent();
 
+  GLenum err = glewInit();
+  if (GLEW_OK != err)
+  {
+    Log::error() << "GLEW init failed!" << std::endl;
+    throw GLError("GLEW failed to initialize!");
+  }
+
   // Initialize OpenGL
   glClearColor(0.0, 0.0, 0.0, 1.0);
 

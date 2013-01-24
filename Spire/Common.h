@@ -36,18 +36,19 @@
 
 // OpenGL headers
 #ifdef SPIRE_USING_OSX
-#include <OpenGL/gl.h>
+  #include <GL/glew.h>
+  //#include <OpenGL/gl.h>
 #elif SPIRE_USING_IOS
-#define OPENGL_ES 1
+  #define OPENGL_ES 1
 #elif SPIRE_USING_WIN
-#define NOMINMAX
-#include <Windows.h>
-#include <gl/GL.h>
+  #define NOMINMAX
+  #include <Windows.h>
+  #include <GL/glew.h>
+  //#include <gl/GL.h>
 //#elif SPIRE_USING_ANDROID
 //#elif SPIRE_USING_LINUX
 #else
-
-#error OpenGL headers not defined for this platform.
+  #error OpenGL headers not defined for this platform.
 #endif
 
 // Utility definitions for non-ES OpenGL implementations.

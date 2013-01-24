@@ -53,7 +53,7 @@ else(UNIX)
   endif(WIN32)
 endif(UNIX)
 
-include_directories(${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/3rdParty ${OPENGL_INCLUDE_DIRS})
+include_directories(${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/3rdParty/glew/include ${CMAKE_CURRENT_SOURCE_DIR}/3rdParty ${OPENGL_INCLUDE_DIRS})
 
 ########################################################################
 # Tuvok
@@ -160,6 +160,9 @@ file (GLOB Source_Pipes
   "StuPipe/*.h"
   )
 
+set(Source_GLEW
+  3rdParty/glew/src/glew.c)
+
 ########################################################################
 # Library setup
 
@@ -169,6 +172,7 @@ add_library(Spire
   ${Source_Low}
   ${Source_Caching}
   ${Source_Pipes}
+  ${Source_GLEW}
   )
 add_dependencies(Spire ThirdParty_Tuvok)
 target_link_libraries(
