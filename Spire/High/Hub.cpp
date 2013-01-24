@@ -111,7 +111,9 @@ void Hub::oneTimeInitOnThread()
 
   Log::message() << "OpenGL initialization. Running on a " << vendor << " "
                  << renderer << " with OpenGL version " << versionl << std::endl
+#ifdef SPIRE_USE_STD_THREADS
                  << "GL made current on thread " << std::this_thread::get_id()
+#endif
                  << std::endl;
 
 	GLint tmp;

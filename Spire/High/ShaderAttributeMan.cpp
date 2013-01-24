@@ -249,7 +249,7 @@ void ShaderAttributeCollection::addAttribute(const std::string& attribName,
     mAttributes.push_back(attribData);
 
     // Re-sort the array.
-    sort(mAttributes.begin(), mAttributes.end(),
+    std::sort(mAttributes.begin(), mAttributes.end(),
          [] (const AttribSpecificData& a, const AttribSpecificData& b) 
           { return a.attrib.index < b.attrib.index; });
   }
