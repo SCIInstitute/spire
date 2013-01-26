@@ -27,7 +27,7 @@ endif()
 ########################################################################
 # OpenGL configuration
 
-if(!IOS)
+if(NOT DEFINED IOS)
   find_package(OpenGL REQUIRED)
 endif()
 
@@ -173,7 +173,7 @@ file (GLOB Source_Pipes
   )
 
 # GLEW is not support on mobile platforms.
-if(!IOS)
+if(NOT DEFINED IOS)
   set(Source_GLEW
     3rdParty/glew/src/glew.c)
 endif()

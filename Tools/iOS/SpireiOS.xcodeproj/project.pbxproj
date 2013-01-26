@@ -37,7 +37,7 @@
 			isa = PBXContainerItemProxy;
 			containerPortal = 460D9C4016B45D8200EE3B99 /* Project.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = 32A8645E0A6E4020AC3086D5;
+			remoteGlobalIDString = 7939FAA610F8437281DC5C5D;
 			remoteInfo = Spire;
 		};
 /* End PBXContainerItemProxy section */
