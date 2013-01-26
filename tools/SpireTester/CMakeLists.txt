@@ -55,26 +55,9 @@ file (GLOB Source_Root
   "*.h"
   )
 
-file (GLOB Source_High
-  "../High/Tests/*.cc"
-  "../High/Tests/*.h"
-  )
-
-file (GLOB Source_Low
-  "../Low/Tests/*.cc"
-  "../Low/Tests/*.h"
-  )
-
-file (GLOB Source_Caching
-  "../Caching/Tests/*.cc"
-  "../Caching/Tests/*.h"
-  )
-
-file (GLOB Source_Pipes
-  "../Pipes/Tests/*.cc"
-  "../Pipes/Tests/*.h"
-  "../Pipes/StuPipe/Tests/*.cc"
-  "../Pipes/StuPipe/Tests/*.h"
+file (GLOB Source_Tests
+  "${BASE_SPIRE_DIR}/Spire/Tests/*.cc"
+  "${BASE_SPIRE_DIR}/Spire/Tests/*.h"
   )
 
 ########################################################################
@@ -82,10 +65,7 @@ file (GLOB Source_Pipes
 
 add_executable(SpireTest 
   ${Source_Root}
-  ${Source_High}
-  ${Source_Low}
-  ${Source_Caching}
-  ${Source_Pipes})
+  ${Source_Tests})
 
 target_link_libraries(SpireTest 
   Spire 
