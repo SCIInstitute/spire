@@ -27,8 +27,9 @@ endif()
 ########################################################################
 # OpenGL configuration
 
-# Find OpenGL
-find_package(OpenGL REQUIRED)
+if(!IOS)
+  find_package(OpenGL REQUIRED)
+endif()
 
 ########################################################################
 # Compiler settings
@@ -43,6 +44,10 @@ if(UNIX)
     # We were using CoreFoundation to look up shaders in the bundle.
     find_library(CORE_FOUNDATION_FRAMEWORK CoreFoundation)
     set(OS_SPECIFIC_LIBS ${CORE_FOUNDATION_FRAMEWORK})
+
+    if(IOS)
+
+    endif()
   else(APPLE)
     add_definitions(-DSPIRE_USING_LINUX)
   endif(APPLE)
