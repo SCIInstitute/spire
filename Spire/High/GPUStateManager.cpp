@@ -324,8 +324,14 @@ GPUState GPUStateManager::getStateFromOpenGL() const
   state.mColorMask = col[0] != 0;  
 
   GLint src, dest;
+#ifdef SPIRE_OPENGL_ES_2
+  //GL_BLEND_DST_RGB and GL_BLEND_DST_ALPHA
+  glGetIntegerv(GL_BLEND_SRC_RGB, &src);
+  glGetIntegerv(GL_BLEND_DST_RGB, &dest);
+#else
   glGetIntegerv(GL_BLEND_SRC, &src);
   glGetIntegerv(GL_BLEND_DST, &dest);
+#endif
   state.mBlendFuncSrc = GLToBLEND_FUNC(src);
   state.mBlendFuncDst = GLToBLEND_FUNC(dest);
 

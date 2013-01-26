@@ -112,9 +112,9 @@ public:
       mBlendEquation(BE_FUNC_ADD),
       mBlendFuncSrc(BF_ONE_MINUS_DST_ALPHA),
       mBlendFuncDst(BF_ONE),
-      mTexActiveUnit(0),
       mDepthMask(true),
-      mColorMask(true)
+      mColorMask(true),
+      mTexActiveUnit(0)
   {
     for (size_t i = 0; i < MAX_TEXTURE_UNITS ; i++) mTexEnable[i] = TEX_NONE;
   }

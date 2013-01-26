@@ -46,7 +46,7 @@ if(UNIX)
 
     if(IOS)
       add_definitions(-DSPIRE_USING_IOS)
-      add_definitions(-DSPIRE_OPENGL_ES)
+      add_definitions(-DSPIRE_OPENGL_ES_2)
     else()
       add_definitions(-DSPIRE_USING_OSX)
     endif()
@@ -172,9 +172,11 @@ file (GLOB Source_Pipes
   "StuPipe/*.h"
   )
 
-# TODO: Manage this per-platform. Most OpenGL ES platforms are *not* supported.
-set(Source_GLEW
-  3rdParty/glew/src/glew.c)
+# GLEW is not support on mobile platforms.
+if(!IOS)
+  set(Source_GLEW
+    3rdParty/glew/src/glew.c)
+endif()
 
 ########################################################################
 # Library setup
@@ -192,5 +194,6 @@ target_link_libraries(
   Spire
   ${OPENGL_LIBRARIES}
   ${TUVOK_LIB}
-  ${OS_SPECIFIC_LIBS})
+  ${OS_SPECIFIC_LIBS}
+  )
 

@@ -87,7 +87,7 @@ void TestUniformColor::doFrame()
 
   // Grab pointers to attributes and uniforms.
   const ShaderAttributeCollection& attribs  = mShader->getAttributes();
-  const ShaderUniformCollection&   uniforms = mShader->getUniforms();
+  //const ShaderUniformCollection&   uniforms = mShader->getUniforms();
 
   // Sanity check: Ensure the shader knows about our attributes.
   if (attribs.hasAttribute(pos.codeName) == false)

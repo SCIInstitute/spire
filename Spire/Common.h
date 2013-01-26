@@ -54,7 +54,7 @@
 #endif
 
 // Utility definitions for non-ES OpenGL implementations.
-#ifndef OPENGL_ES
+#ifndef SPIRE_OPENGL_ES_2
 #define GL_HALF_FLOAT_OES GL_FLOAT
 #endif
 
