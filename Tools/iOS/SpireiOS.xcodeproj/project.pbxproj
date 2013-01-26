@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		460D9C5716B45F5D00EE3B99 /* libSpire.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 460D9C5016B45D8700EE3B99 /* libSpire.a */; };
 		468802C3166FDE100046752B /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 468802C2166FDE100046752B /* UIKit.framework */; };
 		468802C5166FDE100046752B /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 468802C4166FDE100046752B /* Foundation.framework */; };
 		468802C7166FDE100046752B /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 468802C6166FDE100046752B /* CoreGraphics.framework */; };
@@ -18,14 +19,30 @@
 		468802D9166FDE100046752B /* Default.png in Resources */ = {isa = PBXBuildFile; fileRef = 468802D8166FDE100046752B /* Default.png */; };
 		468802DB166FDE100046752B /* Default@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 468802DA166FDE100046752B /* Default@2x.png */; };
 		468802DD166FDE100046752B /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 468802DC166FDE100046752B /* Default-568h@2x.png */; };
-		468802DF166FDE100046752B /* Shader.fsh in Resources */ = {isa = PBXBuildFile; fileRef = 468802DE166FDE100046752B /* Shader.fsh */; };
-		468802E1166FDE100046752B /* Shader.vsh in Resources */ = {isa = PBXBuildFile; fileRef = 468802E0166FDE100046752B /* Shader.vsh */; };
-		468802E4166FDE100046752B /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 468802E3166FDE100046752B /* ViewController.m */; };
+		468802E4166FDE100046752B /* ViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 468802E3166FDE100046752B /* ViewController.mm */; };
 		468802E7166FDE100046752B /* ViewController_iPhone.xib in Resources */ = {isa = PBXBuildFile; fileRef = 468802E5166FDE100046752B /* ViewController_iPhone.xib */; };
 		468802EA166FDE100046752B /* ViewController_iPad.xib in Resources */ = {isa = PBXBuildFile; fileRef = 468802E8166FDE100046752B /* ViewController_iPad.xib */; };
 /* End PBXBuildFile section */
 
+/* Begin PBXContainerItemProxy section */
+		460D9C4F16B45D8700EE3B99 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 460D9C4016B45D8200EE3B99 /* Project.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 1EC32A366DF3469188EE2EBB;
+			remoteInfo = Spire;
+		};
+		460D9C5516B45F5300EE3B99 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 460D9C4016B45D8200EE3B99 /* Project.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 32A8645E0A6E4020AC3086D5;
+			remoteInfo = Spire;
+		};
+/* End PBXContainerItemProxy section */
+
 /* Begin PBXFileReference section */
+		460D9C4016B45D8200EE3B99 /* Project.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Project.xcodeproj; path = ../../bin/xcode/ios/Project.xcodeproj; sourceTree = "<group>"; };
 		468802BE166FDE100046752B /* SpireiOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SpireiOS.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		468802C2166FDE100046752B /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		468802C4166FDE100046752B /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
@@ -41,10 +58,8 @@
 		468802D8166FDE100046752B /* Default.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Default.png; sourceTree = "<group>"; };
 		468802DA166FDE100046752B /* Default@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default@2x.png"; sourceTree = "<group>"; };
 		468802DC166FDE100046752B /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default-568h@2x.png"; sourceTree = "<group>"; };
-		468802DE166FDE100046752B /* Shader.fsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = Shader.fsh; path = Shaders/Shader.fsh; sourceTree = "<group>"; };
-		468802E0166FDE100046752B /* Shader.vsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = Shader.vsh; path = Shaders/Shader.vsh; sourceTree = "<group>"; };
 		468802E2166FDE100046752B /* ViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ViewController.h; sourceTree = "<group>"; };
-		468802E3166FDE100046752B /* ViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ViewController.m; sourceTree = "<group>"; };
+		468802E3166FDE100046752B /* ViewController.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = ViewController.mm; sourceTree = "<group>"; };
 		468802E6166FDE100046752B /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/ViewController_iPhone.xib; sourceTree = "<group>"; };
 		468802E9166FDE100046752B /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/ViewController_iPad.xib; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -54,6 +69,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				460D9C5716B45F5D00EE3B99 /* libSpire.a in Frameworks */,
 				468802C3166FDE100046752B /* UIKit.framework in Frameworks */,
 				468802C5166FDE100046752B /* Foundation.framework in Frameworks */,
 				468802C7166FDE100046752B /* CoreGraphics.framework in Frameworks */,
@@ -65,12 +81,21 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		460D9C4A16B45D8700EE3B99 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				460D9C5016B45D8700EE3B99 /* libSpire.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
 		468802B3166FDE100046752B = {
 			isa = PBXGroup;
 			children = (
 				468802CC166FDE100046752B /* SpireiOS */,
 				468802C1166FDE100046752B /* Frameworks */,
 				468802BF166FDE100046752B /* Products */,
+				460D9C4016B45D8200EE3B99 /* Project.xcodeproj */,
 			);
 			sourceTree = "<group>";
 		};
@@ -99,10 +124,8 @@
 			children = (
 				468802D5166FDE100046752B /* AppDelegate.h */,
 				468802D6166FDE100046752B /* AppDelegate.m */,
-				468802DE166FDE100046752B /* Shader.fsh */,
-				468802E0166FDE100046752B /* Shader.vsh */,
 				468802E2166FDE100046752B /* ViewController.h */,
-				468802E3166FDE100046752B /* ViewController.m */,
+				468802E3166FDE100046752B /* ViewController.mm */,
 				468802E5166FDE100046752B /* ViewController_iPhone.xib */,
 				468802E8166FDE100046752B /* ViewController_iPad.xib */,
 				468802CD166FDE100046752B /* Supporting Files */,
@@ -138,6 +161,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				460D9C5616B45F5300EE3B99 /* PBXTargetDependency */,
 			);
 			name = SpireiOS;
 			productName = SpireiOS;
@@ -163,12 +187,28 @@
 			mainGroup = 468802B3166FDE100046752B;
 			productRefGroup = 468802BF166FDE100046752B /* Products */;
 			projectDirPath = "";
+			projectReferences = (
+				{
+					ProductGroup = 460D9C4A16B45D8700EE3B99 /* Products */;
+					ProjectRef = 460D9C4016B45D8200EE3B99 /* Project.xcodeproj */;
+				},
+			);
 			projectRoot = "";
 			targets = (
 				468802BD166FDE100046752B /* SpireiOS */,
 			);
 		};
 /* End PBXProject section */
+
+/* Begin PBXReferenceProxy section */
+		460D9C5016B45D8700EE3B99 /* libSpire.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libSpire.a;
+			remoteRef = 460D9C4F16B45D8700EE3B99 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+/* End PBXReferenceProxy section */
 
 /* Begin PBXResourcesBuildPhase section */
 		468802BC166FDE100046752B /* Resources */ = {
@@ -179,8 +219,6 @@
 				468802D9166FDE100046752B /* Default.png in Resources */,
 				468802DB166FDE100046752B /* Default@2x.png in Resources */,
 				468802DD166FDE100046752B /* Default-568h@2x.png in Resources */,
-				468802DF166FDE100046752B /* Shader.fsh in Resources */,
-				468802E1166FDE100046752B /* Shader.vsh in Resources */,
 				468802E7166FDE100046752B /* ViewController_iPhone.xib in Resources */,
 				468802EA166FDE100046752B /* ViewController_iPad.xib in Resources */,
 			);
@@ -195,11 +233,19 @@
 			files = (
 				468802D3166FDE100046752B /* main.m in Sources */,
 				468802D7166FDE100046752B /* AppDelegate.m in Sources */,
-				468802E4166FDE100046752B /* ViewController.m in Sources */,
+				468802E4166FDE100046752B /* ViewController.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		460D9C5616B45F5300EE3B99 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = Spire;
+			targetProxy = 460D9C5516B45F5300EE3B99 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
 		468802CF166FDE100046752B /* InfoPlist.strings */ = {
@@ -251,6 +297,7 @@
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = ../../;
 				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
@@ -273,6 +320,7 @@
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = ../../;
 				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
 				OTHER_CFLAGS = "-DNS_BLOCK_ASSERTIONS=1";
 				SDKROOT = iphoneos;
@@ -322,6 +370,7 @@
 				468802EF166FDE100046752B /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
