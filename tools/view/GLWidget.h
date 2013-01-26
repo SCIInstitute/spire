@@ -33,7 +33,7 @@
 #define SPIRE_GLWIDGET_H
 
 #include <QtOpenGL/QGLWidget>
-#include <QTimer.h>
+#include <QTimer>
 
 #include "GLContext.h"
 

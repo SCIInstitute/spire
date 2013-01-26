@@ -37,6 +37,7 @@
 #include <list>
 #include <queue>
 #include <cstdint>
+#include <memory>
 #ifndef SPIRE_USING_WIN
 #include <chrono>
 #else

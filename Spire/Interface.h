@@ -35,6 +35,7 @@
 #include <string>
 #include <vector>
 #include <functional>
+#include <memory>
 
 #include "Context.h"
 

@@ -93,9 +93,9 @@ set(QT_MIN_VERSION "4.8.0")
 find_package(Qt4 REQUIRED)
 
 if (QT_FOUND)
-  include_directories(${QT_INCLUDE_DIR})
+  include_directories("${QT_INCLUDE_DIR}")
 else ()
-  message(FATAL_ERROR "QT 4.7 or greater is required to build Spire Viewer")
+  message(FATAL_ERROR "QT 4.8 or greater is required to build Spire Viewer")
 endif ()
 
 ########################################################################

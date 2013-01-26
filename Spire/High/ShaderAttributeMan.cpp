@@ -29,6 +29,8 @@
 /// \author James Hughes
 /// \date   December 2012
 
+#include <algorithm>
+
 #include "Common.h"
 #include "Exceptions.h"
 

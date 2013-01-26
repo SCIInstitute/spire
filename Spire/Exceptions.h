@@ -33,6 +33,8 @@
 #ifndef SPIRE_EXCEPTIONS_H
 #define SPIRE_EXCEPTIONS_H
 
+#include <stdexcept>
+
 namespace Spire {
 
 /// TODO: Get rid of these ifdefs when we switch to a visual studio that

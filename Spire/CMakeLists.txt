@@ -1,6 +1,4 @@
 # Builds the spire library and all of its dependencies.
-#set (RENDERER_ROOT_DIR "${CMAKE_CURRENT_SOURCE_DIR}")
-
 
 ########################################################################
 # CMake configuration
