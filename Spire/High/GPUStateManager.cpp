@@ -106,8 +106,13 @@ GLenum BLEND_EQToGL(BLEND_EQ func)
     case BE_FUNC_ADD:               return GL_FUNC_ADD;               break;
     case BE_FUNC_SUBTRACT:          return GL_FUNC_SUBTRACT;          break;
     case BE_FUNC_REVERSE_SUBTRACT:  return GL_FUNC_REVERSE_SUBTRACT;  break;
+#ifdef SPIRE_OPENGL_ES_2
+    case BE_MIN:                    Log::error() << "GL_MIN not supported in ES 2.0" << std::endl; break;
+    case BE_MAX:                    Log::error() << "GL_MAX not supported in ES 2.0" << std::endl; break;
+#else
     case BE_MIN:                    return GL_MIN;                    break;
     case BE_MAX:                    return GL_MAX;                    break;
+#endif
   }
   return GL_FUNC_ADD;
 }
@@ -120,8 +125,10 @@ BLEND_EQ GLToBLEND_EQ(const GLenum& func)
     case GL_FUNC_ADD:               return BE_FUNC_ADD;               break;
     case GL_FUNC_SUBTRACT:          return BE_FUNC_SUBTRACT;          break;
     case GL_FUNC_REVERSE_SUBTRACT:  return BE_FUNC_REVERSE_SUBTRACT;  break;
+#ifndef SPIRE_OPENGL_ES_2
     case GL_MIN:                    return BE_MIN;                    break;
     case GL_MAX:                    return BE_MAX;                    break;
+#endif
   }
   return BE_FUNC_ADD;
 }
@@ -175,7 +182,11 @@ GPUStateManager::~GPUStateManager()
 size_t GPUStateManager::getMaxTextureUnits() const
 {
   GLint tmp;
+#ifdef SPIRE_OPENGL_ES_2
+  glGetIntegerv(GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS, &tmp);
+#else
   glGetIntegerv(GL_MAX_TEXTURE_UNITS, &tmp);
+#endif
   return static_cast<size_t>(tmp);
 }
 
@@ -199,7 +210,24 @@ void GPUStateManager::apply(const GPUState& state, bool force)
     {
       glActiveTexture(GLenum(GL_TEXTURE0+i));
       mInternalState.mTexEnable[i] = state.mTexEnable[i];
-      switch (mInternalState.mTexEnable[i]) {
+      switch (mInternalState.mTexEnable[i])
+      {
+#ifdef SPIRE_OPENGL_ES_2
+        case TEX_1D:      Log::error() << "1D textures not supported in ES 2.0" << std::endl;
+                          glDisable(GL_TEXTURE_2D);
+                          glDisable(GL_TEXTURE_CUBE_MAP);
+                          break;
+        case TEX_2D:      glDisable(GL_TEXTURE_CUBE_MAP);
+                          glEnable(GL_TEXTURE_2D);
+                          break;
+        case TEX_3D:      Log::error() << "3D textures not supported in ES 2.0" << std::endl;
+                          glDisable(GL_TEXTURE_CUBE_MAP);
+                          glDisable(GL_TEXTURE_2D);
+                          break;
+        case TEX_NONE:    glDisable(GL_TEXTURE_2D);
+                          glDisable(GL_TEXTURE_CUBE_MAP);
+                          break;
+#else
         case TEX_1D:      glDisable(GL_TEXTURE_2D);
                           glDisable(GL_TEXTURE_3D);
                           glDisable(GL_TEXTURE_CUBE_MAP);
@@ -210,6 +238,8 @@ void GPUStateManager::apply(const GPUState& state, bool force)
                           glEnable(GL_TEXTURE_2D);
                           break;
         case TEX_3D:      glDisable(GL_TEXTURE_CUBE_MAP);
+                          glDisable(GL_TEXTURE_1D);
+                          glDisable(GL_TEXTURE_2D);
                           glEnable(GL_TEXTURE_3D);
                           break;
         case TEX_NONE:    glDisable(GL_TEXTURE_1D);
@@ -217,6 +247,7 @@ void GPUStateManager::apply(const GPUState& state, bool force)
                           glDisable(GL_TEXTURE_3D);
                           glDisable(GL_TEXTURE_CUBE_MAP);
                           break;
+#endif
       }
     }
   }
@@ -256,15 +287,25 @@ GPUState GPUStateManager::getStateFromOpenGL() const
   for(size_t i=0; i < getMaxTextureUnits(); ++i)
   {
     glActiveTexture(GL_TEXTURE0 + GLenum(i));
-    if(glIsEnabled(GL_TEXTURE_3D)) 
-    {
-      state.mTexEnable[i] = TEX_3D;
-    }
-    else if(glIsEnabled(GL_TEXTURE_2D))
+#ifdef SPIRE_OPENGL_ES_2
+    if (glIsEnabled(GL_TEXTURE_2D))
     {
       state.mTexEnable[i] = TEX_2D;
     }
-    else if(glIsEnabled(GL_TEXTURE_1D)) 
+    else
+    {
+      state.mTexEnable[i] = TEX_NONE;
+    }
+#else
+    if (glIsEnabled(GL_TEXTURE_3D))
+    {
+      state.mTexEnable[i] = TEX_3D;
+    }
+    else if (glIsEnabled(GL_TEXTURE_2D))
+    {
+      state.mTexEnable[i] = TEX_2D;
+    }
+    else if (glIsEnabled(GL_TEXTURE_1D))
     {
       state.mTexEnable[i] = TEX_1D;
     }
@@ -272,6 +313,7 @@ GPUState GPUStateManager::getStateFromOpenGL() const
     {
       state.mTexEnable[i] = TEX_NONE;
     }
+#endif
   }
   GLboolean	 b;
   glGetBooleanv(GL_DEPTH_WRITEMASK, &b);

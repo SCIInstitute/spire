@@ -37,15 +37,18 @@
 // OpenGL headers
 #ifdef SPIRE_USING_OSX
   #include <GL/glew.h>
-#elif SPIRE_USING_IOS
-  #define OPENGL_ES 1
 #elif SPIRE_USING_WIN
   #define NOMINMAX
   #include <Windows.h>
   #include <GL/glew.h>
 #elif SPIRE_USING_LINUX
   #include <GL/glew.h>
-//#elif SPIRE_USING_ANDROID
+#elif SPIRE_USING_IOS
+  #import <OpenGLES/ES2/gl.h>
+  #import <OpenGLES/ES2/glext.h>
+#elif SPIRE_USING_ANDROID
+  #include <GLES2/gl2.h>
+  #include <GLES2/gl2ext.h>
 #else
   #error OpenGL headers not defined for this platform.
 #endif

@@ -100,12 +100,14 @@ void Hub::oneTimeInitOnThread()
   // OpenGL initialization
   mContext->makeCurrent();
 
+#ifndef SPIRE_OPENGL_ES_2
   GLenum err = glewInit();
   if (GLEW_OK != err)
   {
     Log::error() << "GLEW init failed!" << std::endl;
     throw GLError("GLEW failed to initialize!");
   }
+#endif
 
   // Initialize OpenGL
   glClearColor(0.0, 0.0, 0.0, 1.0);
@@ -121,23 +123,34 @@ void Hub::oneTimeInitOnThread()
 #endif
                  << std::endl;
 
-	GLint tmp;
+  GLint tmp;
   Log::debug() << "Hardware specific attributes" << std::endl;
   Log::debug() << "+Programmable:" << std::endl;
 
-	glGetIntegerv(GL_MAX_TEXTURE_UNITS, &tmp);
+#ifdef SPIRE_OPENGL_ES_2
+  glGetIntegerv(GL_MAX_VERTEX_TEXTURE_IMAGE_UNITS, &tmp);
+  Log::debug() << "  Vertex texture units: " << tmp << std::endl;
+
+  glGetIntegerv(GL_MAX_TEXTURE_IMAGE_UNITS, &tmp);
+  Log::debug() << "  Fragment texture units: " << tmp << std::endl;
+
+  glGetIntegerv(GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS, &tmp);
+  Log::debug() << "  Combined texture units: " << tmp << std::endl;
+#else
+  glGetIntegerv(GL_MAX_TEXTURE_UNITS, &tmp);
   Log::debug() << "  Texture Units: " << tmp << std::endl;
 
   Log::debug() << "+Fixed function (transient):" << std::endl;
-	glGetIntegerv(GL_MAX_MODELVIEW_STACK_DEPTH, &tmp);
+  glGetIntegerv(GL_MAX_MODELVIEW_STACK_DEPTH, &tmp);
   Log::debug() << "  Model view stack depth: " << tmp << std::endl;
 
-	glGetIntegerv(GL_MAX_PROJECTION_STACK_DEPTH, &tmp);
+  glGetIntegerv(GL_MAX_PROJECTION_STACK_DEPTH, &tmp);
   Log::debug() << "  Projection stack depth: " << tmp << std::endl;
 
-	glGetIntegerv(GL_MAX_TEXTURE_STACK_DEPTH, &tmp);
+  glGetIntegerv(GL_MAX_TEXTURE_STACK_DEPTH, &tmp);
   Log::debug() << "  Texture stack depth: " << tmp << std::endl;
-
+#endif
+    
   /// TODO: Add GPU memory checks using GL_NVX_gpu_memory_info for NVIDIA
   ///       and GL_ATI_meminfo for ATI.
 

@@ -38,7 +38,6 @@ if(UNIX)
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x")
 
   if(APPLE)
-    add_definitions(-DSPIRE_USING_OSX)
     set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libc++")
 
     # We were using CoreFoundation to look up shaders in the bundle.
@@ -46,7 +45,10 @@ if(UNIX)
     set(OS_SPECIFIC_LIBS ${CORE_FOUNDATION_FRAMEWORK})
 
     if(IOS)
-
+      add_definitions(-DSPIRE_USING_IOS)
+      add_definitions(-DSPIRE_OPENGL_ES)
+    else()
+      add_definitions(-DSPIRE_USING_OSX)
     endif()
   else(APPLE)
     add_definitions(-DSPIRE_USING_LINUX)
