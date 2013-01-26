@@ -25,6 +25,14 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+#ifdef OPENGL_ES
+  #ifdef GL_FRAGMENT_PRECISION_HIGH
+    // Default precision
+    precision highp float;
+  #else
+    precision mediump float;
+  #endif
+#endif
 
 varying vec4	fColor;
 

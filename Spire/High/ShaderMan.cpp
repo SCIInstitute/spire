@@ -102,9 +102,17 @@ ShaderAsset::ShaderAsset(Hub& hub, const std::string& filename,
     throw GLError("Unable to construct shader.");
   }
 
+#ifdef SPIRE_OPENGL_ES_2
+  const size_t numShaderSources = 2;
+  const char* cFileContents[numShaderSources] = 
+    {"#define OPENGL_ES\n#define OPENGL_ES_2\n", fileContents.c_str()};
+  glShaderSource(shader, numShaderSources, cFileContents, NULL);
+  GL_CHECK();
+#else
   const char* cFileContents = fileContents.c_str();
   glShaderSource(shader, 1, &cFileContents, NULL);
   GL_CHECK();
+#endif
 
   glCompileShader(shader);
 

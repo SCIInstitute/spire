@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		460D9C5716B45F5D00EE3B99 /* libSpire.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 460D9C5016B45D8700EE3B99 /* libSpire.a */; };
+		460D9C5916B4618500EE3B99 /* Shaders in Resources */ = {isa = PBXBuildFile; fileRef = 460D9C5816B4618500EE3B99 /* Shaders */; };
 		468802C3166FDE100046752B /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 468802C2166FDE100046752B /* UIKit.framework */; };
 		468802C5166FDE100046752B /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 468802C4166FDE100046752B /* Foundation.framework */; };
 		468802C7166FDE100046752B /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 468802C6166FDE100046752B /* CoreGraphics.framework */; };
@@ -43,6 +44,7 @@
 
 /* Begin PBXFileReference section */
 		460D9C4016B45D8200EE3B99 /* Project.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Project.xcodeproj; path = ../../bin/xcode/ios/Project.xcodeproj; sourceTree = "<group>"; };
+		460D9C5816B4618500EE3B99 /* Shaders */ = {isa = PBXFileReference; lastKnownFileType = folder; name = Shaders; path = ../../Spire/Shaders; sourceTree = "<group>"; };
 		468802BE166FDE100046752B /* SpireiOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SpireiOS.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		468802C2166FDE100046752B /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		468802C4166FDE100046752B /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
@@ -92,6 +94,7 @@
 		468802B3166FDE100046752B = {
 			isa = PBXGroup;
 			children = (
+				460D9C5816B4618500EE3B99 /* Shaders */,
 				468802CC166FDE100046752B /* SpireiOS */,
 				468802C1166FDE100046752B /* Frameworks */,
 				468802BF166FDE100046752B /* Products */,
@@ -221,6 +224,7 @@
 				468802DD166FDE100046752B /* Default-568h@2x.png in Resources */,
 				468802E7166FDE100046752B /* ViewController_iPhone.xib in Resources */,
 				468802EA166FDE100046752B /* ViewController_iPad.xib in Resources */,
+				460D9C5916B4618500EE3B99 /* Shaders in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

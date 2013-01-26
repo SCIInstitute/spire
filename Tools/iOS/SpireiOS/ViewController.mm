@@ -65,8 +65,19 @@ protected:
   view.context = self.context;
   view.drawableDepthFormat = GLKViewDrawableDepthFormat24;
 
+  // Obtain path to shader resources.
+  NSString* shaderPath = @"Shaders/UniformColor.fs";
+  NSString* fullPath = [[NSBundle mainBundle] pathForResource:[shaderPath lastPathComponent] ofType:nil inDirectory:[shaderPath stringByDeletingLastPathComponent]];
+  NSString* shaderDir = [fullPath stringByDeletingLastPathComponent];
+  std::string shaderDirSTD([shaderDir UTF8String]);
+
   mContext = new SpireContextiOS(self.context);
-  mInterface = new Spire::Interface(mContext, { "Shaders" }, false);
+  try {
+    mInterface = new Spire::Interface(mContext, { shaderDirSTD }, false);
+  } catch (std::exception& e) {
+    NSLog([NSString stringWithUTF8String:e.what()]);
+    throw;
+  }
 
   [self setupGL];
 }
