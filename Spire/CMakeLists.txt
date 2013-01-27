@@ -11,6 +11,7 @@ include(ExternalProject)
 
 option(USE_TUVOK "Builds and includes the Tuvok volume renderer" ON)
 option(USE_STD_THREADS "Use standard library threads. If turned off, no threading support is available." ON)
+option(BUILD_TESTING_APP "Builds spire testing application instead of the spire library." OFF)
 
 if(USE_TUVOK)
   add_definitions(-DSPIRE_USE_TUVOK)
@@ -67,6 +68,13 @@ endif(UNIX)
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/3rdParty/glew/include ${CMAKE_CURRENT_SOURCE_DIR}/3rdParty ${OPENGL_INCLUDE_DIRS})
 
+if(BUILD_TESTING_APP)
+  add_definitions(-DGTEST_USE_OWN_TR1_TUPLE=1)
+  include_directories(${CMAKE_CURRENT_SOURCE_DIR}/3rdParty/gtest/include)
+  add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/3rdParty/gtest)
+  set(TESTING_LIBS gtest)
+endif()
+
 ########################################################################
 # Tuvok
 
@@ -75,12 +83,12 @@ if(USE_TUVOK)
   # Tuvok's build system needs to be updated in the future so that it can
   # use builders other than QT. There is no reason to have a QT dependency
   # just for generating a makefile for Tuvok.
-  set(QT_MIN_VERSION "4.7.0")
+  set(QT_MIN_VERSION "4.8.0")
   find_package(Qt4 REQUIRED)
 
   if(QT_FOUND)
   else()
-    message(FATAL_ERROR "QT 4.7 or greater is required to build Spire (for Tuvok)")
+    message(FATAL_ERROR "QT 4.9 or greater is required to build Spire (for Tuvok)")
   endif()
 
   # Git (for checking out external projects).
@@ -178,22 +186,48 @@ if(NOT DEFINED IOS)
     3rdParty/glew/src/glew.c)
 endif()
 
+if(BUILD_TESTING_APP)
+  file(GLOB Source_Testing
+    "../Tools/SpireTester/*.cpp"
+    "../Tools/SpireTester/*.h"
+    "Tests/*.cc"
+    "Tests/*.h")
+endif()
+
 ########################################################################
 # Library setup
 
-add_library(Spire
-  ${Source_Root}
-  ${Source_High}
-  ${Source_Low}
-  ${Source_Caching}
-  ${Source_Pipes}
-  ${Source_GLEW}
-  )
-add_dependencies(Spire ThirdParty_Tuvok)
+# Build the library or the testing app.
+if(BUILD_TESTING_APP)
+  set(SPIRE_TARGET_NAME SpireTest)
+  add_executable(${SPIRE_TARGET_NAME}
+    ${Source_Root}
+    ${Source_High}
+    ${Source_Low}
+    ${Source_Caching}
+    ${Source_Pipes}
+    ${Source_GLEW}
+    ${Source_Testing})
+  add_dependencies(${SPIRE_TARGET_NAME} ThirdParty_Tuvok gtest)
+else()
+  set(SPIRE_TARGET_NAME Spire)
+  add_library(${SPIRE_TARGET_NAME}
+    ${Source_Root}
+    ${Source_High}
+    ${Source_Low}
+    ${Source_Caching}
+    ${Source_Pipes}
+    ${Source_GLEW}
+    ${Source_Testing}
+    )
+  add_dependencies(${SPIRE_TARGET_NAME} ThirdParty_Tuvok)
+endif()
+
 target_link_libraries(
-  Spire
+  ${SPIRE_TARGET_NAME}
   ${OPENGL_LIBRARIES}
   ${TUVOK_LIB}
   ${OS_SPECIFIC_LIBS}
+  ${TESTING_LIBS}
   )
 
