@@ -9,8 +9,13 @@ include(ExternalProject)
 ########################################################################
 # CMake Build Options
 
-option(USE_TUVOK "Builds and includes the Tuvok volume renderer" ON)
-option(USE_STD_THREADS "Use standard library threads. If turned off, no threading support is available." ON)
+option(USE_TUVOK "Builds and includes the Tuvok volume renderer" OFF)
+if(WIN32)
+  option(USE_STD_THREADS "Use standard library threads. If turned off, no threading support is available." OFF)
+else()
+  option(USE_STD_THREADS "Use standard library threads. If turned off, no threading support is available." ON)
+endif()
+
 option(BUILD_TESTING_APP "Builds spire testing application instead of the spire library." OFF)
 
 if(USE_TUVOK)
