@@ -151,10 +151,16 @@ QT4_WRAP_UI(UISource ${Forms})
 
 ########################################################################
 # Copy shaders to the target directory
+install(DIRECTORY ${BASE_SPIRE_DIR}/Spire/Shaders
+        DESTINATION ${CMAKE_INSTALL_DIR}/
+        FILE_PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ WORLD_READ
+        DIRECTORY_PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE
+                              GROUP_READ
+                              WORLD_READ WORLD_EXECUTE)
 
 # Copy shaders.
-file(COPY ${BASE_SPIRE_DIR}/Spire/Shaders
-     DESTINATION ${CMAKE_CURRENT_BINARY_DIR}
+file(COPY ${BASE_SPIRE_DIR}/Spire/Shaders/
+     DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/
      FILE_PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ WORLD_READ
      DIRECTORY_PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE
                            GROUP_READ
