@@ -56,7 +56,7 @@ protected slots:
 
 private:
 
-  GLContext                         mContext;
+  std::shared_ptr<GLContext>        mContext;
   std::shared_ptr<Spire::Interface> mGraphics;
 
 #ifndef SPIRE_USE_STD_THREADS

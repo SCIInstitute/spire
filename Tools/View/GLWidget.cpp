@@ -33,7 +33,7 @@
 
 GLWidget::GLWidget(const QGLFormat& format) :
     QGLWidget(format),
-    mContext(this)
+    mContext(new GLContext(this))
 {
   std::vector<std::string> shaderSearchDirs;
   shaderSearchDirs.push_back("Shaders");
@@ -41,10 +41,10 @@ GLWidget::GLWidget(const QGLFormat& format) :
   // Create a threaded spire renderer.
 #ifdef SPIRE_USE_STD_THREADS
   mGraphics = std::shared_ptr<Spire::Interface>(
-      new Spire::Interface(&mContext, shaderSearchDirs, true));
+      new Spire::Interface(mContext, shaderSearchDirs, true));
 #else
   mGraphics = std::shared_ptr<Spire::Interface>(
-      new Spire::Interface(&mContext, shaderSearchDirs, false));
+      new Spire::Interface(mContext, shaderSearchDirs, false));
   mTimer = new QTimer(this);
   connect(mTimer, SIGNAL(timeout()), this, SLOT(updateRenderer()));
   mTimer->start(35);

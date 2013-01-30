@@ -38,7 +38,8 @@
 namespace Spire {
 
 //------------------------------------------------------------------------------
-Interface::Interface(Context* context, const std::vector<std::string>& shaderDirs,
+Interface::Interface(std::shared_ptr<Context> context,
+                     const std::vector<std::string>& shaderDirs,
                      bool createThread, LogFunction logFP) :
     mHub(new Hub(context, shaderDirs, logFP, createThread))
 {

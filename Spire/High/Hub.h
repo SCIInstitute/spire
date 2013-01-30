@@ -60,7 +60,8 @@ class Hub
 public:
 
   /// @todo Make context a shared_ptr
-  Hub(Context* context, const std::vector<std::string>& shaderDirs, 
+  Hub(std::shared_ptr<Context> context,
+      const std::vector<std::string>& shaderDirs, 
       Interface::LogFunction logFn, bool useThread);
   virtual ~Hub();
 
@@ -108,7 +109,7 @@ private:
 
   Interface::LogFunction      mLogFun;          ///< Log function.
   std::unique_ptr<Log>        mLog;             ///< Spire logging class.
-  Context*                    mContext;         ///< Rendering context.
+  std::shared_ptr<Context>    mContext;         ///< Rendering context.
   GPUStateManager             mGPUStateManager; ///< GPU state manager.
   ShaderMan                   mShaderMan;       ///< Shader manager.
   ShaderProgramMan            mShaderProgramMan;///< Shader program manager.
