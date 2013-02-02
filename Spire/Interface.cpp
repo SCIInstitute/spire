@@ -57,7 +57,7 @@ void Interface::terminate()
   ///       thread (if any).
   if (mHub->isRendererThreadRunning())
   {
-    mHub->killRenderingThread();
+    mHub->killRendererThread();
   }
 }
 
