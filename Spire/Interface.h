@@ -86,10 +86,10 @@ public:
   // THREAD SAFE
   //============================================================================
 
-  /// Terminates spire. If running 'threaded', then this will join with the 
+  /// Terminates spire. If running 'threaded' then this will join with the 
   /// spire thread before returning. This should be called before the OpenGL
   /// context is destroyed.
-  void terminateSpire();
+  void terminate();
 
   //============================================================================
   // NOT THREAD SAFE

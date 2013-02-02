@@ -105,6 +105,13 @@ public:
 
   const std::vector<std::string>& getShaderDirs() const {return mShaderDirs;}
 
+  /// Terminates the rendering thread. After this call, you will be able to
+  /// re-issue context->makeCurrent() and call doFrame manually.
+  /// killRendererThread WILL block until the rendering thread has finished.
+  /// This is to ensure makeCurrent will not be called again before the thread 
+  /// has terminated.
+  void killRendererThread();
+
 private:
 
   Interface::LogFunction      mLogFun;          ///< Log function.
@@ -121,13 +128,6 @@ private:
   std::shared_ptr<PipeDriver> mPipe;            ///< Current rendering pipe.
 
   // Threading variables / functions
-
-  /// Terminates the rendering thread. After this call, you will be able to
-  /// re-issue context->makeCurrent() and call doFrame manually.
-  /// killRendererThread WILL block until the rendering thread has finished.
-  /// This is to ensure makeCurrent will not be called again before the thread 
-  /// has terminated.
-  void killRendererThread();
 
   /// Creates a rendering thread. 
   /// There must not be a rendering thread already running.

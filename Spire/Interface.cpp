@@ -51,10 +51,14 @@ Interface::~Interface()
 }
 
 //------------------------------------------------------------------------------
-void Interface::terminateSpire()
+void Interface::terminate()
 {
   /// TODO: Make a call to hub in order to terminate and join with spire's
   ///       thread (if any).
+  if (mHub->isRendererThreadRunning())
+  {
+    mHub->killRenderingThread();
+  }
 }
 
 //------------------------------------------------------------------------------
