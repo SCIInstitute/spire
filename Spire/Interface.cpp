@@ -50,6 +50,13 @@ Interface::~Interface()
 }
 
 //------------------------------------------------------------------------------
+void Interface::terminateSpire()
+{
+  /// TODO: Make a call to hub in order to terminate and join with spire's
+  ///       thread (if any).
+}
+
+//------------------------------------------------------------------------------
 void Interface::doFrame()
 {
   if (mHub->isRendererThreadRunning())
