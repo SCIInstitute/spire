@@ -76,7 +76,8 @@ public:
   /// @todo Re-enabled shared_ptr context when SCIRun5 adopts C++11.
   //Interface(std::shared_ptr<Context> context, bool createThread, 
   //          LogFunction logFP = LogFunction());
-  Interface(Context* context, const std::vector<std::string>& shaderDirs,
+  Interface(std::shared_ptr<Context> context, 
+            const std::vector<std::string>& shaderDirs,
             bool createThread, LogFunction logFP = LogFunction());
   virtual ~Interface();
 
