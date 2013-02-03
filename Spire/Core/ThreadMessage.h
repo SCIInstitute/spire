@@ -51,9 +51,12 @@ public:
 
   /// The purposes of using std::function is so that all parameters can be
   /// bound using std::bind.
-  ThreadMessage(RemoteFunction toCall);
+  ThreadMessage();
   virtual ~ThreadMessage()  {}
   
+  /// Sets message function to call (rvalue reference so we can move construct?)
+  void setFunction(RemoteFunction toCall);
+
   /// Execute function stored in message.
   void execute(Hub* hub);
 

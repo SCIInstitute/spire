@@ -41,7 +41,7 @@ public:
 private:
   size_t increment(size_t idx) const; 
 
-  std::atomic <size_t>  _tail;  // tail(input) index
+  std::atomic<size_t>  _tail;  // tail(input) index
   Element    _array[Capacity];
   std::atomic<size_t>   _head; // head(output) index
 };

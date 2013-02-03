@@ -34,8 +34,7 @@
 namespace Spire {
 
 //------------------------------------------------------------------------------
-ThreadMessage::ThreadMessage(RemoteFunction toCall) :
-    mToCall(toCall)
+ThreadMessage::ThreadMessage()
 {
 }
 
@@ -43,6 +42,12 @@ ThreadMessage::ThreadMessage(RemoteFunction toCall) :
 void ThreadMessage::execute(Hub* hub)
 {
   mToCall(hub);
+}
+
+//------------------------------------------------------------------------------
+void ThreadMessage::setFunction(RemoteFunction toCall)
+{
+  mToCall = toCall;
 }
 
 
