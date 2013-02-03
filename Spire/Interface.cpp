@@ -34,6 +34,7 @@
 #include "Exceptions.h"
 #include "High/Hub.h"
 #include "High/Log.h"
+#include "High/InterfaceImplementation.h"
 
 namespace Spire {
 
@@ -41,7 +42,8 @@ namespace Spire {
 Interface::Interface(std::shared_ptr<Context> context,
                      const std::vector<std::string>& shaderDirs,
                      bool createThread, LogFunction logFP) :
-    mHub(new Hub(context, shaderDirs, logFP, createThread))
+    mHub(new Hub(context, shaderDirs, logFP, createThread)),
+    mInterfaceImpl(new InterfaceImplementation())
 {
 }
 

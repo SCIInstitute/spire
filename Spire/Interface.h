@@ -47,6 +47,7 @@ namespace Spire {
 
 class Hub;
 class HubThread;
+class InterfaceImplementation;
 
 /// Interface to the renderer.
 /// A new interface will need to be created per-context.
@@ -62,16 +63,15 @@ public:
     LOG_ERROR,    ///< Error.
   };
 
+  /// Designates the thread upon which an interface command is being executed.
+  enum THREAD
+  {
+    UI_THREAD,
+    MODULE_THREAD
+  };
+
   typedef std::function<void (const std::string&, Interface::LOG_LEVEL level)> 
       LogFunction;
-
-#ifdef SPIRE_USE_STD_THREADS
-  typedef CircularFifo<ThreadMessage,256> MessageQueue;
-#else
-  /// \todo Need a light wrapper around std::queue to make it comply with
-  ///       our CircularFifo implementation...
-  typedef std::queue MessageQueue;
-#endif
 
   /// Constructs an interface to the renderer.
   /// \param  shaderDirs    A list of directories to search for shader files.
@@ -93,22 +93,48 @@ public:
 
 
   //============================================================================
-  // THREAD SAFE
+  // THREAD SAFE IF ONLY CALLED FROM ONE THREAD
   //============================================================================
 
   /// Terminates spire. If running 'threaded' then this will join with the 
   /// spire thread before returning. This should be called before the OpenGL
   /// context is destroyed.
+  /// There is no mutex lock in this function, it should only be called by one
+  /// thread, but it doesn't matter what thread.
   void terminate();
 
-  /// Obtain UI queue
+  //============================================================================
+  // MESSAGE BASED CONDITIONALLY THREAD SAFE
+  //============================================================================
+  // All functions contained within this section must be called on their
+  // appropriate thread. The THREAD parameter indicates which thread the caller
+  // is on. These functions send a message to spire and involve no locks.
+  // Return is immediate.
 
-  /// Obtain module queue
+  /// \todo Modify current camera transformation
 
-  /// Function interface to spire. std::bind along with std::function will be
-  /// used to execute functions on the remote thread, allowing for arbitrary
-  /// parameters and circumventing the need for 'messages' in the common
-  /// sense.
+  /// \todo Add 'object'
+  /// \todo Remove 'object'
+  /// \todo Modify 'object'? -- Maybe
+
+  //============================================================================
+  // LOCKING THREAD SAFE
+  //============================================================================
+  // It doesn't matter where the functions in this section are called as they
+  // are all mutex locked. These functions exist solely to retrieve information
+  // from Spire in a 'blocking' manner.
+
+  /// \todo Obtain current camera transform.
+
+  /// \todo It is possible to determine where the user 'clicked' in the scene,
+  ///       but the question then becomes: where do we perform the spatial
+  ///       lookup? In spire or in SCIRun? This will likely be a SCIRun task,
+  ///       or at the very least in a 'SCIRun' layer in Spire.
+  ///       The SCIRun layer does NOT need to run on the spire thread and can
+  ///       interact directly with SCIRun without threading worries.
+  ///       The idea is keep spire 'really dumb' with regards to application
+  ///       specific needs, but smart enough to provide the application with
+  ///       everything it needs.
 
   //============================================================================
   // NOT THREAD SAFE
@@ -133,17 +159,11 @@ public:
   /// @}
 
 
-
 private:
 
-  std::unique_ptr<Hub>            mHub;           ///< Rendering hub.
+  std::unique_ptr<Hub>                      mHub;           ///< Rendering hub.
+  std::unique_ptr<InterfaceImplementation>  mInterfaceImpl; ///< Interface implementation.
 
-#ifdef SPIRE_USE_STD_THREADS
-  CircularFifo<ThreadMessage,256>   mUIQueueIn;
-  CircularFifo<ThreadMessage,256>   mModuleQueueIn;
-#else
-  std::vector<ThreadMessage>        
-#endif
 };
 
 } // namespace spire

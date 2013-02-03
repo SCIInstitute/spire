@@ -29,39 +29,21 @@
 /// \author James Hughes
 /// \date   February 2013
 
-#ifndef SPIRE_HIGH_THREADMESSAGE_H
-#define SPIRE_HIGH_THREADMESSAGE_H
+#include "ThreadMessage.h"
 
-#include <queue>
+namespace Spire {
 
-namespace Spire
+//------------------------------------------------------------------------------
+ThreadMessage::ThreadMessage(RemoteFunction toCall) :
+    mToCall(toCall)
 {
+}
 
-class Hub;
-
-/// Encapsulates a function that will be executed on a remote thread.
-/// Used instead of an inbox along with message ID's and whatnot.
-/// std::bind along with std::function are used to execute functions on the 
-/// remote thread, allowing for arbitrary parameters and circumventing the 
-/// need for message passing.
-class ThreadMessage
+//------------------------------------------------------------------------------
+void ThreadMessage::execute(Hub* hub)
 {
-public:
-  typedef std::function<void (Hub* hub)> RemoteFunction;
+  mToCall(hub);
+}
 
-  /// The purposes of using std::function is so that all parameters can be
-  /// bound using std::bind.
-  ThreadMessage(RemoteFunction toCall);
-  virtual ~ThreadMessage()  {}
-  
-  /// Execute function stored in message.
-  void execute(Hub* hub);
 
-private:
-
-  RemoteFunction mToCall;
-};
-
-} // namespace Spire
-
-#endif 
+} // end of namespace Spire

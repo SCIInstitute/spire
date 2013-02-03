@@ -21,7 +21,8 @@
 #include <atomic>
 #include <cstddef>
 
-namespace memory_sequential_consistent {
+namespace Spire {
+
 template<typename Element, size_t Size> 
 class CircularFifo{
 public:
@@ -112,5 +113,5 @@ size_t CircularFifo<Element, Size>::increment(size_t idx) const
 }
 
 
-} // sequential_consistent
+} // Spire
 #endif /* CIRCULARFIFO_SEQUENTIAL_H_ */
