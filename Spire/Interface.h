@@ -37,11 +37,8 @@
 #include <functional>
 #include <memory>
 
-#include "High/CircFIFOSeqCons.hpp"
-#include "High/ThreadMessage.h"
 #include "Context.h"
-
-// Vanilla interface until SCIRun adopts C++11.
+#include "High/Math.h"  // Necessary in order to communicate vector types.
 
 namespace Spire {
 
@@ -51,6 +48,8 @@ class InterfaceImplementation;
 
 /// Interface to the renderer.
 /// A new interface will need to be created per-context.
+/// Spire expects that only one thread will be communicating with it at any
+/// given time.
 class Interface
 {
 public:
@@ -61,13 +60,6 @@ public:
     LOG_MESSAGE,  ///< General message.
     LOG_WARNING,  ///< Warning.
     LOG_ERROR,    ///< Error.
-  };
-
-  /// Designates the thread upon which an interface command is being executed.
-  enum THREAD
-  {
-    UI_THREAD,
-    MODULE_THREAD
   };
 
   typedef std::function<void (const std::string&, Interface::LOG_LEVEL level)> 
@@ -104,8 +96,10 @@ public:
   void terminate();
 
   //============================================================================
-  // MESSAGE BASED CONDITIONALLY THREAD SAFE
+  // THREAD SAFE - Remember, the same thread should always be calling spire.
   //============================================================================
+  // 
+
   // All functions contained within this section must be called on their
   // appropriate thread. The THREAD parameter indicates which thread the caller
   // is on. These functions send a message to spire and involve no locks.

@@ -3,10 +3,10 @@
 
    The MIT License
 
-   Copyright (c) 2012 Scientific Computing and Imaging Institute,
+   Copyright (c) 2013 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -27,49 +27,24 @@
 */
 
 /// \author James Hughes
-/// \date   September 2012
+/// \date   February 2013
 
-#include <sstream>
-#include "Interface.h"
-#include "Exceptions.h"
-#include "High/Hub.h"
-#include "High/Log.h"
-#include "High/InterfaceImplementation.h"
+#include "InterfaceImplementation.h"
 
 namespace Spire {
 
+
 //------------------------------------------------------------------------------
-Interface::Interface(std::shared_ptr<Context> context,
-                     const std::vector<std::string>& shaderDirs,
-                     bool createThread, LogFunction logFP) :
-    mHub(new Hub(context, shaderDirs, logFP, createThread)),
-    mInterfaceImpl(new InterfaceImplementation())
+bool InterfaceImplementation::addFunctionToQueue(Interface::THREAD thread,
+                                                 ThreadMessage::RemoteFunction fun)
 {
 }
 
 //------------------------------------------------------------------------------
-Interface::~Interface()
+void InterfaceImplementation::executeQueue(Interface::THREAD thread, Hub& hub)
 {
+  return /* something */;
 }
 
-//------------------------------------------------------------------------------
-void Interface::terminate()
-{
-  if (mHub->isRendererThreadRunning())
-  {
-    mHub->killRendererThread();
-  }
-}
-
-//------------------------------------------------------------------------------
-void Interface::doFrame()
-{
-  if (mHub->isRendererThreadRunning())
-    throw ThreadException("You cannot call doFrame when the renderer is "
-                          "running in a separate thread.");
-
-  mHub->doFrame();
-}
-
-} // end of namespace Renderer
+} // end of namespace Spire
 

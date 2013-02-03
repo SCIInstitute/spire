@@ -29,53 +29,33 @@
 /// \author James Hughes
 /// \date   February 2013
 
-#ifndef SPIRE_HIGH_INTERFACEIMPLEMENTATION_H
-#define SPIRE_HIGH_INTERFACEIMPLEMENTATION_H
+#ifndef SPIRE_APPSPECIFIC_SCIRUN_SCIRUNINTERFACE_H
+#define SPIRE_APPSPECIFIC_SCIRUN_SCIRUNINTERFACE_H
 
 #include "Interface.h"
-#include "ThreadMessage.h"
-
-#ifdef SPIRE_USE_STD_THREADS
-#include "High/CircFIFOSeqCons.hpp"
-#endif
 
 namespace Spire
 {
 
-/// Implementation of the functions exposed in Interface.h
-class InterfaceImplementation
+/// A wrapper around spire that provides higher level functionality required
+/// to operate SCIRun.
+class SCIRunInterface : public Interface
 {
 public:
-  InterfaceImplementation()           {}
-  virtual ~InterfaceImplementation()  {}
+  SCIRunInterface(std::shared_ptr<Context> context,
+                  const std::vector<std::string>& shaderDirs,
+                  bool createThread, LogFunction logFP = LogFunction());
+  virtual ~SCIRunInterface();
   
-  /// SHOULD ONLY be called by the thread associated with Queue.
-  /// Will add 'fun' to the queue associated with 'thread'.
-  /// \return false if we failed to add the function to the specified queue.
-  ///         queue is likely to be full.
-  bool addFunctionToQueue(ThreadMessage::RemoteFunction fun);
+  /// \todo Mouse movement (appropriate camera transform calls here...)
 
-  /// SHOULD ONLY be called by the spire thread!
-  /// Will execute all commands the the queue associated with Interface::THREAD.
-  void executeQueue(Hub& hub);
+  /// \todo Selecting objects...
 
-  //============================================================================
-  // IMPLEMENTATION
-  //============================================================================
-  // All of the functions below constitute the implementation of the interface
-  // to spire.
-
-
+  /// \todo Obtaining data from mesh objects in order to spatially partition
+  ///       them and provide quick object feedback.
 
 private:
 
-#ifdef SPIRE_USE_STD_THREADS
-  typedef CircularFifo<ThreadMessage,256> MessageQueue;
-#else
-  typedef std::queue<ThreadMessage>       MessageQueue;
-#endif
-
-  MessageQueue                      mQueue;
 };
 
 } // namespace Spire
