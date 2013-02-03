@@ -37,6 +37,8 @@
 #include <functional>
 #include <memory>
 
+#include "High/CircFIFOSeqCons.hpp"
+#include "High/ThreadMessage.h"
 #include "Context.h"
 
 // Vanilla interface until SCIRun adopts C++11.
@@ -62,6 +64,14 @@ public:
 
   typedef std::function<void (const std::string&, Interface::LOG_LEVEL level)> 
       LogFunction;
+
+#ifdef SPIRE_USE_STD_THREADS
+  typedef CircularFifo<ThreadMessage,256> MessageQueue;
+#else
+  /// \todo Need a light wrapper around std::queue to make it comply with
+  ///       our CircularFifo implementation...
+  typedef std::queue MessageQueue;
+#endif
 
   /// Constructs an interface to the renderer.
   /// \param  shaderDirs    A list of directories to search for shader files.
@@ -91,6 +101,15 @@ public:
   /// context is destroyed.
   void terminate();
 
+  /// Obtain UI queue
+
+  /// Obtain module queue
+
+  /// Function interface to spire. std::bind along with std::function will be
+  /// used to execute functions on the remote thread, allowing for arbitrary
+  /// parameters and circumventing the need for 'messages' in the common
+  /// sense.
+
   //============================================================================
   // NOT THREAD SAFE
   //============================================================================
@@ -117,7 +136,14 @@ public:
 
 private:
 
-  std::unique_ptr<Hub>  mHub;           ///< Rendering hub.
+  std::unique_ptr<Hub>            mHub;           ///< Rendering hub.
+
+#ifdef SPIRE_USE_STD_THREADS
+  CircularFifo<ThreadMessage,256>   mUIQueueIn;
+  CircularFifo<ThreadMessage,256>   mModuleQueueIn;
+#else
+  std::vector<ThreadMessage>        
+#endif
 };
 
 } // namespace spire
