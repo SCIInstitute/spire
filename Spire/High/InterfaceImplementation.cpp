@@ -35,15 +35,14 @@ namespace Spire {
 
 
 //------------------------------------------------------------------------------
-bool InterfaceImplementation::addFunctionToQueue(Interface::THREAD thread,
-                                                 ThreadMessage::RemoteFunction fun)
+bool InterfaceImplementation::addFunctionToQueue(ThreadMessage::RemoteFunction fun)
 {
+  return false;
 }
 
 //------------------------------------------------------------------------------
-void InterfaceImplementation::executeQueue(Interface::THREAD thread, Hub& hub)
+void InterfaceImplementation::executeQueue(Hub& hub)
 {
-  return /* something */;
 }
 
 } // end of namespace Spire
