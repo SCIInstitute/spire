@@ -30,7 +30,7 @@
 /// \date   December 2012
 
 #include "Common.h"
-#include "High/GPUStateManager.h"
+#include "Core/GPUStateManager.h"
 
 namespace Spire {
 

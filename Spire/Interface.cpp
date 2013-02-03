@@ -32,9 +32,9 @@
 #include <sstream>
 #include "Interface.h"
 #include "Exceptions.h"
-#include "High/Hub.h"
-#include "High/Log.h"
-#include "High/InterfaceImplementation.h"
+#include "Core/Hub.h"
+#include "Core/Log.h"
+#include "Core/InterfaceImplementation.h"
 
 namespace Spire {
 

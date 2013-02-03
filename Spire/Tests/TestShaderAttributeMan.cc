@@ -32,8 +32,8 @@
 #include <gtest/gtest.h>
 #include "Common.h"
 #include "Exceptions.h"
-#include "High/MurmurHash3.h"
-#include "High/ShaderAttributeMan.h"
+#include "Core/MurmurHash3.h"
+#include "Core/ShaderAttributeMan.h"
 
 using namespace Spire;
 

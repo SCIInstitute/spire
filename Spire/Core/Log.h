@@ -32,7 +32,7 @@
 #ifndef SPIRE_HIGH_LOG_H
 #define SPIRE_HIGH_LOG_H
 
-#include "High/Hub.h"
+#include "Core/Hub.h"
 #include <sstream>
 #ifdef SPIRE_USE_STD_THREADS
 #include <atomic>

@@ -41,10 +41,10 @@
 #endif
 
 #include "Interface.h"
-#include "High/GPUStateManager.h"
-#include "High/ShaderMan.h"
-#include "High/ShaderProgramMan.h"
-#include "High/Camera.h"
+#include "Core/GPUStateManager.h"
+#include "Core/ShaderMan.h"
+#include "Core/ShaderProgramMan.h"
+#include "Core/Camera.h"
 
 namespace Spire {
 

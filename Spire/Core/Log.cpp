@@ -29,7 +29,7 @@
 /// \author James Hughes
 /// \date   November 2012
 
-#include "High/Log.h"
+#include "Core/Log.h"
 
 namespace Spire {
 

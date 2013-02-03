@@ -36,7 +36,7 @@
 #include "ThreadMessage.h"
 
 #ifdef SPIRE_USE_STD_THREADS
-#include "High/CircFIFOSeqCons.hpp"
+#include "Core/CircFIFOSeqCons.hpp"
 #endif
 
 namespace Spire

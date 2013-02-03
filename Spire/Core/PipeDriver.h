@@ -32,7 +32,7 @@
 #ifndef SPIRE_PIPES_PIPEDRIVER_H
 #define SPIRE_PIPES_PIPEDRIVER_H
 
-#include "High/Hub.h"
+#include "Core/Hub.h"
 
 namespace Spire {
 

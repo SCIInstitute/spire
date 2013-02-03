@@ -165,8 +165,8 @@ file (GLOB Source_Root
   )
 
 file (GLOB Source_High
-  "High/*.cpp"
-  "High/*.h"
+  "Core/*.cpp"
+  "Core/*.h"
   )
 
 file (GLOB Source_Low

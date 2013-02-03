@@ -32,8 +32,8 @@
 #ifndef SPIRE_PIPES_STUPIPE_DRIVER_H
 #define SPIRE_PIPES_STUPIPE_DRIVER_H
 
-#include "High/PipeDriver.h"
-#include "High/GPUStateManager.h"
+#include "Core/PipeDriver.h"
+#include "Core/GPUStateManager.h"
 #include "Shaders/Tests/TestUniformColor.h"
 
 namespace Spire {

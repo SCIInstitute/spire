@@ -33,8 +33,8 @@
 #include "Exceptions.h"
 #include "TestUniformColor.h"
 
-#include "High/GLMathUtil.h"
-#include "High/Camera.h"
+#include "Core/GLMathUtil.h"
+#include "Core/Camera.h"
 
 namespace Spire {
 

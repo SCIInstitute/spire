@@ -34,8 +34,8 @@
 #include "Common.h"
 #include "Exceptions.h"
 
-#include "High/ShaderAttributeMan.h"
-#include "High/MurmurHash3.h"
+#include "Core/ShaderAttributeMan.h"
+#include "Core/MurmurHash3.h"
 
 namespace Spire {
 

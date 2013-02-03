@@ -59,8 +59,8 @@
 #endif
 
 // Any ubiquitous header files.
-#include "High/Math.h"
-#include "High/Log.h"
+#include "Core/Math.h"
+#include "Core/Log.h"
 
 #ifdef SPIRE_DEBUG
 # define GL_CHECK()                                                       \

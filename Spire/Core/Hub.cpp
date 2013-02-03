@@ -34,9 +34,9 @@
 #include "Common.h"
 #include "Exceptions.h"
 
-#include "High/Hub.h"
-#include "High/Log.h"
-#include "High/FileUtil.h"
+#include "Core/Hub.h"
+#include "Core/Log.h"
+#include "Core/FileUtil.h"
 
 #include "StuPipe/Driver.h"
 

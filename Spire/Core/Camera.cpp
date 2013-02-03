@@ -30,8 +30,8 @@
 /// \date   January 2013
 
 #include "Common.h"
-#include "High/Hub.h"
-#include "High/Log.h"
+#include "Core/Hub.h"
+#include "Core/Log.h"
 #include "Camera.h"
 
 namespace Spire {
