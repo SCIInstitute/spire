@@ -29,23 +29,28 @@
 /// \author James Hughes
 /// \date   February 2013
 
-#include "SCIRunInterface.h"
+#ifndef SPIRE_APPSPECIFIC_SCIRUN_SRUNCAMERA_H
+#define SPIRE_APPSPECIFIC_SCIRUN_SRUNCAMERA_H
+
+#include "Common.h"
 
 namespace Spire {
 namespace SCIRun {
 
-//------------------------------------------------------------------------------
-SCIRunInterface::SCIRunInterface(std::shared_ptr<Context> context,
-                                 const std::vector<std::string>& shaderDirs,
-                                 bool createThread, LogFunction logFP) :
-    Interface(context, shaderDirs, createThread, logFP)
+/// Basic camera class for Spire, mimicking SCIRun v4.
+class SRCamera
 {
-}
+public:
+  SRCamera();
+  virtual ~SRCamera();
+  
+protected:
 
-//------------------------------------------------------------------------------
-SCIRunInterface::~SCIRunInterface()
-{
-}
+  M44   mCamWorld;
+
+};
 
 } // namespace SCIRun
 } // namespace Spire
+
+#endif 

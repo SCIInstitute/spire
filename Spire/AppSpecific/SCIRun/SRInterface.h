@@ -29,19 +29,36 @@
 /// \author James Hughes
 /// \date   February 2013
 
-#include "Camera.h"
+#ifndef SPIRE_APPSPECIFIC_SCIRUN_SCIRUNINTERFACE_H
+#define SPIRE_APPSPECIFIC_SCIRUN_SCIRUNINTERFACE_H
+
+#include "Interface.h"
 
 namespace Spire {
 namespace SCIRun {
 
-Camera::Camera()
+/// A wrapper around spire that provides higher level functionality required
+/// to operate SCIRun.
+class SRInterface : public Interface
 {
-}
+public:
+  SRInterface(std::shared_ptr<Context> context,
+              const std::vector<std::string>& shaderDirs,
+              bool createThread, LogFunction logFP = LogFunction());
+  virtual ~SRInterface();
 
-Camera::~Camera()
-{
-}
+  /// \todo Mouse movement (appropriate camera transform calls here...)
 
-} // namespace Spire
+  /// \todo Selecting objects...
+
+  /// \todo Obtaining data from mesh objects in order to spatially partition
+  ///       them and provide quick object feedback.
+
+private:
+
+};
+
 } // namespace SCIRun
+} // namespace Spire
 
+#endif 

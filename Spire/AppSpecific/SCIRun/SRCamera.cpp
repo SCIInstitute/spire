@@ -29,28 +29,19 @@
 /// \author James Hughes
 /// \date   February 2013
 
-#ifndef SPIRE_APPSPECIFIC_SCIRUN_SRUNCAMERA_H
-#define SPIRE_APPSPECIFIC_SCIRUN_SRUNCAMERA_H
-
-#include "Common.h"
+#include "SRCamera.h"
 
 namespace Spire {
 namespace SCIRun {
 
-/// Basic camera class for Spire, mimicking SCIRun v4.
-class Camera
+SRCamera::SRCamera()
 {
-public:
-  Camera();
-  virtual ~Camera();
-  
-protected:
+}
 
-  M44   mCamWorld;
+SRCamera::~SRCamera()
+{
+}
 
-};
-
-} // namespace SCIRun
 } // namespace Spire
+} // namespace SCIRun
 
-#endif 
