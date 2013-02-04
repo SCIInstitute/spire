@@ -27,88 +27,21 @@
 */
 
 /// \author James Hughes
-/// \date   January 2013
-/// \brief  Common GL math utilities.
+/// \date   February 2013
 
-#include "Common.h"
-#include "GLMathUtil.h"
+#include "SRunCamera.h"
 
 namespace Spire {
+namespace SRun {
 
-void M33toArray9(const M33& in, GLfloat* out)
+SRunCamera::SRunCamera()
 {
-	// OpenGL is column major.
-
-	// Column 1
-	out[0 ] = in.m11;
-	out[1 ] = in.m21;
-	out[2 ] = in.m31;
-
-	// Column 2
-	out[3 ] = in.m12;
-	out[4 ] = in.m22;
-	out[5 ] = in.m32;
-
-	// Column 3
-	out[6 ] = in.m13;
-	out[7 ] = in.m23;
-	out[8 ] = in.m33;
 }
 
-void M44toArray16(const M44& in, GLfloat* out)
+SRunCamera::~SRunCamera()
 {
-	// OpenGL is column major.
-
-	// Column 1
-	out[0 ] = in.m11;
-	out[1 ] = in.m21;
-	out[2 ] = in.m31;
-	out[3 ] = in.m41;
-
-	// Column 2
-	out[4 ] = in.m12;
-	out[5 ] = in.m22;
-	out[6 ] = in.m32;
-	out[7 ] = in.m42;
-
-	// Column 3
-	out[8 ] = in.m13;
-	out[9 ] = in.m23;
-	out[10] = in.m33;
-	out[11] = in.m43;
-
-	// Column 4
-	out[12] = in.m14;
-	out[13] = in.m24;
-	out[14] = in.m34;
-	out[15] = in.m44;
 }
 
-void V3toArray3(const V3& in, GLfloat* out)
-{
-	out[0] = in.x;
-	out[1] = in.y;
-	out[2] = in.z;
-}
-
-void V3toArray4(const V3& in, GLfloat* out)
-{
-	V3toArray3(in, out);
-	out[3] = 1.0f;
-}
-
-void V4toArray3(const V4& in, GLfloat* out)
-{
-	out[0] = in.x;
-	out[1] = in.y;
-	out[2] = in.z;
-}
-
-void V4toArray4(const V4& in, GLfloat* out)
-{
-	V4toArray3(in, out);
-	out[3] = in.w;
-}
-
-} // end of namespace Spire
+} // namespace Spire
+} // namespace SRun
 

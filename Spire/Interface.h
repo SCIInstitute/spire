@@ -106,6 +106,7 @@ public:
   // Return is immediate.
 
   /// \todo Modify current camera transformation
+  void cameraSetTransform(const M44& transform);
 
   /// \todo Add 'object'
   /// \todo Remove 'object'

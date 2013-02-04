@@ -48,15 +48,15 @@ Camera::Camera(Hub& hub) :
   setAsPerspective();
 
   // Setup default camera to look down the negative Z axis.
-  Point3 eye(0.0f, 0.0f, 5.0f);
-  Point3 lookAt(0.0f, 0.0f, 0.0f);
+  V3 eye(0.0f, 0.0f, 5.0f);
+  V3 lookAt(0.0f, 0.0f, 0.0f);
   V3 upVec(0.0f, 1.0f, 0.0f);
 
   // M44::lookAt builds an inverted view matrix that is ready to be multiplied
   // against a projection matrix. For our purposes, we need the *actual* view
   // matrix.
   M44 invCam  = M44::lookAt(eye, lookAt, upVec);
-  M44 cam     = Vector::orthoInverse(invCam);
+  M44 cam     = M44::orthoInverse(invCam);
   
   setViewTransform(cam);
 }
@@ -110,8 +110,11 @@ void Camera::setViewTransform(const M44& trafo)
   ++mTrafoSeq;
 
   mV    = trafo;
-  mIV   = Vector::orthoInverse(trafo);
+  mIV   = M44::orthoInverse(trafo);
   mPIV  = mP * mIV;
+  //Log::message() << "mV" << std::endl << mV << std::endl;
+  //Log::message() << "mIV" << std::endl << mIV << std::endl;
+  //Log::message() << "mPIV" << std::endl << mPIV << std::endl;
 }
 
 

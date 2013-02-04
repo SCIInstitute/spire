@@ -32,9 +32,6 @@
 #ifndef SPIRE_HIGH_MATH_H
 #define SPIRE_HIGH_MATH_H
 
-// Include Sony's vector-math library.
-#include "AOS_VectorMath.h"
-
 namespace Spire {
 
 //constexpr double pi() { return std::atan(1)*4; }
@@ -43,14 +40,18 @@ const double  PI_D  = 3.141592653589793238462;
 const float   PI    = 3.14159265358979f;
 
 // Typedef's for the vector math library.
-typedef Vector::Vector3    V3;
-typedef Vector::Vector4    V4;
-typedef Vector::Quat       Quat;
-typedef Vector::Matrix3    M33;
-typedef Vector::Matrix4    M44;
-typedef Vector::Transform3 Trafo3;
-typedef Vector::Point3     Point3;
+//typedef Vector::Vector3    V3;
+//typedef Vector::Vector4    V4;
+//typedef Vector::Quat       Quat;
+//typedef Vector::Matrix3    M33;
+//typedef Vector::Matrix4    M44;
+//typedef Vector::Transform3 Trafo3;
+//typedef Vector::Point3     Point3;
 
 } // namespace spire
+
+// Include Sony's vector-math library.
+//#include "AOS_VectorMath.h"
+#include "Vectors.h"
 
 #endif 

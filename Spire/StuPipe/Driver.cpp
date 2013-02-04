@@ -43,8 +43,6 @@ Driver::Driver(Hub& hub) :
   mInitialState.mDepthTestEnable = true;
   mInitialState.mCullFaceEnable = false;  // Todo: Set to true for geometry.
                                           // Should not be true for volumes.
-  //mView = M44::identity();
-
   glClearColor(0.3f, 0.0f, 0.3f, 1.0f);
   glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 
@@ -61,6 +59,9 @@ void Driver::doFrame()
   // Clear the screen
   glClearColor(0.3f, 0.0f, 0.3f, 1.0f);
   glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
+
+  mView = mView * M44::rotationY(0.1f);
+  //mHub.getCamera()->setViewTransform(mView);
 
   // Force a known GPU state
   mHub.getGPUStateManager().apply(mInitialState, true);
