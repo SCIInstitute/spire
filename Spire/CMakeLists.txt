@@ -9,6 +9,7 @@ include(ExternalProject)
 ########################################################################
 # CMake Build Options
 
+option(USE_SCIRUN_INTERFACE "Includes custom interface to SCIRun." OFF)
 option(USE_TUVOK "Builds and includes the Tuvok volume renderer" OFF)
 if(WIN32)
   option(USE_STD_THREADS "Use standard library threads. If turned off, no threading support is available." OFF)
@@ -185,6 +186,13 @@ file (GLOB Source_Pipes
   "StuPipe/*.h"
   )
 
+if(USE_SCIRUN_INTERFACE)
+  file (GLOB Source_SCIRun
+    "AppSpecific/SCIRun/*.cpp"
+    "AppSpecific/SCIRun/*.h"
+    )
+endif()
+
 # GLEW is not support on mobile platforms.
 if(NOT DEFINED IOS)
   set(Source_GLEW
@@ -212,7 +220,9 @@ if(BUILD_TESTING_APP)
     ${Source_Caching}
     ${Source_Pipes}
     ${Source_GLEW}
-    ${Source_Testing})
+    ${Source_Testing}
+    ${Source_SCIRun}
+    )
   add_dependencies(${SPIRE_TARGET_NAME} ThirdParty_Tuvok gtest)
 else()
   set(SPIRE_TARGET_NAME Spire)
@@ -224,6 +234,7 @@ else()
     ${Source_Pipes}
     ${Source_GLEW}
     ${Source_Testing}
+    ${Source_SCIRun}
     )
   add_dependencies(${SPIRE_TARGET_NAME} ThirdParty_Tuvok)
 endif()

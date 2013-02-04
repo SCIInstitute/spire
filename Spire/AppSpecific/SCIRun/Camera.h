@@ -35,7 +35,7 @@
 #include "Common.h"
 
 namespace Spire {
-namespace SRun {
+namespace SCIRun {
 
 /// Basic camera class for Spire, mimicking SCIRun v4.
 class Camera
@@ -50,7 +50,7 @@ protected:
 
 };
 
-} // namespace SRun
+} // namespace SCIRun
 } // namespace Spire
 
 #endif 

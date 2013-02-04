@@ -29,19 +29,19 @@
 /// \author James Hughes
 /// \date   February 2013
 
-#include "SRunCamera.h"
+#include "Camera.h"
 
 namespace Spire {
-namespace SRun {
+namespace SCIRun {
 
-SRunCamera::SRunCamera()
+Camera::Camera()
 {
 }
 
-SRunCamera::~SRunCamera()
+Camera::~Camera()
 {
 }
 
 } // namespace Spire
-} // namespace SRun
+} // namespace SCIRun
 

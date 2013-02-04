@@ -37,81 +37,84 @@
 
 #include "ArcBall.h"
 
-float ArcBall::ms_fEpsilon = 1.0e-5f;
+namespace Spire {
+namespace SCIRun {
+
+float ArcBall::msEpsilon = 1.0e-5f;
 
 //------------------------------------------------------------------------------
 ArcBall::ArcBall(int32_t iWinWidth, int32_t iWinHeight,
                  int32_t iWinOffsetX, int32_t iWinOffsetY,
                  bool bUseTranslation) :
-    m_vStartDrag(),
-    m_iWinDim(iWinWidth, iWinHeight),
-    m_iWinOffsets(iWinOffsetX, iWinOffsetY),
-    m_fRadius(1.0f),
-    m_bUseTranslation(bUseTranslation)
+    mStartDrag(),
+    mWinDim(iWinWidth, iWinHeight),
+    mWinOffsets(iWinOffsetX, iWinOffsetY),
+    mRadius(1.0f),
+    mUseTranslation(bUseTranslation)
 {
 }
 
 //------------------------------------------------------------------------------
-void ArcBall::SetWindowSize(int32_t iWinWidth, int32_t iWinHeight)
+void ArcBall::setWindowSize(int32_t iWinWidth, int32_t iWinHeight)
 {
-    m_iWinDim = Vector2<int>(iWinWidth, iWinHeight);
+    mWinDim = Vector2<int32_t>(iWinWidth, iWinHeight);
 }
 
 //------------------------------------------------------------------------------
-void ArcBall::SetWindowOffset(int32_t iWinOffsetX, int32_t iWinOffsetY)
+void ArcBall::setWindowOffset(int32_t iWinOffsetX, int32_t iWinOffsetY)
 {
-  m_iWinOffsets = Vector2<int32_t>(iWinOffsetX, iWinOffsetY);
+  mWinOffsets = Vector2<int32_t>(iWinOffsetX, iWinOffsetY);
 }
 
 //------------------------------------------------------------------------------
-void ArcBall::Click(Vector2<int32_t> vPosition)
+void ArcBall::click(Vector2<int32_t> vPosition)
 {
-  m_vStartDrag = MapToSphere(vPosition);
+  mStartDrag = mapToSphere(vPosition);
 }
 
 //------------------------------------------------------------------------------
-Quat ArcBall::Drag(Vector2<int32_t> vPosition)
+Quat ArcBall::drag(Vector2<int32_t> vPosition)
 {
   Quat qRotation;
 
   // Map the point to the sphere
-  V3 vCurrent = MapToSphere(vPosition);
+  V3 vCurrent = mapToSphere(vPosition);
 
   // Compute the vector perpendicular to the begin and end vectors
-  V3    vCross(vCurrent % m_vStartDrag);
-  float fDot(vCurrent ^ m_vStartDrag);
+  V3    vCross(vCurrent % mStartDrag);
+  float fDot(vCurrent ^ mStartDrag);
 
-  if (vCross.length() > ms_fEpsilon)    //if its non-zero
+  if (vCross.length() > msEpsilon)    //if its non-zero
       return Quat(vCross.x, vCross.y, vCross.z, fDot);
   else
       return Quat(0,0,0,0);
 }
 
 //------------------------------------------------------------------------------
-V3 ArcBall::MapToSphere(Vector2<int32_t> vPosition) const
+V3 ArcBall::mapToSphere(Vector2<int32_t> vPosition) const
 {
   V3 vResult;
 
   // normalize position to [-1 ... 1]
-  Vector2<int32_t> vNormPosition;
-  vNormPosition.x =  -(((vPosition.x-m_iWinOffsets.x) / (float(m_iWinDim.x - 1) / 2.0f)) - 1.0f);
-  vNormPosition.y =  ((vPosition.y-m_iWinOffsets.y) / (float(m_iWinDim.y - 1) / 2.0f)) - 1.0f;
+  V2 vNormPosition;
+  vNormPosition.x =  -(((vPosition.x-mWinOffsets.x) / (float(mWinDim.x - 1) / 2.0f)) - 1.0f);
+  vNormPosition.y =  ((vPosition.y-mWinOffsets.y) / (float(mWinDim.y - 1) / 2.0f)) - 1.0f;
 
-  if (m_bUseTranslation)
+  if (mUseTranslation)
   {
-    M44 mTranslation(m_mTranslation);
-    mTranslation.m43 = 0;
-    vNormPosition = (V4(vNormPosition,0.0f,1.0f) * mTranslation).xy();
+    M44 trans(mTranslation);
+    trans.m43 = 0;
+    vNormPosition = (V4(vNormPosition,0.0f,1.0f) * trans).xy();
   }
 
   // Compute the length of the vector to the point from the center
   float length = vNormPosition.length();
 
   // If the point is mapped outside of the sphere... (length > radius)
-  if (length > m_fRadius)
+  if (length > mRadius)
   {
       // Compute a normalizing factor (radius / length)
-      float norm = float(m_fRadius / length);
+      float norm = float(mRadius / length);
 
       // Return the "normalized" vector, a point on the sphere
       vResult.x = vNormPosition.x * norm;
@@ -123,9 +126,12 @@ V3 ArcBall::MapToSphere(Vector2<int32_t> vPosition) const
       // Return a vector to a point mapped inside the sphere
       vResult.x = vNormPosition.x;
       vResult.y = vNormPosition.y;
-      vResult.z = length-m_fRadius;
+      vResult.z = length-mRadius;
   }
 
   return vResult;
 }
+
+} // namespace Spire
+} // namespace SCIRun
 

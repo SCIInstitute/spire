@@ -32,7 +32,7 @@
 #include "SCIRunInterface.h"
 
 namespace Spire {
-namespace SRun {
+namespace SCIRun {
 
 //------------------------------------------------------------------------------
 SCIRunInterface::SCIRunInterface(std::shared_ptr<Context> context,
@@ -47,5 +47,5 @@ SCIRunInterface::~SCIRunInterface()
 {
 }
 
-} // namespace SRun
+} // namespace SCIRun
 } // namespace Spire

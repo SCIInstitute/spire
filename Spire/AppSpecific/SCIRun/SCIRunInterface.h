@@ -35,7 +35,7 @@
 #include "Interface.h"
 
 namespace Spire {
-namespace SRun {
+namespace SCIRun {
 
 /// A wrapper around spire that provides higher level functionality required
 /// to operate SCIRun.
@@ -58,7 +58,7 @@ private:
 
 };
 
-} // namespace SRun
+} // namespace SCIRun
 } // namespace Spire
 
 #endif 

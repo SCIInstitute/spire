@@ -32,7 +32,10 @@
 #ifndef SPIRE_APPSPECIFIC_SCIRUN_ARCBALL_H
 #define SPIRE_APPSPECIFIC_SCIRUN_ARCBALL_H
 
-#include "Core/Vectors.h"
+#include "Core/Math.h"
+
+namespace Spire {
+namespace SCIRun {
 
 class ArcBall
 {
@@ -41,11 +44,11 @@ public:
           int32_t iWinOffsetX=0, int32_t iWinOffsetY=0,
           bool bUseTranslation = false);
 
-  void        setRadius(float fRadius)                {m_fRadius = fRadius;}
-  void        setTranslation(const M44& mTranslation) {m_mTranslation = mTranslation;}
-  const M44&  getTranslation() const                  {return m_mTranslation;}
-  void        setUseTranslation(bool bUseTranslation) {m_bUseTranslation = bUseTranslation;}
-  bool        getUseTranslation()                     {return m_bUseTranslation;}
+  void        setRadius(float fRadius)                {mRadius = fRadius;}
+  void        setTranslation(const M44& trans)        {mTranslation = trans;}
+  const M44&  getTranslation() const                  {return mTranslation;}
+  void        setUseTranslation(bool bUseTranslation) {mUseTranslation = bUseTranslation;}
+  bool        getUseTranslation()                     {return mUseTranslation;}
 
   void setWindowSize(int32_t iWinWidth, int32_t iWinHeight);
   void setWindowOffset(int32_t iWinOffsetX, int32_t iWinOffsetY);
@@ -65,5 +68,8 @@ protected:
 
   V3 mapToSphere(Vector2<int32_t> vPosition) const;
 };
+
+} // namespace Spire
+} // namespace SCIRun
 
 #endif // ARCBALL_H
