@@ -154,7 +154,7 @@ public:
 
   Vector3<T>(): x(0), y(0),z(0) {}
   template <class S> explicit Vector3<T>(const std::vector<S>& v, const T& defaultVal = T(0) )
-{
+  {
     x = T(v.size()>0 ? v[0] : defaultVal);
     y = T(v.size()>1 ? v[1] : defaultVal);
     z = T(v.size()>2 ? v[2] : defaultVal);
@@ -860,7 +860,6 @@ public:
   static const Matrix4<T> orthoInverse( const Matrix4<T> & mat )
   {
     // An orthogonal homogeonous inversion.
-    //return mat.inverse();
     Matrix4<T> out = mat.transpose();
     float x = mat.m14; float y = mat.m24; float z = mat.m34;
     out.m41 = 0; out.m42 = 0; out.m43 = 0; out.m44 = 1;
