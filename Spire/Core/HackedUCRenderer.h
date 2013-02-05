@@ -3,7 +3,7 @@
 
    The MIT License
 
-   Copyright (c) 2012 Scientific Computing and Imaging Institute,
+   Copyright (c) 2013 Scientific Computing and Imaging Institute,
    University of Utah.
 
 
@@ -27,38 +27,45 @@
 */
 
 /// \author James Hughes
-/// \date   December 2012
+/// \date   February 2013
 
-#ifndef SPIRE_PIPES_STUPIPE_DRIVER_H
-#define SPIRE_PIPES_STUPIPE_DRIVER_H
+#ifndef SPIRE_CORE_HACKEDUCRENDERER_H
+#define SPIRE_CORE_HACKEDUCRENDERER_H
 
-#include "Core/PipeDriver.h"
-#include "Core/GPUStateManager.h"
-#include "Core/HackedUCRenderer.h"
-#include "Shaders/Tests/TestUniformColor.h"
+class ShaderProgramAsset;
 
-namespace Spire {
-namespace StuPipe {
+namespace Spire
+{
 
-/// StuPipe's driver, primary entrance point to the pipe.
-class Driver : public PipeDriver
+/// A hacked uniform color renderer for demonstration purposes only.
+class HackedUCRenderer
 {
 public:
-
-  Driver(Hub& hub);
-  virtual ~Driver();
+  HackedUCRenderer(Hub& hub);
+  virtual ~HackedUCRenderer();
   
-  virtual void doFrame();
+  void doFrame();
 
-protected:
+  void setEdgeData(uint8_t* vbo, uint8_t* ibo);
+  void setEdgeColor(const V4& color);
+  void setFaceData(uint8_t* vbo, uint8_t* ibo);
+  void setFaceColor(const V4& color);
 
-  GPUState          mInitialState;
-  //TestUniformColor  mUniformColorTest;
+private:
 
-  M44               mView;
+  GLuint  mFaceVBO;
+  GLuint  mFaceIBO;
+  V4      mFaceColor;
+
+  GLuint  mIndexVBO;
+  GLuint  mIndexIBO;
+  V4      mIndexColor;
+
+  Hub&    mHub;
+
+  std::shared_ptr<ShaderProgramAsset>  mShader;
 };
 
-} // namespace StuPipe 
-} // namespace Spire 
+} // namespace Spire
 
 #endif 

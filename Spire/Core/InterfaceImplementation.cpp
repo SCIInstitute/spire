@@ -30,6 +30,7 @@
 /// \date   February 2013
 
 #include "Core/Hub.h"
+#include "Core/HackedUCRenderer.h"
 #include "InterfaceImplementation.h"
 
 namespace Spire {
@@ -74,28 +75,27 @@ void InterfaceImplementation::cameraSetTransform(Hub& hub, M44 transform)
 void InterfaceImplementation::renderHACKSetUCEdge(Hub& hub, uint8_t* vertexBuffer, uint8_t* indexBuffer)
 {
   // Destroy any previous vertex / index buffers
+  hub.getHackedRenderer()->setEdgeData(vertexBuffer, indexBuffer);
 }
 
 //------------------------------------------------------------------------------
 void InterfaceImplementation::renderHACKSetUCEdgeColor(Hub& hub, const V4& color)
 {
+  hub.getHackedRenderer()->setEdgeColor(color);
 }
 
 //------------------------------------------------------------------------------
 void InterfaceImplementation::renderHACKSetUCFace(Hub& hub, uint8_t* vertexBuffer, uint8_t* indexBuffer)
 {
+  hub.getHackedRenderer()->setFaceData(vertexBuffer, indexBuffer);
 }
 
 //------------------------------------------------------------------------------
 void InterfaceImplementation::renderHACKSetUCFaceColor(Hub& hub, const V4& color)
 {
+  hub.getHackedRenderer()->setFaceColor(color);
 }
 
-//------------------------------------------------------------------------------
-void InterfaceImplementation::hackedFrame(Hub& hub)
-{
-  
-}
 
 } // end of namespace Spire
 

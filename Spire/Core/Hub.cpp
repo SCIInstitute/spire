@@ -38,6 +38,7 @@
 #include "Core/Log.h"
 #include "Core/FileUtil.h"
 #include "Core/InterfaceImplementation.h"
+#include "Core/HackedUCRenderer.h"
 
 #include "StuPipe/Driver.h"
 
@@ -167,6 +168,8 @@ void Hub::oneTimeInitOnThread()
   // Setup rendering pipeline
   Log::debug() << "Creating render pipeline." << std::endl;
   mPipe = std::shared_ptr<PipeDriver>(new StuPipe::Driver(*this));
+
+  mHackedRenderer = std::shared_ptr<HackedUCRenderer>(new HackedUCRenderer(*this));
 }
 
 //------------------------------------------------------------------------------

@@ -51,6 +51,7 @@ namespace Spire {
 class Log;
 class PipeDriver;
 class InterfaceImplementation;
+class HackedUCRenderer;
 
 /// Using thread local storage ONLY for logging purposes, nothing else.
 
@@ -101,6 +102,9 @@ public:
   /// Retrieves the default camera.
   std::shared_ptr<Camera> getCamera()             {return mCamera;}
 
+  /// Retrieves the hacked renderer.
+  std::shared_ptr<HackedUCRenderer> getHackedRenderer() {return mHackedRenderer;}
+
   /// Retrieves the actual screen width in pixels.
   size_t getActualScreenWidth() const             {return mPixScreenWidth;}
 
@@ -135,6 +139,8 @@ private:
   std::shared_ptr<PipeDriver> mPipe;            ///< Current rendering pipe.
 
   std::shared_ptr<InterfaceImplementation>  mInterfaceImpl; ///< Interface implementation.
+
+  std::shared_ptr<HackedUCRenderer>         mHackedRenderer;///< Hacked uniform color renderer.
 
   // Threading variables / functions
 

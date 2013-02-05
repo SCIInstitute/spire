@@ -3,7 +3,7 @@
 
    The MIT License
 
-   Copyright (c) 2012 Scientific Computing and Imaging Institute,
+   Copyright (c) 2013 Scientific Computing and Imaging Institute,
    University of Utah.
 
 
@@ -27,49 +27,59 @@
 */
 
 /// \author James Hughes
-/// \date   December 2012
+/// \date   February 2013
 
 #include "Common.h"
-#include "Driver.h"
+#include "HackedUCRenderer.h"
 
-namespace Spire { 
-namespace StuPipe {
+namespace Spire {
 
 //------------------------------------------------------------------------------
-Driver::Driver(Hub& hub) :
-    PipeDriver(hub)
-    //mUniformColorTest(hub)
+HackedUCRenderer::HackedUCRenderer(Hub& hub) :
+    mHub(hub)
 {
-  mInitialState.mDepthTestEnable = true;
-  mInitialState.mCullFaceEnable = false;  // Todo: Set to true for geometry.
-                                          // Should not be true for volumes.
-  glClearColor(0.3f, 0.0f, 0.3f, 1.0f);
-  glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
+  Log::message() << "Initializing hacked uniform color renderer." << std::endl;
+
+  // Build shader program using C++11 initializer lists.
+  /// \todo Change back to initializer lists once VS supports it.
+  std::list<std::tuple<std::string, GLenum>> shaders;
+  shaders.push_back(std::make_tuple("UniformColor.vs", GL_VERTEX_SHADER));
+  shaders.push_back(std::make_tuple("UniformColor.fs", GL_FRAGMENT_SHADER));
+  //  { {"UniformColor.vs", GL_VERTEX_SHADER},
+  //    {"UniformColor.fs", GL_FRAGMENT_SHADER} };
+
+  mShader = mHub.getShaderProgramManager().loadProgram("UniformColor", shaders);
 }
 
 //------------------------------------------------------------------------------
-Driver::~Driver()
+HackedUCRenderer::~HackedUCRenderer()
 {
 }
 
 //------------------------------------------------------------------------------
-void Driver::doFrame()
+void HackedUCRenderer::doFrame()
 {
-  // Clear the screen
-  glClearColor(0.3f, 0.0f, 0.3f, 1.0f);
-  glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
-
-  //mView = mView * M44::rotationY(0.1f);
-  //mHub.getCamera()->setViewTransform(mView);
-
-  // Force a known GPU state
-  mHub.getGPUStateManager().apply(mInitialState, true);
-  mHub.getHackedRenderer()->doFrame();
-
-  // Render a latvolume...
-
-  // Render a volume...
-
 }
 
-} } // end of namespace Spire::StuPipe
+//------------------------------------------------------------------------------
+void HackedUCRenderer::setEdgeColor(const V4& color)
+{
+}
+
+//------------------------------------------------------------------------------
+void HackedUCRenderer::setEdgeData(uint8_t* vbo, uint8_t* ibo)
+{
+}
+
+//------------------------------------------------------------------------------
+void HackedUCRenderer::setFaceColor(const V4& color)
+{
+}
+
+//------------------------------------------------------------------------------
+void HackedUCRenderer::setFaceData(uint8_t* vbo, uint8_t* ibo)
+{
+}
+
+
+} // namespace Spire

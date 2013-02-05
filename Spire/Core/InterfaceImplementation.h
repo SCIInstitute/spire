@@ -97,9 +97,6 @@ public:
   /// HACKED  Uniform face color
   static void renderHACKSetUCEdgeColor(Hub& hub, const V4& color);
 
-  /// HACKED  Hacked frame update.
-  void hackedFrame(Hub& hub);
-
 private:
 
 #ifdef SPIRE_USE_STD_THREADS
