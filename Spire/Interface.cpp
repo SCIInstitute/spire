@@ -83,5 +83,32 @@ void Interface::cameraSetTransform(const M44& transform)
   mHub->addFunctionToThreadQueue(fun);
 }
 
+//------------------------------------------------------------------------------
+void Interface::addPersistentShader(const std::string& programName,
+                                    const std::string& vertexShader,
+                                    const std::string& fragmentShader)
+{
+}
+
+//------------------------------------------------------------------------------
+void Interface::renderHACKSetUCEdge(uint8_t* vertexBuffer, uint8_t* indexBuffer)
+{
+}
+
+//------------------------------------------------------------------------------
+void Interface::renderHACKSetUCEdgeColor(const V4& color)
+{
+}
+
+//------------------------------------------------------------------------------
+void Interface::renderHACKSetUCFace(uint8_t* vertexBuffer, uint8_t* indexBuffer)
+{
+}
+
+//------------------------------------------------------------------------------
+void Interface::renderHACKSetUCFaceColor(const V4& color)
+{
+}
+
 } // end of namespace Renderer
 
