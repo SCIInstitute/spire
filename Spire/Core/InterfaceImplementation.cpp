@@ -36,7 +36,7 @@ namespace Spire {
 
 
 //------------------------------------------------------------------------------
-bool InterfaceImplementation::addFunctionToQueue(ThreadMessage::RemoteFunction fun)
+bool InterfaceImplementation::addFunctionToQueue(const Hub::RemoteFunction& fun)
 {
 #ifdef SPIRE_USE_STD_THREADS
   return mQueue.push(ThreadMessage(fun));
@@ -53,21 +53,21 @@ void InterfaceImplementation::executeQueue(Hub& hub)
   ThreadMessage msg;
   while (mQueue.pop(msg))
   {
-    msg.execute(&hub);
+    msg.execute(hub);
   }
 #else
   while (!mQueue.empty())
   {
-    mQueue.front().execute(&hub);
+    mQueue.front().execute(hub);
     mQueue.pop();
   }
 #endif
 }
 
 //------------------------------------------------------------------------------
-void InterfaceImplementation::cameraSetTransform(Hub* hub, M44 transform)
+void InterfaceImplementation::cameraSetTransform(Hub& hub, M44 transform)
 {
-  hub->getCamera()->setViewTransform(transform);
+  hub.getCamera()->setViewTransform(transform);
 }
 
 } // end of namespace Spire

@@ -50,6 +50,7 @@ namespace Spire {
 
 class Log;
 class PipeDriver;
+class InterfaceImplementation;
 
 /// Using thread local storage ONLY for logging purposes, nothing else.
 
@@ -64,6 +65,9 @@ public:
       const std::vector<std::string>& shaderDirs, 
       Interface::LogFunction logFn, bool useThread);
   virtual ~Hub();
+
+  /// Definition of what a remote function should accept.
+  typedef std::function<void (Hub& hub)> RemoteFunction;
 
   /// One-time initialization of the renderer.
   /// Called by the rendering thread, or the thread where this Interface class
@@ -112,6 +116,9 @@ public:
   /// has terminated.
   void killRendererThread();
 
+  /// Adds a function to the cross-thread message queue.
+  bool addFunctionToThreadQueue(const RemoteFunction& fun);
+
 private:
 
   Interface::LogFunction      mLogFun;          ///< Log function.
@@ -126,6 +133,8 @@ private:
                                                 ///< (this should not be here... move in the future)
   std::vector<std::string>    mShaderDirs;      ///< Shader directories to search.
   std::shared_ptr<PipeDriver> mPipe;            ///< Current rendering pipe.
+
+  std::shared_ptr<InterfaceImplementation>  mInterfaceImpl; ///< Interface implementation.
 
   // Threading variables / functions
 

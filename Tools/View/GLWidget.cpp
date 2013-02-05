@@ -29,8 +29,18 @@
 /// \author James Hughes
 /// \date   September 2012
 
+#include <iostream>
+#include <QMouseEvent>
+
 #include "GLWidget.h"
 
+// List off the classes we are using.
+using Spire::V3;
+using Spire::V2;
+using Spire::Vector2;
+using Spire::M44;
+
+//------------------------------------------------------------------------------
 GLWidget::GLWidget(const QGLFormat& format) :
     QGLWidget(format),
     mContext(new GLContext(this))
@@ -50,16 +60,30 @@ GLWidget::GLWidget(const QGLFormat& format) :
   mTimer->start(35);
 #endif
 
+  // Setup default camera to look down the negative Z axis.
+  V3 eye(0.0f, 0.0f, 5.0f);
+  V3 lookAt(0.0f, 0.0f, 0.0f);
+  V3 upVec(0.0f, 1.0f, 0.0f);
+
+  // M44::lookAt builds an inverted view matrix that is ready to be multiplied
+  // against a projection matrix. For our purposes, we need the *actual* view
+  // matrix.
+  M44 invCam  = M44::lookAt(eye, lookAt, upVec);
+  mCamWorld   = M44::orthoInverse(invCam);
+  mGraphics->cameraSetTransform(mCamWorld);
+
   // We must disable auto buffer swap on the 'paintEvent'.
   setAutoBufferSwap(false);
 }
 
+//------------------------------------------------------------------------------
 void GLWidget::resizeEvent(QResizeEvent *evt)
 {
   /// @todo Inform the renderer that screen dimensions have changed.
   //mGraphics.resizeViewport(evt->size());
 }
 
+//------------------------------------------------------------------------------
 void GLWidget::closeEvent(QCloseEvent *evt)
 {
   // Kill off the graphics thread.
@@ -67,9 +91,51 @@ void GLWidget::closeEvent(QCloseEvent *evt)
   QGLWidget::closeEvent(evt);
 }
 
+//------------------------------------------------------------------------------
 void GLWidget::updateRenderer()
 {
   // Update the renderer.
   mGraphics->doFrame();
 }
+
+//------------------------------------------------------------------------------
+void GLWidget::mouseMoveEvent(QMouseEvent* event)
+{
+  Vector2<int> thisPos;
+  thisPos.x = event->x();
+  thisPos.y = event->y();
+
+  Vector2<int> delta = thisPos - mLastMousePos;
+
+  // Apply this rotation extremelly naively to the camera.
+  // divisor is a magic calibration number from pixels to rotation speed.
+  const float divisor = 32.0f;
+  float rx = static_cast<float>(-delta.y) / divisor;
+  float ry = static_cast<float>(delta.x) / divisor;
+
+  M44 tx = M44::rotationX(rx);
+  M44 ty = M44::rotationY(ry);
+
+  // x applied first in object space, then y.
+  mCamWorld = mCamWorld * ty * tx;
+
+  // Send new camera transform to spire.
+  mGraphics->cameraSetTransform(mCamWorld);
+
+  mLastMousePos = thisPos;
+}
+
+//------------------------------------------------------------------------------
+void GLWidget::mousePressEvent(QMouseEvent* event)
+{
+  mLastMousePos.x = event->x();
+  mLastMousePos.y = event->y();
+}
+
+//------------------------------------------------------------------------------
+void GLWidget::mouseReleaseEvent(QMouseEvent* event)
+{
+}
+
+
 

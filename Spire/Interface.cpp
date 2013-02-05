@@ -35,7 +35,6 @@
 #include "Core/Hub.h"
 #include "Core/Log.h"
 #include "Core/InterfaceImplementation.h"
-#include "Core/ThreadMessage.h"
 
 namespace Spire {
 
@@ -43,8 +42,7 @@ namespace Spire {
 Interface::Interface(std::shared_ptr<Context> context,
                      const std::vector<std::string>& shaderDirs,
                      bool createThread, LogFunction logFP) :
-    mHub(new Hub(context, shaderDirs, logFP, createThread)),
-    mInterfaceImpl(new InterfaceImplementation())
+    mHub(new Hub(context, shaderDirs, logFP, createThread))
 {
 }
 
@@ -78,11 +76,11 @@ void Interface::cameraSetTransform(const M44& transform)
   using namespace std::placeholders;
 
   // Bind the cameraSetTransform function in the interface implementation.
-  ThreadMessage::RemoteFunction fun = 
-      std::bind(InterfaceImplementation::cameraSetTransform,
+  Hub::RemoteFunction fun = std::bind(InterfaceImplementation::cameraSetTransform,
                 _1, transform);
 
   // Now place the remote function in the queue...
+  mHub->addFunctionToThreadQueue(fun);
 }
 
 } // end of namespace Renderer

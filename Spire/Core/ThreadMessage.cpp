@@ -29,6 +29,7 @@
 /// \author James Hughes
 /// \date   February 2013
 
+#include "Hub.h"
 #include "ThreadMessage.h"
 
 namespace Spire {
@@ -39,19 +40,19 @@ ThreadMessage::ThreadMessage()
 }
 
 //------------------------------------------------------------------------------
-ThreadMessage::ThreadMessage(RemoteFunction toCall) :
+ThreadMessage::ThreadMessage(const Hub::RemoteFunction& toCall) :
     mToCall(toCall)
 {
 }
 
 //------------------------------------------------------------------------------
-void ThreadMessage::execute(Hub* hub)
+void ThreadMessage::execute(Hub& hub)
 {
   mToCall(hub);
 }
 
 //------------------------------------------------------------------------------
-void ThreadMessage::setFunction(RemoteFunction toCall)
+void ThreadMessage::setFunction(const Hub::RemoteFunction& toCall)
 {
   mToCall = toCall;
 }

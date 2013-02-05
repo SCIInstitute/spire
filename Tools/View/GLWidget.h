@@ -50,6 +50,9 @@ public:
 protected:
   void resizeEvent(QResizeEvent *evt);
   void closeEvent(QCloseEvent *evt);
+  virtual void mousePressEvent(QMouseEvent* event);
+  virtual void mouseMoveEvent(QMouseEvent* event);
+  virtual void mouseReleaseEvent(QMouseEvent* event);
 
 protected slots:
   void updateRenderer();
@@ -58,6 +61,8 @@ private:
 
   std::shared_ptr<GLContext>        mContext;
   std::shared_ptr<Spire::Interface> mGraphics;
+  Spire::Vector2<int>               mLastMousePos;
+  Spire::M44                        mCamWorld;
 
 #ifndef SPIRE_USE_STD_THREADS
   QTimer*                           mTimer;

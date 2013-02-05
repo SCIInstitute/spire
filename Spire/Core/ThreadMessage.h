@@ -34,10 +34,10 @@
 
 #include <queue>
 
+#include "Core/Hub.h"
+
 namespace Spire
 {
-
-class Hub;
 
 /// Encapsulates a function that will be executed on a remote thread.
 /// Used instead of an inbox along with message ID's and whatnot.
@@ -47,23 +47,21 @@ class Hub;
 class ThreadMessage
 {
 public:
-  typedef std::function<void (Hub* hub)> RemoteFunction;
-
   /// The purposes of using std::function is so that all parameters can be
   /// bound using std::bind.
   ThreadMessage();
-  ThreadMessage(RemoteFunction toCall);
+  ThreadMessage(const Hub::RemoteFunction& toCall);
   virtual ~ThreadMessage()  {}
   
   /// Sets message function to call (rvalue reference so we can move construct?)
-  void setFunction(RemoteFunction toCall);
+  void setFunction(const Hub::RemoteFunction& toCall);
 
   /// Execute function stored in message.
-  void execute(Hub* hub);
+  void execute(Hub& hub);
 
 private:
 
-  RemoteFunction mToCall;
+  Hub::RemoteFunction mToCall;
 };
 
 } // namespace Spire

@@ -33,7 +33,8 @@
 #define SPIRE_HIGH_INTERFACEIMPLEMENTATION_H
 
 #include "Interface.h"
-#include "ThreadMessage.h"
+#include "Core/ThreadMessage.h"
+#include "Core/Hub.h"
 
 #ifdef SPIRE_USE_STD_THREADS
 #include "Core/CircFIFOSeqCons.hpp"
@@ -53,7 +54,7 @@ public:
   /// Will add 'fun' to the queue associated with 'thread'.
   /// \return false if we failed to add the function to the specified queue.
   ///         queue is likely to be full.
-  bool addFunctionToQueue(ThreadMessage::RemoteFunction fun);
+  bool addFunctionToQueue(const Hub::RemoteFunction& fun);
 
   /// SHOULD ONLY be called by the spire thread!
   /// Will execute all commands the the queue associated with Interface::THREAD.
@@ -73,7 +74,7 @@ public:
   // Camera
   //--------
   /// Sets the camera's transformation in world space.
-  static void cameraSetTransform(Hub* hub, M44 transform);
+  static void cameraSetTransform(Hub& hub, M44 transform);
 
 
 

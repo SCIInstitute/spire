@@ -29,6 +29,8 @@
 /// \author James Hughes
 /// \date   January 2013
 
+#include <ostream>
+
 #include "Common.h"
 #include "Core/Hub.h"
 #include "Core/Log.h"

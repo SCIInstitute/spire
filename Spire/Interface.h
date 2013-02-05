@@ -44,7 +44,6 @@ namespace Spire {
 
 class Hub;
 class HubThread;
-class InterfaceImplementation;
 
 /// Interface to the renderer.
 /// A new interface will need to be created per-context.
@@ -157,7 +156,6 @@ public:
 private:
 
   std::unique_ptr<Hub>                      mHub;           ///< Rendering hub.
-  std::unique_ptr<InterfaceImplementation>  mInterfaceImpl; ///< Interface implementation.
 
 };
 
