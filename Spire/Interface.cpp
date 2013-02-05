@@ -35,6 +35,7 @@
 #include "Core/Hub.h"
 #include "Core/Log.h"
 #include "Core/InterfaceImplementation.h"
+#include "Core/ThreadMessage.h"
 
 namespace Spire {
 
@@ -69,6 +70,19 @@ void Interface::doFrame()
                           "running in a separate thread.");
 
   mHub->doFrame();
+}
+
+//------------------------------------------------------------------------------
+void Interface::cameraSetTransform(const M44& transform)
+{
+  using namespace std::placeholders;
+
+  // Bind the cameraSetTransform function in the interface implementation.
+  ThreadMessage::RemoteFunction fun = 
+      std::bind(InterfaceImplementation::cameraSetTransform,
+                _1, transform);
+
+  // Now place the remote function in the queue...
 }
 
 } // end of namespace Renderer

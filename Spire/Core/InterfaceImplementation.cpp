@@ -29,6 +29,7 @@
 /// \author James Hughes
 /// \date   February 2013
 
+#include "Core/Hub.h"
 #include "InterfaceImplementation.h"
 
 namespace Spire {
@@ -37,12 +38,36 @@ namespace Spire {
 //------------------------------------------------------------------------------
 bool InterfaceImplementation::addFunctionToQueue(ThreadMessage::RemoteFunction fun)
 {
-  return false;
+#ifdef SPIRE_USE_STD_THREADS
+  return mQueue.push(ThreadMessage(fun));
+#else
+  mQueue.push(ThreadMessage(fun));
+  return true;
+#endif
 }
 
 //------------------------------------------------------------------------------
 void InterfaceImplementation::executeQueue(Hub& hub)
 {
+#ifdef SPIRE_USE_STD_THREADS
+  ThreadMessage msg;
+  while (mQueue.pop(msg))
+  {
+    msg.execute(&hub);
+  }
+#else
+  while (!mQueue.empty())
+  {
+    mQueue.front().execute(&hub);
+    mQueue.pop();
+  }
+#endif
+}
+
+//------------------------------------------------------------------------------
+void InterfaceImplementation::cameraSetTransform(Hub* hub, M44 transform)
+{
+  hub->getCamera()->setViewTransform(transform);
 }
 
 } // end of namespace Spire

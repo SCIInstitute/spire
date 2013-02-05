@@ -63,13 +63,25 @@ public:
   // IMPLEMENTATION
   //============================================================================
   // All of the functions below constitute the implementation of the interface
-  // to spire.
+  // to spire. 
+  // NOTE: None of the functions below should not take references or raw
+  // pointers with the exception of the Hub* raw poiner (unfortunately
+  // unavoidable). We don't want to worry about the lifetime of the objects
+  // during cross-thread communication.
+
+  //--------
+  // Camera
+  //--------
+  /// Sets the camera's transformation in world space.
+  static void cameraSetTransform(Hub* hub, M44 transform);
 
 
 
 private:
 
 #ifdef SPIRE_USE_STD_THREADS
+  /// \todo Change to boost <url:http://www.boost.org/doc/libs/1_53_0/doc/html/lockfree.html> 
+  ///       Wouldn't have to deal with the limit to message size...
   typedef CircularFifo<ThreadMessage,256> MessageQueue;
 #else
   typedef std::queue<ThreadMessage>       MessageQueue;

@@ -39,6 +39,12 @@ ThreadMessage::ThreadMessage()
 }
 
 //------------------------------------------------------------------------------
+ThreadMessage::ThreadMessage(RemoteFunction toCall) :
+    mToCall(toCall)
+{
+}
+
+//------------------------------------------------------------------------------
 void ThreadMessage::execute(Hub* hub)
 {
   mToCall(hub);
