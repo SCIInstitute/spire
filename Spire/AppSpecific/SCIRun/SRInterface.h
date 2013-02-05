@@ -33,12 +33,15 @@
 #define SPIRE_APPSPECIFIC_SCIRUN_SCIRUNINTERFACE_H
 
 // Be sure to include Spire/Interface.h before including this file!
+#include "ArcBall.h"
 
 namespace Spire {
 namespace SCIRun {
 
 /// A wrapper around spire that provides higher level functionality required
 /// to operate SCIRun.
+/// \todo Think about how we are going to break apart this class.
+///       There will be a lot of functionality behind it.
 class SRInterface : public Interface
 {
 public:
@@ -47,7 +50,14 @@ public:
               bool createThread, LogFunction logFP = LogFunction());
   virtual ~SRInterface();
 
-  /// \todo Mouse movement (appropriate camera transform calls here...)
+  void eventResize(int32_t width, int32_t height);
+
+  /// \todo Specify what buttons are pressed.
+  /// @{
+  void inputMouseDown(const Vector2<int32_t>& pos);
+  void inputMouseMove(const Vector2<int32_t>& pos);
+  void inputMouseUp(const Vector2<int32_t>& pos);
+  /// @}
 
   /// \todo Selecting objects...
 
@@ -55,6 +65,11 @@ public:
   ///       them and provide quick object feedback.
 
 private:
+
+  Vector2<int>  mWindowDims;    ///< Current window dimensions.
+
+  ArcBall       mArcBall;       ///< ArcBall delta transform calculator.
+  M44           mCamWorld;      ///< Camera in world space.
 
 };
 

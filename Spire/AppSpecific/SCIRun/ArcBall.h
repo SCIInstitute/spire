@@ -32,11 +32,10 @@
 #ifndef SPIRE_APPSPECIFIC_SCIRUN_ARCBALL_H
 #define SPIRE_APPSPECIFIC_SCIRUN_ARCBALL_H
 
-#include "Core/Math.h"
-
 namespace Spire {
 namespace SCIRun {
 
+/// \todo Replace this class (with a more faithful translation?).
 class ArcBall
 {
 public:
@@ -44,6 +43,8 @@ public:
           int32_t iWinOffsetX=0, int32_t iWinOffsetY=0,
           bool bUseTranslation = false);
 
+  /// \todo Convert translation to a V3. It makes no sense as a homogeneous
+  ///       transformation (in terms of memory used).
   void        setRadius(float fRadius)                {mRadius = fRadius;}
   void        setTranslation(const M44& trans)        {mTranslation = trans;}
   const M44&  getTranslation() const                  {return mTranslation;}

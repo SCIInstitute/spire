@@ -35,6 +35,7 @@
   \date    October 2008
 */
 
+#include "Interface.h"
 #include "ArcBall.h"
 
 namespace Spire {
@@ -57,7 +58,7 @@ ArcBall::ArcBall(int32_t iWinWidth, int32_t iWinHeight,
 //------------------------------------------------------------------------------
 void ArcBall::setWindowSize(int32_t iWinWidth, int32_t iWinHeight)
 {
-    mWinDim = Vector2<int32_t>(iWinWidth, iWinHeight);
+  mWinDim = Vector2<int32_t>(iWinWidth, iWinHeight);
 }
 
 //------------------------------------------------------------------------------
@@ -81,7 +82,7 @@ Quat ArcBall::drag(Vector2<int32_t> vPosition)
   V3 vCurrent = mapToSphere(vPosition);
 
   // Compute the vector perpendicular to the begin and end vectors
-  V3    vCross(vCurrent % mStartDrag);
+  V3    vCross(mStartDrag % vCurrent);
   float fDot(vCurrent ^ mStartDrag);
 
   if (vCross.length() > msEpsilon)    //if its non-zero

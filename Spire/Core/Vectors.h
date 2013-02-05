@@ -1307,7 +1307,7 @@ public:
   Quaternion4<T>(const T& other) :
       x(other.x), y(other.y), z(other.z), w(other.w) {}
 
-  Matrix4<T> ComputeRotation()
+  Matrix4<T> computeRotation()
   {
     float n, s;
     float xs, ys, zs;
