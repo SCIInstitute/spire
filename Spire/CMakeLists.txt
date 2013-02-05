@@ -27,6 +27,10 @@ if(USE_STD_THREADS)
   add_definitions(-DSPIRE_USE_STD_THREADS)
 endif()
 
+if(USE_SCIRUN_INTERFACE)
+  add_definitions(-DSPIRE_USE_SCIRUN_INTERFACE)
+endif()
+
 if(CMAKE_BUILD_TYPE MATCHES DEBUG)
   add_definitions(-DSPIRE_DEBUG)
 endif()

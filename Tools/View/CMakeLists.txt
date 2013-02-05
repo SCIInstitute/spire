@@ -120,6 +120,11 @@ if(USE_STD_THREADS)
   add_definitions(-DSPIRE_USE_STD_THREADS)
 endif()
 
+get_directory_property(USI_SCIRUN_INTERFACE DIRECTORY ${BASE_SPIRE_DIR}/Spire DEFINITION USE_SCIRUN_INTERFACE)
+if (USE_SCIRUN_INTERFACE)
+  add_definitions(-DSPIRE_USE_SCIRUN_INTERFACE)
+endif()
+
 ########################################################################
 # Compiler settings
 
@@ -142,8 +147,17 @@ include_directories("${CMAKE_CURRENT_BINARY_DIR}" "${BASE_SPIRE_DIR}" )
 ########################################################################
 # Setup source
 
-file (GLOB Sources "*.cpp")
-set (MocHeaders MainWindow.h GLWidget.h)
+set(View_Common_Sources GLContext.cpp GLContext.h MainWindow.cpp MainWindow.h main.cpp)
+
+# An example where globbing isn't so good =(
+if(USE_SCIRUN_INTERFACE)
+  set(View_Specific_Sources GLWidgetSCIRun.cpp GLWidgetSCIRun.h)
+  set (MocHeaders MainWindow.h GLWidgetSCIRun.h)
+else()
+  set(View_Specific_Sources GLWidget.cpp GLWidget.h)
+  set (MocHeaders MainWindow.h GLWidget.h)
+endif()
+
 set (Forms MainWindow.ui) 
 
 QT4_WRAP_CPP(MocSource ${MocHeaders})
@@ -170,8 +184,9 @@ file(COPY ${BASE_SPIRE_DIR}/Spire/Shaders/
 # Setup executable
 
 add_executable(spireview 
-  ${Sources} 
-  ${MocSource} 
+  ${View_Common_Sources}
+  ${View_Specific_Sources}
+  ${MocSource}
   ${UISource})
 
 add_dependencies(spireview Spire)
