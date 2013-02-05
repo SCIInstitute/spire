@@ -46,9 +46,11 @@ public:
   
   void doFrame();
 
-  void setEdgeData(uint8_t* vbo, uint8_t* ibo);
+  void setEdgeData(uint8_t* vbo, size_t vboSize,
+                   uint8_t* ibo, size_t iboSize);
   void setEdgeColor(const V4& color);
-  void setFaceData(uint8_t* vbo, uint8_t* ibo);
+  void setFaceData(uint8_t* vbo, size_t vboSize,
+                   uint8_t* ibo, size_t iboSize);
   void setFaceColor(const V4& color);
 
 private:
@@ -56,10 +58,12 @@ private:
   GLuint  mFaceVBO;
   GLuint  mFaceIBO;
   V4      mFaceColor;
+  size_t  mNumFaceElements;
 
-  GLuint  mIndexVBO;
-  GLuint  mIndexIBO;
-  V4      mIndexColor;
+  GLuint  mEdgeVBO;
+  GLuint  mEdgeIBO;
+  V4      mEdgeColor;
+  size_t  mNumEdgeElements;
 
   Hub&    mHub;
 

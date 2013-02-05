@@ -86,13 +86,17 @@ public:
   /// HACKED  Uniform color face attributes.
   ///         Once your the buffer is passed into this function, spire assumes
   ///         all ownership of it. It will call delete[] on the buffer.
-  static void renderHACKSetUCFace(Hub& hub, uint8_t* vertexBuffer, uint8_t* indexBuffer);
+  static void renderHACKSetUCFace(Hub& hub,
+                                  uint8_t* vertexBuffer, size_t vboSize,
+                                  uint8_t* indexBuffer, size_t iboSize);
 
   /// HACKED  Uniform face color
   static void renderHACKSetUCFaceColor(Hub& hub, const V4& color);
 
   /// HACKED  Uniform color edge attributes.
-  static void renderHACKSetUCEdge(Hub& hub, uint8_t* vertexBuffer, uint8_t* indexBuffer);
+  static void renderHACKSetUCEdge(Hub& hub,
+                                  uint8_t* vertexBuffer, size_t vboSize,
+                                  uint8_t* indexBuffer, size_t iboSize);
 
   /// HACKED  Uniform face color
   static void renderHACKSetUCEdgeColor(Hub& hub, const V4& color);

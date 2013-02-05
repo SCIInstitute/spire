@@ -30,13 +30,21 @@
 /// \date   February 2013
 
 #include "Common.h"
+#include "Exceptions.h"
 #include "HackedUCRenderer.h"
+
+#include "Core/GLMathUtil.h"
+#include "Core/Camera.h"
 
 namespace Spire {
 
 //------------------------------------------------------------------------------
 HackedUCRenderer::HackedUCRenderer(Hub& hub) :
-    mHub(hub)
+    mHub(hub),
+    mFaceVBO(0),
+    mFaceIBO(0),
+    mEdgeVBO(0),
+    mEdgeIBO(0)
 {
   Log::message() << "Initializing hacked uniform color renderer." << std::endl;
 
@@ -59,26 +67,162 @@ HackedUCRenderer::~HackedUCRenderer()
 //------------------------------------------------------------------------------
 void HackedUCRenderer::doFrame()
 {
+  GLuint program = mShader->getProgramID();
+  std::shared_ptr<Camera> cam = mHub.getCamera();
+
+  // Obtain the first attribute in the shader (should be position).
+  AttribState pos = mHub.getShaderAttributeManager().getAttributeWithName("aPos");
+
+  // Grab pointers to attributes and uniforms.
+  const ShaderAttributeCollection& attribs  = mShader->getAttributes();
+  //const ShaderUniformCollection&   uniforms = mShader->getUniforms();
+
+  // Sanity check: Ensure the shader knows about our attributes.
+  if (attribs.hasAttribute(pos.codeName) == false)
+    throw GLError("Unable to find appropriate shader position attribute.");
+
+  // Setup shader.
+  glUseProgram(program);
+
+  if (mFaceVBO != 0 && mFaceIBO != 0)
+  {
+    glBindBuffer(GL_ARRAY_BUFFER, mFaceVBO);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mFaceIBO);
+
+    GLsizei stride = static_cast<GLsizei>(attribs.calculateStride());
+
+    // Manually bind attribute locations (this can also be done through
+    // ShaderAttributeCollection::bindAttributes)
+    // We can also set the index of the attribute.
+    GLuint attribPos = glGetAttribLocation(program, "aPos");
+    glEnableVertexAttribArray(attribPos);
+    glVertexAttribPointer(attribPos,
+                          static_cast<GLint>(pos.numComponents),
+                          pos.type, static_cast<GLboolean>(pos.normalize),
+                          stride, NULL); 
+    // The NULL pointer is critical. Would normally use this pointer as an offset
+    // when dealing with multiple attributes in the same buffer.
+
+    GLint unifLoc;
+    GLfloat tmpGLMat[16];
+
+    // Projection * Inverse View * World transformation.
+    M44 PIV = cam->getWorldToProjection();
+    unifLoc = glGetUniformLocation(program, "uProjIVWorld");
+    M44toArray16(PIV, tmpGLMat);
+    glUniformMatrix4fv(unifLoc, 1, GL_FALSE, tmpGLMat);
+
+    // Color setup
+    GLfloat tmpV4[4];
+    V4toArray4(mFaceColor, tmpV4);
+    unifLoc = glGetUniformLocation(program, "uColor");
+    glUniform4fv(unifLoc, 1, tmpV4);
+
+    glDrawElements(GL_TRIANGLES, mNumFaceElements, GL_UNSIGNED_SHORT, 0);
+  }
+
+  if (mEdgeVBO != 0 && mEdgeIBO != 0)
+  {
+    glBindBuffer(GL_ARRAY_BUFFER, mEdgeVBO);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mEdgeIBO);
+
+    GLsizei stride = static_cast<GLsizei>(attribs.calculateStride());
+
+    // Manually bind attribute locations (this can also be done through
+    // ShaderAttributeCollection::bindAttributes)
+    // We can also set the index of the attribute.
+    GLuint attribPos = glGetAttribLocation(program, "aPos");
+    glEnableVertexAttribArray(attribPos);
+    glVertexAttribPointer(attribPos,
+                          static_cast<GLint>(pos.numComponents),
+                          pos.type, static_cast<GLboolean>(pos.normalize),
+                          stride, NULL); 
+    // The NULL pointer is critical. Would normally use this pointer as an offset
+    // when dealing with multiple attributes in the same buffer.
+
+    GLint unifLoc;
+    GLfloat tmpGLMat[16];
+
+    // Projection * Inverse View * World transformation.
+    M44 PIV = cam->getWorldToProjection();
+    unifLoc = glGetUniformLocation(program, "uProjIVWorld");
+    M44toArray16(PIV, tmpGLMat);
+    glUniformMatrix4fv(unifLoc, 1, GL_FALSE, tmpGLMat);
+
+    // Color setup
+    GLfloat tmpV4[4];
+    V4toArray4(mEdgeColor, tmpV4);
+    unifLoc = glGetUniformLocation(program, "uColor");
+    glUniform4fv(unifLoc, 1, tmpV4);
+
+    glDrawElements(GL_LINES, mNumEdgeElements, GL_UNSIGNED_SHORT, 0);
+  }
 }
 
 //------------------------------------------------------------------------------
 void HackedUCRenderer::setEdgeColor(const V4& color)
 {
+  mEdgeColor = color;
 }
 
 //------------------------------------------------------------------------------
-void HackedUCRenderer::setEdgeData(uint8_t* vbo, uint8_t* ibo)
+void HackedUCRenderer::setEdgeData(uint8_t* vbo, size_t vboSize,
+                                   uint8_t* ibo, size_t iboSize)
 {
+  // Delete pre-existing buffers (if any)
+  if (mEdgeVBO != 0)
+  {
+    glDeleteBuffers(1, &mEdgeVBO);
+  }
+
+  if (mEdgeIBO != 0)
+  {
+    glDeleteBuffers(1, &mEdgeIBO);
+  }
+
+  // Build GL buffers.
+  glGenBuffers(1, &mEdgeVBO);
+  glBindBuffer(GL_ARRAY_BUFFER, mEdgeVBO);
+  glBufferData(GL_ARRAY_BUFFER, vboSize, vbo, GL_STATIC_DRAW);
+
+  glGenBuffers(1, &mEdgeIBO);
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mEdgeIBO);
+  glBufferData(GL_ELEMENT_ARRAY_BUFFER, iboSize, ibo, GL_STATIC_DRAW);
+
+  mNumEdgeElements = iboSize / sizeof(uint16_t);
 }
 
 //------------------------------------------------------------------------------
 void HackedUCRenderer::setFaceColor(const V4& color)
 {
+  mFaceColor = color;
 }
 
 //------------------------------------------------------------------------------
-void HackedUCRenderer::setFaceData(uint8_t* vbo, uint8_t* ibo)
+void HackedUCRenderer::setFaceData(uint8_t* vbo, size_t vboSize,
+                                   uint8_t* ibo, size_t iboSize)
 {
+  // Delete pre-existing buffers (if any)
+  if (mFaceVBO != 0)
+  {
+    glDeleteBuffers(1, &mFaceVBO);
+  }
+
+  if (mFaceIBO != 0)
+  {
+    glDeleteBuffers(1, &mFaceIBO);
+  }
+
+  // Build GL buffers.
+  glGenBuffers(1, &mFaceVBO);
+  glBindBuffer(GL_ARRAY_BUFFER, mFaceVBO);
+  glBufferData(GL_ARRAY_BUFFER, vboSize, vbo, GL_STATIC_DRAW);
+
+  glGenBuffers(1, &mFaceIBO);
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mFaceIBO);
+  glBufferData(GL_ELEMENT_ARRAY_BUFFER, iboSize, ibo, GL_STATIC_DRAW);
+
+  mNumFaceElements = iboSize / sizeof(uint16_t);
 }
 
 

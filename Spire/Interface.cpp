@@ -92,11 +92,12 @@ void Interface::addPersistentShader(const std::string& programName,
 }
 
 //------------------------------------------------------------------------------
-void Interface::renderHACKSetUCEdge(uint8_t* vertexBuffer, uint8_t* indexBuffer)
+void Interface::renderHACKSetUCEdge(uint8_t* vertexBuffer, size_t vboSize,
+                                    uint8_t* indexBuffer, size_t iboSize)
 {
   Hub::RemoteFunction fun =
       std::bind(InterfaceImplementation::renderHACKSetUCEdge,
-                _1, vertexBuffer, indexBuffer);
+                _1, vertexBuffer, vboSize, indexBuffer, iboSize);
 
   mHub->addFunctionToThreadQueue(fun);
 }
@@ -112,11 +113,12 @@ void Interface::renderHACKSetUCEdgeColor(const V4& color)
 }
 
 //------------------------------------------------------------------------------
-void Interface::renderHACKSetUCFace(uint8_t* vertexBuffer, uint8_t* indexBuffer)
+void Interface::renderHACKSetUCFace(uint8_t* vertexBuffer, size_t vboSize,
+                                    uint8_t* indexBuffer, size_t iboSize)
 {
   Hub::RemoteFunction fun =
       std::bind(InterfaceImplementation::renderHACKSetUCFace,
-                _1, vertexBuffer, indexBuffer);
+                _1, vertexBuffer, vboSize, indexBuffer, iboSize);
 
   mHub->addFunctionToThreadQueue(fun);
 }
