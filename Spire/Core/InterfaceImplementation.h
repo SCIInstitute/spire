@@ -77,6 +77,28 @@ public:
   static void cameraSetTransform(Hub& hub, M44 transform);
 
 
+  //------------------
+  // HACKED Interface
+  //------------------
+  // Everything in this interface will be rendered using the uniform color
+  // shader.
+
+  /// HACKED  Uniform color face attributes.
+  ///         Once your the buffer is passed into this function, spire assumes
+  ///         all ownership of it. It will call delete[] on the buffer.
+  static void renderHACKSetUCFace(Hub& hub, uint8_t* vertexBuffer, uint8_t* indexBuffer);
+
+  /// HACKED  Uniform face color
+  static void renderHACKSetUCFaceColor(Hub& hub, const V4& color);
+
+  /// HACKED  Uniform color edge attributes.
+  static void renderHACKSetUCEdge(Hub& hub, uint8_t* vertexBuffer, uint8_t* indexBuffer);
+
+  /// HACKED  Uniform face color
+  static void renderHACKSetUCEdgeColor(Hub& hub, const V4& color);
+
+  /// HACKED  Hacked frame update.
+  void hackedFrame(Hub& hub);
 
 private:
 

@@ -70,5 +70,32 @@ void InterfaceImplementation::cameraSetTransform(Hub& hub, M44 transform)
   hub.getCamera()->setViewTransform(transform);
 }
 
+//------------------------------------------------------------------------------
+void InterfaceImplementation::renderHACKSetUCEdge(Hub& hub, uint8_t* vertexBuffer, uint8_t* indexBuffer)
+{
+  // Destroy any previous vertex / index buffers
+}
+
+//------------------------------------------------------------------------------
+void InterfaceImplementation::renderHACKSetUCEdgeColor(Hub& hub, const V4& color)
+{
+}
+
+//------------------------------------------------------------------------------
+void InterfaceImplementation::renderHACKSetUCFace(Hub& hub, uint8_t* vertexBuffer, uint8_t* indexBuffer)
+{
+}
+
+//------------------------------------------------------------------------------
+void InterfaceImplementation::renderHACKSetUCFaceColor(Hub& hub, const V4& color)
+{
+}
+
+//------------------------------------------------------------------------------
+void InterfaceImplementation::hackedFrame(Hub& hub)
+{
+  
+}
+
 } // end of namespace Spire
 

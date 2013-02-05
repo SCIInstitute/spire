@@ -70,13 +70,14 @@ void Interface::doFrame()
   mHub->doFrame();
 }
 
+using namespace std::placeholders;
+
 //------------------------------------------------------------------------------
 void Interface::cameraSetTransform(const M44& transform)
 {
-  using namespace std::placeholders;
-
   // Bind the cameraSetTransform function in the interface implementation.
-  Hub::RemoteFunction fun = std::bind(InterfaceImplementation::cameraSetTransform,
+  Hub::RemoteFunction fun =
+      std::bind(InterfaceImplementation::cameraSetTransform,
                 _1, transform);
 
   // Now place the remote function in the queue...
@@ -93,21 +94,41 @@ void Interface::addPersistentShader(const std::string& programName,
 //------------------------------------------------------------------------------
 void Interface::renderHACKSetUCEdge(uint8_t* vertexBuffer, uint8_t* indexBuffer)
 {
+  Hub::RemoteFunction fun =
+      std::bind(InterfaceImplementation::renderHACKSetUCEdge,
+                _1, vertexBuffer, indexBuffer);
+
+  mHub->addFunctionToThreadQueue(fun);
 }
 
 //------------------------------------------------------------------------------
 void Interface::renderHACKSetUCEdgeColor(const V4& color)
 {
+  Hub::RemoteFunction fun =
+      std::bind(InterfaceImplementation::renderHACKSetUCEdgeColor,
+                _1, color);
+
+  mHub->addFunctionToThreadQueue(fun);
 }
 
 //------------------------------------------------------------------------------
 void Interface::renderHACKSetUCFace(uint8_t* vertexBuffer, uint8_t* indexBuffer)
 {
+  Hub::RemoteFunction fun =
+      std::bind(InterfaceImplementation::renderHACKSetUCFace,
+                _1, vertexBuffer, indexBuffer);
+
+  mHub->addFunctionToThreadQueue(fun);
 }
 
 //------------------------------------------------------------------------------
 void Interface::renderHACKSetUCFaceColor(const V4& color)
 {
+  Hub::RemoteFunction fun =
+      std::bind(InterfaceImplementation::renderHACKSetUCFaceColor,
+                _1, color);
+
+  mHub->addFunctionToThreadQueue(fun);
 }
 
 } // end of namespace Renderer
