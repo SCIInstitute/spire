@@ -88,8 +88,8 @@ GLWidget::GLWidget(const QGLFormat& format) :
   ibo[6 ] = 4; ibo[7 ] = 5; ibo[8 ] = 6;
   ibo[9 ] = 5; ibo[10] = 6; ibo[11] = 7;
 
-  mGraphics->renderHACKSetUCFace((uint8_t*)(vbo), vboSize, 
-                                 (uint8_t*)(ibo), iboSize);
+  mGraphics->renderHACKSetCommonVBO((uint8_t*)(vbo), vboSize);
+  mGraphics->renderHACKSetUCFace((uint8_t*)(ibo), iboSize);
   mGraphics->renderHACKSetUCFaceColor(Spire::V4(1.0f, 1.0f, 1.0f, 0.5f));
 
   // We must disable auto buffer swap on the 'paintEvent'.

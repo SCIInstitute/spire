@@ -72,12 +72,18 @@ void InterfaceImplementation::cameraSetTransform(Hub& hub, M44 transform)
 }
 
 //------------------------------------------------------------------------------
+void InterfaceImplementation::renderHACKSetCommonVBO(Hub& hub,
+                                                     uint8_t* vertexBuffer, size_t vboSize)
+{
+  hub.getHackedRenderer()->setCommonVBO(vertexBuffer, vboSize);
+}
+
+//------------------------------------------------------------------------------
 void InterfaceImplementation::renderHACKSetUCEdge(Hub& hub,
-                                                  uint8_t* vertexBuffer, size_t vboSize,
                                                   uint8_t* indexBuffer, size_t iboSize)
 {
   // Destroy any previous vertex / index buffers
-  hub.getHackedRenderer()->setEdgeData(vertexBuffer, vboSize, indexBuffer, iboSize);
+  hub.getHackedRenderer()->setEdgeData(indexBuffer, iboSize);
 }
 
 //------------------------------------------------------------------------------
@@ -88,10 +94,9 @@ void InterfaceImplementation::renderHACKSetUCEdgeColor(Hub& hub, const V4& color
 
 //------------------------------------------------------------------------------
 void InterfaceImplementation::renderHACKSetUCFace(Hub& hub,
-                                                  uint8_t* vertexBuffer, size_t vboSize,
                                                   uint8_t* indexBuffer, size_t iboSize)
 {
-  hub.getHackedRenderer()->setFaceData(vertexBuffer, vboSize, indexBuffer, iboSize);
+  hub.getHackedRenderer()->setFaceData(indexBuffer, iboSize);
 }
 
 //------------------------------------------------------------------------------

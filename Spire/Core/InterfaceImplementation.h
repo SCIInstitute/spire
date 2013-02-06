@@ -83,11 +83,15 @@ public:
   // Everything in this interface will be rendered using the uniform color
   // shader.
 
+  /// HACKED  Common vertex buffer.
+  ///         Sets the shared vertex buffer.
+  static void renderHACKSetCommonVBO(Hub& hub,
+                                     uint8_t* vertexBuffer, size_t vboSize);
+
   /// HACKED  Uniform color face attributes.
   ///         Once your the buffer is passed into this function, spire assumes
   ///         all ownership of it. It will call delete[] on the buffer.
   static void renderHACKSetUCFace(Hub& hub,
-                                  uint8_t* vertexBuffer, size_t vboSize,
                                   uint8_t* indexBuffer, size_t iboSize);
 
   /// HACKED  Uniform face color
@@ -95,7 +99,6 @@ public:
 
   /// HACKED  Uniform color edge attributes.
   static void renderHACKSetUCEdge(Hub& hub,
-                                  uint8_t* vertexBuffer, size_t vboSize,
                                   uint8_t* indexBuffer, size_t iboSize);
 
   /// HACKED  Uniform face color

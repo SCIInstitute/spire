@@ -92,12 +92,21 @@ void Interface::addPersistentShader(const std::string& programName,
 }
 
 //------------------------------------------------------------------------------
-void Interface::renderHACKSetUCEdge(uint8_t* vertexBuffer, size_t vboSize,
-                                    uint8_t* indexBuffer, size_t iboSize)
+void Interface::renderHACKSetCommonVBO(uint8_t* vertexBuffer, size_t vboSize)
+{
+  Hub::RemoteFunction fun =
+      std::bind(InterfaceImplementation::renderHACKSetCommonVBO,
+                _1, vertexBuffer, vboSize);
+
+  mHub->addFunctionToThreadQueue(fun);
+}
+
+//------------------------------------------------------------------------------
+void Interface::renderHACKSetUCEdge(uint8_t* indexBuffer, size_t iboSize)
 {
   Hub::RemoteFunction fun =
       std::bind(InterfaceImplementation::renderHACKSetUCEdge,
-                _1, vertexBuffer, vboSize, indexBuffer, iboSize);
+                _1, indexBuffer, iboSize);
 
   mHub->addFunctionToThreadQueue(fun);
 }
@@ -113,12 +122,11 @@ void Interface::renderHACKSetUCEdgeColor(const V4& color)
 }
 
 //------------------------------------------------------------------------------
-void Interface::renderHACKSetUCFace(uint8_t* vertexBuffer, size_t vboSize,
-                                    uint8_t* indexBuffer, size_t iboSize)
+void Interface::renderHACKSetUCFace(uint8_t* indexBuffer, size_t iboSize)
 {
   Hub::RemoteFunction fun =
       std::bind(InterfaceImplementation::renderHACKSetUCFace,
-                _1, vertexBuffer, vboSize, indexBuffer, iboSize);
+                _1, indexBuffer, iboSize);
 
   mHub->addFunctionToThreadQueue(fun);
 }
