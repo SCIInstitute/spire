@@ -128,7 +128,7 @@ public:
   void renderHACKSetUCFaceColor(const V4& color);
 
   /// HACKED  Uniform color edge attributes.
-  ///         Expects that the indexBuffer is an uint16_t buffer.
+  ///         Expects that the indexBuffer is an uint32_t buffer.
   void renderHACKSetUCEdge(uint8_t* vertexBuffer, size_t vboSize,
                            uint8_t* indexBuffer, size_t iboSize);
 

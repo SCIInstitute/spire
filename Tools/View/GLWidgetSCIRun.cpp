@@ -62,6 +62,24 @@ GLWidget::GLWidget(const QGLFormat& format) :
   mTimer->start(35);
 #endif
 
+  // Construct a very large 'latvol' and send it to spire.
+  // Construct the mesh in a GPU cache coherent manner.
+  const int xdim = 100;
+  const int ydim = 100;
+  const int zdim = 100;
+  for (int x = 0; x < xdim; x++)
+  {
+    for (int y = 0; y < ydim; y++)
+    {
+      for (int z = 0; z < zdim; z++)
+      {
+        
+      }
+    }
+  }
+
+
+
   // We must disable auto buffer swap on the 'paintEvent'.
   setAutoBufferSwap(false);
 }

@@ -155,7 +155,8 @@ void HackedUCRenderer::doFrame()
     unifLoc = glGetUniformLocation(program, "uColor");
     glUniform4fv(unifLoc, 1, tmpV4);
 
-    glDrawElements(GL_LINES, mNumEdgeElements, GL_UNSIGNED_SHORT, 0);
+    // Big INDICES! We should batch together the larger models...
+    glDrawElements(GL_LINES, mNumEdgeElements, GL_UNSIGNED_INT, 0);
   }
 }
 
