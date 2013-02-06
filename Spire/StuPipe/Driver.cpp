@@ -40,7 +40,7 @@ Driver::Driver(Hub& hub) :
     PipeDriver(hub)
     //mUniformColorTest(hub)
 {
-  mInitialState.mDepthTestEnable = true;
+  mInitialState.mDepthTestEnable = false;
   mInitialState.mCullFaceEnable = false;  // Todo: Set to true for geometry.
                                           // Should not be true for volumes.
   mInitialState.mBlendEnable = true;
