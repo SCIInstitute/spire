@@ -39,7 +39,8 @@ namespace SCIRun {
 SRInterface::SRInterface(std::shared_ptr<Context> context,
                          const std::vector<std::string>& shaderDirs,
                          bool createThread, LogFunction logFP) :
-    Interface(context, shaderDirs, createThread, logFP)
+    Interface(context, shaderDirs, createThread, logFP),
+    mCamDistance(7.0f)
 {
   //mCamWorld.setTranslation(V3(0.0f, 0.0f, 5.0f));
   //mArcBall.setUseTranslation(true);
@@ -84,7 +85,19 @@ void SRInterface::inputMouseMove(const Vector2<int32_t>& pos)
 
   // The y rotation is to re-orient the camera so it is looking down the z axis.
   M44 finalTrafo = mCamWorld * M44::rotationY(PI);
-  finalTrafo.setTranslation(mCamWorld.getCol2().xyz() * 7.0f);
+  finalTrafo.setTranslation(mCamWorld.getCol2().xyz() * mCamDistance);
+
+  this->cameraSetTransform(finalTrafo);
+}
+
+//------------------------------------------------------------------------------
+void SRInterface::inputMouseWheel(int32_t delta)
+{
+  // Reason why we subtract: Feels more natural to me =/.
+  mCamDistance -= static_cast<float>(delta) / 100.0f;
+
+  M44 finalTrafo = mCamWorld * M44::rotationY(PI);
+  finalTrafo.setTranslation(mCamWorld.getCol2().xyz() * mCamDistance);
 
   this->cameraSetTransform(finalTrafo);
 }
@@ -92,6 +105,7 @@ void SRInterface::inputMouseMove(const Vector2<int32_t>& pos)
 //------------------------------------------------------------------------------
 void SRInterface::inputMouseUp(const Vector2<int32_t>& pos)
 {
+
 }
 
 } // namespace SCIRun

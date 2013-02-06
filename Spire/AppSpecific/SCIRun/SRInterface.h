@@ -59,6 +59,8 @@ public:
   void inputMouseUp(const Vector2<int32_t>& pos);
   /// @}
 
+  void inputMouseWheel(int32_t delta);
+
   /// \todo Selecting objects...
 
   /// \todo Obtaining data from mesh objects in order to spatially partition
@@ -71,6 +73,7 @@ private:
   ArcBall       mArcBall;       ///< ArcBall delta transform calculator.
   M44           mCamWorld;      ///< Camera in world space.
 
+  float         mCamDistance;   ///< Camera's distance from the origin.
 };
 
 } // namespace SCIRun
