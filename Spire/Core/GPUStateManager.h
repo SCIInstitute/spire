@@ -110,8 +110,8 @@ public:
       mCullOrder(ORDER_CCW),
       mBlendEnable(false),
       mBlendEquation(BE_FUNC_ADD),
-      mBlendFuncSrc(BF_ONE_MINUS_DST_ALPHA),
-      mBlendFuncDst(BF_ONE),
+      mBlendFuncSrc(BF_SRC_ALPHA),
+      mBlendFuncDst(BF_ONE_MINUS_SRC_ALPHA),
       mDepthMask(true),
       mColorMask(true),
       mTexActiveUnit(0)

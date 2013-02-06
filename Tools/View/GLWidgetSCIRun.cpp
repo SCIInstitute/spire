@@ -31,6 +31,7 @@
 /// \brief  Not sure this file should go in Modules/Render. But it is an 
 ///         auxiliary file to the ViewScene render module.
 
+#include <cstdlib>
 #include <QMouseEvent>
 
 #include "GLWidgetSCIRun.h"
@@ -62,23 +63,34 @@ GLWidget::GLWidget(const QGLFormat& format) :
   mTimer->start(35);
 #endif
 
-  // Construct a very large 'latvol' and send it to spire.
-  // Construct the mesh in a GPU cache coherent manner.
-  const int xdim = 100;
-  const int ydim = 100;
-  const int zdim = 100;
-  for (int x = 0; x < xdim; x++)
-  {
-    for (int y = 0; y < ydim; y++)
-    {
-      for (int z = 0; z < zdim; z++)
-      {
-        
-      }
-    }
-  }
+  // Two faces of a cube (the only thing that changes for a cube are the
+  // indices). Note: we may be adding normals to the vbo in the future...
+  // Actually, since we just want face normals, we'll compute it using
+  // the cross product in the vertex shader...
+  size_t    vboSize = sizeof(float) * 3 * 8;
+  size_t    iboSize = sizeof(uint32_t) * 12;
+  float*    vbo = static_cast<float*>(std::malloc(vboSize));
+  uint32_t* ibo = static_cast<uint32_t*>(std::malloc(iboSize));
 
+  vbo[0 ] = -1.0f; vbo[1 ] =  1.0f; vbo[2 ] = -1.0f; // 0
+  vbo[3 ] =  1.0f; vbo[4 ] =  1.0f; vbo[5 ] = -1.0f; // 1
+  vbo[6 ] = -1.0f; vbo[7 ] = -1.0f; vbo[8 ] = -1.0f; // 2
+  vbo[9 ] =  1.0f; vbo[10] = -1.0f; vbo[11] = -1.0f; // 3
 
+  vbo[12] = -1.0f; vbo[13] =  1.0f; vbo[14] =  1.0f; // 4
+  vbo[15] =  1.0f; vbo[16] =  1.0f; vbo[17] =  1.0f; // 5
+  vbo[18] = -1.0f; vbo[19] = -1.0f; vbo[20] =  1.0f; // 6
+  vbo[21] =  1.0f; vbo[22] = -1.0f; vbo[23] =  1.0f; // 7
+
+  ibo[0 ] = 0; ibo[1 ] = 1; ibo[2 ] = 2;
+  ibo[3 ] = 1; ibo[4 ] = 2; ibo[5 ] = 3;
+
+  ibo[6 ] = 4; ibo[7 ] = 5; ibo[8 ] = 6;
+  ibo[9 ] = 5; ibo[10] = 6; ibo[11] = 7;
+
+  mGraphics->renderHACKSetUCFace((uint8_t*)(vbo), vboSize, 
+                                 (uint8_t*)(ibo), iboSize);
+  mGraphics->renderHACKSetUCFaceColor(Spire::V4(1.0f, 1.0f, 1.0f, 0.5f));
 
   // We must disable auto buffer swap on the 'paintEvent'.
   setAutoBufferSwap(false);

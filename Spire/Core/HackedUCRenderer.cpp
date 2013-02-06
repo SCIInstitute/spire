@@ -29,6 +29,8 @@
 /// \author James Hughes
 /// \date   February 2013
 
+#include <cstdlib>
+
 #include "Common.h"
 #include "Exceptions.h"
 #include "HackedUCRenderer.h"
@@ -118,7 +120,8 @@ void HackedUCRenderer::doFrame()
     unifLoc = glGetUniformLocation(program, "uColor");
     glUniform4fv(unifLoc, 1, tmpV4);
 
-    glDrawElements(GL_TRIANGLES, mNumFaceElements, GL_UNSIGNED_SHORT, 0);
+    // GL_UNSIGNED_SHORT
+    glDrawElements(GL_TRIANGLES, mNumFaceElements, GL_UNSIGNED_INT, 0);
   }
 
   if (mEdgeVBO != 0 && mEdgeIBO != 0)
@@ -190,7 +193,10 @@ void HackedUCRenderer::setEdgeData(uint8_t* vbo, size_t vboSize,
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mEdgeIBO);
   glBufferData(GL_ELEMENT_ARRAY_BUFFER, iboSize, ibo, GL_STATIC_DRAW);
 
-  mNumEdgeElements = iboSize / sizeof(uint16_t);
+  mNumEdgeElements = iboSize / sizeof(uint32_t);
+
+  std::free(vbo);
+  std::free(ibo);
 }
 
 //------------------------------------------------------------------------------
@@ -223,7 +229,11 @@ void HackedUCRenderer::setFaceData(uint8_t* vbo, size_t vboSize,
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mFaceIBO);
   glBufferData(GL_ELEMENT_ARRAY_BUFFER, iboSize, ibo, GL_STATIC_DRAW);
 
-  mNumFaceElements = iboSize / sizeof(uint16_t);
+  mNumFaceElements = iboSize / sizeof(uint32_t);
+  Log::message() << "Num face elements:" << mNumFaceElements << std::endl;
+
+  std::free(vbo);
+  std::free(ibo);
 }
 
 
