@@ -173,13 +173,17 @@ void HackedUCRenderer::setCommonVBO(uint8_t* vbo, size_t vboSize)
   if (mCommonVBO != 0)
   {
     glDeleteBuffers(1, &mCommonVBO);
+    mCommonVBO = 0;
   }
 
-  glGenBuffers(1, &mCommonVBO);
-  glBindBuffer(GL_ARRAY_BUFFER, mCommonVBO);
-  glBufferData(GL_ARRAY_BUFFER, vboSize, vbo, GL_STATIC_DRAW);
+  if (vbo != nullptr)
+  {
+    glGenBuffers(1, &mCommonVBO);
+    glBindBuffer(GL_ARRAY_BUFFER, mCommonVBO);
+    glBufferData(GL_ARRAY_BUFFER, vboSize, vbo, GL_STATIC_DRAW);
 
-  std::free(vbo);
+    std::free(vbo);
+  }
 }
 
 //------------------------------------------------------------------------------
@@ -195,15 +199,19 @@ void HackedUCRenderer::setEdgeData(uint8_t* ibo, size_t iboSize)
   if (mEdgeIBO != 0)
   {
     glDeleteBuffers(1, &mEdgeIBO);
+    mEdgeIBO = 0;
   }
 
-  glGenBuffers(1, &mEdgeIBO);
-  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mEdgeIBO);
-  glBufferData(GL_ELEMENT_ARRAY_BUFFER, iboSize, ibo, GL_STATIC_DRAW);
+  if (ibo != nullptr)
+  {
+    glGenBuffers(1, &mEdgeIBO);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mEdgeIBO);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, iboSize, ibo, GL_STATIC_DRAW);
 
-  mNumEdgeElements = iboSize / sizeof(uint32_t);
+    mNumEdgeElements = iboSize / sizeof(uint32_t);
 
-  std::free(ibo);
+    std::free(ibo);
+  }
 }
 
 //------------------------------------------------------------------------------
@@ -219,16 +227,20 @@ void HackedUCRenderer::setFaceData(uint8_t* ibo, size_t iboSize)
   if (mFaceIBO != 0)
   {
     glDeleteBuffers(1, &mFaceIBO);
+    mFaceIBO = 0;
   }
 
   // Build GL buffers.
-  glGenBuffers(1, &mFaceIBO);
-  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mFaceIBO);
-  glBufferData(GL_ELEMENT_ARRAY_BUFFER, iboSize, ibo, GL_STATIC_DRAW);
+  if (ibo != nullptr)
+  {
+    glGenBuffers(1, &mFaceIBO);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mFaceIBO);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, iboSize, ibo, GL_STATIC_DRAW);
 
-  mNumFaceElements = iboSize / sizeof(uint32_t);
+    mNumFaceElements = iboSize / sizeof(uint32_t);
 
-  std::free(ibo);
+    std::free(ibo);
+  }
 }
 
 } // namespace Spire
