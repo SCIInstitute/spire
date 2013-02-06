@@ -136,6 +136,9 @@ public:
   /// HACKED  Uniform face color
   void renderHACKSetUCEdgeColor(const V4& color);
 
+  /// HACKED  ZTest setting.
+  void renderHACKSetUseZTest(bool test);
+
   /// \todo Construct a *real* interface to spire. Below is a shot of what it
   ///       should look like. I've still got to think about how the uniforms
   ///       will be handled.

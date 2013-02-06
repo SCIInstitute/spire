@@ -63,6 +63,8 @@ void Driver::doFrame()
   //mView = mView * M44::rotationY(0.1f);
   //mHub.getCamera()->setViewTransform(mView);
 
+  mInitialState.mDepthTestEnable = mHub.getHackedRenderer()->getUseZTest();
+
   // Force a known GPU state
   mHub.getGPUStateManager().apply(mInitialState, true);
   mHub.getHackedRenderer()->doFrame();

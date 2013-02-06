@@ -51,6 +51,9 @@ public:
   void setEdgeColor(const V4& color);
   void setFaceData(uint8_t* ibo, size_t iboSize);
   void setFaceColor(const V4& color);
+  void setUseZTest(bool ztest)  {mUseZTest = ztest;}
+
+  bool getUseZTest()            {return mUseZTest;}
 
 private:
 
@@ -63,6 +66,8 @@ private:
   GLuint  mEdgeIBO;
   V4      mEdgeColor;
   size_t  mNumEdgeElements;
+
+  bool    mUseZTest;
 
   Hub&    mHub;
 

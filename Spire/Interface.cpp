@@ -141,5 +141,15 @@ void Interface::renderHACKSetUCFaceColor(const V4& color)
   mHub->addFunctionToThreadQueue(fun);
 }
 
+//------------------------------------------------------------------------------
+void Interface::renderHACKSetUseZTest(bool ztest)
+{
+  Hub::RemoteFunction fun =
+      std::bind(InterfaceImplementation::renderHACKSetUseZTest,
+                _1, ztest);
+
+  mHub->addFunctionToThreadQueue(fun);
+}
+
 } // end of namespace Renderer
 

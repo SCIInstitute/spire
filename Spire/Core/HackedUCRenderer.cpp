@@ -47,7 +47,8 @@ HackedUCRenderer::HackedUCRenderer(Hub& hub) :
     mFaceIBO(0),
     mNumFaceElements(0),
     mEdgeIBO(0),
-    mNumEdgeElements(0)
+    mNumEdgeElements(0),
+    mUseZTest(true)
 {
   Log::message() << "Initializing hacked uniform color renderer." << std::endl;
 
@@ -229,6 +230,5 @@ void HackedUCRenderer::setFaceData(uint8_t* ibo, size_t iboSize)
 
   std::free(ibo);
 }
-
 
 } // namespace Spire

@@ -104,6 +104,9 @@ public:
   /// HACKED  Uniform face color
   static void renderHACKSetUCEdgeColor(Hub& hub, const V4& color);
 
+  /// HACKED  Set use ztest
+  static void renderHACKSetUseZTest(Hub& hub, bool useZTest);
+
 private:
 
 #ifdef SPIRE_USE_STD_THREADS

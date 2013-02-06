@@ -105,6 +105,11 @@ void InterfaceImplementation::renderHACKSetUCFaceColor(Hub& hub, const V4& color
   hub.getHackedRenderer()->setFaceColor(color);
 }
 
+//------------------------------------------------------------------------------
+void InterfaceImplementation::renderHACKSetUseZTest(Hub& hub, bool useZTest)
+{
+  hub.getHackedRenderer()->setUseZTest(useZTest);
+}
 
 } // end of namespace Spire
 
