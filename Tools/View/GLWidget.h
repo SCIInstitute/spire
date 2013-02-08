@@ -32,6 +32,8 @@
 #ifndef SPIRE_GLWIDGET_H
 #define SPIRE_GLWIDGET_H
 
+#define NOMINMAX
+
 #include <QtOpenGL/QGLWidget>
 #include <QTimer>
 

@@ -29,6 +29,9 @@
 #ifndef TOOLS_VIEW_MAINWINDOW_H
 #define TOOLS_VIEW_MAINWINDOW_H
 
+// For windows.
+#define NOMINMAX
+
 #include <QDialog>
 #include <QMainWindow>
 #include <QtOpenGL/QGLWidget>
