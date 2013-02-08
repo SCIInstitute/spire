@@ -32,6 +32,9 @@
 #ifndef TOOLS_VIEW_GLCONTEXT_H
 #define TOOLS_VIEW_GLCONTEXT_H
 
+// For windows...
+#define NOMINMAX
+
 #include <QtOpenGL/QGLWidget>
 
 // Include spire interface.

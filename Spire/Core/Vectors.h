@@ -29,6 +29,7 @@
 #ifndef SPIRE_CORE_VECTORS_H
 #define SPIRE_CORE_VECTORS_H
 
+#include <cstdint>
 #include <cassert>
 #include <cmath>
 #include <istream>
@@ -850,7 +851,7 @@ public:
     return Vector3<T>(m14, m24, m34);
   }
 
-  inline const void setTranslation(const Vector3<T>& t) const
+  inline const void setTranslation(const Vector3<T>& t)
   {
     m14 = t.x;
     m24 = t.y;
