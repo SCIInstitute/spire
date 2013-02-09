@@ -64,6 +64,7 @@ if(UNIX)
   else(APPLE)
     add_definitions(-DSPIRE_USING_LINUX)
     set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC")
+    set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fPIC")
   endif(APPLE)
 
   # Super strict settings.
