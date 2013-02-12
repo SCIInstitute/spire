@@ -1,4 +1,3 @@
 *.so
 bin
 CMakeLists.txt.user
-.clang_complete
