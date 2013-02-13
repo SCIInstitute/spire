@@ -32,9 +32,12 @@
 #ifndef SPIRE_HIGH_INTERFACEIMPLEMENTATION_H
 #define SPIRE_HIGH_INTERFACEIMPLEMENTATION_H
 
+#include <memory>
+
 #include "Interface.h"
 #include "Core/ThreadMessage.h"
 #include "Core/Hub.h"
+#include "PipeInterface.h"
 
 #ifdef SPIRE_USE_STD_THREADS
 #include "Core/CircFIFOSeqCons.hpp"
@@ -70,12 +73,20 @@ public:
   // unavoidable). We don't want to worry about the lifetime of the objects
   // during cross-thread communication.
 
+  //-------
+  // Pipes
+  //-------
+  /// See corresponding Interface definition.
+  static void pipePushBack(Hub& hub, std::shared_ptr<PipeInterface> pipe);
+  
+  /// See corresponding Interface definition.
+  static void pipeRemove(Hub& hub, std::shared_ptr<PipeInterface> pipe);
+
   //--------
   // Camera
   //--------
   /// Sets the camera's transformation in world space.
   static void cameraSetTransform(Hub& hub, M44 transform);
-
 
   //------------------
   // HACKED Interface

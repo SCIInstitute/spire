@@ -266,4 +266,16 @@ bool Hub::addFunctionToThreadQueue(const RemoteFunction& fun)
 }
 
 
+//------------------------------------------------------------------------------
+void Hub::addPipe(std::shared_ptr<PipeInterface> pipe)
+{
+  mPipes.push_back(pipe);
+}
+
+//------------------------------------------------------------------------------
+void Hub::removePipe(std::shared_ptr<PipeInterface> pipe)
+{
+  mPipes.remove(pipe);
+}
+
 }

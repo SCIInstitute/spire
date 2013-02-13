@@ -39,6 +39,7 @@
 
 #include "Context.h"
 #include "Core/Math.h"  // Necessary in order to communicate vector types.
+#include "Core/PipeInterface.h"
 
 namespace Spire {
 
@@ -157,12 +158,32 @@ public:
   /////                   (see addPersistentShader).
   ///// \todo Figure out what the 'ideal' interface is. This probably is not
   /////       the ideal approach.
-  //void addGeomPassToObject(const std::string& object,
+  //voie addGeomPassToObject(const std::string& object,
   //                         const std::string& passName,
   //                         int priority,
   //                         std::array<uint8_t> buffer, 
   //                         const std::string& shader);
   //void addGeomPassUniform();
+
+  //-------
+  // Pipes
+  //-------
+  // Pipes are a generalized mechanism through which renderer objects are
+  // managed. There can be multiple pipes placed in a stack which, together,
+  // represents rendering passes. Although, it is not encouraged to use the 
+  // pipes as rendering passes themselves, but to include necessary rendering
+  // passes inside of the pipes themselves.
+
+  /// Places the given pipe on the stack. 
+  /// This Pipe will be rendered after all of the pipes in the stack have been
+  /// rendered. Only thread-safe functions should be used in the pipe
+  /// interface after the pipe has been pushed.
+  void pipePushBack(std::shared_ptr<PipeInterface> pipe);
+
+  /// Removes a pipe from the stack.
+  /// When traversing the stack, the equality operator, as defined for 
+  /// shared_ptr, is used.
+  void pipeRemove(std::shared_ptr<PipeInterface> pipe);
 
   //-----------------
   // Shader Programs

@@ -72,8 +72,22 @@ void InterfaceImplementation::cameraSetTransform(Hub& hub, M44 transform)
 }
 
 //------------------------------------------------------------------------------
+void InterfaceImplementation::pipePushBack(Hub& hub,
+                                           std::shared_ptr<PipeInterface> pipe)
+{
+}
+  
+//------------------------------------------------------------------------------
+void InterfaceImplementation::pipeRemove(Hub& hub,
+                                         std::shared_ptr<PipeInterface> pipe)
+{
+
+}
+
+//------------------------------------------------------------------------------
 void InterfaceImplementation::renderHACKSetCommonVBO(Hub& hub,
-                                                     uint8_t* vertexBuffer, size_t vboSize)
+                                                     uint8_t* vertexBuffer,
+                                                     size_t vboSize)
 {
   hub.getHackedRenderer()->setCommonVBO(vertexBuffer, vboSize);
 }

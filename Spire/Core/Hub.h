@@ -41,6 +41,7 @@
 #endif
 
 #include "Interface.h"
+#include "Core/PipeInterface.h"
 #include "Core/GPUStateManager.h"
 #include "Core/ShaderMan.h"
 #include "Core/ShaderProgramMan.h"
@@ -111,7 +112,14 @@ public:
   /// Retrieves the actual screen width in pixels.
   size_t getActualScreenHeight() const            {return mPixScreenHeight;}
 
+  /// Retrieve list of directories in which to search for shaders.
   const std::vector<std::string>& getShaderDirs() const {return mShaderDirs;}
+
+  /// Adds a pipe to the back of the queue.
+  void addPipe(std::shared_ptr<PipeInterface> pipe);
+
+  /// Remove pipe from queue.
+  void removePipe(std::shared_ptr<PipeInterface> pipe);
 
   /// Terminates the rendering thread. After this call, you will be able to
   /// re-issue context->makeCurrent() and call doFrame manually.
@@ -136,10 +144,12 @@ private:
   std::shared_ptr<Camera>     mCamera;          ///< Basic GL Camera 
                                                 ///< (this should not be here... move in the future)
   std::vector<std::string>    mShaderDirs;      ///< Shader directories to search.
+
+  /// \todo Remove this once pipes are fully implemented.
   std::shared_ptr<PipeDriver> mPipe;            ///< Current rendering pipe.
 
+  std::list<std::shared_ptr<PipeInterface>> mPipes;         ///< Rendering pipes in-order.
   std::shared_ptr<InterfaceImplementation>  mInterfaceImpl; ///< Interface implementation.
-
   std::shared_ptr<HackedUCRenderer>         mHackedRenderer;///< Hacked uniform color renderer.
 
   // Threading variables / functions

@@ -151,5 +151,25 @@ void Interface::renderHACKSetUseZTest(bool ztest)
   mHub->addFunctionToThreadQueue(fun);
 }
 
+//------------------------------------------------------------------------------
+void Interface::pipePushBack(std::shared_ptr<PipeInterface> pipe)
+{
+  Hub::RemoteFunction fun =
+      std::bind(InterfaceImplementation::pipePushBack,
+                _1, pipe);
+
+  mHub->addFunctionToThreadQueue(fun);
+}
+
+//------------------------------------------------------------------------------
+void Interface::pipeRemove(std::shared_ptr<PipeInterface> pipe)
+{
+  Hub::RemoteFunction fun =
+      std::bind(InterfaceImplementation::pipeRemove,
+                _1, pipe);
+
+  mHub->addFunctionToThreadQueue(fun);
+}
+
 } // end of namespace Renderer
 
