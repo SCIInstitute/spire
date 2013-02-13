@@ -55,6 +55,7 @@ void InterfaceImplementation::executeQueue(Hub& hub)
   while (mQueue.pop(msg))
   {
     msg.execute(hub);
+    msg.clear();
   }
 #else
   while (!mQueue.empty())

@@ -57,5 +57,10 @@ void ThreadMessage::setFunction(const Hub::RemoteFunction& toCall)
   mToCall = toCall;
 }
 
+//------------------------------------------------------------------------------
+void ThreadMessage::clear()
+{
+  mToCall = nullptr;
+}
 
 } // end of namespace Spire

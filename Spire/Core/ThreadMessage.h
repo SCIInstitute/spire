@@ -59,6 +59,10 @@ public:
   /// Execute function stored in message.
   void execute(Hub& hub);
 
+  /// Clears the bound function. This is important as there may be shared_ptr
+  /// references that have been bound into the function.
+  void clear();
+
 private:
 
   Hub::RemoteFunction mToCall;
