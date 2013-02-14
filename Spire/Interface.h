@@ -140,31 +140,6 @@ public:
   /// HACKED  ZTest setting.
   void renderHACKSetUseZTest(bool test);
 
-  /// \todo Construct a *real* interface to spire. Below is a shot of what it
-  ///       should look like. I've still got to think about how the uniforms
-  ///       will be handled.
-  //---------
-  // Objects
-  //---------
-  ///// Removes an object given an identifier.
-  //void removeObject(const std::string& object);
-
-  ///// Adds a geometry pass to an object given by the identifier 'object'.
-  ///// \param  object    Unique object name.
-  ///// \param  passName  Unique name of the pass.
-  ///// \param  priority  Priority to use when rendering the pass.
-  ///// \param  buffer    Buffer containing attribute data.
-  ///// \param  shader    Complete shader program to use when rendering this pass.
-  /////                   (see addPersistentShader).
-  ///// \todo Figure out what the 'ideal' interface is. This probably is not
-  /////       the ideal approach.
-  //voie addGeomPassToObject(const std::string& object,
-  //                         const std::string& passName,
-  //                         int priority,
-  //                         std::array<uint8_t> buffer, 
-  //                         const std::string& shader);
-  //void addGeomPassUniform();
-
   //-------
   // Pipes
   //-------

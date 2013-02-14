@@ -38,18 +38,31 @@
 #include <vector>
 #include <ostream>
 
-namespace Spire {
+/// \todo Investigate std::move and rvalue references as a means of speeding
+///       this vector library up. I suspect the majority of these class's
+///       functions use RVO, so I'm not sure there is much that I can do.
+///       Move constructors won't be that much help since there isn't that
+///       many 'guts' in these classes. Just references to raw types that would
+///       have to be copied anyways.
+
+/// This is the vector math library from Tuvok. As such, it's been tested to
+/// the extent that it is used inside ImageVis3D.
+
+namespace Spire
+{
 
 template <class T> class Matrix2;
 template <class T> class Matrix3;
 template <class T> class Matrix4;
 
-template <class T=int> class Vector2 {
+template <class T=int> class Vector2
+{
 public:
   T x,y;
 
   Vector2<T>(): x(0), y(0) {}
-  template <class S> explicit Vector2<T>( const std::vector<S>& v, const T& defaultVal = T(0) ) {
+  template <class S> explicit Vector2<T>( const std::vector<S>& v, const T& defaultVal = T(0) )
+  {
     x = T(v.size()>0 ? v[0] : defaultVal);
     y = T(v.size()>1 ? v[1] : defaultVal);
   }

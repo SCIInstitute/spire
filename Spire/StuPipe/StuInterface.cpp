@@ -29,34 +29,17 @@
 /// \author James Hughes
 /// \date   February 2013
 
-#ifndef SPIRE_CORE_PIPEINTERFACE_H
-#define SPIRE_CORE_PIPEINTERFACE_H
+#include "StuInterface.h"
 
 namespace Spire
 {
 
-/// \todo Figure out the basic interface to have for pipes.
-///       After iterating through a few pipe implementations, the details
-///       should become more clear.
-/// It will be mandatory to pointer cast this pipe to its derived
-/// type in order to access the majority of the interface.
-class PipeInterface
+StuInterface::StuInterface()
 {
-public:
-  PipeInterface()           {}
-  virtual ~PipeInterface()  {}
-  
-  /// \todo Figure out time allocations for renderers. We need a way of 
-  ///       compositing frames together if it's clear that a pass is taking
-  ///       too long. This may necessitate the pipes working together.
-  ///       For an example, think of the Tuvok pipe that we will need to
-  ///       build... Tuvok will either be it's own pipe, or integrated into
-  ///       another pipe. Ideally, Tuvok would work together to get transparency
-  ///       working correctly, but that is not going to happen in the short run.
-  /// Perform a rendering pass.
-  virtual void doPass() = 0;
-};
+}
 
-} // namespace Spire
+StuInterface::~StuInterface()
+{
+}
 
-#endif 
+}
