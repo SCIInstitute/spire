@@ -85,13 +85,6 @@ void Interface::cameraSetTransform(const M44& transform)
 }
 
 //------------------------------------------------------------------------------
-void Interface::addPersistentShader(const std::string& programName,
-                                    const std::string& vertexShader,
-                                    const std::string& fragmentShader)
-{
-}
-
-//------------------------------------------------------------------------------
 void Interface::renderHACKSetCommonVBO(uint8_t* vertexBuffer, size_t vboSize)
 {
   Hub::RemoteFunction fun =

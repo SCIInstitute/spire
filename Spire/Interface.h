@@ -96,25 +96,47 @@ public:
   void terminate();
 
   //============================================================================
-  // THREAD SAFE - Remember, the same thread should always be calling spire.
+  // THREAD SAFE - Remember, only one consistent thread should call these
   //============================================================================
-  // 
-
-  // All functions contained within this section must be called on their
-  // appropriate thread. The THREAD parameter indicates which thread the caller
-  // is on. These functions send a message to spire and involve no locks.
-  // Return is immediate.
 
   //--------
   // Camera
   //--------
+
+  /// \todo Set projection and inverse view transform *ONLY*.
+  ///       Spire doesn't need to know anything else in order to render the
+  ///       scene. This will decouple spire and make it a renderer only, we
+  ///       don't need to extract any information from it.
+
+  /// \todo In order to pick objects in the scene all we need is the inverse
+  ///       view and projection matrix in order to  build a ray. Therefore, 
+  ///       we will be able to unproject a 2D point without the help of spire.
+
+
   /// Sets the camera's world-space transformation.
   void cameraSetTransform(const M44& transform);
 
+  //-------
+  // Pipes
+  //-------
+  // Pipes are a generalized mechanism through which renderer objects are
+  // managed. There can be multiple pipes placed in a stack which, together,
+  // represents all rendering passes.
+
+  /// Places the given pipe at the back of stack. 
+  /// All pipes in front of this pipe on the stack will be rendered first.
+  void pipePushBack(std::shared_ptr<PipeInterface> pipe);
+
+  /// Removes a pipe from the stack.
+  /// The equality operator, as defined for shared_ptr, is used when traversing
+  /// the stack.
+  void pipeRemove(std::shared_ptr<PipeInterface> pipe);
 
   //------------------
   // HACKED Interface
   //------------------
+  /// \todo Get rid of this when we have the pipes interface completely fleshed
+  ///       out.
   // Everything in this interface will be rendered using the uniform color
   // shader.
 
@@ -140,60 +162,6 @@ public:
   /// HACKED  ZTest setting.
   void renderHACKSetUseZTest(bool test);
 
-  //-------
-  // Pipes
-  //-------
-  // Pipes are a generalized mechanism through which renderer objects are
-  // managed. There can be multiple pipes placed in a stack which, together,
-  // represents rendering passes. Although, it is not encouraged to use the 
-  // pipes as rendering passes themselves, but to include necessary rendering
-  // passes inside of the pipes themselves.
-
-  /// Places the given pipe on the stack. 
-  /// This Pipe will be rendered after all of the pipes in the stack have been
-  /// rendered. Only thread-safe functions should be used in the pipe
-  /// interface after the pipe has been pushed.
-  void pipePushBack(std::shared_ptr<PipeInterface> pipe);
-
-  /// Removes a pipe from the stack.
-  /// When traversing the stack, the equality operator, as defined for 
-  /// shared_ptr, is used.
-  void pipeRemove(std::shared_ptr<PipeInterface> pipe);
-
-  //-----------------
-  // Shader Programs
-  //-----------------
-  /// \todo Create a generic interface so that geometry shaders can be added
-  ///       in the future.
-
-  /// Adds a persistent shader under the name 'programName'.
-  void addPersistentShader(const std::string& programName,
-                           const std::string& vertexShader,
-                           const std::string& fragmentShader);
-
-  /// \todo Add 'object'
-  /// \todo Remove 'object'
-  /// \todo Modify 'object'? -- Maybe
-
-  //============================================================================
-  // LOCKING THREAD SAFE
-  //============================================================================
-  // It doesn't matter where the functions in this section are called as they
-  // are all mutex locked. These functions exist solely to retrieve information
-  // from Spire in a 'blocking' manner.
-
-  /// \todo Obtain current camera transform.
-
-  /// \todo It is possible to determine where the user 'clicked' in the scene,
-  ///       but the question then becomes: where do we perform the spatial
-  ///       lookup? In spire or in SCIRun? This will likely be a SCIRun task,
-  ///       or at the very least in a 'SCIRun' layer in Spire.
-  ///       The SCIRun layer does NOT need to run on the spire thread and can
-  ///       interact directly with SCIRun without threading worries.
-  ///       The idea is keep spire 'really dumb' with regards to application
-  ///       specific needs, but smart enough to provide the application with
-  ///       everything it needs.
-
   //============================================================================
   // NOT THREAD SAFE
   //============================================================================
@@ -208,14 +176,13 @@ public:
   /// You must call this function every time you want a new frame to be rendered
   /// unless you are using the threaded renderer. The threaded renderer will 
   /// call doFrame automatically.
-  /// \note You must call doFrame on the same thread where makeCurrent issued.
+  /// \note You must call doFrame on the same thread where makeCurrent was issued.
   ///       If this is not the same thread where Interface was created, ensure
   ///       a call to context->makeCurrent() is issued before invoking doFrame
   ///       for the first time.
   void doFrame();
 
   /// @}
-
 
 private:
 

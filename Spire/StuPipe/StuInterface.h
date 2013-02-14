@@ -64,21 +64,43 @@ public:
   /// \param  object        Unique object name.
   /// \param  passName      Unique name of the pass.
   /// \param  attribBuffer  rvalue reference to the attribute buffer. You are
-  ///                       forced to move your vector.
-  /// \param  program       Complete shader program to use when rendering this pass.
-  ///                       (see addPersistentShader).
-  /// \param  priority      Priority to use when rendering the pass.
+  ///                       forced to std::move your vector.
+  /// \param  program       Complete shader program to use when rendering.
+  ///                       See the oveloaded addPersistentShader functions.
   void addGeomPassToObject(const std::string& object,
                            const std::string& passName,
                            std::vector<uint8_t>&& attribBuffer, 
                            const std::vector<std::string>& attribNames,
                            const std::string& program);
-  void addGeomPassUniform();
+
+  /// Associates a uniform value to the specified object's pass.
+  /// The uniform value will be returned to its default value once this pass
+  /// has been completed.
+  void addPassUniform(const std::string& object,
+                      const std::string& passName,
+                      const std::string& uniformName);
 
   //----------
   // Uniforms
   //----------
   
+  
+  //-----------------
+  // Shader Programs
+  //-----------------
+
+  /// Adds a persistent shader under the name 'programName'.
+  void addPersistentShader(const std::string& programName,
+                           const std::string& vertexShader,
+                           const std::string& fragmentShader);
+
+  /// \todo Figure out if the platform supports geometry shaders and expose
+  ///       this somehow. There should be a fallback shader if the platform
+  ///       does not support geometry shaders.
+  void addPersistentShader(const std::string& programName,
+                           const std::string& vertexShader,
+                           const std::string& geometryShader,
+                           const std::string& fragmentShader);
 
   //============================================================================
   // NOT THREAD SAFE
