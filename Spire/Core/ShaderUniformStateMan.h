@@ -29,16 +29,45 @@
 /// \author James Hughes
 /// \date   February 2013
 
-#include "StuInterface.h"
+#ifndef SPIRE_CORE_SHADERUNIFORMSTATEMAN_H
+#define SPIRE_CORE_SHADERUNIFORMSTATEMAN_H
+
+#include <map>
 
 namespace Spire {
 
-StuInterface::StuInterface()
+/// Abstract base class interface for a single uinform state item.
+class UniformStateItem
 {
-}
+public:
+  UniformStateItem()            {}
+  virtual ~UniformStateItem()   {}
 
-StuInterface::~StuInterface()
+  /// Applies uniform value.
+  virtual void applyUniform() = 0;
+};
+
+/// Unform state management. The currently available uniform state can be
+/// set and queried from this interface.
+class ShaderUniformStateMan
 {
-}
+public:
+  ShaderUniformStateMan();
+  virtual ~ShaderUniformStateMan();
+  
+  /// Reference decay won't work for this because I don't really care about
+  /// move semantics in this context. I'm not implementing move constructors 
+  /// for any of the specializations of UniformStateItem.
+  /// Adds a uniform to the global state.
+  void addGlobalUniform(const UniformStateItem& item);
 
-}
+private:
+
+  std::multimap<size_t, UniformStateItem>   mGlobalState;   ///< Global uniform state.
+};
+
+// Type specializations derived off of UniformStateItem.
+
+} // namespace Spire 
+
+#endif 

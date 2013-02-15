@@ -37,8 +37,7 @@
 #include <array>
 #include "Core/PipeInterface.h"
 
-namespace Spire
-{
+namespace Spire {
 
 /// First pass, incredibly stupid pipe interface.
 class StuInterface : public PipeInterface
@@ -88,6 +87,10 @@ public:
   //-----------------
   // Shader Programs
   //-----------------
+
+  /// NOTE: It is possible to have shader programs implemented inside of the
+  ///       pipe itself. That way, it's easier to detect OpenGL version problems
+  ///       and other things.
 
   /// Adds a persistent shader under the name 'programName'.
   void addPersistentShader(const std::string& programName,

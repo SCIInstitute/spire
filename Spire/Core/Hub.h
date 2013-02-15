@@ -45,6 +45,7 @@
 #include "Core/GPUStateManager.h"
 #include "Core/ShaderMan.h"
 #include "Core/ShaderProgramMan.h"
+#include "Core/ShaderAttributeMan.h"
 #include "Core/Camera.h"
 
 namespace Spire {
