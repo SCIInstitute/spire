@@ -45,38 +45,12 @@ ShaderUniformStateMan::~ShaderUniformStateMan()
 }
 
 //------------------------------------------------------------------------------
-// GL uniform implementation.
-//------------------------------------------------------------------------------
-
-//------------------------------------------------------------------------------
-void AbstractUniformStateItem::uniform3f(int location, float v0, float v1,
-                                         float v2)
+void ShaderUniformStateMan::applyUniform(const std::string& name, int location)
 {
-  // Technically, vn should be cast to GLfloat...
-  glUniform3f(static_cast<GLint>(location), v0, v1, v2);
-}
-
-//------------------------------------------------------------------------------
-void AbstractUniformStateItem::uniform3fv(int location, size_t count,
-                                          const float* value)
-{
-  glUniform4fv(static_cast<GLint>(location), count,
-               static_cast<const GLfloat*>(value));
-}
-
-//------------------------------------------------------------------------------
-void AbstractUniformStateItem::uniform4f(int location, float v0, float v1,
-                                         float v2, float v3)
-{
-  glUniform4f(static_cast<GLint>(location), v0, v1, v2, v3);
-}
-
-//------------------------------------------------------------------------------
-void AbstractUniformStateItem::uniformMatrix4fv(int location, size_t count, 
-                                                bool transpose, const float* value)
-{
-  glUniformMatrix4fv(static_cast<GLint>(location), count, transpose,
-                     static_cast<const GLfloat*>(value));
+  // We use mGlobalState.at instead of the [] operator because at throws an
+  // exception if the key is not found in the container.
+  std::unique_ptr<AbstractUniformStateItem>& ptr = mGlobalState.at(name);
+  ptr->applyUniform(location);
 }
 
 

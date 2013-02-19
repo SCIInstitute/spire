@@ -73,6 +73,10 @@ public:
     mGlobalState[name] = std::move(ptr);
   }
 
+  /// Applies the specified uniform to the current shader state.
+  /// Throws std::out_of_range if the key was not found in the map.
+  void applyUniform(const std::string& name, int location);
+
 private:
 
   /// Contains all current global uniform state. I would use an ordered map,
