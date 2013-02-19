@@ -33,10 +33,11 @@
 #define SPIRE_APPSPECIFIC_SCIRUN_SCIRUNINTERFACE_H
 
 // Be sure to include Spire/Interface.h before including this file!
-#include "ArcBall.h"
 
 namespace Spire {
 namespace SCIRun {
+
+class ArcBall;
 
 /// A wrapper around spire that provides higher level functionality required
 /// to operate SCIRun.
@@ -68,12 +69,12 @@ public:
 
 private:
 
-  Vector2<int>  mWindowDims;    ///< Current window dimensions.
+  Vector2<int>              mWindowDims;    ///< Current window dimensions.
 
-  ArcBall       mArcBall;       ///< ArcBall delta transform calculator.
-  M44           mCamWorld;      ///< Camera in world space.
+  std::unique_ptr<ArcBall>  mArcBall;       ///< ArcBall delta transform calculator.
+  M44                       mCamWorld;      ///< Camera in world space.
 
-  float         mCamDistance;   ///< Camera's distance from the origin.
+  float                     mCamDistance;   ///< Camera's distance from the origin.
 };
 
 } // namespace SCIRun

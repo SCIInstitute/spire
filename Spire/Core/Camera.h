@@ -32,6 +32,8 @@
 #ifndef SPIRE_HIGH_CAMERA_H
 #define SPIRE_HIGH_CAMERA_H
 
+#include "Core/Hub.h"
+
 namespace Spire {
 
 /// Basic camera.

@@ -189,7 +189,6 @@ private:
 
   /// Array of available attributes.
   std::vector<AttribState>    mAttributes;
-
 };
 
 } // namespace Spire

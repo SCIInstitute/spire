@@ -33,6 +33,7 @@
 #ifndef SPIRE_EXCEPTIONS_H
 #define SPIRE_EXCEPTIONS_H
 
+#include <string>
 #include <stdexcept>
 
 namespace Spire {

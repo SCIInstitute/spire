@@ -32,6 +32,9 @@
 #ifndef SPIRE_APPSPECIFIC_SCIRUN_ARCBALL_H
 #define SPIRE_APPSPECIFIC_SCIRUN_ARCBALL_H
 
+#include <cstdint>
+#include "Core/Math.h"
+
 namespace Spire {
 namespace SCIRun {
 

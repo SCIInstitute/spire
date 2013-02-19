@@ -34,7 +34,7 @@
 #include "TestUniformColor.h"
 
 #include "Core/GLMathUtil.h"
-#include "Core/Camera.h"
+#include "Core/Hub.h"
 
 namespace Spire {
 

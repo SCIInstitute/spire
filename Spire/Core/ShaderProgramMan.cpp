@@ -32,6 +32,7 @@
 #include "Common.h"
 #include "Exceptions.h"
 
+#include "Core/Hub.h"
 #include "Core/ShaderProgramMan.h"
 
 namespace Spire {

@@ -31,6 +31,7 @@
 
 #include "Interface.h"
 #include "SRInterface.h"
+#include "ArcBall.h"
 
 namespace Spire {
 namespace SCIRun {
@@ -40,12 +41,13 @@ SRInterface::SRInterface(std::shared_ptr<Context> context,
                          const std::vector<std::string>& shaderDirs,
                          bool createThread, LogFunction logFP) :
     Interface(context, shaderDirs, createThread, logFP),
+    mArcBall(new ArcBall),
     mCamDistance(7.0f)
 {
   //mCamWorld.setTranslation(V3(0.0f, 0.0f, 5.0f));
-  //mArcBall.setUseTranslation(true);
-  //mArcBall.setTranslation(mCamWorld);
-  mArcBall.setRadius(2.0f);
+  //mArcBall->setUseTranslation(true);
+  //mArcBall->setTranslation(mCamWorld);
+  mArcBall->setRadius(2.0f);
 }
 
 //------------------------------------------------------------------------------
@@ -59,25 +61,25 @@ void SRInterface::eventResize(int32_t width, int32_t height)
   mWindowDims.x = width;
   mWindowDims.y = height;
 
-  mArcBall.setWindowSize(width, height);
+  mArcBall->setWindowSize(width, height);
 }
 
 //------------------------------------------------------------------------------
 void SRInterface::inputMouseDown(const Vector2<int32_t>& pos)
 {
   /// \todo Only do arc ball if the correct mouse button is down!
-  mArcBall.click(pos);
+  mArcBall->click(pos);
 }
 
 //------------------------------------------------------------------------------
 void SRInterface::inputMouseMove(const Vector2<int32_t>& pos)
 {
   /// \todo Only do arc ball if the correct mouse button is down!
-  Quat q = mArcBall.drag(pos);
+  Quat q = mArcBall->drag(pos);
   M44 rot = q.computeRotation();
   mCamWorld = mCamWorld * rot;
 
-  mArcBall.click(pos);
+  mArcBall->click(pos);
 
   // Make rotation relative to the origin.
   // Super big hack, change when demo is over.

@@ -32,6 +32,8 @@
 #ifndef SPIRE_HIGH_GPUSTATEMANAGER_H
 #define SPIRE_HIGH_GPUSTATEMANAGER_H
 
+#include <cstddef>
+
 namespace Spire {
 
 #define MAX_TEXTURE_UNITS 12

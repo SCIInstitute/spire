@@ -32,8 +32,11 @@
 #ifndef SPIRE_STUPIPE_TESTUNIFORMCOLOR_H
 #define SPIRE_STUPIPE_TESTUNIFORMCOLOR_H
 
+#include "Common.h"
+
 namespace Spire {
 
+class Hub;
 class ShaderProgramAsset;
 
 /// Tests the UniformColor.* shaders.

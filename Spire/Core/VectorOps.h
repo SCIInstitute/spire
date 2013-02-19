@@ -404,3 +404,4 @@ inline const Vector3<T> select( const Vector3<T> & vec0, const Vector3<T> & vec1
 } // namespace VecOps
 } // namespace Spire
 
+#endif

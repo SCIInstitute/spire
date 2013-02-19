@@ -35,6 +35,9 @@
 #ifndef SPIRE_HIGH_FILEUTIL_H
 #define SPIRE_HIGH_FILEUTIL_H
 
+#include <string>
+#include <vector>
+
 namespace Spire
 {
 
