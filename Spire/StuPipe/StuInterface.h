@@ -56,8 +56,6 @@ public:
   //---------
   // Objects
   //---------
-  /// Removes an object given an identifier.
-  void removeObject(const std::string& object);
 
   /// Adds a VBO. This VBO can be re-used by changing
   /// the uniforms or the index buffer. This is essentially the vertex buffer
@@ -78,16 +76,25 @@ public:
   ///         an exception is thrown.
   size_t addIBO(std::shared_ptr<std::vector<uint8_t>> iboData);
 
+  /// Completely removes 'object' from the pipe. This includes removing all of
+  /// the object's passes as well.
+  void removeObject(const std::string& object);
+
   /// \todo Include attribute specification along with the pass so we can match
   ///       it up with what the shader is expecting. These should all be based
   ///       on names.
   /// Adds a geometry pass to an object given by the identifier 'object'.
+  /// If there doesn't exist an object with name 'object' already, an
+  /// object is created.
   /// \param  object        Unique object name.
-  /// \param  vboID         VBO to use.
-  /// \param  iboID         IBO to use.
+  /// \param  pass          Pass name.
   /// \param  program       Complete shader program to use when rendering.
   ///                       See the oveloaded addPersistentShader functions.
+  /// \param  vboID         VBO to use.
+  /// \param  iboID         IBO to use.
+  /// \return Pass ID. Use this ID to assign uniforms to the pass.
   void addGeomPassToObject(const std::string& object,
+                           const std::string& pass,
                            const std::string& program,
                            size_t vboID,
                            size_t iboID);
@@ -96,8 +103,10 @@ public:
   /// The uniform value will be returned to its default value once this pass
   /// has been completed.
   /// \NOTE This needs to be a templated function, see UniformStateMan.
-  void addObjectUniform(const std::string& object,
-                        const std::string& uniformName);
+  void addPassUniform(const std::string& object,
+                      const std::string& pass,
+                      const std::string& uniformName,
+                      size_t passID);
 
   //----------
   // Uniforms
