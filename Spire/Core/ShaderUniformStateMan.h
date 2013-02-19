@@ -56,7 +56,7 @@ protected:
   static void uniform4f(int location, float v0, float v1, float v2, float v3);
   static void uniform3f(int location, float v0, float v1, float v2);
   static void uniformMatrix4fv(int location, size_t count, bool transpose,
-                               float*  value);
+                               const float*  value);
   static void uniform3fv(int location, size_t count, const float* value);
   ///@}
 
@@ -90,7 +90,10 @@ public:
                       "UniformStateItem for your type. See ShaderUniformStateMan.h.");
 };
 
-/// Vector3 implementation
+//------------------------------------------------------------------------------
+// Template specializations for types commonly used in shader uniforms.
+//------------------------------------------------------------------------------
+
 template <>
 class UniformStateItem<V3> : public AbstractUniformStateItem
 {
@@ -108,27 +111,26 @@ private:
   Type mData;
 };
 
-// Temporarily commented out until I refactor the M44 and V4 conversion funcs.
-//template <>
-//class UniformStateItem<M44> : public AbstractUniformStateItem
-//{
-//public:
-//  typedef M44 Type;
-//  UniformStateItem(const Type& in)
-//  {
-//    // Perform conversion process to float array before applyUniform is ever
-//    // called.
-//    M44toArray16(in, glMatrix);
-//  }
-//
-//  void applyUniform(int location) const override
-//  {
-//    uniformMatrix4fv(location, 1, false, );
-//  }
-//
-//private:
-//  float glMatrix[16];
-//};
+template <>
+class UniformStateItem<M44> : public AbstractUniformStateItem
+{
+public:
+  typedef M44 Type;
+  UniformStateItem(const Type& in)
+  {
+    // Perform conversion process to float array before applyUniform is ever
+    // called.
+    M44toArray16(in, glMatrix);
+  }
+
+  void applyUniform(int location) const override
+  {
+    uniformMatrix4fv(location, 1, false, &glMatrix[0]);
+  }
+
+private:
+  float glMatrix[16];
+};
 
 /// Vector3 of floats implementation. Avoid using this function as it depends
 /// on vectors being tightly packed.

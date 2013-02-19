@@ -32,10 +32,11 @@
 #ifndef SPIRE_CORE_HACKEDUCRENDERER_H
 #define SPIRE_CORE_HACKEDUCRENDERER_H
 
-class ShaderProgramAsset;
+#include "Core/Hub.h"
 
-namespace Spire
-{
+namespace Spire {
+
+class ShaderProgramAsset;
 
 /// A hacked uniform color renderer for demonstration purposes only.
 class HackedUCRenderer

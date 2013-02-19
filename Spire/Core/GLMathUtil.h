@@ -33,6 +33,8 @@
 #ifndef SPIRE_HIGH_GLMATHUTIL_H
 #define SPIRE_HIGH_GLMATHUTIL_H
 
+#include "Core/Math.h"
+
 namespace Spire {
 
 //----------------------------------------------------------------------------------------
@@ -40,12 +42,12 @@ namespace Spire {
 // Internal format conversion to GL representation.
 // 
 //----------------------------------------------------------------------------------------
-void M44toArray16(const M44& in, GLfloat* out);
-void M33toArray9(const M33& in, GLfloat* out);
-void V3toArray3(const V3& in, GLfloat* out);
-void V3toArray4(const V3& in, GLfloat* out);
-void V4toArray3(const V4& in, GLfloat* out);
-void V4toArray4(const V4& in, GLfloat* out);
+void M44toArray16(const M44& in, float* out);
+void M33toArray9(const M33& in, float* out);
+void V3toArray3(const V3& in, float* out);
+void V3toArray4(const V3& in, float* out);
+void V4toArray3(const V4& in, float* out);
+void V4toArray4(const V4& in, float* out);
 
 
 } // namespace Spire 

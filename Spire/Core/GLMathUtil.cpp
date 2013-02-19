@@ -35,7 +35,7 @@
 
 namespace Spire {
 
-void M33toArray9(const M33& in, GLfloat* out)
+void M33toArray9(const M33& in, float* out)
 {
 	// OpenGL is column major.
 
@@ -55,7 +55,7 @@ void M33toArray9(const M33& in, GLfloat* out)
 	out[8 ] = in.m33;
 }
 
-void M44toArray16(const M44& in, GLfloat* out)
+void M44toArray16(const M44& in, float* out)
 {
 	// OpenGL is column major.
 
@@ -84,27 +84,27 @@ void M44toArray16(const M44& in, GLfloat* out)
 	out[15] = in.m44;
 }
 
-void V3toArray3(const V3& in, GLfloat* out)
+void V3toArray3(const V3& in, float* out)
 {
 	out[0] = in.x;
 	out[1] = in.y;
 	out[2] = in.z;
 }
 
-void V3toArray4(const V3& in, GLfloat* out)
+void V3toArray4(const V3& in, float* out)
 {
 	V3toArray3(in, out);
 	out[3] = 1.0f;
 }
 
-void V4toArray3(const V4& in, GLfloat* out)
+void V4toArray3(const V4& in, float* out)
 {
 	out[0] = in.x;
 	out[1] = in.y;
 	out[2] = in.z;
 }
 
-void V4toArray4(const V4& in, GLfloat* out)
+void V4toArray4(const V4& in, float* out)
 {
 	V4toArray3(in, out);
 	out[3] = in.w;
