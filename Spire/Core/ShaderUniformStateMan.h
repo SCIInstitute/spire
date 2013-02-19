@@ -33,18 +33,33 @@
 #define SPIRE_CORE_SHADERUNIFORMSTATEMAN_H
 
 #include <map>
+#include "Core/Math.h"
+#include "Core/GLMathUtil.h"
 
 namespace Spire {
 
 /// Abstract base class interface for a single uinform state item.
-class UniformStateItem
+class AbstractUniformStateItem
 {
 public:
-  UniformStateItem()            {}
-  virtual ~UniformStateItem()   {}
+  AbstractUniformStateItem()            {}
+  virtual ~AbstractUniformStateItem()   {}
 
   /// Applies uniform value.
-  virtual void applyUniform() = 0;
+  virtual void applyUniform(int location) const = 0;
+
+protected:
+
+  /// Series of static utility functions to avoid exposing OpenGL functions
+  /// to classes outside of spire.
+  ///@{
+  static void uniform4f(int location, float v0, float v1, float v2, float v3);
+  static void uniform3f(int location, float v0, float v1, float v2);
+  static void uniformMatrix4fv(int location, size_t count, bool transpose,
+                               float*  value);
+  static void uniform3fv(int location, size_t count, const float* value);
+  ///@}
+
 };
 
 /// Unform state management. The currently available uniform state can be
@@ -59,14 +74,88 @@ public:
   /// move semantics in this context. I'm not implementing move constructors 
   /// for any of the specializations of UniformStateItem.
   /// Adds a uniform to the global state.
-  void addGlobalUniform(const UniformStateItem& item);
+  void addGlobalUniform(const AbstractUniformStateItem& item);
 
 private:
 
-  std::multimap<size_t, UniformStateItem>   mGlobalState;   ///< Global uniform state.
+  std::multimap<size_t, AbstractUniformStateItem>   mGlobalState;   ///< Global uniform state.
 };
 
 // Type specializations derived off of UniformStateItem.
+template <typename T>
+class UniformStateItem : public AbstractUniformStateItem
+{
+public:
+  static_assert(true, "There is no valid template specialization of "
+                      "UniformStateItem for your type. See ShaderUniformStateMan.h.");
+};
+
+/// Vector3 implementation
+template <>
+class UniformStateItem<V3> : public AbstractUniformStateItem
+{
+public:
+  typedef V3 Type;
+
+  UniformStateItem(const Type& in) : mData(in) {}
+
+  void applyUniform(int location) const override
+  {
+    uniform3f(location, mData.x, mData.y, mData.z);
+  }
+
+private:
+  Type mData;
+};
+
+// Temporarily commented out until I refactor the M44 and V4 conversion funcs.
+//template <>
+//class UniformStateItem<M44> : public AbstractUniformStateItem
+//{
+//public:
+//  typedef M44 Type;
+//  UniformStateItem(const Type& in)
+//  {
+//    // Perform conversion process to float array before applyUniform is ever
+//    // called.
+//    M44toArray16(in, glMatrix);
+//  }
+//
+//  void applyUniform(int location) const override
+//  {
+//    uniformMatrix4fv(location, 1, false, );
+//  }
+//
+//private:
+//  float glMatrix[16];
+//};
+
+/// Vector3 of floats implementation. Avoid using this function as it depends
+/// on vectors being tightly packed.
+/// \todo Ensure V3's are tightly packed... If we do this, this may hurt 
+///       efficiency when performing calculations on the CPU.
+template <>
+class UniformStateItem<std::vector<V3>> : public AbstractUniformStateItem
+{
+public:
+  typedef V3 Type;
+  // Don't technically *need* the std::move in this case, but it makes it more
+  // apparent what is going on.
+  UniformStateItem(const std::vector<V3>& in) : mData(in)             {}
+  UniformStateItem(std::vector<V3>&& in)      : mData(std::move(in))  {}
+  
+  void applyUniform(int location) const override
+  {
+    // The standard makes it very clear that vectors will be stored in
+    // contiguous memory. This is a *very* dangerous cast that will ONLY work if
+    // vectors are tightly packed.
+    uniform3fv(location, mData.size(), reinterpret_cast<const float*>(&mData[0]));
+  }
+
+private:
+  std::vector<V3>   mData;
+};
+
 
 } // namespace Spire 
 
