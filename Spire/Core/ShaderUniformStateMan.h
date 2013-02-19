@@ -47,6 +47,13 @@ public:
   ShaderUniformStateMan();
   virtual ~ShaderUniformStateMan();
   
+  /// Adds a uniform to the global state.
+  /// \param  name    Name, as used in the shader, of the uniform.
+  /// \param  data    Data to be associated with the uniform.
+  ///                 If you supply an invalid type for data, you will encounter
+  ///                 a compile-time error telling you as such. See
+  ///                 ShaderUniformStateManTemplates.h for a list of datatypes
+  ///                 accepted by this function (look at the specializations).
   template <typename T>
   void addGlobalUniform(const std::string& name, T data)
   {
