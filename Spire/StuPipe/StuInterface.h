@@ -40,6 +40,9 @@
 namespace Spire {
 
 /// First pass, incredibly stupid pipe interface.
+/// No frame buffer management or advanced rendering (although this kind of
+/// advanced rendering would be more suited towards a programmable module that
+/// you hook into spire). This pipe was only created for ease-of-use.
 class StuInterface : public PipeInterface
 {
 public:
@@ -56,28 +59,45 @@ public:
   /// Removes an object given an identifier.
   void removeObject(const std::string& object);
 
+  /// Adds a VBO. This VBO can be re-used by changing
+  /// the uniforms or the index buffer. This is essentially the vertex buffer
+  /// object.
+  /// \param  vboData       VBO data.
+  /// \param  attribNames   List of attribute names. This is used as a sanity
+  ///                       check to ensure that the shader program's expected
+  ///                       attributes match up with what you have provided in
+  ///                       in the VBO. This only checked when a call to
+  ///                       addGeomPassToObject is made.
+  /// \return The VBO identifier if the VBO was successfully created. Otherwise
+  ///         an exception is thrown.
+  size_t addVBO(std::shared_ptr<std::vector<uint8_t>> vboData,
+                const std::vector<std::string>& attribNames);
+
+  /// Adds an IBO. This IBO can be re-used.
+  /// \return The IBO identifier if the IBO was successfully created. Otherwise
+  ///         an exception is thrown.
+  size_t addIBO(std::shared_ptr<std::vector<uint8_t>> iboData);
+
   /// \todo Include attribute specification along with the pass so we can match
   ///       it up with what the shader is expecting. These should all be based
   ///       on names.
   /// Adds a geometry pass to an object given by the identifier 'object'.
   /// \param  object        Unique object name.
-  /// \param  passName      Unique name of the pass.
-  /// \param  attribBuffer  rvalue reference to the attribute buffer. You are
-  ///                       forced to std::move your vector.
+  /// \param  vboID         VBO to use.
+  /// \param  iboID         IBO to use.
   /// \param  program       Complete shader program to use when rendering.
   ///                       See the oveloaded addPersistentShader functions.
   void addGeomPassToObject(const std::string& object,
-                           const std::string& passName,
-                           std::vector<uint8_t>&& attribBuffer, 
-                           const std::vector<std::string>& attribNames,
-                           const std::string& program);
+                           const std::string& program,
+                           size_t vboID,
+                           size_t iboID);
 
   /// Associates a uniform value to the specified object's pass.
   /// The uniform value will be returned to its default value once this pass
   /// has been completed.
-  void addPassUniform(const std::string& object,
-                      const std::string& passName,
-                      const std::string& uniformName);
+  /// \NOTE This needs to be a templated function, see UniformStateMan.
+  void addObjectUniform(const std::string& object,
+                        const std::string& uniformName);
 
   //----------
   // Uniforms
