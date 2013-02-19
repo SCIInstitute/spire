@@ -68,9 +68,7 @@ public:
     // A static_assert will be issued if there exists no template specialization
     // for the template type T.
 
-    // Extra parethesis required to avoid most vexing parse.
-    std::unique_ptr<AbstractUniformStateItem> ptr((UniformStateItem<T>(data)));
-    mGlobalState[name] = std::move(ptr);
+    mGlobalState[name] = std::unique_ptr<AbstractUniformStateItem>(UniformStateItem<T>(data));
   }
 
   /// Applies the specified uniform to the current shader state.
