@@ -33,34 +33,11 @@
 #define SPIRE_CORE_SHADERUNIFORMSTATEMAN_H
 
 #include <map>
-#include "Core/Math.h"
-#include "Core/GLMathUtil.h"
+#include <unordered_map>
+
+#include "Core/ShaderUniformStateManTemplates.h"
 
 namespace Spire {
-
-/// Abstract base class interface for a single uinform state item.
-class AbstractUniformStateItem
-{
-public:
-  AbstractUniformStateItem()            {}
-  virtual ~AbstractUniformStateItem()   {}
-
-  /// Applies uniform value.
-  virtual void applyUniform(int location) const = 0;
-
-protected:
-
-  /// Series of static utility functions to avoid exposing OpenGL functions
-  /// to classes outside of spire.
-  ///@{
-  static void uniform4f(int location, float v0, float v1, float v2, float v3);
-  static void uniform3f(int location, float v0, float v1, float v2);
-  static void uniformMatrix4fv(int location, size_t count, bool transpose,
-                               const float*  value);
-  static void uniform3fv(int location, size_t count, const float* value);
-  ///@}
-
-};
 
 /// Unform state management. The currently available uniform state can be
 /// set and queried from this interface.
@@ -70,92 +47,31 @@ public:
   ShaderUniformStateMan();
   virtual ~ShaderUniformStateMan();
   
-  /// Reference decay won't work for this because I don't really care about
-  /// move semantics in this context. I'm not implementing move constructors 
-  /// for any of the specializations of UniformStateItem.
-  /// Adds a uniform to the global state.
-  void addGlobalUniform(const AbstractUniformStateItem& item);
-
-private:
-
-  std::multimap<size_t, AbstractUniformStateItem>   mGlobalState;   ///< Global uniform state.
-};
-
-// Type specializations derived off of UniformStateItem.
-template <typename T>
-class UniformStateItem : public AbstractUniformStateItem
-{
-public:
-  static_assert(true, "There is no valid template specialization of "
-                      "UniformStateItem for your type. See ShaderUniformStateMan.h.");
-};
-
-//------------------------------------------------------------------------------
-// Template specializations for types commonly used in shader uniforms.
-//------------------------------------------------------------------------------
-
-template <>
-class UniformStateItem<V3> : public AbstractUniformStateItem
-{
-public:
-  typedef V3 Type;
-
-  UniformStateItem(const Type& in) : mData(in) {}
-
-  void applyUniform(int location) const override
+  template <typename T>
+  void addGlobalUniform(const std::string& name, T data)
   {
-    uniform3f(location, mData.x, mData.y, mData.z);
+    /// \todo Want functional pattern matching here.
+    ///       See: http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2012/n3449.pdf 
+    ///       Stroustrup has built a library that does this already called mach 7.
+    ///       https://parasol.tamu.edu/~yuriys/pm/
+    ///       This will likely be in the next c++ standard after c++11.
+
+    // Below is an exceptionally verbose implementation of something like 
+    // a watered down functional pattern matching using template specialization.
+    // A static_assert will be issued if there exists no template specialization
+    // for the template type T.
+
+    // Extra parethesis required to avoid most vexing parse.
+    std::unique_ptr<AbstractUniformStateItem> ptr((UniformStateItem<T>(data)));
+    mGlobalState[name] = std::move(ptr);
   }
 
 private:
-  Type mData;
-};
 
-template <>
-class UniformStateItem<M44> : public AbstractUniformStateItem
-{
-public:
-  typedef M44 Type;
-  UniformStateItem(const Type& in)
-  {
-    // Perform conversion process to float array before applyUniform is ever
-    // called.
-    M44toArray16(in, glMatrix);
-  }
-
-  void applyUniform(int location) const override
-  {
-    uniformMatrix4fv(location, 1, false, &glMatrix[0]);
-  }
-
-private:
-  float glMatrix[16];
-};
-
-/// Vector3 of floats implementation. Avoid using this function as it depends
-/// on vectors being tightly packed.
-/// \todo Ensure V3's are tightly packed... If we do this, this may hurt 
-///       efficiency when performing calculations on the CPU.
-template <>
-class UniformStateItem<std::vector<V3>> : public AbstractUniformStateItem
-{
-public:
-  typedef V3 Type;
-  // Don't technically *need* the std::move in this case, but it makes it more
-  // apparent what is going on.
-  UniformStateItem(const std::vector<V3>& in) : mData(in)             {}
-  UniformStateItem(std::vector<V3>&& in)      : mData(std::move(in))  {}
-  
-  void applyUniform(int location) const override
-  {
-    // The standard makes it very clear that vectors will be stored in
-    // contiguous memory. This is a *very* dangerous cast that will ONLY work if
-    // vectors are tightly packed.
-    uniform3fv(location, mData.size(), reinterpret_cast<const float*>(&mData[0]));
-  }
-
-private:
-  std::vector<V3>   mData;
+  /// Contains all current global uniform state. I would use an ordered map,
+  /// but less than is used as the comparison operator. I would need to hash
+  /// the strings then insert the hashed value into the map.
+  std::unordered_map<std::string, std::unique_ptr<AbstractUniformStateItem>> mGlobalState;
 };
 
 
