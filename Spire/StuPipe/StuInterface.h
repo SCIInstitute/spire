@@ -34,10 +34,14 @@
 
 #include <utility>
 #include <vector>
-#include <array>
+#include <string>
+#include <unordered_map>
 #include "Core/PipeInterface.h"
+#include "Core/ShaderUniformStateManTemplates.h"
 
 namespace Spire {
+
+class StuObject;
 
 /// First pass, incredibly stupid pipe interface.
 /// No frame buffer management or advanced rendering (although this kind of
@@ -49,6 +53,13 @@ public:
   StuInterface();
   virtual ~StuInterface();
   
+  enum IBO_TYPE
+  {
+    IBO_8BIT,
+    IBO_16BIT,
+    IBO_32BIT,
+  };
+
   //============================================================================
   // THREAD SAFE - Remember, the same thread should always be calling spire.
   //============================================================================
@@ -57,10 +68,18 @@ public:
   // Objects
   //---------
 
-  /// Adds a VBO. This VBO can be re-used by changing
-  /// the uniforms or the index buffer. This is essentially the vertex buffer
-  /// object.
-  /// \param  vboData       VBO data.
+  /// Adds a renderable 'object' to the scene.
+  void addObject(const std::string& object);
+
+  /// Adds a VBO. This VBO can be re-used by adding passes to the object.
+  /// Throws an std::out_of_range exception if the object is not found in the 
+  /// system.
+  /// \param  object        Name of the object to add the VBO to. The VBO will
+  ///                       be destroyed when the object is removed. If you want
+  ///                       to reuse VBO / IBOs add passes to this object.
+  /// \param  vboData       VBO data. This pointer will NOT be stored inside of
+  ///                       spire. Unless there is a reference to it out side
+  ///                       of spire, it will be destroyed.
   /// \param  attribNames   List of attribute names. This is used as a sanity
   ///                       check to ensure that the shader program's expected
   ///                       attributes match up with what you have provided in
@@ -68,24 +87,35 @@ public:
   ///                       addGeomPassToObject is made.
   /// \return The VBO identifier if the VBO was successfully created. Otherwise
   ///         an exception is thrown.
-  size_t addVBO(std::shared_ptr<std::vector<uint8_t>> vboData,
-                const std::vector<std::string>& attribNames);
+  size_t addVBOToObject(const std::string& object,
+                        std::shared_ptr<std::vector<uint8_t>> vboData,
+                        const std::vector<std::string>& attribNames);
 
-  /// Adds an IBO. This IBO can be re-used.
+  /// Adds an IBO. This IBO can be re-used by adding passes to the object.
+  /// Throws an std::out_of_range exception if the object is not found in the 
+  /// system.
+  /// \param  object        Name of the object to add the VBO to. The VBO will
+  ///                       be destroyed when the object is removed. If you want
+  ///                       to reuse VBO / IBOs add passes to this object.
+  /// \param  iboData       IBO data. This pointer will NOT be stored inside of
+  ///                       spire. Unless there is a reference to it out side
+  ///                       of spire, it will be destroyed.
+  /// \param  type          Specifies what kind of IBO iboData represents.
   /// \return The IBO identifier if the IBO was successfully created. Otherwise
   ///         an exception is thrown.
-  size_t addIBO(std::shared_ptr<std::vector<uint8_t>> iboData);
+  size_t addIBOToObject(const std::string& object,
+                        std::shared_ptr<std::vector<uint8_t>> iboData,
+                        IBO_TYPE type);
 
   /// Completely removes 'object' from the pipe. This includes removing all of
   /// the object's passes as well.
+  /// Throws an std::out_of_range exception if the object is not found in the 
+  /// system.
   void removeObject(const std::string& object);
 
-  /// \todo Include attribute specification along with the pass so we can match
-  ///       it up with what the shader is expecting. These should all be based
-  ///       on names.
   /// Adds a geometry pass to an object given by the identifier 'object'.
-  /// If there doesn't exist an object with name 'object' already, an
-  /// object is created.
+  /// Throws an std::out_of_range exception if the object is not found in the 
+  /// system.
   /// \param  object        Unique object name.
   /// \param  pass          Pass name.
   /// \param  program       Complete shader program to use when rendering.
@@ -99,14 +129,29 @@ public:
                            size_t vboID,
                            size_t iboID);
 
+  /// Removes a geometry pass from the object.
+  /// Throws an std::out_of_range exception if the object or pass is not found 
+  /// in the system. 
+  /// \param  object        Unique object name.
+  /// \param  pass          Pass name.
+  void removeGeomPassFromObject(const std::string& object,
+                                const std::string& pass);
+
   /// Associates a uniform value to the specified object's pass.
-  /// The uniform value will be returned to its default value once this pass
-  /// has been completed.
-  /// \NOTE This needs to be a templated function, see UniformStateMan.
+  /// During rendering the uniform value will be returned to its default value 
+  /// once this pass has been completed.
+  /// Throws an std::out_of_range exception if the object or pass is not found 
+  /// in the system.
+  template <typename T>
   void addPassUniform(const std::string& object,
                       const std::string& pass,
                       const std::string& uniformName,
-                      size_t passID);
+                      T uniformData)
+  {
+    addPassUniformInternal(object, pass, uniformName, 
+                           std::unique_ptr<AbstractUniformStateItem>(
+                               UniformStateItem<T>(uniformData)));
+  }
 
   //----------
   // Uniforms
@@ -140,8 +185,17 @@ public:
   // Do not call any of these functions, they will be called automatically
   // from within spire.
 
-  // Inherited functions
-  virtual void doPass();
+  void doPass() override;
+
+private:
+
+  void addPassUniformInternal(const std::string& object,
+                              const std::string& pass,
+                              const std::string& uniformName,
+                              std::unique_ptr<AbstractUniformStateItem> item);
+
+  /// Object map.
+  std::unordered_map<std::string, std::unique_ptr<StuObject>> mObjects;
 
 };
 

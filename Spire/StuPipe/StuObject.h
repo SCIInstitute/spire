@@ -34,7 +34,11 @@
 
 #include <string>
 #include <list>
+#include <map>
+
+#include "Common.h"
 #include "Core/ShaderUniformStateManTemplates.h"
+#include "StuPipe/StuInterface.h"
 
 namespace Spire {
 
@@ -72,7 +76,39 @@ public:
 
   /// Removes a pass from the object.
 
+  /// Adds an object specific VBO. See StuInferface.
+  size_t addVBO(std::shared_ptr<std::vector<uint8_t>> vboData,
+                const std::vector<std::string>& attribNames);
+
+  /// Adds an object specific IBO. See StuInferface.
+  size_t addIBO(std::shared_ptr<std::vector<uint8_t>> vboData,
+                const std::vector<std::string>& attribNames);
+
 protected:
+
+  class VBOObject
+  {
+  public:
+    ~VBOObject();
+
+    GLint                     glIndex;    ///< Corresponds to the map index, but obtained from OpenGL.
+    std::vector<std::string>  attributes; ///< Attributes for shader verification.
+  };
+
+  class IBOObject
+  {
+  public:
+    ~IBOObject();
+
+    GLint                     glIndex;    ///< Corresponds to the map index, but obtained from OpenGL.
+    StuInterface::IBO_TYPE    type;       ///< Type of index buffer.
+  };
+
+  // May actually be more efficient implemented as an array. The map sizes
+  // are small and cache coherency will be more important. Ignoring for now
+  // until we identify actual performance bottlenecks.
+  std::map<size_t, VBOObject> mVBOMap;    ///< OpenGL index -> VBOObject map.
+  std::map<size_t, IBOObject> mIBOMap;    ///< OpenGL index -> IBOObject map.
 };
 
 
