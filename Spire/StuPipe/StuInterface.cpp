@@ -29,7 +29,9 @@
 /// \author James Hughes
 /// \date   February 2013
 
+#include "Common.h"
 #include "StuInterface.h"
+#include "StuObject.h"
 
 namespace Spire {
 
