@@ -35,11 +35,85 @@
 
 namespace Spire {
 
+//------------------------------------------------------------------------------
 StuInterface::StuInterface()
 {
 }
 
+//------------------------------------------------------------------------------
 StuInterface::~StuInterface()
+{
+}
+
+//------------------------------------------------------------------------------
+void StuInterface::doPass()
+{
+  
+}
+
+//------------------------------------------------------------------------------
+size_t StuInterface::addIBOToObject(const std::string& object,
+                                    std::shared_ptr<std::vector<uint8_t>> iboData,
+                                    IBO_TYPE type)
+{
+  // The 'at' function will throw std::out_of_range an exception.
+  std::unique_ptr<StuObject>& obj = mObjects.at(object);
+  return 0;
+}
+
+//------------------------------------------------------------------------------
+size_t StuInterface::addVBOToObject(const std::string& object,
+                                    std::shared_ptr<std::vector<uint8_t>> vboData,
+                                    const std::vector<std::string>& attribNames)
+{
+  return 0;
+}
+
+//------------------------------------------------------------------------------
+void StuInterface::addGeomPassToObject(const std::string& object,
+                                       const std::string& pass,
+                                       const std::string& program,
+                                       size_t vboID,
+                                       size_t iboID)
+{
+}
+
+//------------------------------------------------------------------------------
+void StuInterface::addObject(const std::string& object)
+{
+}
+
+//------------------------------------------------------------------------------
+void StuInterface::addPassUniformInternal(const std::string& object,
+                                          const std::string& pass,
+                                          const std::string& uniformName,
+                                          std::unique_ptr<AbstractUniformStateItem> item)
+{
+}
+
+//------------------------------------------------------------------------------
+void StuInterface::addPersistentShader(const std::string& programName,
+                                       const std::string& vertexShader,
+                                       const std::string& fragmentShader)
+{
+}
+
+//------------------------------------------------------------------------------
+void StuInterface::addPersistentShader(const std::string& programName,
+                                       const std::string& vertexShader,
+                                       const std::string& geometryShader,
+                                       const std::string& fragmentShader)
+{
+}
+
+//------------------------------------------------------------------------------
+void StuInterface::removeGeomPassFromObject(const std::string& object,
+                                            const std::string& pass)
+{
+}
+
+//------------------------------------------------------------------------------
+void StuInterface::removeObject(const std::string& object)
 {
 }
 
