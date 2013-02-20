@@ -38,10 +38,19 @@ using namespace Spire;
 
 namespace {
 
+/// \todo Need an option to run OpenGL through a mocked up interface. This
+///       would also require mocking some GLEW functions as well.
+///       Or just have compiler switches that remove any OpenGL calls.
+///       Need to have this support to test beyond the basics.
+///       Possibly the best solution to all of this is to just create a valid
+///       OpenGL context when testing Spire as well. In this manner, I can
+///       delete / create Spire objects at will.
+
 //------------------------------------------------------------------------------
-TEST(, )
+TEST(StuInterfaceBasic, TestObjectCreation)
 {
-  
+  /// \todo Create a test fixture that creates a spire instance that we can use
+  ///       for testing purposes.
 }
 
 }
