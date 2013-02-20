@@ -56,9 +56,10 @@ size_t StuInterface::addIBOToObject(const std::string& object,
                                     std::shared_ptr<std::vector<uint8_t>> iboData,
                                     IBO_TYPE type)
 {
-  // The 'at' function will throw std::out_of_range an exception.
-  std::unique_ptr<StuObject>& obj = mObjects.at(object);
-  return 0;
+  // The 'at' function will throw std::out_of_range an exception if object
+  // doesn't exist.
+  StuObject& obj = mObjects.at(object);
+  return obj.addIBO(iboData, type);
 }
 
 //------------------------------------------------------------------------------
@@ -66,7 +67,8 @@ size_t StuInterface::addVBOToObject(const std::string& object,
                                     std::shared_ptr<std::vector<uint8_t>> vboData,
                                     const std::vector<std::string>& attribNames)
 {
-  return 0;
+  StuObject& obj = mObjects.at(object);
+  return obj.addVBO(vboData, attribNames);
 }
 
 //------------------------------------------------------------------------------
@@ -76,11 +78,18 @@ void StuInterface::addGeomPassToObject(const std::string& object,
                                        size_t vboID,
                                        size_t iboID)
 {
+  StuObject& obj = mObjects.at(object);
+  obj.addGeomPass(pass, program, vboID, iboID);
 }
 
 //------------------------------------------------------------------------------
 void StuInterface::addObject(const std::string& object)
 {
+  if (mObjects.find(object) != mObjects.end())
+    throw Duplicate("There already exists an object by that name!");
+
+  StuObject obj;
+  mObjects[object] = std::move(obj);
 }
 
 //------------------------------------------------------------------------------

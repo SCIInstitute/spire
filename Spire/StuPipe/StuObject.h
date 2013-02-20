@@ -37,11 +37,51 @@
 #include <map>
 
 #include "Common.h"
+#include "Core/ShaderProgramMan.h"
 #include "Core/ShaderUniformStateManTemplates.h"
 #include "StuPipe/StuInterface.h"
 
 namespace Spire {
 
+//------------------------------------------------------------------------------
+// VBO object
+//------------------------------------------------------------------------------
+/// Object that encapsulates an OpenGL vertex buffer. The buffer will be
+/// automatically deleted by VBOObject's destructor.
+class VBOObject
+{
+public:
+  VBOObject(std::shared_ptr<std::vector<uint8_t>> vboData,
+            const std::vector<std::string>& attributes);
+  ~VBOObject();
+
+  GLuint getGLIndex() const                             {return mGLIndex;}
+  const std::vector<std::string>& getAttributes() const {return mAttributes;}
+
+private:
+  GLuint                    mGLIndex;    ///< Corresponds to the map index but obtained from OpenGL.
+  std::vector<std::string>  mAttributes; ///< Attributes for shader verification.
+};
+
+//------------------------------------------------------------------------------
+// IBO object
+//------------------------------------------------------------------------------
+/// Object that encapsulates an OpenGL index buffer. The buffer will be
+/// automatically deleted by IBOObject's destructor.
+class IBOObject
+{
+public:
+  IBOObject(std::shared_ptr<std::vector<uint8_t>> iboData,
+            StuInterface::IBO_TYPE type);
+  ~IBOObject();
+
+  GLuint                    glIndex;    ///< Corresponds to the map index but obtained from OpenGL.
+  StuInterface::IBO_TYPE    type;       ///< Type of index buffer.
+};
+
+//------------------------------------------------------------------------------
+// StuPass object
+//------------------------------------------------------------------------------
 /// Holds all information regarding specific uniforms for use in the pass
 /// and also the GL indices of the VBO / IBO to use.
 class StuPass
@@ -61,13 +101,17 @@ protected:
   /// The set of unsatisfied uniforms should be a subset of the global
   /// uniform state. Otherwise the shader cannot be properly satisfied and a
   /// runtime exception will be thrown.
-  std::list<std::string>                                mUnsatisfiedUniforms;
+  std::list<std::string>                mUnsatisfiedUniforms;
 
-  size_t    mVBO;   // GL vbo ID.
-  size_t    mIBO;   // GL ibo ID.
+  const VBOObject&                      mVBO;     ///< VBO reference from the STU object which composites us.
+  const IBOObject&                      mIBO;     ///< IBO reference from the STU object which composites us.
+
+  std::shared_ptr<ShaderProgramAsset>   mShader;  ///< Shader to be used when rendering this pass.
 };
 
-/// 
+//------------------------------------------------------------------------------
+// StuObject
+//------------------------------------------------------------------------------
 class StuObject
 {
 public:
@@ -82,33 +126,24 @@ public:
 
   /// Adds an object specific IBO. See StuInferface.
   size_t addIBO(std::shared_ptr<std::vector<uint8_t>> vboData,
-                const std::vector<std::string>& attribNames);
+                StuInterface::IBO_TYPE type);
+
+  /// Adds a geometry pass with the specified index / vertex buffer objects.
+  void addGeomPass(const std::string& pass,
+                   const std::string& program,
+                   size_t vboID,
+                   size_t iboID);
 
 protected:
 
-  class VBOObject
-  {
-  public:
-    ~VBOObject();
+  /// All registered passes.
+  std::unordered_map<std::string, StuPass>  mPasses;
 
-    GLint                     glIndex;    ///< Corresponds to the map index, but obtained from OpenGL.
-    std::vector<std::string>  attributes; ///< Attributes for shader verification.
-  };
-
-  class IBOObject
-  {
-  public:
-    ~IBOObject();
-
-    GLint                     glIndex;    ///< Corresponds to the map index, but obtained from OpenGL.
-    StuInterface::IBO_TYPE    type;       ///< Type of index buffer.
-  };
-
-  // May actually be more efficient implemented as an array. The map sizes
-  // are small and cache coherency will be more important. Ignoring for now
-  // until we identify actual performance bottlenecks.
-  std::map<size_t, VBOObject> mVBOMap;    ///< OpenGL index -> VBOObject map.
-  std::map<size_t, IBOObject> mIBOMap;    ///< OpenGL index -> IBOObject map.
+  // These maps may actually be more efficient implemented as an array. The map 
+  // sizes are small and cache coherency will be more important. Ignoring for 
+  // now until we identify an actual performance bottlenecks.
+  std::map<size_t, VBOObject>               mVBOMap;    ///< OpenGL index -> VBOObject map.
+  std::map<size_t, IBOObject>               mIBOMap;    ///< OpenGL index -> IBOObject map.
 };
 
 

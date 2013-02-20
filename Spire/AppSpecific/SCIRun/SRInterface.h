@@ -32,7 +32,7 @@
 #ifndef SPIRE_APPSPECIFIC_SCIRUN_SCIRUNINTERFACE_H
 #define SPIRE_APPSPECIFIC_SCIRUN_SCIRUNINTERFACE_H
 
-// Be sure to include Spire/Interface.h before including this file!
+#include "../../Interface.h"
 
 namespace Spire {
 namespace SCIRun {

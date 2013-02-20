@@ -107,6 +107,14 @@ public:
   virtual ~ShaderUniformNotFound() SPIRE_NOEXCEPT {}
 };
 
+class Duplicate : virtual public Exception
+{
+public:
+  Duplicate() : Exception(std::string("unknown error")) {}
+  Duplicate(std::string e) : Exception(e) {}
+  virtual ~Duplicate() SPIRE_NOEXCEPT {}
+};
+
 } // namespace Spire
 
 #endif // SPIRE_EXCEPTIONS_H

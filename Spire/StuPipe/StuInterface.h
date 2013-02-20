@@ -36,8 +36,9 @@
 #include <vector>
 #include <string>
 #include <unordered_map>
-#include "Core/PipeInterface.h"
-#include "Core/ShaderUniformStateManTemplates.h"
+#include "../Core/PipeInterface.h"
+#include "../Core/ShaderUniformStateManTemplates.h"
+#include "../Exceptions.h"
 
 namespace Spire {
 
@@ -115,7 +116,8 @@ public:
 
   /// Adds a geometry pass to an object given by the identifier 'object'.
   /// Throws an std::out_of_range exception if the object is not found in the 
-  /// system.
+  /// system. If there already exists a geometry pass, it throws a 'Duplicate' 
+  /// exception.
   /// \param  object        Unique object name.
   /// \param  pass          Pass name.
   /// \param  program       Complete shader program to use when rendering.
@@ -195,7 +197,7 @@ private:
                               std::unique_ptr<AbstractUniformStateItem> item);
 
   /// Object map.
-  std::unordered_map<std::string, std::unique_ptr<StuObject>> mObjects;
+  std::unordered_map<std::string, StuObject> mObjects;
 
 };
 
