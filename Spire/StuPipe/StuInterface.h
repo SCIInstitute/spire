@@ -242,6 +242,26 @@ private:
   /// Object map.
   std::unordered_map<std::string, StuObject>      mObjects;
   std::list<std::shared_ptr<ShaderProgramAsset>>  mPersistentShaders;
+
+
+private:
+
+
+  /// Implementation functions executed on the renderer thread.
+  /// I avoid references unless I know the objects that are being referenced
+  /// will still be valid when execution reaches the renderer thread.
+  /// (no stack variables allowed).
+  /// @{
+  static void addIBOToObjectImpl(Hub& hub, StuInterface* iface,
+                                 std::string object, std::string name,
+                                 std::shared_ptr<std::vector<uint8_t>> iboData,
+                                 StuInterface::IBO_TYPE type);
+
+  static void addVBOToObjectImpl(Hub& hub, StuInterface* iface,
+                                 std::string object, std::string name,
+                                 std::shared_ptr<std::vector<uint8_t>> vboData,
+                                 std::vector<std::string> attribNames);
+  /// @}
 };
 
 } // namespace Spire

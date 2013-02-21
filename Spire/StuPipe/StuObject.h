@@ -94,7 +94,7 @@ public:
 protected:
 
   /// List of uniforms to apply before this shader gets executed.
-  std::list<std::unique_ptr<AbstractUniformStateItem>>  mUniforms;
+  std::vector<std::unique_ptr<AbstractUniformStateItem>>  mUniforms;
 
   /// List of unsatisfied uniforms (the list of uniforms that are not covered
   /// by our mUniforms list).

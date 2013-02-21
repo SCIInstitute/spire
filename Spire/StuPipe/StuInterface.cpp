@@ -29,11 +29,15 @@
 /// \author James Hughes
 /// \date   February 2013
 
+#include <functional>
+
 #include "Common.h"
 #include "StuInterface.h"
 #include "StuObject.h"
 #include "Core/ShaderProgramMan.h"
 #include "Core/Hub.h"
+
+using namespace std::placeholders;
 
 namespace Spire {
 
@@ -59,6 +63,17 @@ void StuInterface::doPass()
   
 }
 
+//------------------------------------------------------------------------------
+void StuInterface::addIBOToObjectImpl(Hub& hub, StuInterface* iface,
+                                      std::string object, std::string name,
+                                      std::shared_ptr<std::vector<uint8_t>> iboData,
+                                      StuInterface::IBO_TYPE type)
+{
+  // The 'at' function will throw std::out_of_range an exception if object
+  // doesn't exist.
+  StuObject& obj = iface->mObjects.at(object);
+  obj.addIBO(name, iboData, type);
+}
 
 //------------------------------------------------------------------------------
 void StuInterface::addIBOToObject(const std::string& object,
@@ -66,14 +81,21 @@ void StuInterface::addIBOToObject(const std::string& object,
                                   std::shared_ptr<std::vector<uint8_t>> iboData,
                                   IBO_TYPE type)
 {
-  /// \todo Turn into a message (execute call immediately if we are running
-  ///       a non-threaded Spire -- very useful if unit testing).
-  ///       Need a synchronous test harness. Otherwise things get nasty.
-  // The 'at' function will throw std::out_of_range an exception if object
-  // doesn't exist.
-  StuObject& obj = mObjects.at(object);
-  obj.addIBO(name, iboData, type);
+  Hub::RemoteFunction fun =
+      std::bind(addIBOToObjectImpl, _1, this, object, name, iboData, type);
+  mHub.addFunctionToThreadQueue(fun);
 }
+
+//------------------------------------------------------------------------------
+void StuInterface::addVBOToObjectImpl(Hub& hub, StuInterface* iface,
+                                      std::string object, std::string name,
+                                      std::shared_ptr<std::vector<uint8_t>> vboData,
+                                      std::vector<std::string> attribNames)
+{
+  StuObject& obj = iface->mObjects.at(object);
+  obj.addVBO(name, vboData, attribNames);
+}
+
 
 //------------------------------------------------------------------------------
 void StuInterface::addVBOToObject(const std::string& object,
@@ -81,9 +103,9 @@ void StuInterface::addVBOToObject(const std::string& object,
                                   std::shared_ptr<std::vector<uint8_t>> vboData,
                                   const std::vector<std::string>& attribNames)
 {
-  /// \todo Turn into a message.
-  StuObject& obj = mObjects.at(object);
-  return obj.addVBO(name, vboData, attribNames);
+  Hub::RemoteFunction fun =
+      std::bind(addVBOToObjectImpl, _1, this, object, name, vboData, attribNames);
+  mHub.addFunctionToThreadQueue(fun);
 }
 
 //------------------------------------------------------------------------------
