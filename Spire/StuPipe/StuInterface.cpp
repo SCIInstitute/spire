@@ -32,16 +32,24 @@
 #include "Common.h"
 #include "StuInterface.h"
 #include "StuObject.h"
+#include "Core/ShaderProgramMan.h"
+#include "Core/Hub.h"
 
 namespace Spire {
 
 //------------------------------------------------------------------------------
-StuInterface::StuInterface()
+StuInterface::StuInterface(Interface& iface) :
+    PipeInterface(iface)
 {
 }
 
 //------------------------------------------------------------------------------
 StuInterface::~StuInterface()
+{
+}
+
+//------------------------------------------------------------------------------
+void StuInterface::initOnRenderThread()
 {
 }
 
@@ -56,6 +64,9 @@ size_t StuInterface::addIBOToObject(const std::string& object,
                                     std::shared_ptr<std::vector<uint8_t>> iboData,
                                     IBO_TYPE type)
 {
+  /// \todo Turn into a message (execute call immediately if we are running
+  ///       a non-threaded Spire -- very useful if unit testing).
+  ///       Need a synchronous test harness. Otherwise things get nasty.
   // The 'at' function will throw std::out_of_range an exception if object
   // doesn't exist.
   StuObject& obj = mObjects.at(object);
@@ -67,6 +78,7 @@ size_t StuInterface::addVBOToObject(const std::string& object,
                                     std::shared_ptr<std::vector<uint8_t>> vboData,
                                     const std::vector<std::string>& attribNames)
 {
+  /// \todo Turn into a message.
   StuObject& obj = mObjects.at(object);
   return obj.addVBO(vboData, attribNames);
 }
@@ -78,13 +90,15 @@ void StuInterface::addGeomPassToObject(const std::string& object,
                                        size_t vboID,
                                        size_t iboID)
 {
+  /// \todo Turn into a message.
   StuObject& obj = mObjects.at(object);
-  obj.addGeomPass(pass, program, vboID, iboID);
+  obj.addPass(pass, program, vboID, iboID);
 }
 
 //------------------------------------------------------------------------------
 void StuInterface::addObject(const std::string& object)
 {
+  /// \todo Turn into a message.
   if (mObjects.find(object) != mObjects.end())
     throw Duplicate("There already exists an object by that name!");
 
@@ -98,6 +112,9 @@ void StuInterface::addPassUniformInternal(const std::string& object,
                                           const std::string& uniformName,
                                           std::unique_ptr<AbstractUniformStateItem> item)
 {
+  /// \todo Turn into a message.
+  StuObject& obj = mObjects.at(object);
+  obj.addPassUniform(pass, uniformName, item);
 }
 
 //------------------------------------------------------------------------------
@@ -105,14 +122,19 @@ void StuInterface::addPersistentShader(const std::string& programName,
                                        const std::string& vertexShader,
                                        const std::string& fragmentShader)
 {
+  /// \todo Turn into a message.
+  std::list<std::tuple<std::string, GLenum>> shaders;
+  shaders.push_back(make_tuple(vertexShader, GL_VERTEX_SHADER));
+  shaders.push_back(make_tuple(fragmentShader, GL_FRAGMENT_SHADER));
+  std::shared_ptr<ShaderProgramAsset> shader = 
+      mHub.getShaderProgramManager().loadProgram("UniformColor", shaders);
 }
 
 //------------------------------------------------------------------------------
 void StuInterface::addPersistentShader(const std::string& programName,
-                                       const std::string& vertexShader,
-                                       const std::string& geometryShader,
-                                       const std::string& fragmentShader)
+                                       const std::vector<std::tuple<std::string, SHADER_TYPES>>& shaders)
 {
+
 }
 
 //------------------------------------------------------------------------------

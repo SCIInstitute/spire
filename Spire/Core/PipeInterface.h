@@ -32,8 +32,12 @@
 #ifndef SPIRE_CORE_PIPEINTERFACE_H
 #define SPIRE_CORE_PIPEINTERFACE_H
 
+#include "../Interface.h"
+
 namespace Spire
 {
+
+class Hub;
 
 /// \todo Figure out the basic interface to have for pipes.
 ///       After iterating through a few pipe implementations, the details
@@ -43,9 +47,15 @@ namespace Spire
 class PipeInterface
 {
 public:
-  PipeInterface()           {}
-  virtual ~PipeInterface()  {}
+  PipeInterface(Interface& iface) : 
+      mSubmittedToSpire(false),
+      mHub(*iface.mHub)
+  {}
+  virtual ~PipeInterface()                    {}
   
+  /// Called first thing when the renderer receives the pipe.
+  virtual void initOnRenderThread() = 0;
+
   /// \todo Figure out time allocations for renderers. We need a way of 
   ///       compositing frames together if it's clear that a pass is taking
   ///       too long. This may necessitate the pipes working together.
@@ -55,6 +65,25 @@ public:
   ///       working correctly, but that is not going to happen in the short run.
   /// Perform a rendering pass.
   virtual void doPass() = 0;
+
+  /// Enables the 'submitted to spire' flag.
+  void setSubmitted(bool submitted)   {mSubmittedToSpire = false;}
+
+  /// Returns whether or not this interface has been submitted to spire.
+  bool hasBeenSubmitted()             {return mSubmittedToSpire;}
+
+protected:
+  /// Reference to the hub class. Should only be used when on the renderer
+  /// thread.
+  Hub&  mHub;
+
+private:
+
+  /// Simple boolean value indicating whether or not this pipe has been 
+  /// submitted to Spire. If it has not, then we should error out when making
+  /// 'thread safe' calls as the spire thread will not recognize them.
+  bool mSubmittedToSpire;
+
 };
 
 } // namespace Spire

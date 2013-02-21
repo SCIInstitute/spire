@@ -116,10 +116,6 @@ class StuObject
 {
 public:
 
-  /// Adds a pass to the object.
-
-  /// Removes a pass from the object.
-
   /// Adds an object specific VBO. See StuInferface.
   size_t addVBO(std::shared_ptr<std::vector<uint8_t>> vboData,
                 const std::vector<std::string>& attribNames);
@@ -129,10 +125,18 @@ public:
                 StuInterface::IBO_TYPE type);
 
   /// Adds a geometry pass with the specified index / vertex buffer objects.
-  void addGeomPass(const std::string& pass,
-                   const std::string& program,
-                   size_t vboID,
-                   size_t iboID);
+  void addPass(const std::string& pass,
+               const std::string& program,
+               size_t vboID,
+               size_t iboID);
+
+  /// Removes a geometry pass from the object.
+  void removePass(const std::string& pass);
+
+  /// Adds a uniform to the pass.
+  void addPassUniform(const std::string& pass,
+                      const std::string uniformName,
+                      std::unique_ptr<AbstractUniformStateItem> item);
 
 protected:
 

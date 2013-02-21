@@ -147,6 +147,7 @@ void Interface::renderHACKSetUseZTest(bool ztest)
 //------------------------------------------------------------------------------
 void Interface::pipePushBack(std::shared_ptr<PipeInterface> pipe)
 {
+  pipe->setSubmitted(true);
   Hub::RemoteFunction fun =
       std::bind(InterfaceImplementation::pipePushBack,
                 _1, pipe);
@@ -157,6 +158,7 @@ void Interface::pipePushBack(std::shared_ptr<PipeInterface> pipe)
 //------------------------------------------------------------------------------
 void Interface::pipeRemove(std::shared_ptr<PipeInterface> pipe)
 {
+  pipe->setSubmitted(false);
   Hub::RemoteFunction fun =
       std::bind(InterfaceImplementation::pipeRemove,
                 _1, pipe);

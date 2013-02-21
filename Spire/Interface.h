@@ -39,12 +39,12 @@
 
 #include "Context.h"
 #include "Core/Math.h"  // Necessary in order to communicate vector types.
-#include "Core/PipeInterface.h"
 
 namespace Spire {
 
 class Hub;
 class HubThread;
+class PipeInterface;
 
 /// Interface to the renderer.
 /// A new interface will need to be created per-context.
@@ -186,8 +186,11 @@ public:
 
 private:
 
-  std::unique_ptr<Hub>                      mHub;           ///< Rendering hub.
+  std::unique_ptr<Hub>      mHub;   ///< Rendering hub.
 
+  friend class PipeInterface;       // Technically, only PipeInterface's constructor
+                                    // needs friend status. Needed to extract hub
+                                    // reference when the pipe is created.
 };
 
 } // namespace spire

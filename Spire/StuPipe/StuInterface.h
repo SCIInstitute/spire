@@ -34,6 +34,7 @@
 
 #include <utility>
 #include <vector>
+#include <list>
 #include <string>
 #include <unordered_map>
 #include "../Core/PipeInterface.h"
@@ -42,7 +43,19 @@
 
 namespace Spire {
 
+class Hub;
 class StuObject;
+class ShaderProgramAsset;
+
+/// \todo For other pipes. If we have access to OpenGL4.2 features, use image
+///       load store to implement Order Independent Transparency using
+///       per-pixel linked lists. Requires atomic operations in the GPU.
+///       Compositing will become very important in this renderer. We can only
+///       guarantee a number of fragments in the shader.
+
+/// \todo Before implementing an OIT renderer, a compositing renderer needs to
+///       be built first. We can sort objects in a backt-to-front manner and
+///       render them appropriately.
 
 /// First pass, incredibly stupid pipe interface.
 /// No frame buffer management or advanced rendering (although this kind of
@@ -51,14 +64,34 @@ class StuObject;
 class StuInterface : public PipeInterface
 {
 public:
-  StuInterface();
+  StuInterface(Interface& iface);
   virtual ~StuInterface();
   
+  /// Initialization as performed on the renderer thread.
+  void initOnRenderThread() override;
+
+  /// The different depths supported by the IBO.
   enum IBO_TYPE
   {
     IBO_8BIT,
     IBO_16BIT,
     IBO_32BIT,
+  };
+
+  /// Generally not needed at this stage.
+  /// \todo Add supported OpenGL version to spire. This will allow us to 
+  ///       determine what shaders we should us.
+  enum SHADER_TYPES
+  {
+    // Programmable pipeline
+    VERTEX_SHADER,          // Supported as of OpenGL 2.0
+    TESSELATION_CONTROL,    // Supported as of OpenGL 4.0
+    TESSELATION_EVALUATION, // Supported as of OpenGL 4.0
+    GEOMETRY_SHADER,        // Supported as of OpenGL 3.2
+    FRAGMENT_SHADER,        // Supported as of OpenGL 2.0
+
+    // Abstract
+    COMPUTE_SHADER,         // Supported as of OpenGL 4.3
   };
 
   //============================================================================
@@ -168,18 +201,19 @@ public:
   ///       pipe itself. That way, it's easier to detect OpenGL version problems
   ///       and other things.
 
-  /// Adds a persistent shader under the name 'programName'.
+  /// Adds a persistent shader under the name 'programName'. Default vertex and
+  /// fragment shader.
   void addPersistentShader(const std::string& programName,
                            const std::string& vertexShader,
                            const std::string& fragmentShader);
 
-  /// \todo Figure out if the platform supports geometry shaders and expose
-  ///       this somehow. There should be a fallback shader if the platform
-  ///       does not support geometry shaders.
+  /// You can build any shader program you want using this method.
+  /// Before you use this function, ensure that the necessary features are
+  /// supported by the user's graphics card.
+  /// \param shaders  First tuple argument is the shader program file, the 
+  ///                 second is the type of shader.
   void addPersistentShader(const std::string& programName,
-                           const std::string& vertexShader,
-                           const std::string& geometryShader,
-                           const std::string& fragmentShader);
+                           const std::vector<std::tuple<std::string, SHADER_TYPES>>& shaders);
 
   //============================================================================
   // NOT THREAD SAFE
@@ -197,8 +231,8 @@ private:
                               std::unique_ptr<AbstractUniformStateItem> item);
 
   /// Object map.
-  std::unordered_map<std::string, StuObject> mObjects;
-
+  std::unordered_map<std::string, StuObject>      mObjects;
+  std::list<std::shared_ptr<ShaderProgramAsset>>  mPersistentShaders;
 };
 
 } // namespace Spire
