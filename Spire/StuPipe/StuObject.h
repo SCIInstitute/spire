@@ -136,7 +136,7 @@ public:
   /// Adds a uniform to the pass.
   void addPassUniform(const std::string& pass,
                       const std::string uniformName,
-                      std::unique_ptr<AbstractUniformStateItem> item);
+                      std::unique_ptr<AbstractUniformStateItem>&& item);
 
 protected:
 

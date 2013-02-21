@@ -110,11 +110,12 @@ void StuInterface::addObject(const std::string& object)
 void StuInterface::addPassUniformInternal(const std::string& object,
                                           const std::string& pass,
                                           const std::string& uniformName,
-                                          std::unique_ptr<AbstractUniformStateItem> item)
+                                          std::unique_ptr<AbstractUniformStateItem>&& item)
 {
   /// \todo Turn into a message.
   StuObject& obj = mObjects.at(object);
-  obj.addPassUniform(pass, uniformName, item);
+  // Move is not necessary, but makes things more clear.
+  obj.addPassUniform(pass, uniformName, std::move(item));
 }
 
 //------------------------------------------------------------------------------

@@ -228,7 +228,7 @@ private:
   void addPassUniformInternal(const std::string& object,
                               const std::string& pass,
                               const std::string& uniformName,
-                              std::unique_ptr<AbstractUniformStateItem> item);
+                              std::unique_ptr<AbstractUniformStateItem>&& item);
 
   /// Object map.
   std::unordered_map<std::string, StuObject>      mObjects;
