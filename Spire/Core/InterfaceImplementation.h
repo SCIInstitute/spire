@@ -124,12 +124,10 @@ private:
   /// \todo Change to boost <url:http://www.boost.org/doc/libs/1_53_0/doc/html/lockfree.html> 
   ///       Wouldn't have to deal with the limit to message size...
   typedef CircularFifo<ThreadMessage,256> MessageQueue;
-#else
-  typedef std::queue<ThreadMessage>       MessageQueue;
+  MessageQueue    mQueue;
 #endif
 
-  MessageQueue                      mQueue;
-  Hub&                              mHub;
+  Hub&            mHub;
 };
 
 } // namespace Spire
