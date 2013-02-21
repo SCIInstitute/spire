@@ -59,10 +59,12 @@ void StuInterface::doPass()
   
 }
 
+
 //------------------------------------------------------------------------------
-size_t StuInterface::addIBOToObject(const std::string& object,
-                                    std::shared_ptr<std::vector<uint8_t>> iboData,
-                                    IBO_TYPE type)
+void StuInterface::addIBOToObject(const std::string& object,
+                                  const std::string& name,
+                                  std::shared_ptr<std::vector<uint8_t>> iboData,
+                                  IBO_TYPE type)
 {
   /// \todo Turn into a message (execute call immediately if we are running
   ///       a non-threaded Spire -- very useful if unit testing).
@@ -70,17 +72,18 @@ size_t StuInterface::addIBOToObject(const std::string& object,
   // The 'at' function will throw std::out_of_range an exception if object
   // doesn't exist.
   StuObject& obj = mObjects.at(object);
-  return obj.addIBO(iboData, type);
+  obj.addIBO(name, iboData, type);
 }
 
 //------------------------------------------------------------------------------
-size_t StuInterface::addVBOToObject(const std::string& object,
-                                    std::shared_ptr<std::vector<uint8_t>> vboData,
-                                    const std::vector<std::string>& attribNames)
+void StuInterface::addVBOToObject(const std::string& object,
+                                  const std::string& name,
+                                  std::shared_ptr<std::vector<uint8_t>> vboData,
+                                  const std::vector<std::string>& attribNames)
 {
   /// \todo Turn into a message.
   StuObject& obj = mObjects.at(object);
-  return obj.addVBO(vboData, attribNames);
+  return obj.addVBO(name, vboData, attribNames);
 }
 
 //------------------------------------------------------------------------------

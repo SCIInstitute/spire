@@ -117,12 +117,14 @@ class StuObject
 public:
 
   /// Adds an object specific VBO. See StuInferface.
-  size_t addVBO(std::shared_ptr<std::vector<uint8_t>> vboData,
-                const std::vector<std::string>& attribNames);
+  void addVBO(const std::string& name,
+              std::shared_ptr<std::vector<uint8_t>> vboData,
+              const std::vector<std::string>& attribNames);
 
   /// Adds an object specific IBO. See StuInferface.
-  size_t addIBO(std::shared_ptr<std::vector<uint8_t>> vboData,
-                StuInterface::IBO_TYPE type);
+  void addIBO(const std::string& name,
+              std::shared_ptr<std::vector<uint8_t>> vboData,
+              StuInterface::IBO_TYPE type);
 
   /// Adds a geometry pass with the specified index / vertex buffer objects.
   void addPass(const std::string& pass,

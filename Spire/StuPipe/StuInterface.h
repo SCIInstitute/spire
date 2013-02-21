@@ -97,6 +97,7 @@ public:
   //============================================================================
   // THREAD SAFE - Remember, the same thread should always be calling spire.
   //============================================================================
+  // Most of these interfaces are implemented through the use of mutex
 
   //---------
   // Objects
@@ -111,6 +112,9 @@ public:
   /// \param  object        Name of the object to add the VBO to. The VBO will
   ///                       be destroyed when the object is removed. If you want
   ///                       to reuse VBO / IBOs add passes to this object.
+  /// \param  name          Name of the VBO. See addIBOToObject for a full
+  ///                       description of why you are required to name your
+  ///                       VBO.
   /// \param  vboData       VBO data. This pointer will NOT be stored inside of
   ///                       spire. Unless there is a reference to it out side
   ///                       of spire, it will be destroyed.
@@ -119,11 +123,10 @@ public:
   ///                       attributes match up with what you have provided in
   ///                       in the VBO. This only checked when a call to
   ///                       addGeomPassToObject is made.
-  /// \return The VBO identifier if the VBO was successfully created. Otherwise
-  ///         an exception is thrown.
-  size_t addVBOToObject(const std::string& object,
-                        std::shared_ptr<std::vector<uint8_t>> vboData,
-                        const std::vector<std::string>& attribNames);
+  void addVBOToObject(const std::string& object,
+                      const std::string& name,
+                      std::shared_ptr<std::vector<uint8_t>> vboData,
+                      const std::vector<std::string>& attribNames);
 
   /// Adds an IBO. This IBO can be re-used by adding passes to the object.
   /// Throws an std::out_of_range exception if the object is not found in the 
@@ -131,15 +134,21 @@ public:
   /// \param  object        Name of the object to add the VBO to. The VBO will
   ///                       be destroyed when the object is removed. If you want
   ///                       to reuse VBO / IBOs add passes to this object.
+  /// \param  name          Name of the IBO. You might find it odd that you are
+  ///                       naming an IBO, and in certain terms you are right.
+  ///                       IBOs are named here to avoid returning an identifier
+  ///                       to the IBO. This would require a mutex lock (at
+  ///                       the very least) *and* code would need to be run on
+  ///                       the rendering thread since that is where the OpenGL
+  ///                       context is current.
   /// \param  iboData       IBO data. This pointer will NOT be stored inside of
   ///                       spire. Unless there is a reference to it out side
   ///                       of spire, it will be destroyed.
   /// \param  type          Specifies what kind of IBO iboData represents.
-  /// \return The IBO identifier if the IBO was successfully created. Otherwise
-  ///         an exception is thrown.
-  size_t addIBOToObject(const std::string& object,
-                        std::shared_ptr<std::vector<uint8_t>> iboData,
-                        IBO_TYPE type);
+  void addIBOToObject(const std::string& object,
+                      const std::string& name,
+                      std::shared_ptr<std::vector<uint8_t>> iboData,
+                      IBO_TYPE type);
 
   /// Completely removes 'object' from the pipe. This includes removing all of
   /// the object's passes as well.
