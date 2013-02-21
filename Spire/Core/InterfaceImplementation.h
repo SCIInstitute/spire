@@ -50,7 +50,7 @@ namespace Spire
 class InterfaceImplementation
 {
 public:
-  InterfaceImplementation()           {}
+  InterfaceImplementation(Hub& hub);
   virtual ~InterfaceImplementation()  {}
   
   /// SHOULD ONLY be called by the thread associated with Queue.
@@ -61,7 +61,7 @@ public:
 
   /// SHOULD ONLY be called by the spire thread!
   /// Will execute all commands the the queue associated with Interface::THREAD.
-  void executeQueue(Hub& hub);
+  void executeQueue();
 
   //============================================================================
   // IMPLEMENTATION
@@ -129,6 +129,7 @@ private:
 #endif
 
   MessageQueue                      mQueue;
+  Hub&                              mHub;
 };
 
 } // namespace Spire

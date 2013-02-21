@@ -37,32 +37,36 @@ namespace Spire {
 
 
 //------------------------------------------------------------------------------
+InterfaceImplementation::InterfaceImplementation(Hub& hub) :
+    mHub(hub)
+{
+}
+
+//------------------------------------------------------------------------------
 bool InterfaceImplementation::addFunctionToQueue(const Hub::RemoteFunction& fun)
 {
 #ifdef SPIRE_USE_STD_THREADS
   return mQueue.push(ThreadMessage(fun));
 #else
-  mQueue.push(ThreadMessage(fun));
+  // Call the function immediately. This case (without std threads) will be 
+  // used as our synchronized test harness.
+  fun(hub);
   return true;
 #endif
 }
 
 //------------------------------------------------------------------------------
-void InterfaceImplementation::executeQueue(Hub& hub)
+void InterfaceImplementation::executeQueue()
 {
 #ifdef SPIRE_USE_STD_THREADS
   ThreadMessage msg;
   while (mQueue.pop(msg))
   {
-    msg.execute(hub);
+    msg.execute(mHub);
     msg.clear();
   }
 #else
-  while (!mQueue.empty())
-  {
-    mQueue.front().execute(hub);
-    mQueue.pop();
-  }
+  // The functions were already executed.
 #endif
 }
 

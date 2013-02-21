@@ -58,7 +58,7 @@ Hub::Hub(std::shared_ptr<Context> context,
     mShaderMan(*this),
     mShaderProgramMan(*this),
     mShaderDirs(shaderDirs),
-    mInterfaceImpl(new InterfaceImplementation()),
+    mInterfaceImpl(new InterfaceImplementation(*this)),
 #ifdef SPIRE_USE_STD_THREADS
     mThreadKill(false),
     mThreadRunning(false),
@@ -181,7 +181,7 @@ void Hub::doFrame()
   // Question: How do we split up the pipes? Does everything happen in the
   // stupipe, when we route through the stupipe? It almost appears that it has
   // to. Should we just build the pipe and see where it leads us to?
-  mInterfaceImpl->executeQueue(*this);
+  mInterfaceImpl->executeQueue();
 
   mPipe->doFrame();
 
