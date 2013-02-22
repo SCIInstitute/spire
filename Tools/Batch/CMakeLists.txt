@@ -112,5 +112,5 @@ add_dependencies(spirebatch Spire)
 
 target_link_libraries(spirebatch 
   Spire 
-  ${OPENGL_LIBRARIES}
+  ${OPENGL_LIBRARIES})
 
