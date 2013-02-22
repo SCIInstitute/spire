@@ -106,6 +106,13 @@ public:
   /// Adds a renderable 'object' to the scene.
   void addObject(const std::string& object);
 
+  /// Completely removes 'object' from the pipe. This includes removing all of
+  /// the object's passes as well.
+  /// Throws an std::out_of_range exception if the object is not found in the 
+  /// system.
+  void removeObject(const std::string& object);
+
+
   /// Adds a VBO. This VBO can be re-used by adding passes to the object.
   /// Throws an std::out_of_range exception if the object is not found in the 
   /// system.
@@ -150,12 +157,6 @@ public:
                       std::shared_ptr<std::vector<uint8_t>> iboData,
                       IBO_TYPE type);
 
-  /// Completely removes 'object' from the pipe. This includes removing all of
-  /// the object's passes as well.
-  /// Throws an std::out_of_range exception if the object is not found in the 
-  /// system.
-  void removeObject(const std::string& object);
-
   /// Adds a geometry pass to an object given by the identifier 'object'.
   /// Throws an std::out_of_range exception if the object is not found in the 
   /// system. If there already exists a geometry pass, it throws a 'Duplicate' 
@@ -170,8 +171,8 @@ public:
   void addGeomPassToObject(const std::string& object,
                            const std::string& pass,
                            const std::string& program,
-                           size_t vboID,
-                           size_t iboID);
+                           const std::string& vboName,
+                           const std::string& iboName);
 
   /// Removes a geometry pass from the object.
   /// Throws an std::out_of_range exception if the object or pass is not found 
@@ -193,8 +194,8 @@ public:
                       T uniformData)
   {
     addPassUniformInternal(object, pass, uniformName, 
-                           std::unique_ptr<AbstractUniformStateItem>(
-                               UniformStateItem<T>(uniformData)));
+                           std::shared_ptr<AbstractUniformStateItem>(
+                               new UniformStateItem<T>(uniformData)));
   }
 
   //----------
@@ -237,7 +238,7 @@ private:
   void addPassUniformInternal(const std::string& object,
                               const std::string& pass,
                               const std::string& uniformName,
-                              std::unique_ptr<AbstractUniformStateItem>&& item);
+                              std::shared_ptr<AbstractUniformStateItem> item);
 
   /// Object map.
   std::unordered_map<std::string, StuObject>      mObjects;
@@ -252,6 +253,8 @@ private:
   /// will still be valid when execution reaches the renderer thread.
   /// (no stack variables allowed).
   /// @{
+  static void addObjectImpl(Hub& hub, StuInterface* iface, std::string object);
+
   static void addIBOToObjectImpl(Hub& hub, StuInterface* iface,
                                  std::string object, std::string name,
                                  std::shared_ptr<std::vector<uint8_t>> iboData,
@@ -261,6 +264,30 @@ private:
                                  std::string object, std::string name,
                                  std::shared_ptr<std::vector<uint8_t>> vboData,
                                  std::vector<std::string> attribNames);
+
+  static void addGeomPassToObjectImpl(Hub& hub, StuInterface* iface,
+                                      std::string object,
+                                      std::string pass,
+                                      std::string program,
+                                      std::string vboID,
+                                      std::string iboID);
+
+  static void addPassUniformInternalImpl(Hub& hub, StuInterface* iface,
+                                         std::string object,
+                                         std::string pass,
+                                         std::string uniformName,
+                                         std::shared_ptr<AbstractUniformStateItem> item);
+
+  static void removeGeomPassFromObjectImpl(Hub& hub, StuInterface* iface,
+                                           std::string object,
+                                           std::string pass);
+
+  static void removeObjectImpl(Hub& hub, StuInterface* iface,
+                               std::string object);
+
+  static void addPersistentShaderImpl(Hub& hub, StuInterface* iface,
+                                      std::string programName,
+                                      std::vector<std::tuple<std::string, SHADER_TYPES>> shaders);
   /// @}
 };
 

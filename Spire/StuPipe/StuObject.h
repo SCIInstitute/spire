@@ -129,8 +129,8 @@ public:
   /// Adds a geometry pass with the specified index / vertex buffer objects.
   void addPass(const std::string& pass,
                const std::string& program,
-               size_t vboID,
-               size_t iboID);
+               const std::string& vboName,
+               const std::string& iboName);
 
   /// Removes a geometry pass from the object.
   void removePass(const std::string& pass);
@@ -138,7 +138,7 @@ public:
   /// Adds a uniform to the pass.
   void addPassUniform(const std::string& pass,
                       const std::string uniformName,
-                      std::unique_ptr<AbstractUniformStateItem>&& item);
+                      std::shared_ptr<AbstractUniformStateItem> item);
 
 protected:
 

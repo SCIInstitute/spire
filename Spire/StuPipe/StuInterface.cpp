@@ -86,6 +86,9 @@ void StuInterface::addIBOToObject(const std::string& object,
   mHub.addFunctionToThreadQueue(fun);
 }
 
+
+
+
 //------------------------------------------------------------------------------
 void StuInterface::addVBOToObjectImpl(Hub& hub, StuInterface* iface,
                                       std::string object, std::string name,
@@ -108,39 +111,160 @@ void StuInterface::addVBOToObject(const std::string& object,
   mHub.addFunctionToThreadQueue(fun);
 }
 
+
+//------------------------------------------------------------------------------
+void StuInterface::addGeomPassToObjectImpl(Hub& hub, StuInterface* iface,
+                                           std::string object,
+                                           std::string pass,
+                                           std::string program,
+                                           std::string vboName,
+                                           std::string iboName)
+{
+  /// \todo Turn into a message.
+  StuObject& obj = iface->mObjects.at(object);
+  obj.addPass(pass, program, vboName, iboName);
+}
+
+
 //------------------------------------------------------------------------------
 void StuInterface::addGeomPassToObject(const std::string& object,
                                        const std::string& pass,
                                        const std::string& program,
-                                       size_t vboID,
-                                       size_t iboID)
+                                       const std::string& vboName,
+                                       const std::string& iboName)
 {
-  /// \todo Turn into a message.
-  StuObject& obj = mObjects.at(object);
-  obj.addPass(pass, program, vboID, iboID);
+  Hub::RemoteFunction fun =
+      std::bind(addGeomPassToObjectImpl, _1, this, object, pass, program, 
+                vboName, iboName);
+  mHub.addFunctionToThreadQueue(fun);
+}
+
+
+
+
+
+
+
+//------------------------------------------------------------------------------
+void StuInterface::removeGeomPassFromObjectImpl(Hub& hub, StuInterface* iface,
+                                                std::string object,
+                                                std::string pass)
+{
+  StuObject& obj = iface->mObjects.at(object);
+  obj.removePass(pass);
+}
+
+
+//------------------------------------------------------------------------------
+void StuInterface::removeGeomPassFromObject(const std::string& object,
+                                            const std::string& pass)
+{
+  Hub::RemoteFunction fun =
+      std::bind(removeGeomPassFromObjectImpl, _1, this, object, pass);
+  mHub.addFunctionToThreadQueue(fun);
+}
+
+
+
+
+
+
+//------------------------------------------------------------------------------
+void StuInterface::addObjectImpl(Hub& hub, StuInterface* iface, std::string object)
+{
+  if (iface->mObjects.find(object) != iface->mObjects.end())
+    throw Duplicate("There already exists an object by that name!");
+
+  StuObject obj;
+  iface->mObjects[object] = std::move(obj);
 }
 
 //------------------------------------------------------------------------------
 void StuInterface::addObject(const std::string& object)
 {
-  /// \todo Turn into a message.
-  if (mObjects.find(object) != mObjects.end())
-    throw Duplicate("There already exists an object by that name!");
+  Hub::RemoteFunction fun =
+      std::bind(addObjectImpl, _1, this, object);
+  mHub.addFunctionToThreadQueue(fun);
+}
 
-  StuObject obj;
-  mObjects[object] = std::move(obj);
+
+
+//------------------------------------------------------------------------------
+void StuInterface::removeObjectImpl(Hub& hub, StuInterface* iface,
+                                    std::string object)
+{
+  if (iface->mObjects.find(object) == iface->mObjects.end())
+    throw std::range_error("Object to remove does not exist!");
+
+  iface->mObjects.erase(object);
+}
+
+//------------------------------------------------------------------------------
+void StuInterface::removeObject(const std::string& object)
+{
+  Hub::RemoteFunction fun =
+      std::bind(removeObjectImpl, _1, this, object);
+  mHub.addFunctionToThreadQueue(fun);
+}
+
+
+
+
+
+//------------------------------------------------------------------------------
+void StuInterface::addPassUniformInternalImpl(Hub& hub, StuInterface* iface,
+                                              std::string object,
+                                              std::string pass,
+                                              std::string uniformName,
+                                              std::shared_ptr<AbstractUniformStateItem> item)
+{
+  StuObject& obj = iface->mObjects.at(object);
+  obj.addPassUniform(pass, uniformName, item);
 }
 
 //------------------------------------------------------------------------------
 void StuInterface::addPassUniformInternal(const std::string& object,
                                           const std::string& pass,
                                           const std::string& uniformName,
-                                          std::unique_ptr<AbstractUniformStateItem>&& item)
+                                          std::shared_ptr<AbstractUniformStateItem> item)
 {
-  /// \todo Turn into a message.
-  StuObject& obj = mObjects.at(object);
-  // Move is not necessary, but makes things more clear.
-  obj.addPassUniform(pass, uniformName, std::move(item));
+  Hub::RemoteFunction fun =
+      std::bind(addPassUniformInternalImpl, _1, this, object, pass, uniformName, item);
+  mHub.addFunctionToThreadQueue(fun);
+}
+
+
+
+
+//------------------------------------------------------------------------------
+void StuInterface::addPersistentShaderImpl(Hub& hub, StuInterface* iface,
+                                           std::string programName,
+                                           std::vector<std::tuple<std::string, SHADER_TYPES>> tempShaders)
+{
+  std::list<std::tuple<std::string, GLenum>> shaders;
+  for (auto it = shaders.begin(); it != shaders.end(); ++it)
+  {
+    GLenum glType = GL_VERTEX_SHADER;
+    switch (std::get<1>(*it))
+    {
+      case VERTEX_SHADER:
+        glType = GL_VERTEX_SHADER;
+        break;
+
+      case FRAGMENT_SHADER:
+        glType = GL_FRAGMENT_SHADER;
+        break;
+
+      default:
+        throw UnsupportedException("This shader is not supported yet.");
+        break;
+    }
+    shaders.push_back(make_tuple(std::get<0>(*it), glType));
+  }
+
+  std::shared_ptr<ShaderProgramAsset> shader = 
+      iface->mHub.getShaderProgramManager().loadProgram("UniformColor", shaders);
+  iface->mPersistentShaders.push_back(shader);
 }
 
 //------------------------------------------------------------------------------
@@ -148,30 +272,23 @@ void StuInterface::addPersistentShader(const std::string& programName,
                                        const std::string& vertexShader,
                                        const std::string& fragmentShader)
 {
-  /// \todo Turn into a message.
-  std::list<std::tuple<std::string, GLenum>> shaders;
-  shaders.push_back(make_tuple(vertexShader, GL_VERTEX_SHADER));
-  shaders.push_back(make_tuple(fragmentShader, GL_FRAGMENT_SHADER));
-  std::shared_ptr<ShaderProgramAsset> shader = 
-      mHub.getShaderProgramManager().loadProgram("UniformColor", shaders);
+  std::vector<std::tuple<std::string, SHADER_TYPES>> shaders;
+  shaders.push_back(make_tuple(vertexShader, VERTEX_SHADER));
+  shaders.push_back(make_tuple(fragmentShader, FRAGMENT_SHADER));
+
+  Hub::RemoteFunction fun =
+      std::bind(addPersistentShaderImpl, _1, this, programName, shaders);
+  mHub.addFunctionToThreadQueue(fun);
 }
 
 //------------------------------------------------------------------------------
 void StuInterface::addPersistentShader(const std::string& programName,
                                        const std::vector<std::tuple<std::string, SHADER_TYPES>>& shaders)
 {
-
+  Hub::RemoteFunction fun =
+      std::bind(addPersistentShaderImpl, _1, this, programName, shaders);
+  mHub.addFunctionToThreadQueue(fun);
 }
 
-//------------------------------------------------------------------------------
-void StuInterface::removeGeomPassFromObject(const std::string& object,
-                                            const std::string& pass)
-{
-}
-
-//------------------------------------------------------------------------------
-void StuInterface::removeObject(const std::string& object)
-{
-}
 
 }
