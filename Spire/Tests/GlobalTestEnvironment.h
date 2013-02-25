@@ -3,7 +3,7 @@
 
    The MIT License
 
-   Copyright (c) 2008 Scientific Computing and Imaging Institute,
+   Copyright (c) 2013 Scientific Computing and Imaging Institute,
    University of Utah.
 
 
@@ -26,41 +26,47 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <cstdlib>
-#include <iostream>
+/// \author James Hughes
+/// \date   February 2013
+
+#ifndef SPIRE_TESTS_GLOBALTESTENVIRONMENT_H
+#define SPIRE_TESTS_GLOBALTESTENVIRONMENT_H
+
+#include <exception>
 
 #include "gtest/gtest.h"
-#include "GL/glew.h"
+#include "../Interface.h"
 
-#include "BatchContext.h"
-#include "Spire/Tests/GlobalTestEnvironment.h"
-
-// 'Exposed' function that the testing suite expects to exist.
-// Hands the current context over to the testing suite.
-std::shared_ptr<Spire::Context> getTestingContext()
+namespace Spire
 {
 
-}
-
-std::shared_ptr<Spire::BatchContext> createContext(uint32_t width, uint32_t height,
-                                                   int32_t color_bits,
-                                                   int32_t depth_bits,
-                                                   int32_t stencil_bits,
-                                                   bool double_buffer, bool visible)
+/// Abstract class expected to be initialized and placed in the google testing
+/// environment.
+class GlobalTestEnvironmentInterface : public ::testing::Environment
 {
-  std::shared_ptr<Spire::BatchContext> ctx(
-      Spire::BatchContext::Create(width,height, color_bits,depth_bits,stencil_bits, 
-                           double_buffer,visible));
-  ctx->isValid();
-  ctx->makeCurrent();
+public:
 
-  return ctx;
-}
+  static GlobalTestEnvironmentInterface* instance()
+  {
+    if (mInstance == nullptr)
+      throw std::runtime_error("Global test environment not initialized!");
+    return mInstance;
+  }
 
-int main(int argc, char** argv)
-{
-  // Create the context and run tests
-  ::testing::InitGoogleTest(&argc, argv);
-  return RUN_ALL_TESTS();
-}
+  virtual std::shared_ptr<Spire::Context> getContext() = 0;
 
+protected:
+
+  GlobalTestEnvironmentInterface()
+  {
+    if (mInstance != nullptr)
+      throw std::runtime_error("Global test environment has already been constructed!");
+    mInstance = this;
+  }
+  
+  static GlobalTestEnvironmentInterface* mInstance;
+};
+
+} // namespace Spire
+
+#endif 

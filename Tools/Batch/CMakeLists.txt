@@ -33,6 +33,10 @@ if (USE_SCIRUN_INTERFACE)
   add_definitions(-DSPIRE_USE_SCIRUN_INTERFACE)
 endif()
 
+# Include gtest
+add_definitions(-DGTEST_USE_OWN_TR1_TUPLE=1)
+include_directories(${BASE_SPIRE_DIR}/Spire/3rdParty/gtest/include ${BASE_SPIRE_DIR}/Spire)
+
 ########################################################################
 # Compiler settings
 
@@ -73,6 +77,10 @@ else()
   endif(WIN32)
 endif ()
 
+########################################################################
+# Google test must come after setting compiler flags.
+
+add_subdirectory(${BASE_SPIRE_DIR}/Spire/3rdParty/gtest ${BASE_SPIRE_DIR}/bin/gtest)
 
 ########################################################################
 # Setup source
@@ -84,14 +92,13 @@ set(CommonSources
   BatchContext.h
   main.cpp)
 
+set(GLOB TestSources
+  "${BASE_SPIRE_DIR}/Spire/Tests/*.cc"
+  "${BASE_SPIRE_DIR}/Spire/Tests/*.h"
+  }
+
 ########################################################################
 # Copy shaders to the target directory
-install(DIRECTORY ${BASE_SPIRE_DIR}/Spire/Shaders
-        DESTINATION ${CMAKE_INSTALL_DIR}/
-        FILE_PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ WORLD_READ
-        DIRECTORY_PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE
-                              GROUP_READ
-                              WORLD_READ WORLD_EXECUTE)
 
 # Copy shaders.
 file(COPY ${BASE_SPIRE_DIR}/Spire/Shaders/
@@ -106,11 +113,13 @@ file(COPY ${BASE_SPIRE_DIR}/Spire/Shaders/
 
 add_executable(spirebatch
   ${CommonSources}
+  ${TestSources}
   ${SpecificSources})
 
 add_dependencies(spirebatch Spire)
 
 target_link_libraries(spirebatch 
-  Spire 
+  Spire
+  gtest
   ${OPENGL_LIBRARIES})
 

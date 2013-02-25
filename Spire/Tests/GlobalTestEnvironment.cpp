@@ -3,7 +3,7 @@
 
    The MIT License
 
-   Copyright (c) 2008 Scientific Computing and Imaging Institute,
+   Copyright (c) 2013 Scientific Computing and Imaging Institute,
    University of Utah.
 
 
@@ -26,41 +26,14 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <cstdlib>
-#include <iostream>
+/// \author James Hughes
+/// \date   February 2013
 
-#include "gtest/gtest.h"
-#include "GL/glew.h"
+#include "GlobalTestEnvironment.h"
 
-#include "BatchContext.h"
-#include "Spire/Tests/GlobalTestEnvironment.h"
+namespace Spire {
 
-// 'Exposed' function that the testing suite expects to exist.
-// Hands the current context over to the testing suite.
-std::shared_ptr<Spire::Context> getTestingContext()
-{
+GlobalTestEnvironmentInterface* GlobalTestEnvironmentInterface::mInstance = nullptr;
 
-}
-
-std::shared_ptr<Spire::BatchContext> createContext(uint32_t width, uint32_t height,
-                                                   int32_t color_bits,
-                                                   int32_t depth_bits,
-                                                   int32_t stencil_bits,
-                                                   bool double_buffer, bool visible)
-{
-  std::shared_ptr<Spire::BatchContext> ctx(
-      Spire::BatchContext::Create(width,height, color_bits,depth_bits,stencil_bits, 
-                           double_buffer,visible));
-  ctx->isValid();
-  ctx->makeCurrent();
-
-  return ctx;
-}
-
-int main(int argc, char** argv)
-{
-  // Create the context and run tests
-  ::testing::InitGoogleTest(&argc, argv);
-  return RUN_ALL_TESTS();
-}
+} // Spire
 
