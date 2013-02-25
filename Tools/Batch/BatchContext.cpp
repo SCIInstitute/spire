@@ -31,7 +31,7 @@
 #include <iostream>
 #include <stdexcept>
 
-#include <GL/glew.h>
+#include "Spire/3rdParty/glew/include/GL/glew.h"
 
 #include "BatchContext.h"
 

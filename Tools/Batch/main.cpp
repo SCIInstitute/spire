@@ -30,36 +30,64 @@
 #include <iostream>
 
 #include "gtest/gtest.h"
-#include "GL/glew.h"
+#include "Spire/3rdParty/GLEW/include/GL/glew.h"
 
 #include "BatchContext.h"
 #include "Spire/Tests/GlobalTestEnvironment.h"
 
-// 'Exposed' function that the testing suite expects to exist.
-// Hands the current context over to the testing suite.
-std::shared_ptr<Spire::Context> getTestingContext()
+class TestEnvironment : public Spire::GlobalTestEnvironmentInterface
 {
+public:
+  TestEnvironment(uint32_t width, uint32_t height, 
+                  int32_t colorBits, int32_t depthBits, int32_t stencilBits,
+                  bool doubleBuffer, bool visible)
+  {
+    mContext = createContext(width, height, colorBits, depthBits, stencilBits,
+                             doubleBuffer, visible);
+  }
 
-}
 
-std::shared_ptr<Spire::BatchContext> createContext(uint32_t width, uint32_t height,
-                                                   int32_t color_bits,
-                                                   int32_t depth_bits,
-                                                   int32_t stencil_bits,
-                                                   bool double_buffer, bool visible)
-{
-  std::shared_ptr<Spire::BatchContext> ctx(
-      Spire::BatchContext::Create(width,height, color_bits,depth_bits,stencil_bits, 
-                           double_buffer,visible));
-  ctx->isValid();
-  ctx->makeCurrent();
+  /// Creates a context if one hasn't already been created and returns it.
+  /// Otherwise, it returns the currently active context.
+  std::shared_ptr<Spire::Context> getContext()
+  {
+    return std::dynamic_pointer_cast<Spire::Context>(mContext);
+  }
 
-  return ctx;
-}
+  /// Overrides from gtest
+  /// @{
+  void SetUp() override     {}
+  void TearDown() override  {}
+  /// @}
+
+private:
+  static std::shared_ptr<Spire::BatchContext> createContext(
+      uint32_t width, uint32_t height,
+      int32_t colorBits, int32_t depthBits, int32_t stencilBits,
+      bool doubleBuffer, bool visible)
+  {
+    std::shared_ptr<Spire::BatchContext> ctx(
+        Spire::BatchContext::Create(width,height,
+                                    colorBits,depthBits,stencilBits, 
+                                    doubleBuffer,visible));
+    ctx->isValid();
+    ctx->makeCurrent();
+
+    return ctx;
+  }
+
+  std::shared_ptr<Spire::BatchContext> mContext;
+};
+
 
 int main(int argc, char** argv)
 {
-  // Create the context and run tests
+  // Create the global testing environment.
+  ::testing::Environment* const testEnv = 
+      ::testing::AddGlobalTestEnvironment(
+          new TestEnvironment(640, 480, 32, 24, 8, true, false));
+
+  // Run the tests.
   ::testing::InitGoogleTest(&argc, argv);
   return RUN_ALL_TESTS();
 }

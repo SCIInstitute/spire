@@ -53,7 +53,7 @@ public:
     return mInstance;
   }
 
-  virtual std::shared_ptr<Spire::Context> getContext() = 0;
+  virtual std::shared_ptr<Spire::Context>   getContext() = 0;
 
 protected:
 

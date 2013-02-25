@@ -50,7 +50,7 @@ bool InterfaceImplementation::addFunctionToQueue(const Hub::RemoteFunction& fun)
 #else
   // Call the function immediately. This case (without std threads) will be 
   // used as our synchronized test harness.
-  fun(hub);
+  fun(mHub);
   return true;
 #endif
 }

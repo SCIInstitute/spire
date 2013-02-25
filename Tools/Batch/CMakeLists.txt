@@ -35,7 +35,7 @@ endif()
 
 # Include gtest
 add_definitions(-DGTEST_USE_OWN_TR1_TUPLE=1)
-include_directories(${BASE_SPIRE_DIR}/Spire/3rdParty/gtest/include ${BASE_SPIRE_DIR}/Spire)
+include_directories(${BASE_SPIRE_DIR}/Spire/3rdParty/gtest/include ${BASE_SPIRE_DIR})
 
 ########################################################################
 # Compiler settings
@@ -87,15 +87,15 @@ add_subdirectory(${BASE_SPIRE_DIR}/Spire/3rdParty/gtest ${BASE_SPIRE_DIR}/bin/gt
 
 # Setup spire test sources. Even though this is a batch renderer, this is
 # a good test of concept.
-set(CommonSources 
-  BatchContext.cpp 
+set(CommonSources
+  BatchContext.cpp
   BatchContext.h
   main.cpp)
 
 set(GLOB TestSources
   "${BASE_SPIRE_DIR}/Spire/Tests/*.cc"
   "${BASE_SPIRE_DIR}/Spire/Tests/*.h"
-  }
+  )
 
 ########################################################################
 # Copy shaders to the target directory

@@ -91,16 +91,17 @@ bool NSContext::isValid() const
 }
 
 //------------------------------------------------------------------------------
-bool NSContext::makeCurrent()
+void NSContext::makeCurrent()
 {
   [mCI->openGLContext makeCurrentContext];
-  return [NSOpenGLContext currentContext] == mCI->openGLContext;
+  if ([NSOpenGLContext currentContext] != mCI->openGLContext)
+    throw std::runtime_error("Unable to make context current!");
 }
 
 //------------------------------------------------------------------------------
-bool NSContext::swapBuffers()
+void NSContext::swapBuffers()
 {
-  return false;
+  // Buffers are autoswapped?
 }
 
 } // end namespace tuvok
