@@ -70,7 +70,8 @@ private:
         Spire::BatchContext::Create(width,height,
                                     colorBits,depthBits,stencilBits, 
                                     doubleBuffer,visible));
-    ctx->isValid();
+    if (ctx->isValid() == false)
+      throw std::runtime_error("Invalid context generated.");
     ctx->makeCurrent();
 
     return ctx;

@@ -36,7 +36,7 @@
 
 // OpenGL headers
 #ifdef SPIRE_USING_OSX
-  #include <GL/glew.h>
+  #include "3rdParty/GLEW/include/GL/glew.h"
 #elif SPIRE_USING_WIN
   #define NOMINMAX
   #include <Windows.h>

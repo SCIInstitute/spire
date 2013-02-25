@@ -35,7 +35,8 @@ endif()
 
 # Include gtest
 add_definitions(-DGTEST_USE_OWN_TR1_TUPLE=1)
-include_directories(${BASE_SPIRE_DIR}/Spire/3rdParty/gtest/include ${BASE_SPIRE_DIR})
+include_directories(${BASE_SPIRE_DIR}/Spire/3rdParty/gtest/include ${BASE_SPIRE_DIR} ${BASE_SPIRE_DIR}/Spire)
+# Note: The spire tests require that ${BASE_SPIRE_DIR}/Spire is in the include path.
 
 ########################################################################
 # Compiler settings
@@ -47,6 +48,10 @@ if (UNIX)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libc++")
     set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -stdlib=libc++")
     add_definitions(-DSPIRE_USING_OSX)
+
+    # Find necessary apple libraries (cocoa).
+    FIND_LIBRARY(COCOA_LIBRARY Cocoa)
+    set(OS_SPECIFIC_LIBS ${COCOA_LIBRARY})
 
     # Apple specific sources
     set (SpecificSources
@@ -92,7 +97,7 @@ set(CommonSources
   BatchContext.h
   main.cpp)
 
-set(GLOB TestSources
+file(GLOB TestSources
   "${BASE_SPIRE_DIR}/Spire/Tests/*.cc"
   "${BASE_SPIRE_DIR}/Spire/Tests/*.h"
   )
@@ -121,5 +126,6 @@ add_dependencies(spirebatch Spire)
 target_link_libraries(spirebatch 
   Spire
   gtest
-  ${OPENGL_LIBRARIES})
+  ${OPENGL_LIBRARIES}
+  ${OS_SPECIFIC_LIBS})
 
