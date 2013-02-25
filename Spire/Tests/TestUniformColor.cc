@@ -36,7 +36,26 @@
 #include "Core/GLMathUtil.h"
 #include "Core/Hub.h"
 
-namespace Spire {
+using namespace Spire;
+
+/// Tests the UniformColor.* shaders.
+class TestUniformColor
+{
+public:
+  TestUniformColor(Hub& hub);
+  virtual ~TestUniformColor();
+  
+  void doFrame();
+
+private:
+
+  GLuint              mVertexBuffer;
+  GLuint              mIndexBuffer;
+
+  Hub&                mHub;
+
+  std::shared_ptr<ShaderProgramAsset>  mShader;
+};
 
 //------------------------------------------------------------------------------
 TestUniformColor::TestUniformColor(Hub& hub) :
@@ -145,6 +164,4 @@ void TestUniformColor::doFrame()
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, stride, vVertices);
 	//glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 }
-
-} // end of namespace Spire
 
