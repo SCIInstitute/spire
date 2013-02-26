@@ -39,6 +39,9 @@
 #include "AppSpecific/SCIRun/SRInterface.h"
 #include "StuPipe/StuInterface.h"
 
+//------------------------------------------------------------------------------
+// Basic StuPipe test fixture.
+//------------------------------------------------------------------------------
 class StuPipeTestFixture : public testing::Test
 {
 public:
@@ -69,6 +72,9 @@ public:
   std::shared_ptr<Spire::StuInterface>  mStuInterface;
 };
 
+//------------------------------------------------------------------------------
+// SCIRun with StuPipe test fixture.
+//------------------------------------------------------------------------------
 class SCIRunStuPipeTestFixture : public testing::Test
 {
 public:

@@ -52,16 +52,8 @@ namespace {
 TEST_F(StuPipeTestFixture, TestObjectCreation)
 {
   // We have a fresh instance of spire with a StuPipe bound.
-
-
-  /// \todo Create a test fixture that creates a spire instance that we can use
-  ///       for testing purposes.
-
-  ///// Assuming StuInterface is already created somehow...
-  //StuInterface interface;
-
-  //interface.addObject("obj1");
-  //EXPECT_THROW(interface.addObject("obj1"), Duplicate);
+  mStuInterface->addObject("obj1");
+  EXPECT_THROW(mStuInterface->addObject("obj1"), Duplicate);
 }
 
 }
