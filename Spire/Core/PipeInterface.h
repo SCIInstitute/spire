@@ -53,8 +53,24 @@ public:
   {}
   virtual ~PipeInterface()                    {}
   
+  //============================================================================
+  // THREAD SAFE
+  //============================================================================
+
+  /// Enables the 'submitted to spire' flag.
+  void setSubmitted(bool submitted)   {mSubmittedToSpire = false;}
+
+  /// Returns whether or not this interface has been submitted to spire.
+  bool hasBeenSubmitted()             {return mSubmittedToSpire;}
+
+  //============================================================================
+  // NOT THREAD SAFE
+  //============================================================================
+  // Be sure that you are calling these functions from the thread upon which
+  // spire is executing. All non-thread-safe functions are prefixed with 'nts'.
+
   /// Called first thing when the renderer receives the pipe.
-  virtual void initOnRenderThread() = 0;
+  virtual void ntsInitOnRenderThread() = 0;
 
   /// \todo Figure out time allocations for renderers. We need a way of 
   ///       compositing frames together if it's clear that a pass is taking
@@ -64,13 +80,8 @@ public:
   ///       another pipe. Ideally, Tuvok would work together to get transparency
   ///       working correctly, but that is not going to happen in the short run.
   /// Perform a rendering pass.
-  virtual void doPass() = 0;
+  virtual void ntsDoPass() = 0;
 
-  /// Enables the 'submitted to spire' flag.
-  void setSubmitted(bool submitted)   {mSubmittedToSpire = false;}
-
-  /// Returns whether or not this interface has been submitted to spire.
-  bool hasBeenSubmitted()             {return mSubmittedToSpire;}
 
 protected:
   /// Reference to the hub class. Should only be used when on the renderer

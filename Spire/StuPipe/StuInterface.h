@@ -37,6 +37,7 @@
 #include <list>
 #include <string>
 #include <unordered_map>
+#include <map>
 #include "../Core/PipeInterface.h"
 #include "../Core/ShaderUniformStateManTemplates.h"
 #include "../Exceptions.h"
@@ -68,7 +69,7 @@ public:
   virtual ~StuInterface();
   
   /// Initialization as performed on the renderer thread.
-  void initOnRenderThread() override;
+  void ntsInitOnRenderThread() override;
 
   /// The different depths supported by the IBO.
   enum IBO_TYPE
@@ -228,10 +229,22 @@ public:
   //============================================================================
   // NOT THREAD SAFE
   //============================================================================
-  // Do not call any of these functions, they will be called automatically
-  // from within spire.
+  // Be sure that you are calling these functions from the thread upon which
+  // spire is executing. All non-thread-safe functions are prefixed with 'nts'.
 
-  void doPass() override;
+  /// Perform the entire pass.
+  /// \todo Add timing and other semantics here.
+  void ntsDoPass() override;
+
+  /// Obtain the current number of objects.
+  size_t ntsGetNumObjects() const         {return mNameToObject.size();}
+
+  /// Obtain the current rendering order.
+  int32_t ntsGetRenderOrder() const       {return mCurrentRenderOrder;}
+
+  /// Obtain the object associated with 'name'.
+  /// throws std::range_error if the object is not found.
+  std::shared_ptr<const StuObject> ntsGetObjectWithName(const std::string& name);
 
 private:
 
@@ -240,10 +253,18 @@ private:
                               const std::string& uniformName,
                               std::shared_ptr<AbstractUniformStateItem> item);
 
-  /// Object map.
-  std::unordered_map<std::string, StuObject>      mObjects;
+  /// This unordered map is a 1-1 mapping of object names onto objects.
+  std::unordered_map<std::string, std::shared_ptr<StuObject>>   mNameToObject;
+
+  /// Rendering order of objects. This map is not a well-defined function: one
+  /// value in the domain possibly maps to multiple values in the range.
+  std::multimap<int32_t, std::shared_ptr<StuObject>>  mRenderOrderToObjects;
+
+  /// List of shaders that are stored persistently by this pipe (will never
+  /// be GC'ed unless this pipe is destroyed).
   std::list<std::shared_ptr<ShaderProgramAsset>>  mPersistentShaders;
 
+  int32_t mCurrentRenderOrder;    ///< Current rendering order. Used for automatic order assignment.
 
 private:
 
@@ -256,18 +277,18 @@ private:
   static void addObjectImpl(Hub& hub, StuInterface* iface, std::string object);
 
   static void addIBOToObjectImpl(Hub& hub, StuInterface* iface,
-                                 std::string object, std::string name,
+                                 std::string objectName, std::string iboName,
                                  std::shared_ptr<std::vector<uint8_t>> iboData,
                                  StuInterface::IBO_TYPE type);
 
   static void addVBOToObjectImpl(Hub& hub, StuInterface* iface,
-                                 std::string object, std::string name,
+                                 std::string objectName, std::string vboName,
                                  std::shared_ptr<std::vector<uint8_t>> vboData,
                                  std::vector<std::string> attribNames);
 
   static void addGeomPassToObjectImpl(Hub& hub, StuInterface* iface,
-                                      std::string object,
-                                      std::string pass,
+                                      std::string objectName,
+                                      std::string passName,
                                       std::string program,
                                       std::string vboID,
                                       std::string iboID);

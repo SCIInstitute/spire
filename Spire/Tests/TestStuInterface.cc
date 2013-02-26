@@ -29,10 +29,13 @@
 /// \author James Hughes
 /// \date   February 2013
 
-#include <gtest/gtest.h>
+#include "gtest/gtest.h"
+
 #include "Common.h"
 #include "Exceptions.h"
 #include "StuPipe/StuInterface.h"
+#include "StuPipe/StuObject.h"
+
 #include "GlobalTestEnvironment.h"
 #include "CommonTestFixtures.h"
 
@@ -40,20 +43,56 @@ using namespace Spire;
 
 namespace {
 
-/// \todo Need an option to run OpenGL through a mocked up interface. This
-///       would also require mocking some GLEW functions as well.
-///       Or just have compiler switches that remove any OpenGL calls.
-///       Need to have this support to test beyond the basics.
-///       Possibly the best solution to all of this is to just create a valid
-///       OpenGL context when testing Spire as well. In this manner, I can
-///       delete / create Spire objects at will.
-
 //------------------------------------------------------------------------------
-TEST_F(StuPipeTestFixture, TestObjectCreation)
+TEST_F(StuPipeTestFixture, TestPublicInterface)
 {
+  // This test is contrived and won't yield that much knowledge if you are 
+  // attempting to learn the system.
+
+  // REMEMBER:  We will always run the tests synchronously! So we will be able
+  //            to catch errors immediately.
+
   // We have a fresh instance of spire with a StuPipe bound.
+  EXPECT_EQ(0, mStuInterface->ntsGetRenderOrder());
   mStuInterface->addObject("obj1");
   EXPECT_THROW(mStuInterface->addObject("obj1"), Duplicate);
+  EXPECT_EQ(1, mStuInterface->ntsGetNumObjects());
+
+  // Add a new obj2.
+  mStuInterface->addObject("obj2");
+  EXPECT_THROW(mStuInterface->addObject("obj1"), Duplicate);
+  EXPECT_THROW(mStuInterface->addObject("obj2"), Duplicate);
+  EXPECT_EQ(2, mStuInterface->ntsGetNumObjects());
+
+  // Remove and re-add object 1.
+  mStuInterface->removeObject("obj1");
+  EXPECT_EQ(1, mStuInterface->ntsGetNumObjects());
+  mStuInterface->addObject("obj1");
+  EXPECT_EQ(2, mStuInterface->ntsGetNumObjects());
+
+  // Add a new obj3.
+  mStuInterface->addObject("obj3");
+  EXPECT_THROW(mStuInterface->addObject("obj1"), Duplicate);
+  EXPECT_THROW(mStuInterface->addObject("obj2"), Duplicate);
+  EXPECT_THROW(mStuInterface->addObject("obj3"), Duplicate);
+  EXPECT_EQ(3, mStuInterface->ntsGetNumObjects());
+
+
+  // Verify rendering orders.
+
+  // Re-assign rendering orders for objects.
+}
+
+//------------------------------------------------------------------------------
+TEST_F(StuPipeTestFixture, TestTriangle)
+{
+  // Test the rendering of a triangle with StuPipe.
+}
+
+//------------------------------------------------------------------------------
+TEST_F(StuPipeTestFixture, TestCube)
+{
+  // Test the rendering of a cube with the StuPipe
 }
 
 }

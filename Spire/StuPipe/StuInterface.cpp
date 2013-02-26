@@ -43,7 +43,8 @@ namespace Spire {
 
 //------------------------------------------------------------------------------
 StuInterface::StuInterface(std::weak_ptr<Interface> iface) :
-    PipeInterface(iface)
+    PipeInterface(iface),
+    mCurrentRenderOrder(0)
 {
 }
 
@@ -53,26 +54,26 @@ StuInterface::~StuInterface()
 }
 
 //------------------------------------------------------------------------------
-void StuInterface::initOnRenderThread()
+void StuInterface::ntsInitOnRenderThread()
 {
 }
 
 //------------------------------------------------------------------------------
-void StuInterface::doPass()
+void StuInterface::ntsDoPass()
 {
   
 }
 
 //------------------------------------------------------------------------------
 void StuInterface::addIBOToObjectImpl(Hub& hub, StuInterface* iface,
-                                      std::string object, std::string name,
+                                      std::string objectName, std::string iboName,
                                       std::shared_ptr<std::vector<uint8_t>> iboData,
                                       StuInterface::IBO_TYPE type)
 {
   // The 'at' function will throw std::out_of_range an exception if object
   // doesn't exist.
-  StuObject& obj = iface->mObjects.at(object);
-  obj.addIBO(name, iboData, type);
+  std::shared_ptr<StuObject> obj = iface->mNameToObject.at(objectName);
+  obj->addIBO(iboName, iboData, type);
 }
 
 //------------------------------------------------------------------------------
@@ -91,12 +92,12 @@ void StuInterface::addIBOToObject(const std::string& object,
 
 //------------------------------------------------------------------------------
 void StuInterface::addVBOToObjectImpl(Hub& hub, StuInterface* iface,
-                                      std::string object, std::string name,
+                                      std::string objectName, std::string vboName,
                                       std::shared_ptr<std::vector<uint8_t>> vboData,
                                       std::vector<std::string> attribNames)
 {
-  StuObject& obj = iface->mObjects.at(object);
-  obj.addVBO(name, vboData, attribNames);
+  std::shared_ptr<StuObject> obj = iface->mNameToObject.at(objectName);
+  obj->addVBO(vboName, vboData, attribNames);
 }
 
 
@@ -120,9 +121,8 @@ void StuInterface::addGeomPassToObjectImpl(Hub& hub, StuInterface* iface,
                                            std::string vboName,
                                            std::string iboName)
 {
-  /// \todo Turn into a message.
-  StuObject& obj = iface->mObjects.at(object);
-  obj.addPass(pass, program, vboName, iboName);
+  std::shared_ptr<StuObject> obj = iface->mNameToObject.at(object);
+  obj->addPass(pass, program, vboName, iboName);
 }
 
 
@@ -150,8 +150,8 @@ void StuInterface::removeGeomPassFromObjectImpl(Hub& hub, StuInterface* iface,
                                                 std::string object,
                                                 std::string pass)
 {
-  StuObject& obj = iface->mObjects.at(object);
-  obj.removePass(pass);
+  std::shared_ptr<StuObject> obj = iface->mNameToObject.at(object);
+  obj->removePass(pass);
 }
 
 
@@ -172,11 +172,10 @@ void StuInterface::removeGeomPassFromObject(const std::string& object,
 //------------------------------------------------------------------------------
 void StuInterface::addObjectImpl(Hub& hub, StuInterface* iface, std::string object)
 {
-  if (iface->mObjects.find(object) != iface->mObjects.end())
+  if (iface->mNameToObject.find(object) != iface->mNameToObject.end())
     throw Duplicate("There already exists an object by that name!");
 
-  StuObject obj;
-  iface->mObjects[object] = std::move(obj);
+  iface->mNameToObject[object] = std::shared_ptr<StuObject>(new StuObject);
 }
 
 //------------------------------------------------------------------------------
@@ -193,10 +192,10 @@ void StuInterface::addObject(const std::string& object)
 void StuInterface::removeObjectImpl(Hub& hub, StuInterface* iface,
                                     std::string object)
 {
-  if (iface->mObjects.find(object) == iface->mObjects.end())
+  if (iface->mNameToObject.find(object) == iface->mNameToObject.end())
     throw std::range_error("Object to remove does not exist!");
 
-  iface->mObjects.erase(object);
+  iface->mNameToObject.erase(object);
 }
 
 //------------------------------------------------------------------------------
@@ -218,8 +217,8 @@ void StuInterface::addPassUniformInternalImpl(Hub& hub, StuInterface* iface,
                                               std::string uniformName,
                                               std::shared_ptr<AbstractUniformStateItem> item)
 {
-  StuObject& obj = iface->mObjects.at(object);
-  obj.addPassUniform(pass, uniformName, item);
+  std::shared_ptr<StuObject> obj = iface->mNameToObject.at(object);
+  obj->addPassUniform(pass, uniformName, item);
 }
 
 //------------------------------------------------------------------------------
@@ -290,5 +289,10 @@ void StuInterface::addPersistentShader(const std::string& programName,
   mHub.addFunctionToThreadQueue(fun);
 }
 
+//------------------------------------------------------------------------------
+std::shared_ptr<const StuObject> StuInterface::ntsGetObjectWithName(const std::string& name)
+{
+  return mNameToObject.at(name);
+}
 
 }
