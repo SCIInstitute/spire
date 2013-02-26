@@ -101,7 +101,7 @@ protected:
   /// The set of unsatisfied uniforms should be a subset of the global
   /// uniform state. Otherwise the shader cannot be properly satisfied and a
   /// runtime exception will be thrown.
-  std::list<std::string>                UnsatisfiedUniforms;
+  std::list<std::string>                mUnsatisfiedUniforms;
 
   size_t                                mVBO;     ///< ID of VBO to use during pass.
   size_t                                mIBO;     ///< ID of IBO to use during pass.
@@ -115,6 +115,14 @@ protected:
 class StuObject
 {
 public:
+
+  StuObject(const std::string& name, int32_t renderOrder);
+
+  std::string getName() const     {return mName;}
+  int32_t getRenderOrder() const  {return mRenderOrder;}
+
+  /// Set new rendering order.
+  void setRenderOrder(int32_t renderOrder) {mRenderOrder = renderOrder;}
 
   /// Adds an object specific VBO. See StuInferface.
   void addVBO(const std::string& name,
@@ -150,6 +158,9 @@ protected:
   // now until we identify an actual performance bottlenecks.
   std::map<size_t, VBOObject>               mVBOMap;    ///< OpenGL index -> VBOObject map.
   std::map<size_t, IBOObject>               mIBOMap;    ///< OpenGL index -> IBOObject map.
+
+  std::string                               mName;
+  int32_t                                   mRenderOrder;
 };
 
 

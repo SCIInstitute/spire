@@ -52,35 +52,68 @@ TEST_F(StuPipeTestFixture, TestPublicInterface)
   // REMEMBER:  We will always run the tests synchronously! So we will be able
   //            to catch errors immediately.
 
+  std::string obj1 = "obj1";
+  std::string obj2 = "obj2";
+  std::string obj3 = "obj3";
+
   // We have a fresh instance of spire with a StuPipe bound.
-  EXPECT_EQ(0, mStuInterface->ntsGetRenderOrder());
-  mStuInterface->addObject("obj1");
-  EXPECT_THROW(mStuInterface->addObject("obj1"), Duplicate);
+  mStuInterface->addObject(obj1);
+  EXPECT_EQ(0, mStuInterface->ntsGetObjectWithName(obj1)->getRenderOrder());
+  EXPECT_THROW(mStuInterface->addObject(obj1), Duplicate);
   EXPECT_EQ(1, mStuInterface->ntsGetNumObjects());
 
   // Add a new obj2.
-  mStuInterface->addObject("obj2");
-  EXPECT_THROW(mStuInterface->addObject("obj1"), Duplicate);
-  EXPECT_THROW(mStuInterface->addObject("obj2"), Duplicate);
+  mStuInterface->addObject(obj2);
+  EXPECT_EQ(1, mStuInterface->ntsGetObjectWithName(obj2)->getRenderOrder());
+  EXPECT_THROW(mStuInterface->addObject(obj1), Duplicate);
+  EXPECT_THROW(mStuInterface->addObject(obj2), Duplicate);
   EXPECT_EQ(2, mStuInterface->ntsGetNumObjects());
+
+  EXPECT_TRUE(mStuInterface->ntsHasRenderingOrder({obj1, obj2}));
 
   // Remove and re-add object 1.
-  mStuInterface->removeObject("obj1");
+  mStuInterface->removeObject(obj1);
   EXPECT_EQ(1, mStuInterface->ntsGetNumObjects());
-  mStuInterface->addObject("obj1");
+  mStuInterface->addObject(obj1);
+  EXPECT_EQ(2, mStuInterface->ntsGetObjectWithName(obj1)->getRenderOrder());
   EXPECT_EQ(2, mStuInterface->ntsGetNumObjects());
 
+  EXPECT_TRUE(mStuInterface->ntsHasRenderingOrder({obj2, obj1}));
+
   // Add a new obj3.
-  mStuInterface->addObject("obj3");
-  EXPECT_THROW(mStuInterface->addObject("obj1"), Duplicate);
-  EXPECT_THROW(mStuInterface->addObject("obj2"), Duplicate);
-  EXPECT_THROW(mStuInterface->addObject("obj3"), Duplicate);
+  mStuInterface->addObject(obj3);
+  EXPECT_EQ(3, mStuInterface->ntsGetObjectWithName(obj3)->getRenderOrder());
+  EXPECT_THROW(mStuInterface->addObject(obj1), Duplicate);
+  EXPECT_THROW(mStuInterface->addObject(obj2), Duplicate);
+  EXPECT_THROW(mStuInterface->addObject(obj3), Duplicate);
   EXPECT_EQ(3, mStuInterface->ntsGetNumObjects());
 
+  EXPECT_TRUE(mStuInterface->ntsHasRenderingOrder({obj2, obj1, obj3}));
 
-  // Verify rendering orders.
+  // Test render re-ordering.
+  mStuInterface->assignRenderOrder(obj1, 5);
+  mStuInterface->assignRenderOrder(obj2, 1);
+  mStuInterface->assignRenderOrder(obj3, 2);
+  EXPECT_EQ(5, mStuInterface->ntsGetObjectWithName(obj1)->getRenderOrder());
+  EXPECT_EQ(1, mStuInterface->ntsGetObjectWithName(obj2)->getRenderOrder());
+  EXPECT_EQ(2, mStuInterface->ntsGetObjectWithName(obj3)->getRenderOrder());
+  EXPECT_TRUE(mStuInterface->ntsHasRenderingOrder({obj2, obj3, obj1}));
 
-  // Re-assign rendering orders for objects.
+  mStuInterface->assignRenderOrder(obj3, 5);
+  mStuInterface->assignRenderOrder(obj2, 2);
+  mStuInterface->assignRenderOrder(obj1, 1);
+  EXPECT_EQ(5, mStuInterface->ntsGetObjectWithName(obj3)->getRenderOrder());
+  EXPECT_EQ(2, mStuInterface->ntsGetObjectWithName(obj2)->getRenderOrder());
+  EXPECT_EQ(1, mStuInterface->ntsGetObjectWithName(obj1)->getRenderOrder());
+  EXPECT_TRUE(mStuInterface->ntsHasRenderingOrder({obj1, obj2, obj3}));
+
+  mStuInterface->assignRenderOrder(obj1, 3);
+  mStuInterface->assignRenderOrder(obj2, 5);
+  mStuInterface->assignRenderOrder(obj3, 1);
+  EXPECT_EQ(3, mStuInterface->ntsGetObjectWithName(obj1)->getRenderOrder());
+  EXPECT_EQ(5, mStuInterface->ntsGetObjectWithName(obj2)->getRenderOrder());
+  EXPECT_EQ(1, mStuInterface->ntsGetObjectWithName(obj3)->getRenderOrder());
+  EXPECT_TRUE(mStuInterface->ntsHasRenderingOrder({obj3, obj1, obj2}));
 }
 
 //------------------------------------------------------------------------------

@@ -86,6 +86,14 @@ StuPass::~StuPass()
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
+StuObject::StuObject(const std::string& name, int32_t renderOrder) :
+    mName(name),
+    mRenderOrder(renderOrder)
+{
+
+}
+
+//------------------------------------------------------------------------------
 void StuObject::addIBO(const std::string& name,
               std::shared_ptr<std::vector<uint8_t>> vboData,
               StuInterface::IBO_TYPE type)

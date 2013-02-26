@@ -30,6 +30,7 @@
 /// \date   February 2013
 
 #include <functional>
+#include <utility>
 
 #include "Common.h"
 #include "StuInterface.h"
@@ -170,22 +171,38 @@ void StuInterface::removeGeomPassFromObject(const std::string& object,
 
 
 //------------------------------------------------------------------------------
-void StuInterface::addObjectImpl(Hub& hub, StuInterface* iface, std::string object)
+void StuInterface::addObjectImpl(Hub& hub, StuInterface* iface,
+                                 std::string objectName, int32_t renderOrder)
 {
-  if (iface->mNameToObject.find(object) != iface->mNameToObject.end())
+  if (iface->mNameToObject.find(objectName) != iface->mNameToObject.end())
     throw Duplicate("There already exists an object by that name!");
 
-  iface->mNameToObject[object] = std::shared_ptr<StuObject>(new StuObject);
+  std::shared_ptr<StuObject> obj = std::shared_ptr<StuObject>(
+      new StuObject(objectName, renderOrder));
+  iface->mNameToObject[objectName] = obj;
+
+  // Add object to specified rendering order.
+  iface->mRenderOrderToObjects.insert(std::make_pair(renderOrder, obj));
 }
 
 //------------------------------------------------------------------------------
 void StuInterface::addObject(const std::string& object)
 {
+  // Note: Is is fine to access mCurrentRenderOrder. It is only modified by
+  //       the client. Never the render thread.
   Hub::RemoteFunction fun =
-      std::bind(addObjectImpl, _1, this, object);
+      std::bind(addObjectImpl, _1, this, object, mCurrentRenderOrder);
   mHub.addFunctionToThreadQueue(fun);
+  ++mCurrentRenderOrder;
 }
 
+//------------------------------------------------------------------------------
+void StuInterface::addObject(const std::string& object, int32_t renderOrder)
+{
+  Hub::RemoteFunction fun =
+      std::bind(addObjectImpl, _1, this, object, renderOrder);
+  mHub.addFunctionToThreadQueue(fun);
+}
 
 
 //------------------------------------------------------------------------------
@@ -195,7 +212,26 @@ void StuInterface::removeObjectImpl(Hub& hub, StuInterface* iface,
   if (iface->mNameToObject.find(object) == iface->mNameToObject.end())
     throw std::range_error("Object to remove does not exist!");
 
+  std::shared_ptr<StuObject> obj = iface->mNameToObject.at(object);
+  iface->removeObjectFromOrderList(obj->getName(), obj->getRenderOrder());
   iface->mNameToObject.erase(object);
+}
+
+//------------------------------------------------------------------------------
+void StuInterface::removeObjectFromOrderList(const std::string& objectName,
+                                             int32_t objectOrder)
+{
+  auto it = mRenderOrderToObjects.find(objectOrder);
+  /// \xxx Should we be only iterating to mRenderOrderToObjects.count(objRenderOrder)?
+  for (; it != mRenderOrderToObjects.end(); ++it)
+  {
+    if (it->second->getName() == objectName)
+    {
+      mRenderOrderToObjects.erase(it);
+      return;
+    }
+  }
+  throw std::range_error("Unable to find object to remove in render order map.");
 }
 
 //------------------------------------------------------------------------------
@@ -208,6 +244,31 @@ void StuInterface::removeObject(const std::string& object)
 
 
 
+//------------------------------------------------------------------------------
+void StuInterface::assignRenderOrderImpl(Hub& hub, StuInterface* iface,
+                                         std::string objectName, int32_t renderOrder)
+{
+  if (iface->mNameToObject.find(objectName) == iface->mNameToObject.end())
+    throw std::range_error("Object to reassign rendering order to does not exist!");
+
+
+  std::shared_ptr<StuObject> obj = iface->mNameToObject.at(objectName);
+  iface->removeObjectFromOrderList(obj->getName(), obj->getRenderOrder());
+
+  // Re-assign order to object...
+  obj->setRenderOrder(renderOrder);
+
+  // Now re-add the object to the render order map.
+  iface->mRenderOrderToObjects.insert(std::make_pair(renderOrder, obj));
+}
+
+//------------------------------------------------------------------------------
+void StuInterface::assignRenderOrder(const std::string& object, int32_t renderOrder)
+{
+  Hub::RemoteFunction fun =
+      std::bind(assignRenderOrderImpl, _1, this, object, renderOrder);
+  mHub.addFunctionToThreadQueue(fun);
+}
 
 
 //------------------------------------------------------------------------------
@@ -290,9 +351,29 @@ void StuInterface::addPersistentShader(const std::string& programName,
 }
 
 //------------------------------------------------------------------------------
-std::shared_ptr<const StuObject> StuInterface::ntsGetObjectWithName(const std::string& name)
+std::shared_ptr<const StuObject> StuInterface::ntsGetObjectWithName(const std::string& name) const
 {
   return mNameToObject.at(name);
+}
+
+//------------------------------------------------------------------------------
+bool StuInterface::ntsHasRenderingOrder(const std::vector<std::string>& renderOrder) const
+{
+  // Iterate over the map (we will iterate over the map in ascending order).
+  // This is the same loop we will be using in the renderer.
+  auto itToTest = renderOrder.begin();
+  auto itOrder = mRenderOrderToObjects.begin();
+  for (; itOrder != mRenderOrderToObjects.end() && itToTest != renderOrder.end();
+       ++itOrder, ++itToTest)
+  {
+    if (itOrder->second->getName() != *itToTest)
+      return false;
+  }
+
+  if (itToTest == renderOrder.end() && itOrder == mRenderOrderToObjects.end())
+    return true;
+  else
+    return false;
 }
 
 }

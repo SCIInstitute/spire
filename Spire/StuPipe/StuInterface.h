@@ -104,14 +104,26 @@ public:
   // Objects
   //---------
 
+  /// \todo Add BVH which only stores object names and is used for frustum
+  ///       culling. This BVH should be mutex locked so the UI thread can cast
+  ///       rays into it.
+
   /// Adds a renderable 'object' to the scene.
   void addObject(const std::string& object);
+
+  /// Adds a renderable 'object' to the scene, and assigns it 'renderOrder'.
+  /// Objects with lower render orders will be rendered first.
+  void addObject(const std::string& object, int32_t renderOrder);
 
   /// Completely removes 'object' from the pipe. This includes removing all of
   /// the object's passes as well.
   /// Throws an std::out_of_range exception if the object is not found in the 
   /// system.
   void removeObject(const std::string& object);
+
+  /// Assigns a new rendering order to the object
+  /// Throws std::range_error if object is not found.
+  void assignRenderOrder(const std::string& object, int32_t renderOrder);
 
 
   /// Adds a VBO. This VBO can be re-used by adding passes to the object.
@@ -240,11 +252,17 @@ public:
   size_t ntsGetNumObjects() const         {return mNameToObject.size();}
 
   /// Obtain the current rendering order.
+  /// (technically, this is thread safe as the rendering thread never accesses
+  ///  this value and is only used on the client thread).
   int32_t ntsGetRenderOrder() const       {return mCurrentRenderOrder;}
 
   /// Obtain the object associated with 'name'.
   /// throws std::range_error if the object is not found.
-  std::shared_ptr<const StuObject> ntsGetObjectWithName(const std::string& name);
+  std::shared_ptr<const StuObject> ntsGetObjectWithName(const std::string& name) const;
+  
+  /// Returns true if the system would render the list of object names in the
+  /// specified order.
+  bool ntsHasRenderingOrder(const std::vector<std::string>& renderOrder) const;
 
 private:
 
@@ -252,6 +270,9 @@ private:
                               const std::string& pass,
                               const std::string& uniformName,
                               std::shared_ptr<AbstractUniformStateItem> item);
+
+  /// Remove the specified object from the order list.
+  void removeObjectFromOrderList(const std::string& objectName, int32_t objectOrder);
 
   /// This unordered map is a 1-1 mapping of object names onto objects.
   std::unordered_map<std::string, std::shared_ptr<StuObject>>   mNameToObject;
@@ -264,6 +285,9 @@ private:
   /// be GC'ed unless this pipe is destroyed).
   std::list<std::shared_ptr<ShaderProgramAsset>>  mPersistentShaders;
 
+  // NOTE:  The following variable should only be accessed on the client side.
+  //        Never by the renderer. This var just makes it easier when adding
+  //        objects and you don't care about their order.
   int32_t mCurrentRenderOrder;    ///< Current rendering order. Used for automatic order assignment.
 
 private:
@@ -274,7 +298,11 @@ private:
   /// will still be valid when execution reaches the renderer thread.
   /// (no stack variables allowed).
   /// @{
-  static void addObjectImpl(Hub& hub, StuInterface* iface, std::string object);
+  static void addObjectImpl(Hub& hub, StuInterface* iface, std::string object,
+                            int32_t renderOrder);
+
+  static void assignRenderOrderImpl(Hub& hub, StuInterface* iface,
+                                    std::string object, int32_t renderOrder);
 
   static void addIBOToObjectImpl(Hub& hub, StuInterface* iface,
                                  std::string objectName, std::string iboName,
