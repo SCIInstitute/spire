@@ -35,10 +35,12 @@
 #include "BatchContext.h"
 #include "Spire/Tests/GlobalTestEnvironment.h"
 
+// Defining cimg_display to 0 ensures CImg doesn't try to include OS specific
+// windowing header files.
 #define cimg_display 0
 #include "3rdParty/CImg/CImg.h"
 
-class TestEnvironment : public Spire::GlobalTestEnvironmentInterface
+class TestEnvironment : public Spire::GlobalTestEnvironment
 {
 public:
   TestEnvironment(uint32_t width, uint32_t height, 

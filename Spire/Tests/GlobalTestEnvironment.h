@@ -42,11 +42,11 @@ namespace Spire
 
 /// Abstract class expected to be initialized and placed in the google testing
 /// environment.
-class GlobalTestEnvironmentInterface : public ::testing::Environment
+class GlobalTestEnvironment: public ::testing::Environment
 {
 public:
 
-  static GlobalTestEnvironmentInterface* instance()
+  static GlobalTestEnvironment* instance()
   {
     if (mInstance == nullptr)
       throw std::runtime_error("Global test environment not initialized!");
@@ -57,14 +57,14 @@ public:
 
 protected:
 
-  GlobalTestEnvironmentInterface()
+  GlobalTestEnvironment()
   {
     if (mInstance != nullptr)
       throw std::runtime_error("Global test environment has already been constructed!");
     mInstance = this;
   }
   
-  static GlobalTestEnvironmentInterface* mInstance;
+  static GlobalTestEnvironment* mInstance;
 };
 
 } // namespace Spire

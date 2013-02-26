@@ -37,6 +37,8 @@
 
 using namespace Spire;
 
+/// \todo Convert this into a standalone test using the StuPipe.
+
 /// Tests the UniformColor.* shaders.
 class TestUniformColor
 {

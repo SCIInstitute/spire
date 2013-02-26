@@ -28,39 +28,20 @@
 
 /// \author James Hughes
 /// \date   February 2013
+/// \brief  Fixtures that are commonly used by the gtests.
 
-#include <gtest/gtest.h>
-#include "Common.h"
-#include "Exceptions.h"
-#include "StuPipe/StuInterface.h"
-#include "GlobalTestEnvironment.h"
+#ifndef SPIRE_TESTS_COMMONTESTFIXTURES_H
+#define SPIRE_TESTS_COMMONTESTFIXTURES_H
 
-using namespace Spire;
+#include "gtest/gtest.h"
 
-namespace {
-
-/// \todo Need an option to run OpenGL through a mocked up interface. This
-///       would also require mocking some GLEW functions as well.
-///       Or just have compiler switches that remove any OpenGL calls.
-///       Need to have this support to test beyond the basics.
-///       Possibly the best solution to all of this is to just create a valid
-///       OpenGL context when testing Spire as well. In this manner, I can
-///       delete / create Spire objects at will.
-
-//------------------------------------------------------------------------------
-TEST(StuInterfaceBasic, TestObjectCreation)
+class StuPipeTestFixture : public testing::Test
 {
-  GlobalTestEnvironment::instance();
+protected:
+  StuPipeTestFixture() {}
 
-  /// \todo Create a test fixture that creates a spire instance that we can use
-  ///       for testing purposes.
+  virtual void SetUp()    {}
+  virtual void TearDown() {}
+};
 
-  ///// Assuming StuInterface is already created somehow...
-  //StuInterface interface;
-
-  //interface.addObject("obj1");
-  //EXPECT_THROW(interface.addObject("obj1"), Duplicate);
-}
-
-}
-
+#endif 
