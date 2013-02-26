@@ -35,6 +35,9 @@
 #include "BatchContext.h"
 #include "Spire/Tests/GlobalTestEnvironment.h"
 
+#define cimg_display 0
+#include "3rdParty/CImg/CImg.h"
+
 class TestEnvironment : public Spire::GlobalTestEnvironmentInterface
 {
 public:

@@ -95,7 +95,8 @@ add_subdirectory(${BASE_SPIRE_DIR}/Spire/3rdParty/gtest ${BASE_SPIRE_DIR}/bin/gt
 set(CommonSources
   BatchContext.cpp
   BatchContext.h
-  main.cpp)
+  main.cpp
+  3rdParty/CImg/CImg.h)
 
 file(GLOB TestSources
   "${BASE_SPIRE_DIR}/Spire/Tests/*.cc"

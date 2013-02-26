@@ -35,7 +35,6 @@
 #include "Core/PipeDriver.h"
 #include "Core/GPUStateManager.h"
 #include "Core/HackedUCRenderer.h"
-#include "Shaders/Tests/TestUniformColor.h"
 
 namespace Spire {
 namespace StuPipe {
@@ -53,7 +52,6 @@ public:
 protected:
 
   GPUState          mInitialState;
-  //TestUniformColor  mUniformColorTest;
 
   M44               mView;
 };

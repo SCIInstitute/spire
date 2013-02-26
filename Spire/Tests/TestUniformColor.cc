@@ -31,7 +31,6 @@
 
 #include "Common.h"
 #include "Exceptions.h"
-#include "TestUniformColor.h"
 
 #include "Core/GLMathUtil.h"
 #include "Core/Hub.h"
