@@ -29,19 +29,74 @@
 /// \author James Hughes
 /// \date   February 2013
 /// \brief  Fixtures that are commonly used by the gtests.
+///         No fixtures should use threading. They should all be synchronous.
 
 #ifndef SPIRE_TESTS_COMMONTESTFIXTURES_H
 #define SPIRE_TESTS_COMMONTESTFIXTURES_H
 
 #include "gtest/gtest.h"
+#include "GlobalTestEnvironment.h"
+#include "AppSpecific/SCIRun/SRInterface.h"
+#include "StuPipe/StuInterface.h"
 
 class StuPipeTestFixture : public testing::Test
 {
-protected:
+public:
   StuPipeTestFixture() {}
 
-  virtual void SetUp()    {}
-  virtual void TearDown() {}
+  virtual void SetUp() override
+  {
+    std::vector<std::string> shaderSearchDirs;
+    shaderSearchDirs.push_back("Shaders");
+
+    // Build StuPipe using the context from GlobalTestEnvironment.
+    std::shared_ptr<Spire::Context> ctx = Spire::GlobalTestEnvironment::instance()->getContext();
+    mSpireInterface = std::shared_ptr<Spire::Interface>(new Spire::Interface(
+        ctx, shaderSearchDirs, false));
+
+    // Build and bind StuPipe.
+    mStuInterface = std::shared_ptr<Spire::StuInterface>(
+        new Spire::StuInterface(mSpireInterface));
+    mSpireInterface->pipePushBack(mStuInterface);
+  }
+
+  virtual void TearDown() override
+  {
+    mSpireInterface.reset();
+  }
+
+  std::shared_ptr<Spire::Interface>     mSpireInterface;
+  std::shared_ptr<Spire::StuInterface>  mStuInterface;
+};
+
+class SCIRunStuPipeTestFixture : public testing::Test
+{
+public:
+  SCIRunStuPipeTestFixture() {}
+
+  virtual void SetUp() override
+  {
+    std::vector<std::string> shaderSearchDirs;
+    shaderSearchDirs.push_back("Shaders");
+
+    // Build StuPipe using the context from GlobalTestEnvironment.
+    std::shared_ptr<Spire::Context> ctx = Spire::GlobalTestEnvironment::instance()->getContext();
+    mSpireInterface = std::shared_ptr<Spire::SCIRun::SRInterface>(
+        new Spire::SCIRun::SRInterface(ctx, shaderSearchDirs, false));
+
+    // Build and bind StuPipe.
+    mStuInterface = std::shared_ptr<Spire::StuInterface>(
+        new Spire::StuInterface(mSpireInterface));
+    mSpireInterface->pipePushBack(mStuInterface);
+  }
+
+  virtual void TearDown() override
+  {
+    mSpireInterface.reset();
+  }
+
+  std::shared_ptr<Spire::SCIRun::SRInterface> mSpireInterface;
+  std::shared_ptr<Spire::StuInterface>        mStuInterface;
 };
 
 #endif 

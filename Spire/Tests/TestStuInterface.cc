@@ -34,6 +34,7 @@
 #include "Exceptions.h"
 #include "StuPipe/StuInterface.h"
 #include "GlobalTestEnvironment.h"
+#include "CommonTestFixtures.h"
 
 using namespace Spire;
 
@@ -48,9 +49,10 @@ namespace {
 ///       delete / create Spire objects at will.
 
 //------------------------------------------------------------------------------
-TEST(StuInterfaceBasic, TestObjectCreation)
+TEST_F(StuPipeTestFixture, TestObjectCreation)
 {
-  GlobalTestEnvironment::instance();
+  // We have a fresh instance of spire with a StuPipe bound.
+
 
   /// \todo Create a test fixture that creates a spire instance that we can use
   ///       for testing purposes.

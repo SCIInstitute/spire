@@ -33,7 +33,7 @@
 
 namespace Spire {
 
-GlobalTestEnvironmentInterface* GlobalTestEnvironmentInterface::mInstance = nullptr;
+GlobalTestEnvironment* GlobalTestEnvironment::mInstance = nullptr;
 
 } // Spire
 
