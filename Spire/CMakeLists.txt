@@ -17,8 +17,6 @@ else()
   option(USE_STD_THREADS "Use standard library threads. If turned off, no threading support is available." ON)
 endif()
 
-option(BUILD_TESTING_APP "Builds spire testing application instead of the spire library." OFF)
-
 if(USE_TUVOK)
   add_definitions(-DSPIRE_USE_TUVOK)
 endif()
@@ -79,13 +77,6 @@ else(UNIX)
 endif(UNIX)
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/3rdParty/glew/include ${CMAKE_CURRENT_SOURCE_DIR}/3rdParty ${OPENGL_INCLUDE_DIRS})
-
-if(BUILD_TESTING_APP)
-  add_definitions(-DGTEST_USE_OWN_TR1_TUPLE=1)
-  include_directories(${CMAKE_CURRENT_SOURCE_DIR}/3rdParty/gtest/include)
-  add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/3rdParty/gtest)
-  set(TESTING_LIBS gtest)
-endif()
 
 ########################################################################
 # Tuvok
@@ -187,7 +178,6 @@ file (GLOB Source_Caching
   )
 
 file (GLOB Source_Pipes
-  "Shaders/Tests/*.cpp"
   "StuPipe/*.cpp"
   "StuPipe/*.h"
   )
@@ -205,45 +195,22 @@ if(NOT DEFINED IOS)
     3rdParty/glew/src/glew.c)
 endif()
 
-if(BUILD_TESTING_APP)
-  file(GLOB Source_Testing
-    "../Tools/SpireTester/*.cpp"
-    "../Tools/SpireTester/*.h"
-    "Tests/*.cc"
-    "Tests/*.h")
-endif()
-
 ########################################################################
 # Library setup
 
 # Build the library or the testing app.
-if(BUILD_TESTING_APP)
-  set(SPIRE_TARGET_NAME SpireTest)
-  add_executable(${SPIRE_TARGET_NAME}
-    ${Source_Root}
-    ${Source_High}
-    ${Source_Low}
-    ${Source_Caching}
-    ${Source_Pipes}
-    ${Source_GLEW}
-    ${Source_Testing}
-    ${Source_SCIRun}
-    )
-  add_dependencies(${SPIRE_TARGET_NAME} ThirdParty_Tuvok gtest)
-else()
-  set(SPIRE_TARGET_NAME Spire)
-  add_library(${SPIRE_TARGET_NAME}
-    ${Source_Root}
-    ${Source_High}
-    ${Source_Low}
-    ${Source_Caching}
-    ${Source_Pipes}
-    ${Source_GLEW}
-    ${Source_Testing}
-    ${Source_SCIRun}
-    )
-  add_dependencies(${SPIRE_TARGET_NAME} ThirdParty_Tuvok)
-endif()
+set(SPIRE_TARGET_NAME Spire)
+add_library(${SPIRE_TARGET_NAME}
+  ${Source_Root}
+  ${Source_High}
+  ${Source_Low}
+  ${Source_Caching}
+  ${Source_Pipes}
+  ${Source_GLEW}
+  ${Source_Testing}
+  ${Source_SCIRun}
+  )
+add_dependencies(${SPIRE_TARGET_NAME} ThirdParty_Tuvok)
 
 target_link_libraries(
   ${SPIRE_TARGET_NAME}
