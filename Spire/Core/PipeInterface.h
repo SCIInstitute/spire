@@ -47,9 +47,9 @@ class Hub;
 class PipeInterface
 {
 public:
-  PipeInterface(Interface& iface) : 
+  PipeInterface(std::weak_ptr<Interface> iface) : 
       mSubmittedToSpire(false),
-      mHub(*iface.mHub)
+      mHub(*iface.lock()->mHub)
   {}
   virtual ~PipeInterface()                    {}
   

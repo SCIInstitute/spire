@@ -42,7 +42,7 @@ using namespace std::placeholders;
 namespace Spire {
 
 //------------------------------------------------------------------------------
-StuInterface::StuInterface(Interface& iface) :
+StuInterface::StuInterface(std::weak_ptr<Interface> iface) :
     PipeInterface(iface)
 {
 }

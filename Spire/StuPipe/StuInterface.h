@@ -64,7 +64,7 @@ class ShaderProgramAsset;
 class StuInterface : public PipeInterface
 {
 public:
-  StuInterface(Interface& iface);
+  StuInterface(std::weak_ptr<Interface> iface);
   virtual ~StuInterface();
   
   /// Initialization as performed on the renderer thread.
