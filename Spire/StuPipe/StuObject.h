@@ -101,10 +101,10 @@ protected:
   /// The set of unsatisfied uniforms should be a subset of the global
   /// uniform state. Otherwise the shader cannot be properly satisfied and a
   /// runtime exception will be thrown.
-  std::list<std::string>                mUnsatisfiedUniforms;
+  std::list<std::string>                UnsatisfiedUniforms;
 
-  const VBOObject&                      mVBO;     ///< VBO reference from the STU object which composites us.
-  const IBOObject&                      mIBO;     ///< IBO reference from the STU object which composites us.
+  size_t                                mVBO;     ///< ID of VBO to use during pass.
+  size_t                                mIBO;     ///< ID of IBO to use during pass.
 
   std::shared_ptr<ShaderProgramAsset>   mShader;  ///< Shader to be used when rendering this pass.
 };
