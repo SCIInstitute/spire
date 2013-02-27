@@ -184,8 +184,6 @@ void Hub::doFrame()
   mInterfaceImpl->executeQueue();
 
   mPipe->doFrame();
-
-  mContext->swapBuffers();
 }
 
 //------------------------------------------------------------------------------
@@ -242,6 +240,10 @@ void Hub::rendererThread()
   while (mThreadKill.load() == false)
   {
     doFrame();
+
+    // Swap buffers manually.
+    mContext->swapBuffers();
+
     /// @todo Add logic to determine how long we should sleep for...
     ///       This will be highly dependent on how long it took to render the
     ///       last frame, and if we are in the middle of compositing the final

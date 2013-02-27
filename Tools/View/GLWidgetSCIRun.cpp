@@ -157,7 +157,8 @@ void GLWidget::closeEvent(QCloseEvent *evt)
 //------------------------------------------------------------------------------
 void GLWidget::updateRenderer()
 {
-  // Update the renderer.
+  mContext->makeCurrent();    // Required on windows...
   mGraphics->doFrame();
+  mContext->swapBuffers();
 }
 
