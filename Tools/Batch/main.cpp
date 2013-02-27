@@ -91,7 +91,7 @@ int main(int argc, char** argv)
   // Create the global testing environment.
   ::testing::Environment* const testEnv = 
       ::testing::AddGlobalTestEnvironment(
-          new TestEnvironment(640, 480, 32, 24, 8, true, false));
+          new TestEnvironment(600, 600, 32, 24, 8, true, false));
 
   // Run the tests.
   ::testing::InitGoogleTest(&argc, argv);
