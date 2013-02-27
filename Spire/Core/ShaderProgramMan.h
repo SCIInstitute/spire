@@ -55,6 +55,9 @@ public:
   /// Shader uniform collection.
   const ShaderUniformCollection& getUniforms() const      {return mUniforms;}
 
+  /// Returns false if 'shaders' does not match our program definition.
+  /// O(n^2)
+  bool areProgramSignaturesIdentical(const std::list<std::tuple<std::string, GLenum>>& shaders);
 
 protected:
 
@@ -65,6 +68,10 @@ protected:
 
   ShaderAttributeCollection mAttributes;      ///< All program attributes.
   ShaderUniformCollection   mUniforms;        ///< All program uniforms.
+
+  ///< This list is used to verify that requested shader programs are not at
+  ///< odds with each other.
+  std::list<std::tuple<std::string, GLenum>>  mLoadedShaders;
 };
 
 /// Management of fully linked GL shader programs.

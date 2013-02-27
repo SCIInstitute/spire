@@ -39,14 +39,15 @@ namespace Spire {
 
 //------------------------------------------------------------------------------
 std::shared_ptr<ShaderProgramAsset>
-ShaderProgramMan::loadProgram(const std::string& programName,
-                      const std::list<std::tuple<std::string, GLenum>>& shaders)
+ShaderProgramMan::loadProgram(
+    const std::string& programName,
+    const std::list<std::tuple<std::string, GLenum>>& shaders)
 {
   std::shared_ptr<BaseAsset> asset = findAsset(programName);
   if (asset == nullptr)
   {
-    std::shared_ptr<ShaderProgramAsset> program(new ShaderProgramAsset(mHub,
-            programName, shaders));
+    std::shared_ptr<ShaderProgramAsset> program(
+        new ShaderProgramAsset(mHub, programName, shaders));
 
     // Add the asset
     addAsset(std::dynamic_pointer_cast<BaseAsset>(program));
@@ -55,13 +56,24 @@ ShaderProgramMan::loadProgram(const std::string& programName,
   }
   else
   {
-    return std::dynamic_pointer_cast<ShaderProgramAsset>(asset); 
+    // Check to ensure that 'shaderAsset' all requested shaders -- and that
+    // all of the shader names are the same. There should be no directory
+    // paths in the shader names, so they should compare exactly.
+    std::shared_ptr<ShaderProgramAsset> shaderAsset = 
+        std::dynamic_pointer_cast<ShaderProgramAsset>(asset);
+    if (shaderAsset->areProgramSignaturesIdentical(shaders) == false)
+    {
+      throw std::invalid_argument("Shader signatures (shader files and types) "
+                                  "should match pre-existing shader.");
+    }
+    return shaderAsset;
   }
 }
 
 //------------------------------------------------------------------------------
-ShaderProgramAsset::ShaderProgramAsset(Hub& hub, const std::string& name,
-                      const std::list<std::tuple<std::string, GLenum>>& shaders) :
+ShaderProgramAsset::ShaderProgramAsset(
+      Hub& hub, const std::string& name,
+      const std::list<std::tuple<std::string, GLenum>>& shaders) :
     BaseAsset(name),
     mHub(hub),
     mAttributes(mHub.getShaderAttributeManager()),
@@ -170,8 +182,10 @@ ShaderProgramAsset::ShaderProgramAsset(Hub& hub, const std::string& name,
     }
   }
 
-  mHasValidProgram = true;
-  glProgramID = program;
+  mLoadedShaders    = shaders;
+  mHasValidProgram  = true;
+
+  glProgramID       = program;
 }
 
 //------------------------------------------------------------------------------
@@ -182,6 +196,30 @@ ShaderProgramAsset::~ShaderProgramAsset()
     glDeleteProgram(glProgramID);
     mHasValidProgram = false;
   }
+}
+
+//------------------------------------------------------------------------------
+bool ShaderProgramAsset::areProgramSignaturesIdentical(
+    const std::list<std::tuple<std::string, GLenum>>& shaders)
+{
+  for (auto it = shaders.begin(); it != shaders.end(); ++it)
+  {
+    bool foundCorresponding = false;
+    for (auto it2 = mLoadedShaders.begin(); it2 != mLoadedShaders.end(); ++it2)
+    {
+      if (   std::get<0>(*it) == std::get<0>(*it2) 
+          && std::get<1>(*it) == std::get<1>(*it2))
+      {
+        foundCorresponding = true;
+        break;
+      }
+    }
+
+    if (foundCorresponding == false)
+      return false;
+  }
+
+  return true;
 }
 
 

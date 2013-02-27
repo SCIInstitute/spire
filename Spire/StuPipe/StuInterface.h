@@ -226,6 +226,12 @@ public:
 
   /// Adds a persistent shader under the name 'programName'. Default vertex and
   /// fragment shader.
+  ///
+  /// Throws an invalid_argument exception if there already exists a program
+  /// by the same name, and the program specified by this function's arguments
+  /// does not match the program that already exists.
+  /// Throws a Duplicate exception if this shader is already in the persistent
+  /// shader list.
   void addPersistentShader(const std::string& programName,
                            const std::string& vertexShader,
                            const std::string& fragmentShader);
@@ -233,6 +239,13 @@ public:
   /// You can build any shader program you want using this method.
   /// Before you use this function, ensure that the necessary features are
   /// supported by the user's graphics card.
+  ///
+  /// Throws an invalid_argument exception if there already exists a program
+  /// by the same name, and the program specified by this function's arguments
+  /// does not match the program that already exists.
+  /// Throws a Duplicate exception if this shader is already in the persistent
+  /// shader list.
+  ///
   /// \param shaders  First tuple argument is the shader program file, the 
   ///                 second is the type of shader.
   void addPersistentShader(const std::string& programName,

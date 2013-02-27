@@ -187,6 +187,27 @@ TEST_F(StuPipeTestFixture, TestTriangle)
         {"UniformColor.fs", StuInterface::FRAGMENT_SHADER},
       });
 
+  // Test various cases of shader failure after adding a prior shader.
+  EXPECT_THROW(mStuInterface->addPersistentShader(
+      "UniformColor", 
+      { {"UniformColor.vs", StuInterface::FRAGMENT_SHADER}, 
+        {"UniformColor.fs", StuInterface::VERTEX_SHADER},
+      }), std::invalid_argument);
+
+  EXPECT_THROW(mStuInterface->addPersistentShader(
+      "UniformColor", 
+      { {"UniformColor2.vs", StuInterface::VERTEX_SHADER}, 
+        {"UniformColor.fs", StuInterface::FRAGMENT_SHADER},
+      }), std::invalid_argument);
+
+  EXPECT_THROW(mStuInterface->addPersistentShader(
+      "UniformColor", 
+      { {"UniformColor.vs", StuInterface::VERTEX_SHADER}, 
+        {"UniformColor2.fs", StuInterface::FRAGMENT_SHADER},
+      }), std::invalid_argument);
+
+  // This final exception is throw directly from the addPersistentShader
+  // function. The 3 prior exception were all thrown from the ShaderProgramMan.
   EXPECT_THROW(mStuInterface->addPersistentShader(
       "UniformColor", 
       { {"UniformColor.vs", StuInterface::VERTEX_SHADER}, 

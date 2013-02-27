@@ -303,7 +303,7 @@ void StuInterface::addPersistentShaderImpl(
     std::vector<std::tuple<std::string, SHADER_TYPES>> tempShaders)
 {
   std::list<std::tuple<std::string, GLenum>> shaders;
-  for (auto it = shaders.begin(); it != shaders.end(); ++it)
+  for (auto it = tempShaders.begin(); it != tempShaders.end(); ++it)
   {
     GLenum glType = GL_VERTEX_SHADER;
     switch (std::get<1>(*it))
@@ -325,6 +325,14 @@ void StuInterface::addPersistentShaderImpl(
 
   std::shared_ptr<ShaderProgramAsset> shader = 
       iface->mHub.getShaderProgramManager().loadProgram(programName, shaders);
+
+  // Check to make sure we haven't already added this shader.
+  for (auto it = iface->mPersistentShaders.begin();
+       it != iface->mPersistentShaders.end(); ++it)
+  {
+    if (shader == *it)
+      throw Duplicate("Attempted to add duplicate shader to persistent shader list");
+  }
   iface->mPersistentShaders.push_back(shader);
 }
 
