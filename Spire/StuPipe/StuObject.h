@@ -91,8 +91,8 @@ private:
 class StuPass
 {
 public:
-  StuPass(const std::string& objectName, const std::string& programName,
-          std::shared_ptr<VBOObject> vboID, std::shared_ptr<IBOObject> iboID);
+  StuPass(const std::string& passName, const std::string& programName,
+          std::shared_ptr<VBOObject> vbo, std::shared_ptr<IBOObject> ibo);
   virtual ~StuPass();
   
 protected:
@@ -175,7 +175,7 @@ protected:
   std::shared_ptr<IBOObject> getIBOByName(const std::string& name);
 
   /// All registered passes.
-  std::unordered_map<std::string, StuPass>  mPasses;
+  std::unordered_map<std::string, std::shared_ptr<StuPass>>  mPasses;
 
   // These maps may actually be more efficient implemented as an array. The map 
   // sizes are small and cache coherency will be more important. Ignoring for 

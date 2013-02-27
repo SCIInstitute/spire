@@ -68,12 +68,13 @@ IBOObject::IBOObject(std::shared_ptr<std::vector<uint8_t>> iboData,
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-StuPass::StuPass(const std::string& objectName, const std::string& programName,
+StuPass::StuPass(const std::string& passName, const std::string& programName,
                  std::shared_ptr<VBOObject> vbo, std::shared_ptr<IBOObject> ibo) :
     mVBO(vbo),
     mIBO(ibo)
 {
-  /// \todo Lookup the shader to use
+  /// \todo Lookup the shader. Throw std::out_of_range if the program does
+  ///       not exist.
 }
 
 //------------------------------------------------------------------------------
@@ -126,7 +127,11 @@ void StuObject::addPass(
     throw Duplicate("There already exists a pass with the specified pass name.");
 
   // Build the pass.
-
+  std::shared_ptr<StuPass> pass(new StuPass(passName, program, 
+                                            getVBOByName(vboName),
+                                            getIBOByName(iboName)));
+  
+  mPasses.insert(make_pair(passName, pass));
 }
 
 //------------------------------------------------------------------------------
