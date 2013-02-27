@@ -148,6 +148,11 @@ public:
                       std::shared_ptr<std::vector<uint8_t>> vboData,
                       const std::vector<std::string>& attribNames);
 
+  /// Removes specified vbo from the object. It is safe to issue this call even
+  /// though some of your passes may still be referencing the VBOs/IBOs. When
+  /// the passes are destroyed, their associated VBOs/IBOs will be destroyed.
+  void removeVBOFromObject(const std::string& object, const std::string& vboName);
+
   /// Adds an IBO. This IBO can be re-used by adding passes to the object.
   /// Throws an std::out_of_range exception if the object is not found in the 
   /// system.
@@ -169,6 +174,11 @@ public:
                       const std::string& name,
                       std::shared_ptr<std::vector<uint8_t>> iboData,
                       IBO_TYPE type);
+
+  /// Removes specified ibo from the object. It is safe to issue this call even
+  /// though some of your passes may still be referencing the VBOs/IBOs. When
+  /// the passes are destroyed, their associated VBOs/IBOs will be destroyed.
+  void removeIBOFromObject(const std::string& object, const std::string& iboName);
 
   /// Adds a geometry pass to an object given by the identifier 'object'.
   /// Throws an std::out_of_range exception if the object is not found in the 
@@ -321,11 +331,15 @@ private:
                                  std::string objectName, std::string iboName,
                                  std::shared_ptr<std::vector<uint8_t>> iboData,
                                  StuInterface::IBO_TYPE type);
+  static void removeIBOFromObjectImpl(Hub& hub, StuInterface* iface,
+                                      std::string objectName, std::string iboName);
 
   static void addVBOToObjectImpl(Hub& hub, StuInterface* iface,
                                  std::string objectName, std::string vboName,
                                  std::shared_ptr<std::vector<uint8_t>> vboData,
                                  std::vector<std::string> attribNames);
+  static void removeVBOFromObjectImpl(Hub& hub, StuInterface* iface,
+                                      std::string object, std::string vboName);
 
   static void addGeomPassToObjectImpl(Hub& hub, StuInterface* iface,
                                       std::string objectName,

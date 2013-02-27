@@ -133,10 +133,18 @@ public:
               std::shared_ptr<std::vector<uint8_t>> vboData,
               const std::vector<std::string>& attribNames);
 
+  /// Removes a VBO.
+  /// Throws std::out_of_range if the VBO doesn't exist.
+  void removeVBO(const std::string& name);
+
   /// Adds an object specific IBO. See StuInferface.
   void addIBO(const std::string& name,
               std::shared_ptr<std::vector<uint8_t>> vboData,
               StuInterface::IBO_TYPE type);
+
+  /// Removes an IBO.
+  /// Throws std::out_of_range if the IBO doesn't exist.
+  void removeIBO(const std::string& name);
 
   /// \note If we add ability to remove IBOs and VBOs, the IBOs and VBOs will
   ///       not be removed until their corresponding passes are removed

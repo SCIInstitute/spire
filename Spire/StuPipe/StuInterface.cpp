@@ -113,6 +113,41 @@ void StuInterface::addVBOToObject(const std::string& object,
   mHub.addFunctionToThreadQueue(fun);
 }
 
+//------------------------------------------------------------------------------
+void StuInterface::removeVBOFromObjectImpl(Hub& hub, StuInterface* iface,
+                                           std::string objectName, std::string vboName)
+{
+  std::shared_ptr<StuObject> obj = iface->mNameToObject.at(objectName);
+  obj->removeVBO(vboName);
+}
+
+//------------------------------------------------------------------------------
+void StuInterface::removeVBOFromObject(const std::string& object, const std::string& vboName)
+{
+  Hub::RemoteFunction fun =
+      std::bind(removeVBOFromObjectImpl, _1, this, object, vboName);
+  mHub.addFunctionToThreadQueue(fun);
+}
+
+
+//------------------------------------------------------------------------------
+void StuInterface::removeIBOFromObjectImpl(Hub& hub, StuInterface* iface,
+                                           std::string objectName, std::string iboName)
+{
+  std::shared_ptr<StuObject> obj = iface->mNameToObject.at(objectName);
+  obj->removeIBO(iboName);
+}
+
+//------------------------------------------------------------------------------
+void StuInterface::removeIBOFromObject(const std::string& object, const std::string& iboName)
+{
+  Hub::RemoteFunction fun =
+      std::bind(removeVBOFromObjectImpl, _1, this, object, iboName);
+  mHub.addFunctionToThreadQueue(fun);
+}
+
+
+
 
 //------------------------------------------------------------------------------
 void StuInterface::addGeomPassToObjectImpl(Hub& hub, StuInterface* iface,

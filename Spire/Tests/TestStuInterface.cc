@@ -230,6 +230,11 @@ TEST_F(StuPipeTestFixture, TestTriangle)
 
 
   /// \todo Test duplicate pass exceptions.
+
+
+  /// \todo Remove VBO and IBO from object once we are done using
+  ///       them. This way, if we remove all passes that reference the IBOs
+  ///       or VBOs, they will automatically be deleted.
 }
 
 //------------------------------------------------------------------------------

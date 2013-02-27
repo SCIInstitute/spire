@@ -107,6 +107,14 @@ void StuObject::addIBO(const std::string& name,
 }
 
 //------------------------------------------------------------------------------
+void StuObject::removeIBO(const std::string& name)
+{
+  size_t numElementsRemoved = mIBOMap.erase(mHashFun(name));
+  if (numElementsRemoved == 0)
+    throw std::out_of_range("Could not find IBO to remove.");
+}
+
+//------------------------------------------------------------------------------
 void StuObject::addPass(
     const std::string& passName,
     const std::string& program,
@@ -139,6 +147,14 @@ void StuObject::addVBO(const std::string& name,
 
   mVBOMap.emplace(std::make_pair(
           hash, std::shared_ptr<VBOObject>(new VBOObject(vboData, attribNames))));
+}
+
+//------------------------------------------------------------------------------
+void StuObject::removeVBO(const std::string& vboName)
+{
+  size_t numElementsRemoved = mIBOMap.erase(mHashFun(vboName));
+  if (numElementsRemoved == 0)
+    throw std::out_of_range("Could not find VBO to remove.");
 }
 
 //------------------------------------------------------------------------------
