@@ -171,15 +171,27 @@ TEST_F(StuPipeTestFixture, TestTriangle)
   std::string vbo1 = "vbo1";
   std::string ibo1 = "ibo1";
 
-  EXPECT_THROW(mStuInterface->addVBOToObject(obj1, vbo1, rawVBO, attribNames), std::range_error);
-  EXPECT_THROW(mStuInterface->addIBOToObject(obj1, ibo1, rawIBO, iboType), std::range_error);
+  EXPECT_THROW(mStuInterface->addVBOToObject(obj1, vbo1, rawVBO, attribNames), std::out_of_range);
+  EXPECT_THROW(mStuInterface->addIBOToObject(obj1, ibo1, rawIBO, iboType), std::out_of_range);
 
   mStuInterface->addObject(obj1);
   mStuInterface->addVBOToObject(obj1, vbo1, rawVBO, attribNames);
   mStuInterface->addIBOToObject(obj1, ibo1, rawIBO, iboType);
+  EXPECT_THROW(mStuInterface->addVBOToObject(obj1, vbo1, rawVBO, attribNames), Duplicate);
+  EXPECT_THROW(mStuInterface->addIBOToObject(obj1, ibo1, rawIBO, iboType), Duplicate);
   
   // Add and compile persistent shaders.
-  //mStuInterface->addPersistentShader("UniformColor", );
+  mStuInterface->addPersistentShader(
+      "UniformColor", 
+      { {"UniformColor.vs", StuInterface::VERTEX_SHADER}, 
+        {"UniformColor.fs", StuInterface::FRAGMENT_SHADER},
+      });
+
+  EXPECT_THROW(mStuInterface->addPersistentShader(
+      "UniformColor", 
+      { {"UniformColor.vs", StuInterface::VERTEX_SHADER}, 
+        {"UniformColor.fs", StuInterface::FRAGMENT_SHADER},
+      }), Duplicate);
 
   /// \todo Test attributes in shader against attributes specified by vbo.
   

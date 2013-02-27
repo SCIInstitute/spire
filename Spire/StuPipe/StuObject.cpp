@@ -95,9 +95,14 @@ StuObject::StuObject(const std::string& name, int32_t renderOrder) :
 
 //------------------------------------------------------------------------------
 void StuObject::addIBO(const std::string& name,
-              std::shared_ptr<std::vector<uint8_t>> vboData,
+              std::shared_ptr<std::vector<uint8_t>> iboData,
               StuInterface::IBO_TYPE type)
 {
+  size_t hash = mHashFun(name);
+  if (mIBOMap.find(hash) != mIBOMap.end())
+    throw Duplicate("Attempting to add duplicate IBO to object (possible hash collision?).");
+
+  mIBOMap.emplace(std::make_pair(hash, IBOObject(iboData, type)));
 }
 
 //------------------------------------------------------------------------------
@@ -120,11 +125,30 @@ void StuObject::addVBO(const std::string& name,
               std::shared_ptr<std::vector<uint8_t>> vboData,
               const std::vector<std::string>& attribNames)
 {
+  size_t hash = mHashFun(name);
+  if (mVBOMap.find(hash) != mVBOMap.end())
+    throw Duplicate("Attempting to add duplicate VBO to object (possible hash collision?).");
+
+  mVBOMap.emplace(std::make_pair(hash, VBOObject(vboData, attribNames)));
 }
 
 //------------------------------------------------------------------------------
 void StuObject::removePass(const std::string& pass)
 {
+}
+
+//------------------------------------------------------------------------------
+IBOObject& StuObject::getIBOByName(const std::string& name)
+{
+  size_t hash = mHashFun(name);
+  return mIBOMap.at(hash);
+}
+
+//------------------------------------------------------------------------------
+VBOObject& StuObject::getVBOByName(const std::string& name)
+{
+  size_t hash = mHashFun(name);
+  return mVBOMap.at(hash);
 }
 
 

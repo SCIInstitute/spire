@@ -297,9 +297,10 @@ void StuInterface::addPassUniformInternal(const std::string& object,
 
 
 //------------------------------------------------------------------------------
-void StuInterface::addPersistentShaderImpl(Hub& hub, StuInterface* iface,
-                                           std::string programName,
-                                           std::vector<std::tuple<std::string, SHADER_TYPES>> tempShaders)
+void StuInterface::addPersistentShaderImpl(
+    Hub& hub, StuInterface* iface,
+    std::string programName,
+    std::vector<std::tuple<std::string, SHADER_TYPES>> tempShaders)
 {
   std::list<std::tuple<std::string, GLenum>> shaders;
   for (auto it = shaders.begin(); it != shaders.end(); ++it)
@@ -323,7 +324,7 @@ void StuInterface::addPersistentShaderImpl(Hub& hub, StuInterface* iface,
   }
 
   std::shared_ptr<ShaderProgramAsset> shader = 
-      iface->mHub.getShaderProgramManager().loadProgram("UniformColor", shaders);
+      iface->mHub.getShaderProgramManager().loadProgram(programName, shaders);
   iface->mPersistentShaders.push_back(shader);
 }
 

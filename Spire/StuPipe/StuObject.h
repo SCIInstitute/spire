@@ -150,12 +150,22 @@ public:
 
 protected:
 
+  /// Retrieves a VBO by name.
+  /// Throws std::out_of_range exception if no VBO is found.
+  VBOObject& getVBOByName(const std::string& name);
+
+  /// Retrieves an IBO by name.
+  /// Throws std::out_of_range exception if no VBO is found.
+  IBOObject& getIBOByName(const std::string& name);
+
   /// All registered passes.
   std::unordered_map<std::string, StuPass>  mPasses;
 
   // These maps may actually be more efficient implemented as an array. The map 
   // sizes are small and cache coherency will be more important. Ignoring for 
   // now until we identify an actual performance bottlenecks.
+  // size_t represents a std::hash of a string.
+  std::hash<std::string>                    mHashFun;
   std::map<size_t, VBOObject>               mVBOMap;    ///< OpenGL index -> VBOObject map.
   std::map<size_t, IBOObject>               mIBOMap;    ///< OpenGL index -> IBOObject map.
 
