@@ -95,8 +95,8 @@ public:
           std::shared_ptr<VBOObject> vbo, std::shared_ptr<IBOObject> ibo);
   virtual ~StuPass();
   
-  const std::string& getName()    {return mName;}
-  int32_t getPassOrder()          {return mPassOrder;}
+  const std::string& getName() const    {return mName;}
+  int32_t getPassOrder() const          {return mPassOrder;}
 
 protected:
 
@@ -175,6 +175,8 @@ public:
   void addPassUniform(const std::string& pass,
                       const std::string uniformName,
                       std::shared_ptr<AbstractUniformStateItem> item);
+
+  bool hasPassRenderingOrder(const std::vector<std::string>& passes) const;
 
 protected:
 

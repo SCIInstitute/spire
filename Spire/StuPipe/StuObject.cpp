@@ -226,4 +226,24 @@ std::shared_ptr<StuPass> StuObject::getPassByName(const std::string& name)
   return mPasses.at(name);
 }
 
+//------------------------------------------------------------------------------
+bool StuObject::hasPassRenderingOrder(const std::vector<std::string>& passes) const
+{
+  // Iterate over the map (we will iterate over the map in ascending order).
+  // This is the same loop we will be using in the renderer.
+  auto itToTest = passes.begin();
+  auto itOrder = mPassRenderOrder.begin();
+  for (; itOrder != mPassRenderOrder.end() && itToTest != passes.end();
+       ++itOrder, ++itToTest)
+  {
+    if (itOrder->second->getName() != *itToTest)
+      return false;
+  }
+
+  if (itToTest == passes.end() && itOrder == mPassRenderOrder.end())
+    return true;
+  else
+    return false;
+}
+
 } // end of namespace Spire

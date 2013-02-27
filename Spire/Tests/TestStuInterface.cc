@@ -228,6 +228,11 @@ TEST_F(StuPipeTestFixture, TestTriangle)
           obj1, "dummy pass", "Bad Shader", "vbo", "ibo"),
       std::out_of_range);
 
+  // Non-existant vbo.
+  EXPECT_THROW(mStuInterface->addGeomPassToObject(
+          obj1, "dummy pass", "UniformColor", "Bad vbo", "ibo"),
+      std::out_of_range);
+
 
   /// \todo Test duplicate pass exceptions.
 
@@ -236,7 +241,7 @@ TEST_F(StuPipeTestFixture, TestTriangle)
   ///       them. This way, if we remove all passes that reference the IBOs
   ///       or VBOs, they will automatically be deleted.
 
-  /// \todo Test pass order.
+  /// \todo Test pass order using hasPassRenderingOrder on the object.
 }
 
 //------------------------------------------------------------------------------
