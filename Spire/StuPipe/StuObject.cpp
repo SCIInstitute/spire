@@ -69,9 +69,9 @@ IBOObject::IBOObject(std::shared_ptr<std::vector<uint8_t>> iboData,
 
 //------------------------------------------------------------------------------
 StuPass::StuPass(const std::string& objectName, const std::string& programName,
-                 size_t vboID, size_t iboID) :
-    mVBO(vboID),
-    mIBO(iboID)
+                 std::shared_ptr<VBOObject> vbo, std::shared_ptr<IBOObject> ibo) :
+    mVBO(vbo),
+    mIBO(ibo)
 {
   /// \todo Lookup the shader to use
 }
@@ -102,15 +102,23 @@ void StuObject::addIBO(const std::string& name,
   if (mIBOMap.find(hash) != mIBOMap.end())
     throw Duplicate("Attempting to add duplicate IBO to object (possible hash collision?).");
 
-  mIBOMap.emplace(std::make_pair(hash, IBOObject(iboData, type)));
+  mIBOMap.insert(std::make_pair(
+          hash, std::shared_ptr<IBOObject>(new IBOObject(iboData, type))));
 }
 
 //------------------------------------------------------------------------------
-void StuObject::addPass(const std::string& pass,
-               const std::string& program,
-               const std::string& vboName,
-               const std::string& iboName)
+void StuObject::addPass(
+    const std::string& passName,
+    const std::string& program,
+    const std::string& vboName,
+    const std::string& iboName)
 {
+  // Check to see if there already is a pass by that name...
+  if (mPasses.find(passName) != mPasses.end())
+    throw Duplicate("There already exists a pass with the specified pass name.");
+
+  // Build the pass.
+
 }
 
 //------------------------------------------------------------------------------
@@ -129,7 +137,8 @@ void StuObject::addVBO(const std::string& name,
   if (mVBOMap.find(hash) != mVBOMap.end())
     throw Duplicate("Attempting to add duplicate VBO to object (possible hash collision?).");
 
-  mVBOMap.emplace(std::make_pair(hash, VBOObject(vboData, attribNames)));
+  mVBOMap.emplace(std::make_pair(
+          hash, std::shared_ptr<VBOObject>(new VBOObject(vboData, attribNames))));
 }
 
 //------------------------------------------------------------------------------
@@ -138,14 +147,14 @@ void StuObject::removePass(const std::string& pass)
 }
 
 //------------------------------------------------------------------------------
-IBOObject& StuObject::getIBOByName(const std::string& name)
+std::shared_ptr<IBOObject> StuObject::getIBOByName(const std::string& name)
 {
   size_t hash = mHashFun(name);
   return mIBOMap.at(hash);
 }
 
 //------------------------------------------------------------------------------
-VBOObject& StuObject::getVBOByName(const std::string& name)
+std::shared_ptr<VBOObject> StuObject::getVBOByName(const std::string& name)
 {
   size_t hash = mHashFun(name);
   return mVBOMap.at(hash);

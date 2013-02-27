@@ -75,6 +75,10 @@ public:
             StuInterface::IBO_TYPE type);
   ~IBOObject();
 
+  GLuint getGLIndex() const               {return glIndex;}
+  StuInterface::IBO_TYPE getType() const  {return type;}
+
+private:
   GLuint                    glIndex;    ///< Corresponds to the map index but obtained from OpenGL.
   StuInterface::IBO_TYPE    type;       ///< Type of index buffer.
 };
@@ -88,7 +92,7 @@ class StuPass
 {
 public:
   StuPass(const std::string& objectName, const std::string& programName,
-            size_t vboID, size_t iboID);
+          std::shared_ptr<VBOObject> vboID, std::shared_ptr<IBOObject> iboID);
   virtual ~StuPass();
   
 protected:
@@ -103,8 +107,8 @@ protected:
   /// runtime exception will be thrown.
   std::list<std::string>                mUnsatisfiedUniforms;
 
-  size_t                                mVBO;     ///< ID of VBO to use during pass.
-  size_t                                mIBO;     ///< ID of IBO to use during pass.
+  std::shared_ptr<VBOObject>            mVBO;     ///< ID of VBO to use during pass.
+  std::shared_ptr<IBOObject>            mIBO;     ///< ID of IBO to use during pass.
 
   std::shared_ptr<ShaderProgramAsset>   mShader;  ///< Shader to be used when rendering this pass.
 };
@@ -134,6 +138,10 @@ public:
               std::shared_ptr<std::vector<uint8_t>> vboData,
               StuInterface::IBO_TYPE type);
 
+  /// \note If we add ability to remove IBOs and VBOs, the IBOs and VBOs will
+  ///       not be removed until their corresponding passes are removed
+  ///       as well due to the shared_ptr.
+
   /// Adds a geometry pass with the specified index / vertex buffer objects.
   void addPass(const std::string& pass,
                const std::string& program,
@@ -152,11 +160,11 @@ protected:
 
   /// Retrieves a VBO by name.
   /// Throws std::out_of_range exception if no VBO is found.
-  VBOObject& getVBOByName(const std::string& name);
+  std::shared_ptr<VBOObject> getVBOByName(const std::string& name);
 
   /// Retrieves an IBO by name.
   /// Throws std::out_of_range exception if no VBO is found.
-  IBOObject& getIBOByName(const std::string& name);
+  std::shared_ptr<IBOObject> getIBOByName(const std::string& name);
 
   /// All registered passes.
   std::unordered_map<std::string, StuPass>  mPasses;
@@ -165,12 +173,12 @@ protected:
   // sizes are small and cache coherency will be more important. Ignoring for 
   // now until we identify an actual performance bottlenecks.
   // size_t represents a std::hash of a string.
-  std::hash<std::string>                    mHashFun;
-  std::map<size_t, VBOObject>               mVBOMap;    ///< OpenGL index -> VBOObject map.
-  std::map<size_t, IBOObject>               mIBOMap;    ///< OpenGL index -> IBOObject map.
+  std::hash<std::string>                        mHashFun;
+  std::map<size_t, std::shared_ptr<VBOObject>>  mVBOMap;    ///< OpenGL index -> VBOObject map.
+  std::map<size_t, std::shared_ptr<IBOObject>>  mIBOMap;    ///< OpenGL index -> IBOObject map.
 
-  std::string                               mName;
-  int32_t                                   mRenderOrder;
+  std::string                                   mName;
+  int32_t                                       mRenderOrder;
 };
 
 

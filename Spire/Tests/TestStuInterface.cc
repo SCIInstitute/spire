@@ -180,7 +180,9 @@ TEST_F(StuPipeTestFixture, TestTriangle)
   EXPECT_THROW(mStuInterface->addVBOToObject(obj1, vbo1, rawVBO, attribNames), Duplicate);
   EXPECT_THROW(mStuInterface->addIBOToObject(obj1, ibo1, rawIBO, iboType), Duplicate);
   
-  // Add and compile persistent shaders.
+  // Add and compile persistent shaders (if not already present).
+  // You will only run into the 'Duplicate' exception if the persistent shader
+  // is already in the persistent shader list.
   mStuInterface->addPersistentShader(
       "UniformColor", 
       { {"UniformColor.vs", StuInterface::VERTEX_SHADER}, 
@@ -214,8 +216,20 @@ TEST_F(StuPipeTestFixture, TestTriangle)
         {"UniformColor.fs", StuInterface::FRAGMENT_SHADER},
       }), Duplicate);
 
-  /// \todo Test attributes in shader against attributes specified by vbo.
-  
+  // Now construct passes (taking into account VBO attributes).
+
+  // There exists no 'test obj'.
+  EXPECT_THROW(mStuInterface->addGeomPassToObject(
+          "test obj", "dummy pass", "UniformColor", "vbo", "ibo"), 
+      std::out_of_range);
+
+  // Not a valid shader.
+  EXPECT_THROW(mStuInterface->addGeomPassToObject(
+          obj1, "dummy pass", "Bad Shader", "vbo", "ibo"),
+      std::out_of_range);
+
+
+  /// \todo Test duplicate pass exceptions.
 }
 
 //------------------------------------------------------------------------------
