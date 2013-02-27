@@ -91,11 +91,17 @@ private:
 class StuPass
 {
 public:
-  StuPass(const std::string& passName, const std::string& programName,
+  StuPass(const std::string& passName, const std::string& programName, int32_t passOrder,
           std::shared_ptr<VBOObject> vbo, std::shared_ptr<IBOObject> ibo);
   virtual ~StuPass();
   
+  const std::string& getName()    {return mName;}
+  int32_t getPassOrder()          {return mPassOrder;}
+
 protected:
+
+  std::string                           mName;      ///< Simple pass name.
+  int32_t                               mPassOrder; ///< Pass order.
 
   /// List of uniforms to apply before this shader gets executed.
   std::vector<std::unique_ptr<AbstractUniformStateItem>>  mUniforms;
@@ -155,6 +161,12 @@ public:
                const std::string& program,
                const std::string& vboName,
                const std::string& iboName);
+  void addPass(const std::string& pass,
+               const std::string& program,
+               const std::string& vboName,
+               const std::string& iboName,
+               int32_t passOrder);
+
 
   /// Removes a geometry pass from the object.
   void removePass(const std::string& pass);
@@ -166,6 +178,8 @@ public:
 
 protected:
 
+  void removePassFromOrderList(const std::string& pass, int32_t passOrder);
+
   /// Retrieves a VBO by name.
   /// Throws std::out_of_range exception if no VBO is found.
   std::shared_ptr<VBOObject> getVBOByName(const std::string& name);
@@ -174,14 +188,24 @@ protected:
   /// Throws std::out_of_range exception if no VBO is found.
   std::shared_ptr<IBOObject> getIBOByName(const std::string& name);
 
+  std::shared_ptr<StuPass> getPassByName(const std::string& name);
+
   /// All registered passes.
-  std::unordered_map<std::string, std::shared_ptr<StuPass>>  mPasses;
+  std::unordered_map<std::string, std::shared_ptr<StuPass>>   mPasses;
+  std::map<int32_t, std::shared_ptr<StuPass>>                 mPassRenderOrder;
+
+  int32_t mCurrentPassRenderOrder;  ///< Used to increment pass render order
+                                    ///< if no render order is specified when
+                                    ///< Creating pass.
 
   // These maps may actually be more efficient implemented as an array. The map 
   // sizes are small and cache coherency will be more important. Ignoring for 
   // now until we identify an actual performance bottlenecks.
   // size_t represents a std::hash of a string.
   std::hash<std::string>                        mHashFun;
+
+  /// \todo Consider moving vbo's to StuInterface so that all objects can have
+  ///       access to them.
   std::map<size_t, std::shared_ptr<VBOObject>>  mVBOMap;    ///< OpenGL index -> VBOObject map.
   std::map<size_t, std::shared_ptr<IBOObject>>  mIBOMap;    ///< OpenGL index -> IBOObject map.
 

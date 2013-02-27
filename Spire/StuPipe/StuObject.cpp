@@ -68,10 +68,12 @@ IBOObject::IBOObject(std::shared_ptr<std::vector<uint8_t>> iboData,
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-StuPass::StuPass(const std::string& passName, const std::string& programName,
+StuPass::StuPass(const std::string& passName, const std::string& programName, int32_t passOrder,
                  std::shared_ptr<VBOObject> vbo, std::shared_ptr<IBOObject> ibo) :
     mVBO(vbo),
-    mIBO(ibo)
+    mIBO(ibo),
+    mName(passName),
+    mPassOrder(passOrder)
 {
   /// \todo Lookup the shader. Throw std::out_of_range if the program does
   ///       not exist.
@@ -89,7 +91,8 @@ StuPass::~StuPass()
 //------------------------------------------------------------------------------
 StuObject::StuObject(const std::string& name, int32_t renderOrder) :
     mName(name),
-    mRenderOrder(renderOrder)
+    mRenderOrder(renderOrder),
+    mCurrentPassRenderOrder(0)
 {
 
 }
@@ -120,18 +123,59 @@ void StuObject::addPass(
     const std::string& passName,
     const std::string& program,
     const std::string& vboName,
-    const std::string& iboName)
+    const std::string& iboName,
+    int32_t passOrder)
 {
   // Check to see if there already is a pass by that name...
   if (mPasses.find(passName) != mPasses.end())
     throw Duplicate("There already exists a pass with the specified pass name.");
 
   // Build the pass.
-  std::shared_ptr<StuPass> pass(new StuPass(passName, program, 
+  std::shared_ptr<StuPass> pass(new StuPass(passName, program, passOrder,
                                             getVBOByName(vboName),
                                             getIBOByName(iboName)));
   
   mPasses.insert(make_pair(passName, pass));
+  mPassRenderOrder.insert(make_pair(passOrder, pass));
+}
+
+//------------------------------------------------------------------------------
+void StuObject::addPass(
+    const std::string& passName,
+    const std::string& program,
+    const std::string& vboName,
+    const std::string& iboName)
+{
+  addPass(passName, program, vboName, iboName, mCurrentPassRenderOrder);
+  ++mCurrentPassRenderOrder;
+}
+
+//------------------------------------------------------------------------------
+void StuObject::removePass(const std::string& passName)
+{
+  // This call will throw std::out_of_range error if passName doesn't exist in
+  // the pass' unordered_map.
+  std::shared_ptr<StuPass> pass = getPassByName(passName);
+
+  mPasses.erase(passName);
+  removePassFromOrderList(pass->getName(), pass->getPassOrder());
+}
+
+//------------------------------------------------------------------------------
+void StuObject::removePassFromOrderList(const std::string& passName,
+                                        int32_t passOrder)
+{
+  auto it = mPassRenderOrder.find(passOrder);
+  /// \xxx Should we be only iterating to mRenderOrderToObjects.count(objRenderOrder)?
+  for (; it != mPassRenderOrder.end(); ++it)
+  {
+    if (it->second->getName() == passName)
+    {
+      mPassRenderOrder.erase(it);
+      return;
+    }
+  }
+  throw std::range_error("Unable to find object to remove in render order map.");
 }
 
 //------------------------------------------------------------------------------
@@ -163,11 +207,6 @@ void StuObject::removeVBO(const std::string& vboName)
 }
 
 //------------------------------------------------------------------------------
-void StuObject::removePass(const std::string& pass)
-{
-}
-
-//------------------------------------------------------------------------------
 std::shared_ptr<IBOObject> StuObject::getIBOByName(const std::string& name)
 {
   size_t hash = mHashFun(name);
@@ -181,5 +220,10 @@ std::shared_ptr<VBOObject> StuObject::getVBOByName(const std::string& name)
   return mVBOMap.at(hash);
 }
 
+//------------------------------------------------------------------------------
+std::shared_ptr<StuPass> StuObject::getPassByName(const std::string& name)
+{
+  return mPasses.at(name);
+}
 
 } // end of namespace Spire
