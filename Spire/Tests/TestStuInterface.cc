@@ -120,6 +120,69 @@ TEST_F(StuPipeTestFixture, TestPublicInterface)
 TEST_F(StuPipeTestFixture, TestTriangle)
 {
   // Test the rendering of a triangle with StuPipe.
+
+  // Call Interface's doFrame manually. Then, since we are single threaded,
+  // use the OpenGL context to extract a frame from the GPU and compare it with
+  // golden images generated prior. If no golden image exists for this run,
+  // then manually add it to the golden image comparison storage area...
+
+  // First things first: just get the rendered image onto the filesystem...
+  
+  std::vector<float> vboData = 
+  {
+    -1.0f,  1.0f,  0.0f,
+    1.0f,  1.0f,  0.0f,
+    -1.0f, -1.0f,  0.0f,
+    1.0f, -1.0f,  0.0f
+  };
+  std::vector<std::string> attribNames = {"aPos"};
+
+  std::vector<uint16_t> iboData =
+  {
+    0, 1, 2, 3
+  };
+  StuInterface::IBO_TYPE iboType = StuInterface::IBO_16BIT;
+
+  // This is pretty contorted interface due to the marshalling between
+  // std::vector<float> and std::vector<uint8_t>. In practice, you would want
+  // to calculate the size of your VBO and using one std::vector<uint8_t> and
+  // reserve the necessary space in it. Then cast it's contents to floats or
+  // uint16_t as necessary (attributes can have a wide array of types, including
+  // half floats).
+  uint8_t*  rawBegin;
+  size_t    rawSize;
+
+  // Copy vboData into vector of uint8_t. Using std::copy.
+  std::shared_ptr<std::vector<uint8_t>> rawVBO(new std::vector<uint8_t>());
+  rawSize = vboData.size() * (sizeof(float) / sizeof(uint8_t));
+  rawVBO->reserve(rawSize);
+  rawBegin = reinterpret_cast<uint8_t*>(&vboData[0]); // Remember, standard guarantees that vectors are contiguous in memory.
+  std::copy(rawBegin, rawBegin + rawSize, rawVBO->begin());
+
+  // Copy iboData into vector of uint8_t. Using std::vector::assign.
+  std::shared_ptr<std::vector<uint8_t>> rawIBO(new std::vector<uint8_t>());
+  rawSize = iboData.size() * (sizeof(float) / sizeof(uint8_t));
+  rawIBO->reserve(rawSize);
+  rawBegin = reinterpret_cast<uint8_t*>(&iboData[0]); // Remember, standard guarantees that vectors are contiguous in memory.
+  rawIBO->assign(rawBegin, rawBegin + rawSize);
+
+  // Test attempting to add VBO and IBO before creating the object...
+  std::string obj1 = "obj1";
+  std::string vbo1 = "vbo1";
+  std::string ibo1 = "ibo1";
+
+  EXPECT_THROW(mStuInterface->addVBOToObject(obj1, vbo1, rawVBO, attribNames), std::range_error);
+  EXPECT_THROW(mStuInterface->addIBOToObject(obj1, ibo1, rawIBO, iboType), std::range_error);
+
+  mStuInterface->addObject(obj1);
+  mStuInterface->addVBOToObject(obj1, vbo1, rawVBO, attribNames);
+  mStuInterface->addIBOToObject(obj1, ibo1, rawIBO, iboType);
+  
+  // Add and compile persistent shaders.
+  //mStuInterface->addPersistentShader("UniformColor", );
+
+  /// \todo Test attributes in shader against attributes specified by vbo.
+  
 }
 
 //------------------------------------------------------------------------------
