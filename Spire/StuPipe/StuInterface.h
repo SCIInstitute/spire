@@ -144,7 +144,7 @@ public:
   ///                       check to ensure that the shader program's expected
   ///                       attributes match up with what you have provided in
   ///                       in the VBO. This only checked when a call to
-  ///                       addGeomPassToObject is made.
+  ///                       addPassToObject is made.
   void addVBO(const std::string& name,
               std::shared_ptr<std::vector<uint8_t>> vboData,
               const std::vector<std::string>& attribNames);
@@ -191,11 +191,11 @@ public:
   /// \param  vboID         VBO to use.
   /// \param  iboID         IBO to use.
   /// \return Pass ID. Use this ID to assign uniforms to the pass.
-  void addGeomPassToObject(const std::string& object,
-                           const std::string& pass,
-                           const std::string& program,
-                           const std::string& vboName,
-                           const std::string& iboName);
+  void addPassToObject(const std::string& object,
+                       const std::string& pass,
+                       const std::string& program,
+                       const std::string& vboName,
+                       const std::string& iboName);
 
   /// Removes a geometry pass from the object.
   /// Throws an std::out_of_range exception if the object or pass is not found 
@@ -348,12 +348,12 @@ private:
   static void removeVBOImpl(Hub& hub, StuInterface* iface,
                                       std::string vboName);
 
-  static void addGeomPassToObjectImpl(Hub& hub, StuInterface* iface,
-                                      std::string objectName,
-                                      std::string passName,
-                                      std::string program,
-                                      std::string vboID,
-                                      std::string iboID);
+  static void addPassToObjectImpl(Hub& hub, StuInterface* iface,
+                                  std::string objectName,
+                                  std::string passName,
+                                  std::string program,
+                                  std::string vboID,
+                                  std::string iboID);
 
   static void addPassUniformInternalImpl(Hub& hub, StuInterface* iface,
                                          std::string object,

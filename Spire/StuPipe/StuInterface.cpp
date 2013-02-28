@@ -155,7 +155,7 @@ void StuInterface::removeIBO(const std::string& iboName)
 
 
 //------------------------------------------------------------------------------
-void StuInterface::addGeomPassToObjectImpl(Hub& hub, StuInterface* iface,
+void StuInterface::addPassToObjectImpl(Hub& hub, StuInterface* iface,
                                            std::string object,
                                            std::string pass,
                                            std::string program,
@@ -170,14 +170,14 @@ void StuInterface::addGeomPassToObjectImpl(Hub& hub, StuInterface* iface,
 
 
 //------------------------------------------------------------------------------
-void StuInterface::addGeomPassToObject(const std::string& object,
+void StuInterface::addPassToObject(const std::string& object,
                                        const std::string& pass,
                                        const std::string& program,
                                        const std::string& vboName,
                                        const std::string& iboName)
 {
   Hub::RemoteFunction fun =
-      std::bind(addGeomPassToObjectImpl, _1, this, object, pass, program, 
+      std::bind(addPassToObjectImpl, _1, this, object, pass, program, 
                 vboName, iboName);
   mHub.addFunctionToThreadQueue(fun);
 }

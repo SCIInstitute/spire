@@ -171,6 +171,7 @@ TEST_F(StuPipeTestFixture, TestTriangle)
   std::string ibo1 = "ibo1";
   mStuInterface->addVBO(vbo1, rawVBO, attribNames);
   mStuInterface->addIBO(ibo1, rawIBO, iboType);
+
   // Attempt to add duplicate VBOs and IBOs
   EXPECT_THROW(mStuInterface->addVBO(vbo1, rawVBO, attribNames), Duplicate);
   EXPECT_THROW(mStuInterface->addIBO(ibo1, rawIBO, iboType), Duplicate);
@@ -178,30 +179,31 @@ TEST_F(StuPipeTestFixture, TestTriangle)
   std::string obj1 = "obj1";
   mStuInterface->addObject(obj1);
   
+  std::string shader1 = "UniformColor";
   // Add and compile persistent shaders (if not already present).
   // You will only run into the 'Duplicate' exception if the persistent shader
   // is already in the persistent shader list.
   mStuInterface->addPersistentShader(
-      "UniformColor", 
+      shader1, 
       { {"UniformColor.vs", StuInterface::VERTEX_SHADER}, 
         {"UniformColor.fs", StuInterface::FRAGMENT_SHADER},
       });
 
   // Test various cases of shader failure after adding a prior shader.
   EXPECT_THROW(mStuInterface->addPersistentShader(
-      "UniformColor", 
+      shader1, 
       { {"UniformColor.vs", StuInterface::FRAGMENT_SHADER}, 
         {"UniformColor.fs", StuInterface::VERTEX_SHADER},
       }), std::invalid_argument);
 
   EXPECT_THROW(mStuInterface->addPersistentShader(
-      "UniformColor", 
+      shader1, 
       { {"UniformColor2.vs", StuInterface::VERTEX_SHADER}, 
         {"UniformColor.fs", StuInterface::FRAGMENT_SHADER},
       }), std::invalid_argument);
 
   EXPECT_THROW(mStuInterface->addPersistentShader(
-      "UniformColor", 
+      shader1, 
       { {"UniformColor.vs", StuInterface::VERTEX_SHADER}, 
         {"UniformColor2.fs", StuInterface::FRAGMENT_SHADER},
       }), std::invalid_argument);
@@ -209,7 +211,7 @@ TEST_F(StuPipeTestFixture, TestTriangle)
   // This final exception is throw directly from the addPersistentShader
   // function. The 3 prior exception were all thrown from the ShaderProgramMan.
   EXPECT_THROW(mStuInterface->addPersistentShader(
-      "UniformColor", 
+      shader1, 
       { {"UniformColor.vs", StuInterface::VERTEX_SHADER}, 
         {"UniformColor.fs", StuInterface::FRAGMENT_SHADER},
       }), Duplicate);
@@ -217,20 +219,32 @@ TEST_F(StuPipeTestFixture, TestTriangle)
   // Now construct passes (taking into account VBO attributes).
 
   // There exists no 'test obj'.
-  EXPECT_THROW(mStuInterface->addGeomPassToObject(
+  EXPECT_THROW(mStuInterface->addPassToObject(
           "test obj", "dummy pass", "UniformColor", "vbo", "ibo"), 
       std::out_of_range);
 
   // Not a valid shader.
-  EXPECT_THROW(mStuInterface->addGeomPassToObject(
+  EXPECT_THROW(mStuInterface->addPassToObject(
           obj1, "dummy pass", "Bad Shader", "vbo", "ibo"),
       std::out_of_range);
 
   // Non-existant vbo.
-  EXPECT_THROW(mStuInterface->addGeomPassToObject(
+  EXPECT_THROW(mStuInterface->addPassToObject(
           obj1, "dummy pass", "UniformColor", "Bad vbo", "ibo"),
       std::out_of_range);
 
+  // Non-existant ibo.
+  EXPECT_THROW(mStuInterface->addPassToObject(
+          obj1, "dummy pass", "UniformColor", vbo1, "bad ibo"),
+      std::out_of_range);
+
+  // Build a good pass.
+  std::string pass1 = "pass1";
+  mStuInterface->addPassToObject(obj1, pass1, shader1, vbo1, ibo1);
+
+  // Attempt to re-add the good pass.
+  EXPECT_THROW(mStuInterface->addPassToObject(obj1, pass1, shader1, vbo1, ibo1),
+               Duplicate);
 
   /// \todo Test duplicate pass exceptions.
 
