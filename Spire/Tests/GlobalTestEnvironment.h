@@ -53,7 +53,10 @@ public:
     return mInstance;
   }
 
-  virtual std::shared_ptr<Spire::Context>   getContext() = 0;
+  virtual std::shared_ptr<Spire::Context>   getContext() const = 0;
+
+  // Writes the current FBO to the designated file. Should be a valid image file.
+  virtual void writeFBO(const std::string& file) = 0;
 
 protected:
 

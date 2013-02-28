@@ -54,6 +54,7 @@ public:
 
     // Build StuPipe using the context from GlobalTestEnvironment.
     std::shared_ptr<Spire::Context> ctx = Spire::GlobalTestEnvironment::instance()->getContext();
+    ctx->makeCurrent();
     mSpireInterface = std::shared_ptr<Spire::Interface>(new Spire::Interface(
         ctx, shaderSearchDirs, false));
 

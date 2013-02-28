@@ -246,12 +246,28 @@ TEST_F(StuPipeTestFixture, TestTriangle)
   EXPECT_THROW(mStuInterface->addPassToObject(obj1, pass1, shader1, vbo1, ibo1),
                Duplicate);
 
-  /// \todo Test duplicate pass exceptions.
+  // No longer need VBO and IBO.
+  mStuInterface->removeIBO(ibo1);
+  mStuInterface->removeVBO(vbo1);
+  EXPECT_THROW(mStuInterface->removeIBO(ibo1), std::out_of_range);
+  EXPECT_THROW(mStuInterface->removeVBO(vbo1), std::out_of_range);
+
+  // Ensure context is current.
+  std::shared_ptr<Spire::Context> ctx = Spire::GlobalTestEnvironment::instance()->getContext();
+  ctx->makeCurrent();
+
+  //M44 rot = M44::rotationX(PI);
+  //mHub.getCamera()->setViewTransform(mView);
+  //mSpireInterface->cameraSetTransform();
+
+  // Attempt to render the triangle using synchronous interface (mind camera position).
+  mSpireInterface->doFrame();
+
+  // Extract results
+  Spire::GlobalTestEnvironment::instance()->writeFBO("/tmp/test.png");
 
 
-  /// \todo Remove VBO and IBO from object once we are done using
-  ///       them. This way, if we remove all passes that reference the IBOs
-  ///       or VBOs, they will automatically be deleted.
+  // Create an image of appropriate dimensions.
 
   /// \todo Test pass order using hasPassRenderingOrder on the object.
 }

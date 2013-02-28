@@ -39,24 +39,67 @@
 // windowing header files.
 #define cimg_display 0
 #include "3rdParty/CImg/CImg.h"
+using namespace cimg_library;
 
+// Lots of yucky code in the test-environment.
 class TestEnvironment : public Spire::GlobalTestEnvironment
 {
 public:
   TestEnvironment(uint32_t width, uint32_t height, 
                   int32_t colorBits, int32_t depthBits, int32_t stencilBits,
-                  bool doubleBuffer, bool visible)
+                  bool doubleBuffer, bool visible) :
+      mWidth(width),
+      mHeight(height)
   {
     mContext = createContext(width, height, colorBits, depthBits, stencilBits,
                              doubleBuffer, visible);
+
+    // Pre-allocate an image of appropriate size.
+    try
+    {
+      mRawImage.resize(width*height*4);  // 4 is the bit depth - RGBA.
+    }
+    catch (...)
+    {
+      mRawImage.clear();
+    }
+    if ( mRawImage.empty() )
+      throw std::runtime_error("Unable to allocate space for image.");
   }
 
 
   /// Creates a context if one hasn't already been created and returns it.
   /// Otherwise, it returns the currently active context.
-  std::shared_ptr<Spire::Context> getContext()
+  std::shared_ptr<Spire::Context> getContext() const override
   {
     return std::dynamic_pointer_cast<Spire::Context>(mContext);
+  }
+
+  void writeFBO(const std::string& file) override
+  {
+    mContext->makeCurrent();
+
+    // This function should be called from test code. So we are safe writing
+    // test assertions in this code.
+    GLint viewport[4];
+    glGetIntegerv(GL_VIEWPORT, viewport);
+    ASSERT_EQ(0, viewport[0]);
+    ASSERT_EQ(0, viewport[1]);
+    ASSERT_EQ(mWidth, viewport[2]);
+    ASSERT_EQ(mHeight, viewport[3]);
+
+    glPixelStorei(GL_PACK_ALIGNMENT, 1);
+    glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+    glReadBuffer(GL_COLOR_ATTACHMENT0);
+    glReadPixels(0,0,viewport[2],viewport[3],GL_RGBA,GL_UNSIGNED_SHORT,&mRawImage[0]);
+
+    //CImg<uint8_t> img(viewport[2], viewport[3], 1, 4, 0);
+    // We are using shared memory for the CImg class so it doesn't have to allocate its own.
+    // It would be better to std::move vector into CImg though.
+    // \todo image flipped?
+    CImg<uint8_t> img(reinterpret_cast<const char*>(&mRawImage[0]), viewport[2], viewport[3], 1, true);
+
+    img.save(file.c_str());
   }
 
   /// Overrides from gtest
@@ -79,10 +122,18 @@ private:
       throw std::runtime_error("Invalid context generated.");
     ctx->makeCurrent();
 
+    // Setup the viewport correctly.
+    glViewport(0, 0, width, height);
+
     return ctx;
   }
 
   std::shared_ptr<Spire::BatchContext> mContext;
+
+  /// Pre-allocated rawImage of what we will pull from OpenGL.
+  std::vector<uint8_t> mRawImage;
+  uint32_t mWidth;
+  uint32_t mHeight;
 };
 
 
