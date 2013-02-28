@@ -102,6 +102,7 @@ void NSContext::makeCurrent()
 void NSContext::swapBuffers()
 {
   // Buffers are autoswapped?
+  [mCI->openGLContext flushBuffer];
 }
 
 } // end namespace tuvok

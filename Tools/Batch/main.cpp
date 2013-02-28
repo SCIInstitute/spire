@@ -92,13 +92,16 @@ public:
     glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
     glReadBuffer(GL_COLOR_ATTACHMENT0);
     glReadPixels(0,0,viewport[2],viewport[3],GL_RGBA,GL_UNSIGNED_SHORT,&mRawImage[0]);
+    std::cerr << "Image Data: " << static_cast<int>(mRawImage[0]) 
+                                << static_cast<int>(mRawImage[1]) 
+                                << static_cast<int>(mRawImage[2]) 
+                                << static_cast<int>(mRawImage[3]) << std::endl;
 
     //CImg<uint8_t> img(viewport[2], viewport[3], 1, 4, 0);
     // We are using shared memory for the CImg class so it doesn't have to allocate its own.
     // It would be better to std::move vector into CImg though.
     // \todo image flipped?
-    CImg<uint8_t> img(reinterpret_cast<const char*>(&mRawImage[0]), viewport[2], viewport[3], 1, true);
-
+    CImg<uint8_t> img(reinterpret_cast<const char*>(&mRawImage[0]), viewport[2], viewport[3], 1, false);
     img.save(file.c_str());
   }
 

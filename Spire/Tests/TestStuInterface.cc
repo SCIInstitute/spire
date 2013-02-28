@@ -262,6 +262,10 @@ TEST_F(StuPipeTestFixture, TestTriangle)
 
   // Attempt to render the triangle using synchronous interface (mind camera position).
   mSpireInterface->doFrame();
+  ctx->swapBuffers();
+
+  mSpireInterface->doFrame();
+  ctx->swapBuffers();
 
   // Extract results
   Spire::GlobalTestEnvironment::instance()->writeFBO("/tmp/test.png");
