@@ -35,36 +35,6 @@
 namespace Spire {
 
 //------------------------------------------------------------------------------
-// VBO
-//------------------------------------------------------------------------------
-
-//------------------------------------------------------------------------------
-VBOObject::VBOObject(std::shared_ptr<std::vector<uint8_t>> vboData,
-            const std::vector<std::string>& attributes)
-{
-}
-
-//------------------------------------------------------------------------------
-VBOObject::~VBOObject()
-{
-}
-
-//------------------------------------------------------------------------------
-// IBO
-//------------------------------------------------------------------------------
-
-//------------------------------------------------------------------------------
-IBOObject::~IBOObject()
-{
-}
-
-//------------------------------------------------------------------------------
-IBOObject::IBOObject(std::shared_ptr<std::vector<uint8_t>> iboData,
-            StuInterface::IBO_TYPE type)
-{
-}
-
-//------------------------------------------------------------------------------
 // StuPass
 //------------------------------------------------------------------------------
 
@@ -104,33 +74,13 @@ StuObject::StuObject(Hub& hub, const std::string& name, int32_t renderOrder) :
 
 }
 
-//------------------------------------------------------------------------------
-void StuObject::addIBO(const std::string& name,
-              std::shared_ptr<std::vector<uint8_t>> iboData,
-              StuInterface::IBO_TYPE type)
-{
-  size_t hash = mHashFun(name);
-  if (mIBOMap.find(hash) != mIBOMap.end())
-    throw Duplicate("Attempting to add duplicate IBO to object (possible hash collision?).");
-
-  mIBOMap.insert(std::make_pair(
-          hash, std::shared_ptr<IBOObject>(new IBOObject(iboData, type))));
-}
-
-//------------------------------------------------------------------------------
-void StuObject::removeIBO(const std::string& name)
-{
-  size_t numElementsRemoved = mIBOMap.erase(mHashFun(name));
-  if (numElementsRemoved == 0)
-    throw std::out_of_range("Could not find IBO to remove.");
-}
 
 //------------------------------------------------------------------------------
 void StuObject::addPass(
     const std::string& passName,
     const std::string& program,
-    const std::string& vboName,
-    const std::string& iboName,
+    std::shared_ptr<VBOObject> vbo,
+    std::shared_ptr<IBOObject> ibo,
     int32_t passOrder)
 {
   // Check to see if there already is a pass by that name...
@@ -139,8 +89,8 @@ void StuObject::addPass(
 
   // Build the pass.
   std::shared_ptr<StuPass> pass(new StuPass(mHub, passName, program, passOrder,
-                                            getVBOByName(vboName),
-                                            getIBOByName(iboName)));
+                                            vbo,
+                                            ibo));
   
   mPasses.insert(make_pair(passName, pass));
   mPassRenderOrder.insert(make_pair(passOrder, pass));
@@ -150,10 +100,10 @@ void StuObject::addPass(
 void StuObject::addPass(
     const std::string& passName,
     const std::string& program,
-    const std::string& vboName,
-    const std::string& iboName)
+    std::shared_ptr<VBOObject> vbo,
+    std::shared_ptr<IBOObject> ibo)
 {
-  addPass(passName, program, vboName, iboName, mCurrentPassRenderOrder);
+  addPass(passName, program, vbo, ibo, mCurrentPassRenderOrder);
   ++mCurrentPassRenderOrder;
 }
 
@@ -192,40 +142,6 @@ void StuObject::addPassUniform(const std::string& pass,
 {
 }
 
-//------------------------------------------------------------------------------
-void StuObject::addVBO(const std::string& name,
-              std::shared_ptr<std::vector<uint8_t>> vboData,
-              const std::vector<std::string>& attribNames)
-{
-  size_t hash = mHashFun(name);
-  if (mVBOMap.find(hash) != mVBOMap.end())
-    throw Duplicate("Attempting to add duplicate VBO to object (possible hash collision?).");
-
-  mVBOMap.emplace(std::make_pair(
-          hash, std::shared_ptr<VBOObject>(new VBOObject(vboData, attribNames))));
-}
-
-//------------------------------------------------------------------------------
-void StuObject::removeVBO(const std::string& vboName)
-{
-  size_t numElementsRemoved = mIBOMap.erase(mHashFun(vboName));
-  if (numElementsRemoved == 0)
-    throw std::out_of_range("Could not find VBO to remove.");
-}
-
-//------------------------------------------------------------------------------
-std::shared_ptr<IBOObject> StuObject::getIBOByName(const std::string& name)
-{
-  size_t hash = mHashFun(name);
-  return mIBOMap.at(hash);
-}
-
-//------------------------------------------------------------------------------
-std::shared_ptr<VBOObject> StuObject::getVBOByName(const std::string& name)
-{
-  size_t hash = mHashFun(name);
-  return mVBOMap.at(hash);
-}
 
 //------------------------------------------------------------------------------
 std::shared_ptr<StuPass> StuObject::getPassByName(const std::string& name)

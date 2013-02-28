@@ -39,49 +39,11 @@
 #include "Common.h"
 #include "Core/ShaderProgramMan.h"
 #include "Core/ShaderUniformStateManTemplates.h"
-#include "StuPipe/StuInterface.h"
+
+#include "StuVBOObject.h"
+#include "StuIBOObject.h"
 
 namespace Spire {
-
-//------------------------------------------------------------------------------
-// VBO object
-//------------------------------------------------------------------------------
-/// Object that encapsulates an OpenGL vertex buffer. The buffer will be
-/// automatically deleted by VBOObject's destructor.
-class VBOObject
-{
-public:
-  VBOObject(std::shared_ptr<std::vector<uint8_t>> vboData,
-            const std::vector<std::string>& attributes);
-  ~VBOObject();
-
-  GLuint getGLIndex() const                             {return mGLIndex;}
-  const std::vector<std::string>& getAttributes() const {return mAttributes;}
-
-private:
-  GLuint                    mGLIndex;    ///< Corresponds to the map index but obtained from OpenGL.
-  std::vector<std::string>  mAttributes; ///< Attributes for shader verification.
-};
-
-//------------------------------------------------------------------------------
-// IBO object
-//------------------------------------------------------------------------------
-/// Object that encapsulates an OpenGL index buffer. The buffer will be
-/// automatically deleted by IBOObject's destructor.
-class IBOObject
-{
-public:
-  IBOObject(std::shared_ptr<std::vector<uint8_t>> iboData,
-            StuInterface::IBO_TYPE type);
-  ~IBOObject();
-
-  GLuint getGLIndex() const               {return glIndex;}
-  StuInterface::IBO_TYPE getType() const  {return type;}
-
-private:
-  GLuint                    glIndex;    ///< Corresponds to the map index but obtained from OpenGL.
-  StuInterface::IBO_TYPE    type;       ///< Type of index buffer.
-};
 
 //------------------------------------------------------------------------------
 // StuPass object
@@ -138,24 +100,6 @@ public:
   /// Set new rendering order.
   void setRenderOrder(int32_t renderOrder) {mRenderOrder = renderOrder;}
 
-  /// Adds an object specific VBO. See StuInferface.
-  void addVBO(const std::string& name,
-              std::shared_ptr<std::vector<uint8_t>> vboData,
-              const std::vector<std::string>& attribNames);
-
-  /// Removes a VBO.
-  /// Throws std::out_of_range if the VBO doesn't exist.
-  void removeVBO(const std::string& name);
-
-  /// Adds an object specific IBO. See StuInferface.
-  void addIBO(const std::string& name,
-              std::shared_ptr<std::vector<uint8_t>> vboData,
-              StuInterface::IBO_TYPE type);
-
-  /// Removes an IBO.
-  /// Throws std::out_of_range if the IBO doesn't exist.
-  void removeIBO(const std::string& name);
-
   /// \note If we add ability to remove IBOs and VBOs, the IBOs and VBOs will
   ///       not be removed until their corresponding passes are removed
   ///       as well due to the shared_ptr.
@@ -163,12 +107,12 @@ public:
   /// Adds a geometry pass with the specified index / vertex buffer objects.
   void addPass(const std::string& pass,
                const std::string& program,
-               const std::string& vboName,
-               const std::string& iboName);
+               std::shared_ptr<VBOObject> vbo,
+               std::shared_ptr<IBOObject> ibo);
   void addPass(const std::string& pass,
                const std::string& program,
-               const std::string& vboName,
-               const std::string& iboName,
+               std::shared_ptr<VBOObject> vbo,
+               std::shared_ptr<IBOObject> ibo,
                int32_t passOrder);
 
 
@@ -186,14 +130,7 @@ protected:
 
   void removePassFromOrderList(const std::string& pass, int32_t passOrder);
 
-  /// Retrieves a VBO by name.
-  /// Throws std::out_of_range exception if no VBO is found.
-  std::shared_ptr<VBOObject> getVBOByName(const std::string& name);
-
-  /// Retrieves an IBO by name.
-  /// Throws std::out_of_range exception if no VBO is found.
-  std::shared_ptr<IBOObject> getIBOByName(const std::string& name);
-
+  /// Retrieves the pass by name.
   std::shared_ptr<StuPass> getPassByName(const std::string& name);
 
   /// All registered passes.
@@ -209,11 +146,6 @@ protected:
   // now until we identify an actual performance bottlenecks.
   // size_t represents a std::hash of a string.
   std::hash<std::string>                        mHashFun;
-
-  /// \todo Consider moving vbo's to StuInterface so that all objects can have
-  ///       access to them.
-  std::map<size_t, std::shared_ptr<VBOObject>>  mVBOMap;    ///< OpenGL index -> VBOObject map.
-  std::map<size_t, std::shared_ptr<IBOObject>>  mIBOMap;    ///< OpenGL index -> IBOObject map.
 
   std::string                                   mName;
   int32_t                                       mRenderOrder;

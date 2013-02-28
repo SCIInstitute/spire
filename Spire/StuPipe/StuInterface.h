@@ -47,6 +47,8 @@ namespace Spire {
 class Hub;
 class StuObject;
 class ShaderProgramAsset;
+class VBOObject;
+class IBOObject;
 
 /// \todo For other pipes. If we have access to OpenGL4.2 features, use image
 ///       load store to implement Order Independent Transparency using
@@ -143,15 +145,14 @@ public:
   ///                       attributes match up with what you have provided in
   ///                       in the VBO. This only checked when a call to
   ///                       addGeomPassToObject is made.
-  void addVBOToObject(const std::string& object,
-                      const std::string& name,
-                      std::shared_ptr<std::vector<uint8_t>> vboData,
-                      const std::vector<std::string>& attribNames);
+  void addVBO(const std::string& name,
+              std::shared_ptr<std::vector<uint8_t>> vboData,
+              const std::vector<std::string>& attribNames);
 
   /// Removes specified vbo from the object. It is safe to issue this call even
   /// though some of your passes may still be referencing the VBOs/IBOs. When
   /// the passes are destroyed, their associated VBOs/IBOs will be destroyed.
-  void removeVBOFromObject(const std::string& object, const std::string& vboName);
+  void removeVBO(const std::string& vboName);
 
   /// Adds an IBO. This IBO can be re-used by adding passes to the object.
   /// Throws an std::out_of_range exception if the object is not found in the 
@@ -170,15 +171,14 @@ public:
   ///                       spire. Unless there is a reference to it out side
   ///                       of spire, it will be destroyed.
   /// \param  type          Specifies what kind of IBO iboData represents.
-  void addIBOToObject(const std::string& object,
-                      const std::string& name,
+  void addIBO(const std::string& name,
                       std::shared_ptr<std::vector<uint8_t>> iboData,
                       IBO_TYPE type);
 
   /// Removes specified ibo from the object. It is safe to issue this call even
   /// though some of your passes may still be referencing the VBOs/IBOs. When
   /// the passes are destroyed, their associated VBOs/IBOs will be destroyed.
-  void removeIBOFromObject(const std::string& object, const std::string& iboName);
+  void removeIBO(const std::string& iboName);
 
   /// Adds a geometry pass to an object given by the identifier 'object'.
   /// Throws an std::out_of_range exception if the object is not found in the 
@@ -308,6 +308,13 @@ private:
   /// be GC'ed unless this pipe is destroyed).
   std::list<std::shared_ptr<ShaderProgramAsset>>  mPersistentShaders;
 
+  /// VBO names to our representation of a vertex buffer object.
+  std::unordered_map<std::string, std::shared_ptr<VBOObject>>  mVBOMap;
+
+  /// IBO names to our representation of an index buffer object.
+  std::unordered_map<std::string, std::shared_ptr<IBOObject>>  mIBOMap;
+
+
   // NOTE:  The following variable should only be accessed on the client side.
   //        Never by the renderer. This var just makes it easier when adding
   //        objects and you don't care about their order.
@@ -327,19 +334,19 @@ private:
   static void assignRenderOrderImpl(Hub& hub, StuInterface* iface,
                                     std::string object, int32_t renderOrder);
 
-  static void addIBOToObjectImpl(Hub& hub, StuInterface* iface,
-                                 std::string objectName, std::string iboName,
+  static void addIBOImpl(Hub& hub, StuInterface* iface,
+                                 std::string iboName,
                                  std::shared_ptr<std::vector<uint8_t>> iboData,
                                  StuInterface::IBO_TYPE type);
-  static void removeIBOFromObjectImpl(Hub& hub, StuInterface* iface,
-                                      std::string objectName, std::string iboName);
+  static void removeIBOImpl(Hub& hub, StuInterface* iface,
+                                      std::string iboName);
 
-  static void addVBOToObjectImpl(Hub& hub, StuInterface* iface,
-                                 std::string objectName, std::string vboName,
+  static void addVBOImpl(Hub& hub, StuInterface* iface,
+                                 std::string vboName,
                                  std::shared_ptr<std::vector<uint8_t>> vboData,
                                  std::vector<std::string> attribNames);
-  static void removeVBOFromObjectImpl(Hub& hub, StuInterface* iface,
-                                      std::string object, std::string vboName);
+  static void removeVBOImpl(Hub& hub, StuInterface* iface,
+                                      std::string vboName);
 
   static void addGeomPassToObjectImpl(Hub& hub, StuInterface* iface,
                                       std::string objectName,

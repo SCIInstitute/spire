@@ -66,25 +66,26 @@ void StuInterface::ntsDoPass()
 }
 
 //------------------------------------------------------------------------------
-void StuInterface::addIBOToObjectImpl(Hub& hub, StuInterface* iface,
-                                      std::string objectName, std::string iboName,
+void StuInterface::addIBOImpl(Hub& hub, StuInterface* iface,
+                                      std::string iboName,
                                       std::shared_ptr<std::vector<uint8_t>> iboData,
                                       StuInterface::IBO_TYPE type)
 {
-  // The 'at' function will throw std::out_of_range an exception if object
-  // doesn't exist.
-  std::shared_ptr<StuObject> obj = iface->mNameToObject.at(objectName);
-  obj->addIBO(iboName, iboData, type);
+  if (iface->mIBOMap.find(iboName) != iface->mIBOMap.end())
+    throw Duplicate("Attempting to add duplicate IBO to object.");
+
+  iface->mIBOMap.insert(std::make_pair(
+          iboName, std::shared_ptr<IBOObject>(new IBOObject(iboData, type))));
 }
 
+
 //------------------------------------------------------------------------------
-void StuInterface::addIBOToObject(const std::string& object,
-                                  const std::string& name,
+void StuInterface::addIBO(const std::string& name,
                                   std::shared_ptr<std::vector<uint8_t>> iboData,
                                   IBO_TYPE type)
 {
   Hub::RemoteFunction fun =
-      std::bind(addIBOToObjectImpl, _1, this, object, name, iboData, type);
+      std::bind(addIBOImpl, _1, this, name, iboData, type);
   mHub.addFunctionToThreadQueue(fun);
 }
 
@@ -92,57 +93,61 @@ void StuInterface::addIBOToObject(const std::string& object,
 
 
 //------------------------------------------------------------------------------
-void StuInterface::addVBOToObjectImpl(Hub& hub, StuInterface* iface,
-                                      std::string objectName, std::string vboName,
+void StuInterface::addVBOImpl(Hub& hub, StuInterface* iface,
+                                      std::string vboName,
                                       std::shared_ptr<std::vector<uint8_t>> vboData,
                                       std::vector<std::string> attribNames)
 {
-  std::shared_ptr<StuObject> obj = iface->mNameToObject.at(objectName);
-  obj->addVBO(vboName, vboData, attribNames);
+  if (iface->mVBOMap.find(vboName) != iface->mVBOMap.end())
+    throw Duplicate("Attempting to add duplicate VBO to object.");
+
+  iface->mVBOMap.insert(std::make_pair(
+          vboName, std::shared_ptr<VBOObject>(new VBOObject(vboData, attribNames))));
 }
 
 
 //------------------------------------------------------------------------------
-void StuInterface::addVBOToObject(const std::string& object,
-                                  const std::string& name,
+void StuInterface::addVBO(const std::string& name,
                                   std::shared_ptr<std::vector<uint8_t>> vboData,
                                   const std::vector<std::string>& attribNames)
 {
   Hub::RemoteFunction fun =
-      std::bind(addVBOToObjectImpl, _1, this, object, name, vboData, attribNames);
+      std::bind(addVBOImpl, _1, this, name, vboData, attribNames);
   mHub.addFunctionToThreadQueue(fun);
 }
 
 //------------------------------------------------------------------------------
-void StuInterface::removeVBOFromObjectImpl(Hub& hub, StuInterface* iface,
-                                           std::string objectName, std::string vboName)
+void StuInterface::removeVBOImpl(Hub& hub, StuInterface* iface,
+                                           std::string vboName)
 {
-  std::shared_ptr<StuObject> obj = iface->mNameToObject.at(objectName);
-  obj->removeVBO(vboName);
+  size_t numElementsRemoved = iface->mVBOMap.erase(vboName);
+  if (numElementsRemoved == 0)
+    throw std::out_of_range("Could not find VBO to remove.");
 }
 
 //------------------------------------------------------------------------------
-void StuInterface::removeVBOFromObject(const std::string& object, const std::string& vboName)
+void StuInterface::removeVBO(const std::string& vboName)
 {
   Hub::RemoteFunction fun =
-      std::bind(removeVBOFromObjectImpl, _1, this, object, vboName);
+      std::bind(removeVBOImpl, _1, this, vboName);
   mHub.addFunctionToThreadQueue(fun);
 }
 
 
 //------------------------------------------------------------------------------
-void StuInterface::removeIBOFromObjectImpl(Hub& hub, StuInterface* iface,
-                                           std::string objectName, std::string iboName)
+void StuInterface::removeIBOImpl(Hub& hub, StuInterface* iface,
+                                           std::string iboName)
 {
-  std::shared_ptr<StuObject> obj = iface->mNameToObject.at(objectName);
-  obj->removeIBO(iboName);
+  size_t numElementsRemoved = iface->mIBOMap.erase(iboName);
+  if (numElementsRemoved == 0)
+    throw std::out_of_range("Could not find IBO to remove.");
 }
 
 //------------------------------------------------------------------------------
-void StuInterface::removeIBOFromObject(const std::string& object, const std::string& iboName)
+void StuInterface::removeIBO(const std::string& iboName)
 {
   Hub::RemoteFunction fun =
-      std::bind(removeVBOFromObjectImpl, _1, this, object, iboName);
+      std::bind(removeIBOImpl, _1, this, iboName);
   mHub.addFunctionToThreadQueue(fun);
 }
 
@@ -158,7 +163,9 @@ void StuInterface::addGeomPassToObjectImpl(Hub& hub, StuInterface* iface,
                                            std::string iboName)
 {
   std::shared_ptr<StuObject> obj = iface->mNameToObject.at(object);
-  obj->addPass(pass, program, vboName, iboName);
+  std::shared_ptr<VBOObject> vbo = iface->mVBOMap.at(vboName);
+  std::shared_ptr<IBOObject> ibo = iface->mIBOMap.at(iboName);
+  obj->addPass(pass, program, vbo, ibo);
 }
 
 

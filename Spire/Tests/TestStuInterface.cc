@@ -166,19 +166,17 @@ TEST_F(StuPipeTestFixture, TestTriangle)
   rawBegin = reinterpret_cast<uint8_t*>(&iboData[0]); // Remember, standard guarantees that vectors are contiguous in memory.
   rawIBO->assign(rawBegin, rawBegin + rawSize);
 
-  // Test attempting to add VBO and IBO before creating the object...
-  std::string obj1 = "obj1";
+  // Add necessary VBO's and IBO's
   std::string vbo1 = "vbo1";
   std::string ibo1 = "ibo1";
+  mStuInterface->addVBO(vbo1, rawVBO, attribNames);
+  mStuInterface->addIBO(ibo1, rawIBO, iboType);
+  // Attempt to add duplicate VBOs and IBOs
+  EXPECT_THROW(mStuInterface->addVBO(vbo1, rawVBO, attribNames), Duplicate);
+  EXPECT_THROW(mStuInterface->addIBO(ibo1, rawIBO, iboType), Duplicate);
 
-  EXPECT_THROW(mStuInterface->addVBOToObject(obj1, vbo1, rawVBO, attribNames), std::out_of_range);
-  EXPECT_THROW(mStuInterface->addIBOToObject(obj1, ibo1, rawIBO, iboType), std::out_of_range);
-
+  std::string obj1 = "obj1";
   mStuInterface->addObject(obj1);
-  mStuInterface->addVBOToObject(obj1, vbo1, rawVBO, attribNames);
-  mStuInterface->addIBOToObject(obj1, ibo1, rawIBO, iboType);
-  EXPECT_THROW(mStuInterface->addVBOToObject(obj1, vbo1, rawVBO, attribNames), Duplicate);
-  EXPECT_THROW(mStuInterface->addIBOToObject(obj1, ibo1, rawIBO, iboType), Duplicate);
   
   // Add and compile persistent shaders (if not already present).
   // You will only run into the 'Duplicate' exception if the persistent shader
