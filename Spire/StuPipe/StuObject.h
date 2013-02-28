@@ -91,8 +91,10 @@ private:
 class StuPass
 {
 public:
-  StuPass(const std::string& passName, const std::string& programName, int32_t passOrder,
-          std::shared_ptr<VBOObject> vbo, std::shared_ptr<IBOObject> ibo);
+  StuPass(
+      Hub& hub,
+      const std::string& passName, const std::string& programName, int32_t passOrder,
+      std::shared_ptr<VBOObject> vbo, std::shared_ptr<IBOObject> ibo);
   virtual ~StuPass();
   
   const std::string& getName() const    {return mName;}
@@ -117,6 +119,8 @@ protected:
   std::shared_ptr<IBOObject>            mIBO;     ///< ID of IBO to use during pass.
 
   std::shared_ptr<ShaderProgramAsset>   mShader;  ///< Shader to be used when rendering this pass.
+
+  Hub&                                  mHub;
 };
 
 //------------------------------------------------------------------------------
@@ -126,7 +130,7 @@ class StuObject
 {
 public:
 
-  StuObject(const std::string& name, int32_t renderOrder);
+  StuObject(Hub& hub, const std::string& name, int32_t renderOrder);
 
   std::string getName() const     {return mName;}
   int32_t getRenderOrder() const  {return mRenderOrder;}
@@ -213,6 +217,8 @@ protected:
 
   std::string                                   mName;
   int32_t                                       mRenderOrder;
+
+  Hub&                                          mHub;
 };
 
 

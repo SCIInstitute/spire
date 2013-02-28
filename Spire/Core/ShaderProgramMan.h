@@ -87,6 +87,8 @@ public:
       const std::string& programName,
       const std::list<std::tuple<std::string, GLenum>>& shaders);
 
+  std::shared_ptr<ShaderProgramAsset> findProgram(const std::string& program);
+
 private:
 
   Hub&      mHub;

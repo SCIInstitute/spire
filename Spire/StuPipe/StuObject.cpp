@@ -30,6 +30,7 @@
 /// \date   February 2013
 
 #include "StuObject.h"
+#include "Core/Hub.h"
 
 namespace Spire {
 
@@ -68,15 +69,20 @@ IBOObject::IBOObject(std::shared_ptr<std::vector<uint8_t>> iboData,
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-StuPass::StuPass(const std::string& passName, const std::string& programName, int32_t passOrder,
-                 std::shared_ptr<VBOObject> vbo, std::shared_ptr<IBOObject> ibo) :
+StuPass::StuPass(
+    Hub& hub,
+    const std::string& passName, const std::string& programName, int32_t passOrder,
+    std::shared_ptr<VBOObject> vbo, std::shared_ptr<IBOObject> ibo) :
     mVBO(vbo),
     mIBO(ibo),
     mName(passName),
-    mPassOrder(passOrder)
+    mPassOrder(passOrder),
+    mHub(hub)
 {
-  /// \todo Lookup the shader. Throw std::out_of_range if the program does
-  ///       not exist.
+  // findProgram will throw an exception of type std::out_of_range if shader is
+  // not found.
+  ShaderProgramMan& man = mHub.getShaderProgramManager();
+  mShader = man.findProgram(programName);
 }
 
 //------------------------------------------------------------------------------
@@ -89,10 +95,11 @@ StuPass::~StuPass()
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-StuObject::StuObject(const std::string& name, int32_t renderOrder) :
+StuObject::StuObject(Hub& hub, const std::string& name, int32_t renderOrder) :
     mName(name),
     mRenderOrder(renderOrder),
-    mCurrentPassRenderOrder(0)
+    mCurrentPassRenderOrder(0),
+    mHub(hub)
 {
 
 }
@@ -131,7 +138,7 @@ void StuObject::addPass(
     throw Duplicate("There already exists a pass with the specified pass name.");
 
   // Build the pass.
-  std::shared_ptr<StuPass> pass(new StuPass(passName, program, passOrder,
+  std::shared_ptr<StuPass> pass(new StuPass(mHub, passName, program, passOrder,
                                             getVBOByName(vboName),
                                             getIBOByName(iboName)));
   

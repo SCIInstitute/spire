@@ -38,7 +38,9 @@
 
 namespace Spire {
 
-/// TODO: Get rid of these ifdefs when we switch to a visual studio that
+/// \todo Have excetpions accept streams as input. See the spire log function.
+
+/// \todo Get rid of these ifdefs when we switch to a visual studio that
 ///       supports noexcept (VS 2010 and VS 2012 do not).
 #ifndef SPIRE_USING_WIN
   #define SPIRE_NOEXCEPT noexcept

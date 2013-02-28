@@ -222,6 +222,23 @@ bool ShaderProgramAsset::areProgramSignaturesIdentical(
   return true;
 }
 
+//------------------------------------------------------------------------------
+std::shared_ptr<ShaderProgramAsset> ShaderProgramMan::findProgram(
+    const std::string& program)
+{
+  std::shared_ptr<BaseAsset> asset = findAsset(program);
+  if (asset != nullptr)
+  {
+    return std::dynamic_pointer_cast<ShaderProgramAsset>(asset);
+  }
+  else
+  {
+    throw std::out_of_range("Unable to find shader program.");
+  }
+
+  return nullptr;
+}
+
 
 } // end of namespace Spire
 

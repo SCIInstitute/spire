@@ -213,7 +213,7 @@ void StuInterface::addObjectImpl(Hub& hub, StuInterface* iface,
     throw Duplicate("There already exists an object by that name!");
 
   std::shared_ptr<StuObject> obj = std::shared_ptr<StuObject>(
-      new StuObject(objectName, renderOrder));
+      new StuObject(iface->mHub, objectName, renderOrder));
   iface->mNameToObject[objectName] = obj;
 
   // Add object to specified rendering order.
