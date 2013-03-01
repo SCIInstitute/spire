@@ -41,6 +41,10 @@ include_directories(${BASE_SPIRE_DIR}/Spire/3rdParty/gtest/include ${BASE_SPIRE_
 ########################################################################
 # Compiler settings
 
+if (CMAKE_BUILD_TYPE MATCHES DEBUG)
+  add_definitions(-DSPIRE_DEBUG)
+endif()
+
 if (UNIX)
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x")
 

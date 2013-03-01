@@ -62,13 +62,33 @@
 #include "Core/Math.h"
 #include "Core/Log.h"
 
+#define MAX_GL_ERROR_COUNT 10 
+
 #ifdef SPIRE_DEBUG
+# define GL(stmt)                                                      \
+  do {                                                                 \
+    GLenum glerr;                                                      \
+    unsigned int iCounter = 0;                                         \
+    while((glerr = glGetError()) != GL_NO_ERROR) {                     \
+      Spire::Log::error() << "GL error calling" << #stmt << " before line " << __LINE__ << " (" << __FILE__ << "): " << gluErrorString(glerr) << " (" << static_cast<unsigned>(glerr) << ")"; \
+      iCounter++;                                                      \
+      if (iCounter > MAX_GL_ERROR_COUNT) break;                        \
+    }                                                                  \
+    stmt;                                                              \
+    iCounter = 0;                                                      \
+    while((glerr = glGetError()) != GL_NO_ERROR) {                     \
+      Spire::Log::error() << "'" << #stmt << "' on line " << __LINE__ << " (" << __FILE__ << ") caused GL error: " << gluErrorString(glerr) << " (" << static_cast<unsigned>(glerr) << ")"; \
+      iCounter++;                                                      \
+      if (iCounter > MAX_GL_ERROR_COUNT) break;                        \
+    }                                                                  \
+  } while(0)
+
 # define GL_CHECK()                                                       \
   do {                                                                    \
     GLenum glerr;                                                         \
     unsigned int iCounter = 0;                                            \
     while((glerr = glGetError()) != GL_NO_ERROR) {                        \
-      Log::error() << "GL error before line " << __LINE__ << "("          \
+      Spire::Log::error() << "GL error before line " << __LINE__ << "("   \
                    << __FILE__ << "): " << glerr << " ("                  \
                    << gluErrorString(glerr) << ")" << std::endl;          \
       iCounter++;                                                         \
@@ -76,6 +96,7 @@
     }                                                                     \
   } while(0)
 #else
+# define GL(stmt) do { stmt; } while(0)
 # define GL_CHECK() 
 #endif
 

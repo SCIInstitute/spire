@@ -34,6 +34,8 @@
 
 #include "BatchContext.h"
 #include "Spire/Tests/GlobalTestEnvironment.h"
+#include "Spire/Common.h"
+#include "Spire/Core/Log.h"
 
 // Defining cimg_display to 0 ensures CImg doesn't try to include OS specific
 // windowing header files.
@@ -77,21 +79,27 @@ public:
 
   void writeFBO(const std::string& file) override
   {
-    mContext->makeCurrent();
-
     // This function should be called from test code. So we are safe writing
     // test assertions in this code.
     GLint viewport[4];
-    glGetIntegerv(GL_VIEWPORT, viewport);
+    GL(glGetIntegerv(GL_VIEWPORT, viewport));
     ASSERT_EQ(0, viewport[0]);
     ASSERT_EQ(0, viewport[1]);
     ASSERT_EQ(mWidth, viewport[2]);
     ASSERT_EQ(mHeight, viewport[3]);
 
-    glPixelStorei(GL_PACK_ALIGNMENT, 1);
-    glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-    glReadBuffer(GL_COLOR_ATTACHMENT0);
-    glReadPixels(0,0,viewport[2],viewport[3],GL_RGBA,GL_UNSIGNED_SHORT,&mRawImage[0]);
+    GL(glPixelStorei(GL_PACK_ALIGNMENT, 1));
+    GL(glPixelStorei(GL_UNPACK_ALIGNMENT, 1));
+    GL(glReadBuffer(GL_BACK));
+    mRawImage[0] = 255;
+    mRawImage[1] = 255;
+    mRawImage[2] = 255;
+    mRawImage[3] = 255;
+    GL(glReadPixels(0,0,viewport[2],viewport[3],GL_RGBA,GL_UNSIGNED_BYTE,&mRawImage[0]));
+    GL_CHECK();
+#ifdef SPIRE_DEBUG
+    Spire::Log::debug() << "Test" << std::endl;
+#endif
     std::cerr << "Image Data: " << static_cast<int>(mRawImage[0]) 
                                 << static_cast<int>(mRawImage[1]) 
                                 << static_cast<int>(mRawImage[2]) 
@@ -101,7 +109,8 @@ public:
     // We are using shared memory for the CImg class so it doesn't have to allocate its own.
     // It would be better to std::move vector into CImg though.
     // \todo image flipped?
-    CImg<uint8_t> img(reinterpret_cast<const char*>(&mRawImage[0]), viewport[2], viewport[3], 1, false);
+    CImg<uint8_t> img(reinterpret_cast<uint8_t*>(&mRawImage[0]), viewport[2],
+                      viewport[3], 1, 4, true);
     img.save(file.c_str());
   }
 
