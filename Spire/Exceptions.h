@@ -109,6 +109,14 @@ public:
   virtual ~ShaderUniformNotFound() SPIRE_NOEXCEPT {}
 };
 
+class ShaderUniformTypeError : virtual public Exception
+{
+public:
+  ShaderUniformTypeError() : Exception(std::string("unknown error")) {}
+  ShaderUniformTypeError(std::string e) : Exception(e) {}
+  virtual ~ShaderUniformTypeError() SPIRE_NOEXCEPT {}
+};
+
 class Duplicate : virtual public Exception
 {
 public:

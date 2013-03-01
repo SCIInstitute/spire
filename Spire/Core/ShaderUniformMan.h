@@ -35,6 +35,7 @@
 #include "Common.h"
 #include <vector>
 #include <string>
+#include <unordered_map>
 
 namespace Spire {
 
@@ -43,9 +44,8 @@ class ShaderUniformMan;
 /// Holds information on one uniform.
 struct UniformState
 {
-  size_t      index;          ///< Arbitrarily assigned index.
   std::string codeName;       ///< In-shader code name.
-  uint32_t    nameHash;       ///< Hash of 'codeName'.
+  GLenum      type;           ///< Type of the uniform. Used for type checking.
 };
 
 class ShaderUniformCollection
@@ -58,9 +58,15 @@ public:
 
   struct UniformSpecificData
   {
-    GLint         uniformLoc; ///< Shader uniform location as returned by
-                              ///< glGetUniformLocation.
-    UniformState  uniform;    ///< Uniform state.
+    std::shared_ptr<const UniformState> uniform;      ///< Uniform state.
+
+    /// GL shader specific variables
+    /// @{
+    GLint     glUniformLoc; ///< Shader uniform location as returned by
+                            ///< glGetUniformLocation.
+    GLint     glSize;       ///< 'size' of the uniform variable.
+    GLenum    glType;       ///< Type of the uniform variable (see: http://www.opengl.org/sdk/docs/man/xhtml/glGetActiveUniform.xml)
+    /// @}
   };
 
   /// \todo Change back to constexpr
@@ -73,9 +79,6 @@ public:
   /// Also queries the OpenGL shader program for the position of the uniform.
   void addUniform(const std::string& uniformName);
 
-  /// Retrieves the uniform at 'index' from ShaderUniformMan.
-  UniformSpecificData getUniform(size_t index) const;
-
   /// Retrieves number of uniforms stored in mUniforms.
   size_t getNumUniforms() const;
 
@@ -83,10 +86,6 @@ public:
   bool hasUniform(const std::string& uniformName) const;
 
 private:
-
-  /// Returns true if the uniform array contains a reference to 'index'.
-  /// This is the index into the array in ShaderUniformMan.
-  bool hasIndex(size_t targetIndex) const;
 
   /// Contains indices to uniforms in ShaderUniformMan, sorted (ascending).
   std::vector<UniformSpecificData>  mUniforms;
@@ -106,14 +105,9 @@ public:
   ShaderUniformMan(bool addDefaultUniforms = true);
   virtual ~ShaderUniformMan();
 
-  /// Seed value to use when hashing strings for comparison purposes.
-  /// \todo Change back to constexpr
-  static uint32_t getMurmurSeedValue()    {return 0x83abd272;}
-
   /// These two functions represent the unknown's index and name.
   /// \todo Change back to constexpr
   /// @{
-  static size_t getUnknownUniformIndex()  {return 0;}
   static const char* getUnknownName()     {return "_unknown_";}
   /// @}
 
@@ -122,37 +116,21 @@ public:
   /// A ShaderUniformNotFound exception will be thrown if the uniform is not
   /// found in the ShaderUniformMan.
   /// \param codeName       Name of the uniform in the shader code.
-  void addUniform(const std::string& codeName);
+  /// \param type           For a good description of all available types, see:
+  ///                       http://www.opengl.org/sdk/docs/man/xhtml/glGetActiveUniform.xml .
+  void addUniform(const std::string& codeName, GLenum type);
 
-  /// Returns the index associated with the uniform whose name is 'codeName'.
-  /// \return the first tuple parameter (bool) indicates whether or not an 
-  ///         uniform with 'codeName' was found. The second tuple parameter
-  ///         returns the index of the uniform, if found. If it is not found
-  ///         then size_t will be NULL.
-  std::tuple<bool,size_t> findUniformWithName(const std::string& codeName) const;
+  /// Retrieves uniform with name 'codeName'. If codeName is not found,
+  /// std::out_of_range is thrown.
+  std::shared_ptr<const UniformState> getUniformWithName(const std::string& codeName) const;
 
-  /// Same as findUniformWithName, except an exception is thrown instead
-  /// of returning false when an uniform with the specified name does not exist.
-  UniformState getUniformWithName(const std::string& codeName) const;
-
-  /// Returns the attibute at the specified index.
-  /// If no uniform is found at 'index', or if the 'index' is invalid, an
-  /// exception is thrown.
-  UniformState getUniformAtIndex(size_t index) const;
-
-  /// Returns the number of uniforms currently in the uniform array.
-  /// Will always be >= 1, because the unknown uniform is always the first
-  /// uniform in the array.
-  size_t getNumUniforms() const   {return mUniforms.size();}
-
-  /// Hashes 'str' into a uint32_t using murmur hash.
-  /// Uses MURMUR_SEED_VALUE.
-  static uint32_t hashString(const std::string& str);
+  /// Returns number of uniforms currently registered.
+  size_t getNumUniforms()   {return mUniforms.size();}
 
 private:
 
   /// Array of available uniforms.
-  std::vector<UniformState>    mUniforms;
+  std::unordered_map<std::string, std::shared_ptr<UniformState>>   mUniforms;
 
 };
 

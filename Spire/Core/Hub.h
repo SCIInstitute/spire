@@ -46,6 +46,7 @@
 #include "Core/ShaderMan.h"
 #include "Core/ShaderProgramMan.h"
 #include "Core/ShaderAttributeMan.h"
+#include "Core/ShaderUniformStateMan.h"
 #include "Core/Camera.h"
 
 namespace Spire {
@@ -98,6 +99,9 @@ public:
   /// Retrieves shader uniform manager.
   ShaderUniformMan& getShaderUniformManager()     {return mShaderUniforms;}
 
+  /// Retrieves shader uniform *state* manager.
+  ShaderUniformStateMan& getShaderUniformStateMan() {return mShaderUniformStateMan;}
+
   /// Retrieves the shader program manager.
   ShaderProgramMan& getShaderProgramManager()     {return mShaderProgramMan;}
 
@@ -142,6 +146,7 @@ private:
   ShaderProgramMan            mShaderProgramMan;///< Shader program manager.
   ShaderAttributeMan          mShaderAttributes;///< Shader attribute manager.
   ShaderUniformMan            mShaderUniforms;  ///< Shader attribute manager.
+  ShaderUniformStateMan       mShaderUniformStateMan; ///< Uniform state manager.
   std::shared_ptr<Camera>     mCamera;          ///< Basic GL Camera 
                                                 ///< (this should not be here... move in the future)
   std::vector<std::string>    mShaderDirs;      ///< Shader directories to search.

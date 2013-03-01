@@ -263,6 +263,13 @@ TEST_F(StuPipeTestFixture, TestTriangle)
   // Extract results
   Spire::GlobalTestEnvironment::instance()->writeFBO("/tmp/test.png");
 
+  /// \todo Test uniforms.
+  ///       1 - No uniforms set: should attempt to access global uniform state
+  ///           manager and extract the uniform resulting in a std::out_of_range.
+  ///       2 - Partial uniforms. Result same as #1.
+  ///       3 - Uniform type checking. Ensure the types pulled from OpenGL
+  ///           compiler matches our expected types.
+
 
   // Create an image of appropriate dimensions.
 

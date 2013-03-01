@@ -40,15 +40,15 @@ namespace Spire {
 //------------------------------------------------------------------------------
 ShaderUniformMan::ShaderUniformMan(bool addDefaultUniforms)
 {
-  addUniform(getUnknownName());
+  addUniform(getUnknownName(), GL_FLOAT);
 
   if (addDefaultUniforms)
   {
-    addUniform("uProj");
-    addUniform("uProjIV");
-    addUniform("uProjIVWorld");
-    addUniform("uColor");
-    addUniform("uDirLight");
+    addUniform("uProj",         GL_FLOAT_MAT4);
+    addUniform("uProjIV",       GL_FLOAT_MAT4);
+    addUniform("uProjIVWorld",  GL_FLOAT_MAT4);
+    addUniform("uColor",        GL_FLOAT_VEC4);
+    addUniform("uDirLight",     GL_FLOAT_VEC3);
   }
 }
 
@@ -58,66 +58,20 @@ ShaderUniformMan::~ShaderUniformMan()
 }
 
 //------------------------------------------------------------------------------
-void ShaderUniformMan::addUniform(const std::string& codeName)
+void ShaderUniformMan::addUniform(const std::string& codeName, GLenum type)
 {
-  UniformState uniform;
-  uniform.index = mUniforms.size();;
-  uniform.codeName = codeName;
-  uniform.nameHash = hashString(codeName);
+  std::shared_ptr<UniformState> uniform(new UniformState);
+  uniform->codeName  = codeName;
+  uniform->type      = type;
 
-  mUniforms.push_back(uniform);
+  mUniforms.insert(std::make_pair(codeName, uniform));
 }
 
 //------------------------------------------------------------------------------
-std::tuple<bool,size_t>
-ShaderUniformMan::findUniformWithName(const std::string& codeName) const
-{
-  // Hash the string, search for the hash, then proceed with str comparisons.
-  uint32_t targetHash = hashString(codeName);
-  for (auto it = mUniforms.begin(); it != mUniforms.end(); ++it)
-  {
-    if (it->nameHash == targetHash)
-    {
-      if (it->codeName == codeName)
-      {
-        return std::make_tuple(true, it->index);
-      }
-    }
-  }
-
-  return std::make_tuple(false, 0);
-}
-
-//------------------------------------------------------------------------------
-UniformState ShaderUniformMan::getUniformAtIndex(size_t index) const
-{
-  if (index >= mUniforms.size())
-    throw std::range_error("Index greater than size of mUniforms.");
-
-  return mUniforms[index];
-}
-
-//------------------------------------------------------------------------------
-UniformState 
+std::shared_ptr<const UniformState>
 ShaderUniformMan::getUniformWithName(const std::string& codeName) const
 {
-  std::tuple<bool, size_t> uniformIndex = findUniformWithName(codeName);
-  if (std::get<0>(uniformIndex) == false)
-    throw NotFound("Unable to find uniform with name.");
-
-  return getUniformAtIndex(std::get<1>(uniformIndex));
-}
-
-//------------------------------------------------------------------------------
-uint32_t ShaderUniformMan::hashString(const std::string& str)
-{
-  uint32_t hashOut = 0;
-  MurmurHash3_x86_32(
-      static_cast<const void*>(str.c_str()),
-      static_cast<int>(str.size()),
-      getMurmurSeedValue(),
-      static_cast<void*>(&hashOut));
-  return hashOut;
+  return mUniforms.at(codeName);
 }
 
 //------------------------------------------------------------------------------
@@ -127,56 +81,48 @@ uint32_t ShaderUniformMan::hashString(const std::string& str)
 //------------------------------------------------------------------------------
 void ShaderUniformCollection::addUniform(const std::string& uniformName)
 {
-  std::tuple<bool, size_t> ret = mUniformMan.findUniformWithName(uniformName);
-  if (std::get<0>(ret))
+  // std::out_of_range will be thrown here if uniform is not found.
+  std::shared_ptr<const UniformState> state = mUniformMan.getUniformWithName(uniformName);
+
+  UniformSpecificData uniformData;
+  uniformData.uniform = state;
+
+  if (getInvalidProgramHandle() != mProgram)
   {
-    UniformSpecificData uniformData;
-    uniformData.uniform = mUniformMan.getUniformAtIndex(std::get<1>(ret));
-    // When testing this class, the gl call will always return 0.
-    // I thought about writing a mock for the OpenGL interface, but that would
-    // likely be a waist of time considering the utilities available on each
-    // platform for testing OpenGL.
-    if (getInvalidProgramHandle() != mProgram)
-      uniformData.uniformLoc = glGetUniformLocation(mProgram, uniformName.c_str());
-    else
-      uniformData.uniformLoc = 0;
-    mUniforms.push_back(uniformData);
+    uniformData.glUniformLoc = glGetUniformLocation(mProgram, uniformName.c_str());
+
+    // Now query even more data about the uniform.
+    const GLsizei nameSize = 128;
+    GLsizei bytesWritten = 0;
+    char uniformName[nameSize]; // Name which we already know..
+    glGetActiveUniform(mProgram, uniformData.glUniformLoc, 
+                       nameSize, &bytesWritten,
+                       &uniformData.glSize, &uniformData.glType,
+                       uniformName);
+
+    // Perform a type check against uniform type.
+    if (state->type != uniformData.glType)
+      throw ShaderUniformTypeError("Uniform types do not match!");
+
     GL_CHECK();
   }
   else
   {
-    throw ShaderUniformNotFound(uniformName);
+    throw GLError("A valid shader program has not been associated with this "
+                  "uniform collection.");
   }
-}
-
-//------------------------------------------------------------------------------
-bool ShaderUniformCollection::hasIndex(size_t targetIndex) const
-{
-  // Could perform a binary search here...
-  for (auto it = mUniforms.begin(); it != mUniforms.end(); ++it)
-  {
-    if (targetIndex == it->uniform.index)
-      return true;
-  }
-
-  return false;
+  mUniforms.push_back(uniformData);
 }
 
 //------------------------------------------------------------------------------
 bool ShaderUniformCollection::hasUniform(const std::string& uniformName) const
 {
-  uint32_t hash = ShaderUniformMan::hashString(uniformName);
-
   for (auto it = mUniforms.begin(); it != mUniforms.end(); ++it)
   {
-    UniformState state = it->uniform;
-    if (state.nameHash == hash)
+    std::shared_ptr<const UniformState> state = it->uniform;
+    if (state->codeName == uniformName)
     {
-      // Check for hash collisions
-      if (uniformName == state.codeName)
-      {
-        return true;
-      }
+      return true;
     }
   }
 
@@ -188,16 +134,5 @@ size_t ShaderUniformCollection::getNumUniforms() const
 {
   return mUniforms.size();
 }
-
-//------------------------------------------------------------------------------
-ShaderUniformCollection::UniformSpecificData 
-ShaderUniformCollection::getUniform(size_t index) const
-{
-  if (index >= mUniforms.size())
-    throw std::range_error("Index greater than size of mAttributes.");
-
-  return mUniforms[index];
-}
-
 
 } // end of namespace Spire
