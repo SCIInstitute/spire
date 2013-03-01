@@ -34,12 +34,37 @@
 namespace Spire {
 
 IBOObject::IBOObject(std::shared_ptr<std::vector<uint8_t>> iboData,
-            StuInterface::IBO_TYPE type)
+                     StuInterface::IBO_TYPE type) :
+    mType(type)
 {
+  GL(glGenBuffers(1, &mGLIndex));
+  GL(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mGLIndex));
+  GL(glBufferData(GL_ELEMENT_ARRAY_BUFFER, iboData->size(), &(*iboData)[0], GL_STATIC_DRAW));
+
+  // Calculate number of elements based on the IBO type.
+  switch (type)
+  {
+    case StuInterface::IBO_8BIT:
+      mNumElements = iboData->size() / sizeof(uint8_t);
+      break;
+
+    case StuInterface::IBO_16BIT:
+      mNumElements = iboData->size() / sizeof(uint16_t);
+      break;
+
+    case StuInterface::IBO_32BIT:
+      mNumElements = iboData->size() / sizeof(uint32_t);
+      break;
+
+    default:
+      throw std::invalid_argument("IBO type expected to be of type StuInetrface::IBO_TYPE.");
+      break;
+  }
 }
 
 IBOObject::~IBOObject()
 {
+  GL(glDeleteBuffers(1, &mGLIndex));
 }
 
 

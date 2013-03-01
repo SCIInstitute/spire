@@ -38,11 +38,15 @@ VBOObject::VBOObject(
     std::shared_ptr<std::vector<uint8_t>> vboData,
     const std::vector<std::string>& attributes)
 {
+  GL(glGenBuffers(1, &mGLIndex));
+  GL(glBindBuffer(GL_ARRAY_BUFFER, mGLIndex));
+  GL(glBufferData(GL_ARRAY_BUFFER, vboData->size(), &(*vboData)[0], GL_STATIC_DRAW));
 }
 
 //------------------------------------------------------------------------------
 VBOObject::~VBOObject()
 {
+  GL(glDeleteBuffers(1, &mGLIndex));
 }
 
 
