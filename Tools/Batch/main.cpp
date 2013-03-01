@@ -94,7 +94,8 @@ public:
     mRawImage[0] = 255;
     mRawImage[1] = 255;
     mRawImage[2] = 255;
-    mRawImage[3] = 255;
+    mRawImage[3] = 177;
+    GL_CHECK();
     GL(glReadPixels(0,0,viewport[2],viewport[3],GL_RGBA,GL_UNSIGNED_BYTE,&mRawImage[0]));
     GL_CHECK();
 #ifdef SPIRE_DEBUG
