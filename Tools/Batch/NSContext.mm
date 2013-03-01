@@ -62,6 +62,13 @@ NSContext::NSContext(
     NSOpenGLPFAColorSize, colorBits,
     NSOpenGLPFADepthSize, depthBits,
     NSOpenGLPFAAlphaSize, 8,
+    //NSOpenGLPFAOpenGLProfile, NSOpenGLProfileVersion3_2Core,  // Use this for 3.2 support -- glew doesn't play nice with this.
+                                            // Need to specify glewExperimental=TRUE; (global variable) before calling glewInit.
+                                            // See: http://www.opengl.org/wiki/OpenGL_Loading_Library and also
+                                            // take a look at: https://github.com/ginkgo/flextGL . It seems like it is
+                                            // a bit more work but could be better than GLEW.
+                                            // Also refer: http://www.gamedev.net/topic/619447-problem-with-glew-and-gl-contexts-32-and-above/
+                                            // This article indicates the reasoning behind GLEW's non-support of glstringi.
     doubleBuffer ? NSOpenGLPFADoubleBuffer : (NSOpenGLPixelFormatAttribute)0, 
     (NSOpenGLPixelFormatAttribute) 0
   };

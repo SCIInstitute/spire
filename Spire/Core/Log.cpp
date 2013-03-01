@@ -118,6 +118,7 @@ std::ostream& Log::debug()
   }
 #else
   // We will always be single threaded.
+  if (mLog == nullptr) mLog = new Log(nullptr);
   return mLog->mDebugStream;
 #endif
 }
@@ -136,6 +137,7 @@ std::ostream& Log::message()
     return mCNull;
   }
 #else
+  if (mLog == nullptr) mLog = new Log(nullptr);
   return mLog->mMessageStream;
 #endif
 }
@@ -154,6 +156,7 @@ std::ostream& Log::warning()
     return mCNull;
   }
 #else
+  if (mLog == nullptr) mLog = new Log(nullptr);
   return mLog->mWarningStream;
 #endif
 }
@@ -172,6 +175,7 @@ std::ostream& Log::error()
     return mCNull;
   }
 #else
+  if (mLog == nullptr) mLog = new Log(nullptr);
   return mLog->mErrorStream;
 #endif
 }
