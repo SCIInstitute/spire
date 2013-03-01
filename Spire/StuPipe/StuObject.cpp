@@ -65,6 +65,11 @@ StuPass::~StuPass()
 //------------------------------------------------------------------------------
 void StuPass::renderPass()
 {
+  /// \todo Should route through the shader man so we don't re-apply programs
+  ///       that are already active (likely the driver will handle this for
+  ///       us, however).
+  GL(glUseProgram(mShader->getProgramID()));
+
   GL(glBindBuffer(GL_ARRAY_BUFFER, mVBO->getGLIndex()));
   GL(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mIBO->getGLIndex()));
 
@@ -165,7 +170,7 @@ void StuObject::renderAllPasses()
 {
   for (auto it = mPassRenderOrder.begin(); it != mPassRenderOrder.end(); ++it)
   {
-    
+    it->second->renderPass();
   }
 }
 
