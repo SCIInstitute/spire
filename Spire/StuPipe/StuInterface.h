@@ -84,6 +84,9 @@ public:
   /// Generally not needed at this stage.
   /// \todo Add supported OpenGL version to spire. This will allow us to 
   ///       determine what shaders we should us.
+  /// \todo See glProvokingVertex for possible flat shading implementations
+  ///       instead of using a geometry shader.
+  /// \xxx  Place in GPUMan?
   enum SHADER_TYPES
   {
     // Programmable pipeline
@@ -95,6 +98,24 @@ public:
 
     // Abstract
     COMPUTE_SHADER,         // Supported as of OpenGL 4.3
+  };
+
+  /// See: http://www.opengl.org/wiki/Primitive
+  /// \todo Add patch tesselation primitives.
+  /// \xxx  Place in GPUMan?
+  enum PRIMITVE_TYPES
+  {
+    POINTS,
+    LINES,
+    LINE_LOOP,
+    LINE_STRIP,
+    TRIANGLES,
+    TRIANGLE_STRIP,
+    TRIANGLE_FAN,
+    LINES_ADJACENCY,
+    LINE_STRIP_ADJACENCY,
+    TRIANGLES_ADJACENCY,
+    TRIANGLE_STRIP_ADJACENCY,
   };
 
   //============================================================================
@@ -195,7 +216,15 @@ public:
                        const std::string& pass,
                        const std::string& program,
                        const std::string& vboName,
-                       const std::string& iboName);
+                       const std::string& iboName,
+                       PRIMITVE_TYPES type);
+  void addPassToObject(const std::string& object,
+                       const std::string& pass,
+                       const std::string& program,
+                       const std::string& vboName,
+                       const std::string& iboName,
+                       PRIMITVE_TYPES type,
+                       int32_t passOrder);
 
   /// Removes a geometry pass from the object.
   /// Throws an std::out_of_range exception if the object or pass is not found 
@@ -319,9 +348,9 @@ private:
   //        Never by the renderer. This var just makes it easier when adding
   //        objects and you don't care about their order.
   int32_t mCurrentRenderOrder;    ///< Current rendering order. Used for automatic order assignment.
+  int32_t mCurrentPassOrder;      ///< Current pass rendering order.
 
 private:
-
 
   /// Implementation functions executed on the renderer thread.
   /// I avoid references unless I know the objects that are being referenced
@@ -353,7 +382,9 @@ private:
                                   std::string passName,
                                   std::string program,
                                   std::string vboID,
-                                  std::string iboID);
+                                  std::string iboID,
+                                  PRIMITVE_TYPES type,
+                                  int32_t passOrder);
 
   static void addPassUniformInternalImpl(Hub& hub, StuInterface* iface,
                                          std::string object,

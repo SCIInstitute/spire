@@ -56,16 +56,18 @@ public:
   StuPass(
       Hub& hub,
       const std::string& passName, const std::string& programName, int32_t passOrder,
-      std::shared_ptr<VBOObject> vbo, std::shared_ptr<IBOObject> ibo);
+      std::shared_ptr<VBOObject> vbo, std::shared_ptr<IBOObject> ibo, GLenum primitiveType);
   virtual ~StuPass();
   
   const std::string& getName() const    {return mName;}
   int32_t getPassOrder() const          {return mPassOrder;}
+  GLenum getPrimitiveType() const       {return mPrimitiveType;}
 
 protected:
 
   std::string                           mName;      ///< Simple pass name.
   int32_t                               mPassOrder; ///< Pass order.
+  GLenum                                mPrimitiveType;
 
   /// List of uniforms to apply before this shader gets executed.
   std::vector<std::unique_ptr<AbstractUniformStateItem>>  mUniforms;
@@ -108,11 +110,8 @@ public:
   void addPass(const std::string& pass,
                const std::string& program,
                std::shared_ptr<VBOObject> vbo,
-               std::shared_ptr<IBOObject> ibo);
-  void addPass(const std::string& pass,
-               const std::string& program,
-               std::shared_ptr<VBOObject> vbo,
                std::shared_ptr<IBOObject> ibo,
+               GLenum primType,
                int32_t passOrder);
 
 
@@ -136,10 +135,6 @@ protected:
   /// All registered passes.
   std::unordered_map<std::string, std::shared_ptr<StuPass>>   mPasses;
   std::map<int32_t, std::shared_ptr<StuPass>>                 mPassRenderOrder;
-
-  int32_t mCurrentPassRenderOrder;  ///< Used to increment pass render order
-                                    ///< if no render order is specified when
-                                    ///< Creating pass.
 
   // These maps may actually be more efficient implemented as an array. The map 
   // sizes are small and cache coherency will be more important. Ignoring for 

@@ -42,10 +42,16 @@ using namespace std::placeholders;
 
 namespace Spire {
 
+// Simple static function to convert from PRIMITIVE_TYPES to GL types.
+// Not part of the class due to the return type (interface class should have
+// nothing GL specific in them).
+GLenum getGLPrimitive(StuInterface::PRIMITVE_TYPES type);
+
 //------------------------------------------------------------------------------
 StuInterface::StuInterface(std::weak_ptr<Interface> iface) :
     PipeInterface(iface),
-    mCurrentRenderOrder(0)
+    mCurrentRenderOrder(0),
+    mCurrentPassOrder(0)
 {
 }
 
@@ -160,12 +166,14 @@ void StuInterface::addPassToObjectImpl(Hub& hub, StuInterface* iface,
                                            std::string pass,
                                            std::string program,
                                            std::string vboName,
-                                           std::string iboName)
+                                           std::string iboName,
+                                           PRIMITVE_TYPES type,
+                                           int32_t passOrder)
 {
   std::shared_ptr<StuObject> obj = iface->mNameToObject.at(object);
   std::shared_ptr<VBOObject> vbo = iface->mVBOMap.at(vboName);
   std::shared_ptr<IBOObject> ibo = iface->mIBOMap.at(iboName);
-  obj->addPass(pass, program, vbo, ibo);
+  obj->addPass(pass, program, vbo, ibo, getGLPrimitive(type), passOrder);
 }
 
 
@@ -174,14 +182,30 @@ void StuInterface::addPassToObject(const std::string& object,
                                        const std::string& pass,
                                        const std::string& program,
                                        const std::string& vboName,
-                                       const std::string& iboName)
+                                       const std::string& iboName,
+                                       PRIMITVE_TYPES type)
 {
   Hub::RemoteFunction fun =
       std::bind(addPassToObjectImpl, _1, this, object, pass, program, 
-                vboName, iboName);
+                vboName, iboName, type, mCurrentPassOrder);
   mHub.addFunctionToThreadQueue(fun);
+  ++mCurrentPassOrder;
 }
 
+//------------------------------------------------------------------------------
+void StuInterface::addPassToObject(const std::string& object,
+                                       const std::string& pass,
+                                       const std::string& program,
+                                       const std::string& vboName,
+                                       const std::string& iboName,
+                                       PRIMITVE_TYPES type,
+                                       int32_t passOrder)
+{
+  Hub::RemoteFunction fun =
+      std::bind(addPassToObjectImpl, _1, this, object, pass, program, 
+                vboName, iboName, type, passOrder);
+  mHub.addFunctionToThreadQueue(fun);
+}
 
 
 
@@ -425,6 +449,62 @@ bool StuInterface::ntsHasRenderingOrder(const std::vector<std::string>& renderOr
     return true;
   else
     return false;
+}
+
+//------------------------------------------------------------------------------
+GLenum getGLPrimitive(StuInterface::PRIMITVE_TYPES type)
+{
+  switch (type)
+  {
+    case StuInterface::POINTS:
+      return GL_POINTS;
+      break;
+
+    case StuInterface::LINES:
+      return GL_LINES;
+      break;
+
+    case StuInterface::LINE_LOOP:
+      return GL_LINE_LOOP;
+      break;
+
+    case StuInterface::LINE_STRIP:
+      return GL_LINE_STRIP;
+      break;
+
+    case StuInterface::TRIANGLES:
+      return GL_TRIANGLES;
+      break;
+
+    case StuInterface::TRIANGLE_STRIP:
+      return GL_TRIANGLE_STRIP;
+      break;
+
+    case StuInterface::TRIANGLE_FAN:
+      return GL_TRIANGLE_FAN;
+      break;
+
+    case StuInterface::LINES_ADJACENCY:
+      return GL_LINES_ADJACENCY;
+      break;
+
+    case StuInterface::LINE_STRIP_ADJACENCY:
+      return GL_LINE_STRIP_ADJACENCY;
+      break;
+
+    case StuInterface::TRIANGLES_ADJACENCY:
+      return GL_TRIANGLES_ADJACENCY;
+      break;
+
+    case StuInterface::TRIANGLE_STRIP_ADJACENCY:
+      return GL_TRIANGLE_STRIP_ADJACENCY;
+      break;
+
+    default:
+      throw std::invalid_argument("Expected type to be one of PRIMITIVE_TYPES.");
+  }
+
+  return GL_TRIANGLES;
 }
 
 }

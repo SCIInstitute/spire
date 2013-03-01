@@ -220,30 +220,34 @@ TEST_F(StuPipeTestFixture, TestTriangle)
 
   // There exists no 'test obj'.
   EXPECT_THROW(mStuInterface->addPassToObject(
-          "test obj", "dummy pass", "UniformColor", "vbo", "ibo"), 
+          "test obj", "dummy pass", "UniformColor", "vbo", "ibo",
+          StuInterface::TRIANGLES),
       std::out_of_range);
 
   // Not a valid shader.
   EXPECT_THROW(mStuInterface->addPassToObject(
-          obj1, "dummy pass", "Bad Shader", "vbo", "ibo"),
+          obj1, "dummy pass", "Bad Shader", "vbo", "ibo",
+          StuInterface::TRIANGLES),
       std::out_of_range);
 
   // Non-existant vbo.
   EXPECT_THROW(mStuInterface->addPassToObject(
-          obj1, "dummy pass", "UniformColor", "Bad vbo", "ibo"),
+          obj1, "dummy pass", "UniformColor", "Bad vbo", "ibo",
+          StuInterface::TRIANGLES),
       std::out_of_range);
 
   // Non-existant ibo.
   EXPECT_THROW(mStuInterface->addPassToObject(
-          obj1, "dummy pass", "UniformColor", vbo1, "bad ibo"),
+          obj1, "dummy pass", "UniformColor", vbo1, "bad ibo",
+          StuInterface::TRIANGLES),
       std::out_of_range);
 
   // Build a good pass.
   std::string pass1 = "pass1";
-  mStuInterface->addPassToObject(obj1, pass1, shader1, vbo1, ibo1);
+  mStuInterface->addPassToObject(obj1, pass1, shader1, vbo1, ibo1, StuInterface::TRIANGLES);
 
   // Attempt to re-add the good pass.
-  EXPECT_THROW(mStuInterface->addPassToObject(obj1, pass1, shader1, vbo1, ibo1),
+  EXPECT_THROW(mStuInterface->addPassToObject(obj1, pass1, shader1, vbo1, ibo1, StuInterface::TRIANGLES),
                Duplicate);
 
   // No longer need VBO and IBO.

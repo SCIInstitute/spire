@@ -42,11 +42,13 @@ namespace Spire {
 StuPass::StuPass(
     Hub& hub,
     const std::string& passName, const std::string& programName, int32_t passOrder,
-    std::shared_ptr<VBOObject> vbo, std::shared_ptr<IBOObject> ibo) :
+    std::shared_ptr<VBOObject> vbo, std::shared_ptr<IBOObject> ibo, GLenum primitiveType) :
+
     mVBO(vbo),
     mIBO(ibo),
     mName(passName),
     mPassOrder(passOrder),
+    mPrimitiveType(primitiveType),
     mHub(hub)
 {
   // findProgram will throw an exception of type std::out_of_range if shader is
@@ -68,7 +70,6 @@ StuPass::~StuPass()
 StuObject::StuObject(Hub& hub, const std::string& name, int32_t renderOrder) :
     mName(name),
     mRenderOrder(renderOrder),
-    mCurrentPassRenderOrder(0),
     mHub(hub)
 {
 
@@ -81,6 +82,7 @@ void StuObject::addPass(
     const std::string& program,
     std::shared_ptr<VBOObject> vbo,
     std::shared_ptr<IBOObject> ibo,
+    GLenum type,
     int32_t passOrder)
 {
   // Check to see if there already is a pass by that name...
@@ -89,22 +91,10 @@ void StuObject::addPass(
 
   // Build the pass.
   std::shared_ptr<StuPass> pass(new StuPass(mHub, passName, program, passOrder,
-                                            vbo,
-                                            ibo));
+                                            vbo, ibo, type));
   
   mPasses.insert(make_pair(passName, pass));
   mPassRenderOrder.insert(make_pair(passOrder, pass));
-}
-
-//------------------------------------------------------------------------------
-void StuObject::addPass(
-    const std::string& passName,
-    const std::string& program,
-    std::shared_ptr<VBOObject> vbo,
-    std::shared_ptr<IBOObject> ibo)
-{
-  addPass(passName, program, vbo, ibo, mCurrentPassRenderOrder);
-  ++mCurrentPassRenderOrder;
 }
 
 //------------------------------------------------------------------------------
