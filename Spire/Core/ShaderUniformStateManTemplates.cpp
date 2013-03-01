@@ -43,30 +43,30 @@ void AbstractUniformStateItem::uniform3f(int location, float v0, float v1,
                                          float v2)
 {
   // Technically, vn should be cast to GLfloat...
-  glUniform3f(static_cast<GLint>(location), v0, v1, v2);
+  GL(glUniform3f(static_cast<GLint>(location), v0, v1, v2));
 }
 
 //------------------------------------------------------------------------------
 void AbstractUniformStateItem::uniform3fv(int location, size_t count,
                                           const float* value)
 {
-  glUniform4fv(static_cast<GLint>(location), count,
-               static_cast<const GLfloat*>(value));
+  GL(glUniform4fv(static_cast<GLint>(location), count,
+                  static_cast<const GLfloat*>(value)));
 }
 
 //------------------------------------------------------------------------------
 void AbstractUniformStateItem::uniform4f(int location, float v0, float v1,
                                          float v2, float v3)
 {
-  glUniform4f(static_cast<GLint>(location), v0, v1, v2, v3);
+  GL(glUniform4f(static_cast<GLint>(location), v0, v1, v2, v3));
 }
 
 //------------------------------------------------------------------------------
 void AbstractUniformStateItem::uniformMatrix4fv(int location, size_t count, 
                                                 bool transpose, const float* value)
 {
-  glUniformMatrix4fv(static_cast<GLint>(location), count, transpose,
-                     static_cast<const GLfloat*>(value));
+  GL(glUniformMatrix4fv(static_cast<GLint>(location), count, transpose,
+                        static_cast<const GLfloat*>(value)));
 }
 
 } // end of namespace Spire

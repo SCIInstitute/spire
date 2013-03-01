@@ -114,11 +114,12 @@ void Hub::oneTimeInitOnThread()
 #endif
 
   // Initialize OpenGL
-  glClearColor(0.0, 0.0, 0.0, 1.0);
+  GL(glClearColor(0.0, 0.0, 0.0, 1.0));
 
   const GLubyte* vendor     = glGetString(GL_VENDOR);
   const GLubyte* renderer   = glGetString(GL_RENDERER);
   const GLubyte* versionl   = glGetString(GL_VERSION);
+  GL_CHECK();
 
   Log::message() << "OpenGL initialization. Running on a " << vendor << " "
                  << renderer << " with OpenGL version " << versionl << std::endl
@@ -132,26 +133,26 @@ void Hub::oneTimeInitOnThread()
   Log::debug() << "+Programmable:" << std::endl;
 
 #ifdef SPIRE_OPENGL_ES_2
-  glGetIntegerv(GL_MAX_VERTEX_TEXTURE_IMAGE_UNITS, &tmp);
+  GL(glGetIntegerv(GL_MAX_VERTEX_TEXTURE_IMAGE_UNITS, &tmp));
   Log::debug() << "  Vertex texture units: " << tmp << std::endl;
 
-  glGetIntegerv(GL_MAX_TEXTURE_IMAGE_UNITS, &tmp);
+  GL(glGetIntegerv(GL_MAX_TEXTURE_IMAGE_UNITS, &tmp));
   Log::debug() << "  Fragment texture units: " << tmp << std::endl;
 
-  glGetIntegerv(GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS, &tmp);
+  GL(glGetIntegerv(GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS, &tmp));
   Log::debug() << "  Combined texture units: " << tmp << std::endl;
 #else
-  glGetIntegerv(GL_MAX_TEXTURE_UNITS, &tmp);
+  GL(glGetIntegerv(GL_MAX_TEXTURE_UNITS, &tmp));
   Log::debug() << "  Texture Units: " << tmp << std::endl;
 
   Log::debug() << "+Fixed function (transient):" << std::endl;
-  glGetIntegerv(GL_MAX_MODELVIEW_STACK_DEPTH, &tmp);
+  GL(glGetIntegerv(GL_MAX_MODELVIEW_STACK_DEPTH, &tmp));
   Log::debug() << "  Model view stack depth: " << tmp << std::endl;
 
-  glGetIntegerv(GL_MAX_PROJECTION_STACK_DEPTH, &tmp);
+  GL(glGetIntegerv(GL_MAX_PROJECTION_STACK_DEPTH, &tmp));
   Log::debug() << "  Projection stack depth: " << tmp << std::endl;
 
-  glGetIntegerv(GL_MAX_TEXTURE_STACK_DEPTH, &tmp);
+  GL(glGetIntegerv(GL_MAX_TEXTURE_STACK_DEPTH, &tmp));
   Log::debug() << "  Texture stack depth: " << tmp << std::endl;
 #endif
     

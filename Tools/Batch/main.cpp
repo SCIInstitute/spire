@@ -136,7 +136,7 @@ private:
     ctx->makeCurrent();
 
     // Setup the viewport correctly.
-    glViewport(0, 0, width, height);
+    GL(glViewport(0, 0, width, height));
 
     return ctx;
   }

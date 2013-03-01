@@ -87,12 +87,12 @@ void HackedUCRenderer::doFrame()
     throw GLError("Unable to find appropriate shader position attribute.");
 
   // Setup shader.
-  glUseProgram(program);
+  GL(glUseProgram(program));
 
   if (mCommonVBO != 0 && mEdgeIBO != 0)
   {
-    glBindBuffer(GL_ARRAY_BUFFER, mCommonVBO);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mEdgeIBO);
+    GL(glBindBuffer(GL_ARRAY_BUFFER, mCommonVBO));
+    GL(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mEdgeIBO));
 
     GLsizei stride = static_cast<GLsizei>(attribs.calculateStride());
 
@@ -100,11 +100,11 @@ void HackedUCRenderer::doFrame()
     // ShaderAttributeCollection::bindAttributes)
     // We can also set the index of the attribute.
     GLuint attribPos = glGetAttribLocation(program, "aPos");
-    glEnableVertexAttribArray(attribPos);
-    glVertexAttribPointer(attribPos,
-                          static_cast<GLint>(pos.numComponents),
-                          pos.type, static_cast<GLboolean>(pos.normalize),
-                          stride, NULL); 
+    GL(glEnableVertexAttribArray(attribPos));
+    GL(glVertexAttribPointer(attribPos,
+                             static_cast<GLint>(pos.numComponents),
+                             pos.type, static_cast<GLboolean>(pos.normalize),
+                             stride, NULL));
     // The NULL pointer is critical. Would normally use this pointer as an offset
     // when dealing with multiple attributes in the same buffer.
 
@@ -115,22 +115,22 @@ void HackedUCRenderer::doFrame()
     M44 PIV = cam->getWorldToProjection();
     unifLoc = glGetUniformLocation(program, "uProjIVWorld");
     M44toArray16(PIV, tmpGLMat);
-    glUniformMatrix4fv(unifLoc, 1, GL_FALSE, tmpGLMat);
+    GL(glUniformMatrix4fv(unifLoc, 1, GL_FALSE, tmpGLMat));
 
     // Color setup
     GLfloat tmpV4[4];
     V4toArray4(mEdgeColor, tmpV4);
     unifLoc = glGetUniformLocation(program, "uColor");
-    glUniform4fv(unifLoc, 1, tmpV4);
+    GL(glUniform4fv(unifLoc, 1, tmpV4));
 
     // Big INDICES! We should batch together the larger models...
-    glDrawElements(GL_LINES, mNumEdgeElements, GL_UNSIGNED_INT, 0);
+    GL(glDrawElements(GL_LINES, mNumEdgeElements, GL_UNSIGNED_INT, 0));
   }
 
   if (mCommonVBO != 0 && mFaceIBO != 0)
   {
-    glBindBuffer(GL_ARRAY_BUFFER, mCommonVBO);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mFaceIBO);
+    GL(glBindBuffer(GL_ARRAY_BUFFER, mCommonVBO));
+    GL(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mFaceIBO));
 
     GLsizei stride = static_cast<GLsizei>(attribs.calculateStride());
 
@@ -138,11 +138,11 @@ void HackedUCRenderer::doFrame()
     // ShaderAttributeCollection::bindAttributes)
     // We can also set the index of the attribute.
     GLuint attribPos = glGetAttribLocation(program, "aPos");
-    glEnableVertexAttribArray(attribPos);
-    glVertexAttribPointer(attribPos,
-                          static_cast<GLint>(pos.numComponents),
-                          pos.type, static_cast<GLboolean>(pos.normalize),
-                          stride, NULL); 
+    GL(glEnableVertexAttribArray(attribPos));
+    GL(glVertexAttribPointer(attribPos,
+                             static_cast<GLint>(pos.numComponents),
+                             pos.type, static_cast<GLboolean>(pos.normalize),
+                             stride, NULL));
     // The NULL pointer is critical. Would normally use this pointer as an offset
     // when dealing with multiple attributes in the same buffer.
 
@@ -153,16 +153,16 @@ void HackedUCRenderer::doFrame()
     M44 PIV = cam->getWorldToProjection();
     unifLoc = glGetUniformLocation(program, "uProjIVWorld");
     M44toArray16(PIV, tmpGLMat);
-    glUniformMatrix4fv(unifLoc, 1, GL_FALSE, tmpGLMat);
+    GL(glUniformMatrix4fv(unifLoc, 1, GL_FALSE, tmpGLMat));
 
     // Color setup
     GLfloat tmpV4[4];
     V4toArray4(mFaceColor, tmpV4);
     unifLoc = glGetUniformLocation(program, "uColor");
-    glUniform4fv(unifLoc, 1, tmpV4);
+    GL(glUniform4fv(unifLoc, 1, tmpV4));
 
     // GL_UNSIGNED_SHORT
-    glDrawElements(GL_TRIANGLES, mNumFaceElements, GL_UNSIGNED_INT, 0);
+    GL(glDrawElements(GL_TRIANGLES, mNumFaceElements, GL_UNSIGNED_INT, 0));
   }
 
 }
@@ -172,15 +172,15 @@ void HackedUCRenderer::setCommonVBO(uint8_t* vbo, size_t vboSize)
 {
   if (mCommonVBO != 0)
   {
-    glDeleteBuffers(1, &mCommonVBO);
+    GL(glDeleteBuffers(1, &mCommonVBO));
     mCommonVBO = 0;
   }
 
   if (vbo != nullptr)
   {
-    glGenBuffers(1, &mCommonVBO);
-    glBindBuffer(GL_ARRAY_BUFFER, mCommonVBO);
-    glBufferData(GL_ARRAY_BUFFER, vboSize, vbo, GL_STATIC_DRAW);
+    GL(glGenBuffers(1, &mCommonVBO));
+    GL(glBindBuffer(GL_ARRAY_BUFFER, mCommonVBO));
+    GL(glBufferData(GL_ARRAY_BUFFER, vboSize, vbo, GL_STATIC_DRAW));
 
     std::free(vbo);
   }
@@ -198,15 +198,15 @@ void HackedUCRenderer::setEdgeData(uint8_t* ibo, size_t iboSize)
   // Delete pre-existing buffers (if any)
   if (mEdgeIBO != 0)
   {
-    glDeleteBuffers(1, &mEdgeIBO);
+    GL(glDeleteBuffers(1, &mEdgeIBO));
     mEdgeIBO = 0;
   }
 
   if (ibo != nullptr)
   {
-    glGenBuffers(1, &mEdgeIBO);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mEdgeIBO);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, iboSize, ibo, GL_STATIC_DRAW);
+    GL(glGenBuffers(1, &mEdgeIBO));
+    GL(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mEdgeIBO));
+    GL(glBufferData(GL_ELEMENT_ARRAY_BUFFER, iboSize, ibo, GL_STATIC_DRAW));
 
     mNumEdgeElements = iboSize / sizeof(uint32_t);
 
@@ -226,16 +226,16 @@ void HackedUCRenderer::setFaceData(uint8_t* ibo, size_t iboSize)
   // Delete pre-existing buffers (if any)
   if (mFaceIBO != 0)
   {
-    glDeleteBuffers(1, &mFaceIBO);
+    GL(glDeleteBuffers(1, &mFaceIBO));
     mFaceIBO = 0;
   }
 
   // Build GL buffers.
   if (ibo != nullptr)
   {
-    glGenBuffers(1, &mFaceIBO);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mFaceIBO);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, iboSize, ibo, GL_STATIC_DRAW);
+    GL(glGenBuffers(1, &mFaceIBO));
+    GL(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mFaceIBO));
+    GL(glBufferData(GL_ELEMENT_ARRAY_BUFFER, iboSize, ibo, GL_STATIC_DRAW));
 
     mNumFaceElements = iboSize / sizeof(uint32_t);
 

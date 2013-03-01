@@ -141,6 +141,7 @@ void ShaderUniformCollection::addUniform(const std::string& uniformName)
     else
       uniformData.uniformLoc = 0;
     mUniforms.push_back(uniformData);
+    GL_CHECK();
   }
   else
   {

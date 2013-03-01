@@ -336,11 +336,9 @@ GPUState GPUStateManager::getStateFromOpenGL() const
   state.mBlendFuncDst = GLToBLEND_FUNC(dest);
 
   GLint equation;
-  glGetIntegerv(GL_BLEND_EQUATION_RGB, &equation); 
+  GL(glGetIntegerv(GL_BLEND_EQUATION_RGB, &equation));
   state.mBlendEquation = GLToBLEND_EQ(equation);
 
-  GL_CHECK();
-  
   return state;
 }
 
@@ -352,11 +350,11 @@ void GPUStateManager::setBlendEnable(bool value, bool force)
     mInternalState.mBlendEnable = value;
     if (mInternalState.mBlendEnable)
     {
-      glEnable(GL_BLEND);
+      GL(glEnable(GL_BLEND));
     }
     else
     {
-      glDisable(GL_BLEND);
+      GL(glDisable(GL_BLEND));
     }
   }
 }
@@ -367,7 +365,7 @@ void GPUStateManager::setBlendEquation(BLEND_EQ value, bool force)
   if (force || value != mInternalState.mBlendEquation)
   {
     mInternalState.mBlendEquation = value;
-    glBlendEquation(BLEND_EQToGL(mInternalState.mBlendEquation));
+    GL(glBlendEquation(BLEND_EQToGL(mInternalState.mBlendEquation)));
   }
 }
 
@@ -381,8 +379,8 @@ void GPUStateManager::setBlendFunction(BLEND_FUNC src, BLEND_FUNC dest,
   {
     mInternalState.mBlendFuncSrc = src;
     mInternalState.mBlendFuncDst = dest;
-    glBlendFunc( BLEND_FUNCToGL(mInternalState.mBlendFuncSrc), 
-                 BLEND_FUNCToGL(mInternalState.mBlendFuncDst) );
+    GL(glBlendFunc( BLEND_FUNCToGL(mInternalState.mBlendFuncSrc), 
+                   BLEND_FUNCToGL(mInternalState.mBlendFuncDst) ));
   }
 }
 
@@ -393,7 +391,7 @@ void GPUStateManager::setColorMask(bool mask, bool force)
   {
     mInternalState.mColorMask = mask;
     GLboolean b = mInternalState.mColorMask ? 1 : 0;
-    glColorMask(b,b,b,b);
+    GL(glColorMask(b,b,b,b));
   }
 }
 
@@ -403,7 +401,7 @@ void GPUStateManager::setCullState(STATE_CULL value, bool force)
   if (force || value != mInternalState.mCullState)
   {
     mInternalState.mCullState = value;
-    glCullFace((mInternalState.mCullState == CULL_FRONT) ? GL_FRONT : GL_BACK);
+    GL(glCullFace((mInternalState.mCullState == CULL_FRONT) ? GL_FRONT : GL_BACK));
   }
 }
 
@@ -415,11 +413,11 @@ void GPUStateManager::setCullFaceEnable(bool value, bool force)
     mInternalState.mCullFaceEnable = value;
     if (mInternalState.mCullFaceEnable)
     {
-      glEnable(GL_CULL_FACE);
+      GL(glEnable(GL_CULL_FACE));
     }
     else
     {
-      glDisable(GL_CULL_FACE);
+      GL(glDisable(GL_CULL_FACE));
     }
   }
 }
@@ -430,7 +428,7 @@ void GPUStateManager::setCullFrontFaceOrder(CULL_ORDER value, bool force)
   if (force || value != mInternalState.mCullOrder)
   {
     mInternalState.mCullOrder = value;
-    glFrontFace(CULL_ORDERToGL(mInternalState.mCullOrder));
+    GL(glFrontFace(CULL_ORDERToGL(mInternalState.mCullOrder)));
   }
 }
 
@@ -440,7 +438,7 @@ void GPUStateManager::setDepthFunc(DEPTH_FUNC value, bool force)
   if (force || value != mInternalState.mDepthFunc)
   {
     mInternalState.mDepthFunc = value;
-    glDepthFunc(DEPTH_FUNCToGL(mInternalState.mDepthFunc));
+    GL(glDepthFunc(DEPTH_FUNCToGL(mInternalState.mDepthFunc)));
   }
 }
 
@@ -450,7 +448,7 @@ void GPUStateManager::setDepthMask(bool value, bool force)
   if (force || value != mInternalState.mDepthMask)
   {
     mInternalState.mDepthMask = value;
-    glDepthMask(mInternalState.mDepthMask ? 1 : 0);
+    GL(glDepthMask(mInternalState.mDepthMask ? 1 : 0));
   }
 }
 
@@ -462,11 +460,11 @@ void GPUStateManager::setDepthTestEnable(bool value, bool force)
     mInternalState.mDepthTestEnable = value;
     if (mInternalState.mDepthTestEnable )
     {
-      glEnable(GL_DEPTH_TEST);
+      GL(glEnable(GL_DEPTH_TEST));
     }
     else
     {
-      glDisable(GL_DEPTH_TEST);
+      GL(glDisable(GL_DEPTH_TEST));
     }
   }
 }

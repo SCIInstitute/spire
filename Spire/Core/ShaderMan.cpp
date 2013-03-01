@@ -97,6 +97,7 @@ ShaderAsset::ShaderAsset(Hub& hub, const std::string& filename,
 
   // Create the shader object.
   shader = glCreateShader(shaderType);
+  GL_CHECK();
   if (0 == shader)
   {
     Log::message() << "Failed to create shader of type: " << shaderType << "\n";
@@ -107,37 +108,35 @@ ShaderAsset::ShaderAsset(Hub& hub, const std::string& filename,
   const size_t numShaderSources = 2;
   const char* cFileContents[numShaderSources] = 
     {"#define OPENGL_ES\n#define OPENGL_ES_2\n", fileContents.c_str()};
-  glShaderSource(shader, numShaderSources, cFileContents, NULL);
-  GL_CHECK();
+  GL(glShaderSource(shader, numShaderSources, cFileContents, NULL));
 #else
   const char* cFileContents = fileContents.c_str();
-  glShaderSource(shader, 1, &cFileContents, NULL);
-  GL_CHECK();
+  GL(glShaderSource(shader, 1, &cFileContents, NULL));
 #endif
 
-  glCompileShader(shader);
+  GL(glCompileShader(shader));
 
   // Check the compile status
-  glGetShaderiv(shader, GL_COMPILE_STATUS, &compiled);
+  GL(glGetShaderiv(shader, GL_COMPILE_STATUS, &compiled));
 
   // Check compilation status.
   if (!compiled)
   {
     GLint infoLen = 0;
   
-    glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &infoLen);
+    GL(glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &infoLen));
     if (infoLen > 1)
     {
       char* infoLog = new char[infoLen];
 
-      glGetShaderInfoLog(shader, infoLen, NULL, infoLog);
+      GL(glGetShaderInfoLog(shader, infoLen, NULL, infoLog));
       Log::error() << "Error compiling '" << filename << "':" << std::endl << infoLog 
                    << std::endl;
 
       delete[] infoLog;
     }
 
-    glDeleteShader(shader);
+    GL(glDeleteShader(shader));
 
     throw GLError("Failed to compile shader.");
   }
@@ -151,7 +150,7 @@ ShaderAsset::~ShaderAsset()
 {
   if (mHasValidShader)  
   {
-    glDeleteShader(glID);
+    GL(glDeleteShader(glID));
     mHasValidShader = false;
   }
 }

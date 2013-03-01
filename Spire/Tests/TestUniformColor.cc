@@ -79,16 +79,16 @@ TestUniformColor::TestUniformColor(Hub& hub) :
                            1.0f,  1.0f, 0.0f,
                           -1.0f, -1.0f, 0.0f,
                            1.0f, -1.0f, 0.0f};
-  glGenBuffers(1, &mVertexBuffer);
-  glBindBuffer(GL_ARRAY_BUFFER, mVertexBuffer);
-  glBufferData(GL_ARRAY_BUFFER, sizeof(vertexData), vertexData, GL_STATIC_DRAW);
+  GL(glGenBuffers(1, &mVertexBuffer));
+  GL(glBindBuffer(GL_ARRAY_BUFFER, mVertexBuffer));
+  GL(glBufferData(GL_ARRAY_BUFFER, sizeof(vertexData), vertexData, GL_STATIC_DRAW));
 
   // Create index buffer.
   uint16_t elementData[] = {0, 1, 2, 3};
-  glGenBuffers(1, &mIndexBuffer);
-  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mIndexBuffer);
-  glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(elementData), elementData,
-               GL_STATIC_DRAW);
+  GL(glGenBuffers(1, &mIndexBuffer));
+  GL(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mIndexBuffer));
+  GL(glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(elementData), elementData,
+                  GL_STATIC_DRAW));
 }
 
 //------------------------------------------------------------------------------
@@ -114,10 +114,10 @@ void TestUniformColor::doFrame()
     throw GLError("Unable to find appropriate shader position attribute.");
 
   // Setup shader.
-  glUseProgram(program);
+  GL(glUseProgram(program));
 
-  glBindBuffer(GL_ARRAY_BUFFER, mVertexBuffer);
-  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mIndexBuffer);
+  GL(glBindBuffer(GL_ARRAY_BUFFER, mVertexBuffer));
+  GL(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mIndexBuffer));
 
   GLsizei stride = static_cast<GLsizei>(attribs.calculateStride());
 
@@ -125,11 +125,12 @@ void TestUniformColor::doFrame()
   // ShaderAttributeCollection::bindAttributes)
   // We can also set the index of the attribute.
   GLuint attribPos = glGetAttribLocation(program, "aPos");
-  glEnableVertexAttribArray(attribPos);
-  glVertexAttribPointer(attribPos,
-                        static_cast<GLint>(pos.numComponents),
-                        pos.type, static_cast<GLboolean>(pos.normalize),
-                        stride, NULL); 
+  GL_CHECK();
+  GL(glEnableVertexAttribArray(attribPos));
+  GL(glVertexAttribPointer(attribPos,
+                           static_cast<GLint>(pos.numComponents),
+                           pos.type, static_cast<GLboolean>(pos.normalize),
+                           stride, NULL));
   // The NULL pointer is critical. Would normally use this pointer as an offset
   // when dealing with multiple attributes in the same buffer.
 
@@ -139,21 +140,22 @@ void TestUniformColor::doFrame()
   // Projection * Inverse View * World transformation.
   M44 PIV = cam->getWorldToProjection();
   unifLoc = glGetUniformLocation(program, "uProjIVWorld");
+  GL_CHECK();
   M44toArray16(PIV, tmpGLMat);
-  glUniformMatrix4fv(unifLoc, 1, GL_FALSE, tmpGLMat);
+  GL(glUniformMatrix4fv(unifLoc, 1, GL_FALSE, tmpGLMat));
 
   // Color setup
   GLfloat color[4] = {1.0f, 0.0f, 1.0f, 1.0f};
   unifLoc = glGetUniformLocation(program, "uColor");
-  glUniform4fv(unifLoc, 1, color);
+  GL(glUniform4fv(unifLoc, 1, color));
 
-  glDrawElements(GL_TRIANGLE_STRIP, 4, GL_UNSIGNED_SHORT, 0);
-  //glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+  GL(glDrawElements(GL_TRIANGLE_STRIP, 4, GL_UNSIGNED_SHORT, 0));
+  //GL(glDrawArrays(GL_TRIANGLE_STRIP, 0, 4));
 
 
   // Now draw the same thing without buffers...
-  glBindBuffer(GL_ARRAY_BUFFER, 0);
-  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+  GL(glBindBuffer(GL_ARRAY_BUFFER, 0));
+  GL(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0));
 
   GLfloat vVertices[] = {
     -0.5f,  0.5f,  0.5f,  // TL
@@ -162,7 +164,7 @@ void TestUniformColor::doFrame()
      0.5f, -0.5f,  0.5f};	// BR
 
 	stride = sizeof(float) * 3;
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, stride, vVertices);
-	//glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+	GL(glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, stride, vVertices));
+	//GL(glDrawArrays(GL_TRIANGLE_STRIP, 0, 4));
 }
 

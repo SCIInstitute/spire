@@ -285,7 +285,7 @@ void ShaderAttributeCollection::bindAttributes(GLuint program)
     if (it->attrib.index != ShaderAttributeMan::getUnknownAttributeIndex())
     {
       AttribState attrib = it->attrib;
-      glBindAttribLocation(program, i, attrib.codeName.c_str());
+      GL(glBindAttribLocation(program, i, attrib.codeName.c_str()));
     }
     ++i;
   }

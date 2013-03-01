@@ -44,8 +44,6 @@ Driver::Driver(Hub& hub) :
   mInitialState.mCullFaceEnable = false;  // Todo: Set to true for geometry.
                                           // Should not be true for volumes.
   mInitialState.mBlendEnable = true;
-  glClearColor(0.3f, 0.0f, 0.3f, 1.0f);
-  glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 }
 
 //------------------------------------------------------------------------------
@@ -57,8 +55,8 @@ Driver::~Driver()
 void Driver::doFrame()
 {
   // Clear the screen
-  glClearColor(0.9f, 0.9f, 0.9f, 1.0f);
-  glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
+  GL(glClearColor(0.9f, 0.9f, 0.9f, 1.0f));
+  GL(glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT));
 
   //mView = mView * M44::rotationY(0.1f);
   //mHub.getCamera()->setViewTransform(mView);

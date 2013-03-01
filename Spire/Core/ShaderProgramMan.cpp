@@ -80,6 +80,7 @@ ShaderProgramAsset::ShaderProgramAsset(
     mUniforms(mHub.getShaderUniformManager())
 {
   GLuint program = glCreateProgram();
+  GL_CHECK();
   if (0 == program)
   {
     Log::error() << "Unable to create GL program using glCreateProgram.\n";
@@ -93,32 +94,32 @@ ShaderProgramAsset::ShaderProgramAsset(
     std::shared_ptr<ShaderAsset> shader = 
         mHub.getShaderManager().loadShader(std::get<0>(*it), std::get<1>(*it));
 
-    glAttachShader(program, shader->getShaderID());
+    GL(glAttachShader(program, shader->getShaderID()));
   }
 
   // Link the program
-  glLinkProgram(program);
+  GL(glLinkProgram(program));
 
 	// Check the link status 
 	GLint linked;
-	glGetProgramiv(program, GL_LINK_STATUS, &linked);
+	GL(glGetProgramiv(program, GL_LINK_STATUS, &linked));
 	if (!linked)
 	{
 		GLint infoLen = 0;
-		glGetProgramiv(program, GL_INFO_LOG_LENGTH, &infoLen);
+		GL(glGetProgramiv(program, GL_INFO_LOG_LENGTH, &infoLen));
 
 		if (infoLen > 1)
 		{
       char* infoLog = new char[infoLen];
 
-			glGetProgramInfoLog(program, infoLen, NULL, infoLog);
+			GL(glGetProgramInfoLog(program, infoLen, NULL, infoLog));
       Log::error() << "Error linking program:" << std::endl;
       Log::error() << infoLog << std::endl;
 
       delete[] infoLog;
 		}
 
-		glDeleteProgram(program);
+		GL(glDeleteProgram(program));
 
     throw GLError("Failed to link shader.");
 	}
@@ -127,7 +128,7 @@ ShaderProgramAsset::ShaderProgramAsset(
   {
     // Check the active attributes.
     GLint activeAttributes;
-    glGetProgramiv(program, GL_ACTIVE_ATTRIBUTES, &activeAttributes);
+    GL(glGetProgramiv(program, GL_ACTIVE_ATTRIBUTES, &activeAttributes));
 
     const int maxAttribNameSize = 1024;
     char attributeName[maxAttribNameSize];
@@ -136,8 +137,8 @@ ShaderProgramAsset::ShaderProgramAsset(
       GLsizei charsWritten = 0;
       GLint attribSize;
       GLenum type;
-      glGetActiveAttrib(program, i, maxAttribNameSize, &charsWritten,
-          &attribSize, &type, attributeName);
+      GL(glGetActiveAttrib(program, i, maxAttribNameSize, &charsWritten,
+                           &attribSize, &type, attributeName));
 
       try
       {
@@ -158,7 +159,7 @@ ShaderProgramAsset::ShaderProgramAsset(
   {
     // Check the active uniforms.
     GLint activeUniforms;
-    glGetProgramiv(program, GL_ACTIVE_UNIFORMS, &activeUniforms);
+    GL(glGetProgramiv(program, GL_ACTIVE_UNIFORMS, &activeUniforms));
 
     const int maxUniformNameSize = 1024;
     char uniformName[maxUniformNameSize];
@@ -167,8 +168,8 @@ ShaderProgramAsset::ShaderProgramAsset(
       GLsizei charsWritten = 0;
       GLint uniformSize;
       GLenum type;
-      glGetActiveUniform(program, i, maxUniformNameSize, &charsWritten,
-          &uniformSize, &type, uniformName);
+      GL(glGetActiveUniform(program, i, maxUniformNameSize, &charsWritten,
+                            &uniformSize, &type, uniformName));
 
       try
       {
@@ -193,7 +194,7 @@ ShaderProgramAsset::~ShaderProgramAsset()
 {
   if (mHasValidProgram)
   {
-    glDeleteProgram(glProgramID);
+    GL(glDeleteProgram(glProgramID));
     mHasValidProgram = false;
   }
 }
