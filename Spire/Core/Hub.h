@@ -146,9 +146,6 @@ private:
                                                 ///< (this should not be here... move in the future)
   std::vector<std::string>    mShaderDirs;      ///< Shader directories to search.
 
-  /// \todo Remove this once pipes are fully implemented.
-  std::shared_ptr<PipeDriver> mPipe;            ///< Current rendering pipe.
-
   std::list<std::shared_ptr<PipeInterface>> mPipes;         ///< Rendering pipes in-order.
   std::shared_ptr<InterfaceImplementation>  mInterfaceImpl; ///< Interface implementation.
   std::shared_ptr<HackedUCRenderer>         mHackedRenderer;///< Hacked uniform color renderer.

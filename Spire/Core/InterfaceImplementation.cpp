@@ -80,13 +80,14 @@ void InterfaceImplementation::cameraSetTransform(Hub& hub, M44 transform)
 void InterfaceImplementation::pipePushBack(Hub& hub,
                                            std::shared_ptr<PipeInterface> pipe)
 {
+  hub.addPipe(pipe);
 }
   
 //------------------------------------------------------------------------------
 void InterfaceImplementation::pipeRemove(Hub& hub,
                                          std::shared_ptr<PipeInterface> pipe)
 {
-
+  hub.removePipe(pipe);
 }
 
 //------------------------------------------------------------------------------

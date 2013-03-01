@@ -180,10 +180,7 @@ void Hub::oneTimeInitOnThread()
   // Setup camera
   mCamera = std::shared_ptr<Camera>(new Camera(*this));
 
-  // Setup rendering pipeline
-  Log::debug() << "Creating render pipeline." << std::endl;
-  mPipe = std::shared_ptr<PipeDriver>(new StuPipe::Driver(*this));
-
+  /// \todo Remove the hacked renderer.
   mHackedRenderer = std::shared_ptr<HackedUCRenderer>(new HackedUCRenderer(*this));
 }
 
@@ -198,7 +195,11 @@ void Hub::doFrame()
   // to. Should we just build the pipe and see where it leads us to?
   mInterfaceImpl->executeQueue();
 
-  mPipe->doFrame();
+  // Iterate over pipes and render.
+  for (auto it = mPipes.begin(); it != mPipes.end(); ++it)
+  {
+    (*it)->ntsDoPass();
+  }
 }
 
 //------------------------------------------------------------------------------
@@ -287,6 +288,7 @@ bool Hub::addFunctionToThreadQueue(const RemoteFunction& fun)
 void Hub::addPipe(std::shared_ptr<PipeInterface> pipe)
 {
   mPipes.push_back(pipe);
+  pipe->ntsInitOnRenderThread();
 }
 
 //------------------------------------------------------------------------------
