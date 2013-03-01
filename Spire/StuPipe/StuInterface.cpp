@@ -68,7 +68,10 @@ void StuInterface::ntsInitOnRenderThread()
 //------------------------------------------------------------------------------
 void StuInterface::ntsDoPass()
 {
-  
+  for (auto it = mRenderOrderToObjects.begin(); it != mRenderOrderToObjects.end(); ++it)
+  {
+    it->second->renderAllPasses();
+  }
 }
 
 //------------------------------------------------------------------------------

@@ -34,8 +34,7 @@
 namespace Spire {
 
 IBOObject::IBOObject(std::shared_ptr<std::vector<uint8_t>> iboData,
-                     StuInterface::IBO_TYPE type) :
-    mType(type)
+                     StuInterface::IBO_TYPE type)
 {
   GL(glGenBuffers(1, &mGLIndex));
   GL(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mGLIndex));
@@ -46,14 +45,17 @@ IBOObject::IBOObject(std::shared_ptr<std::vector<uint8_t>> iboData,
   {
     case StuInterface::IBO_8BIT:
       mNumElements = iboData->size() / sizeof(uint8_t);
+      mType = GL_UNSIGNED_BYTE;
       break;
 
     case StuInterface::IBO_16BIT:
       mNumElements = iboData->size() / sizeof(uint16_t);
+      mType = GL_UNSIGNED_SHORT;
       break;
 
     case StuInterface::IBO_32BIT:
       mNumElements = iboData->size() / sizeof(uint32_t);
+      mType = GL_UNSIGNED_INT;
       break;
 
     default:

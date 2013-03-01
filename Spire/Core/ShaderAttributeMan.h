@@ -40,6 +40,7 @@
 namespace Spire {
 
 class ShaderAttributeMan;
+class ShaderProgramAsset;
 
 /// Holds all information regarding one attribute.
 struct AttribState
@@ -94,7 +95,7 @@ public:
   bool hasAttribute(const std::string& attribName) const;
 
   /// Binds attributes to the shader indicated by parameter 'program'.
-  void bindAttributes(GLuint program);
+  void bindAttributes(std::shared_ptr<ShaderProgramAsset> program) const;
 
   /// Calculates the stride between vertices based on the attribute sizes
   /// calculated using calculateAttributeSizes.

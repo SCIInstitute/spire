@@ -63,6 +63,27 @@ StuPass::~StuPass()
 }
 
 //------------------------------------------------------------------------------
+void StuPass::renderPass()
+{
+  GL(glBindBuffer(GL_ARRAY_BUFFER, mVBO->getGLIndex()));
+  GL(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mIBO->getGLIndex()));
+
+  // We have already verified that the attributes contained in the shader
+  // are consistent with the attributes we have in the VBO. Therefore, it's
+  // okay to calculate the attribute stride based on the shader's stride, and
+  // bind all of the shader's attributes.
+  const ShaderAttributeCollection& attribs  = mShader->getAttributes();
+  attribs.bindAttributes(mShader);
+  
+  /// \todo Setup all uniforms for this pass... extracting uniforms from the
+  ///       global state if necessary.
+
+  /// \todo Ensure attributes are always sorted in ascending order...
+
+  GL(glDrawElements(mPrimitiveType, mIBO->getNumElements(), mIBO->getType(), 0));
+}
+
+//------------------------------------------------------------------------------
 // StuObject
 //------------------------------------------------------------------------------
 
@@ -137,6 +158,15 @@ void StuObject::addPassUniform(const std::string& pass,
 std::shared_ptr<StuPass> StuObject::getPassByName(const std::string& name)
 {
   return mPasses.at(name);
+}
+
+//------------------------------------------------------------------------------
+void StuObject::renderAllPasses()
+{
+  for (auto it = mPassRenderOrder.begin(); it != mPassRenderOrder.end(); ++it)
+  {
+    
+  }
 }
 
 //------------------------------------------------------------------------------

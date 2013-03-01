@@ -52,12 +52,12 @@ public:
 
   GLuint getGLIndex() const               {return mGLIndex;}
   GLuint getNumElements() const           {return mNumElements;}
-  StuInterface::IBO_TYPE getType() const  {return mType;}
+  GLenum getType() const                  {return mType;}
 
 private:
   GLuint                    mGLIndex;    ///< Corresponds to the map index but obtained from OpenGL.
   GLuint                    mNumElements;///< Number of elements in the IBO.
-  StuInterface::IBO_TYPE    mType;       ///< Type of index buffer.
+  GLenum                    mType;       ///< Type of index buffer.
 };
 
 } // namespace Spire

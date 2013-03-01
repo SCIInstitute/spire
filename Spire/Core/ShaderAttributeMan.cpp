@@ -35,6 +35,7 @@
 #include "Exceptions.h"
 
 #include "Core/ShaderAttributeMan.h"
+#include "Core/ShaderProgramMan.h"
 #include "Core/MurmurHash3.h"
 
 namespace Spire {
@@ -277,7 +278,7 @@ size_t ShaderAttributeCollection::getFullAttributeSize(const AttribSpecificData&
 }
 
 //------------------------------------------------------------------------------
-void ShaderAttributeCollection::bindAttributes(GLuint program)
+void ShaderAttributeCollection::bindAttributes(std::shared_ptr<ShaderProgramAsset> program) const
 {
   int i = 0;
   for (auto it = mAttributes.begin(); it != mAttributes.end(); ++it)
@@ -285,7 +286,7 @@ void ShaderAttributeCollection::bindAttributes(GLuint program)
     if (it->attrib.index != ShaderAttributeMan::getUnknownAttributeIndex())
     {
       AttribState attrib = it->attrib;
-      GL(glBindAttribLocation(program, i, attrib.codeName.c_str()));
+      GL(glBindAttribLocation(program->getProgramID(), i, attrib.codeName.c_str()));
     }
     ++i;
   }

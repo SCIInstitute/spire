@@ -59,6 +59,8 @@ public:
       std::shared_ptr<VBOObject> vbo, std::shared_ptr<IBOObject> ibo, GLenum primitiveType);
   virtual ~StuPass();
   
+  void renderPass();
+
   const std::string& getName() const    {return mName;}
   int32_t getPassOrder() const          {return mPassOrder;}
   GLenum getPrimitiveType() const       {return mPrimitiveType;}
@@ -124,6 +126,9 @@ public:
                       std::shared_ptr<AbstractUniformStateItem> item);
 
   bool hasPassRenderingOrder(const std::vector<std::string>& passes) const;
+
+  /// Renders all passes associated with this object.
+  void renderAllPasses();
 
 protected:
 
