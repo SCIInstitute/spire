@@ -39,15 +39,19 @@
 
 namespace Spire {
 
+class Hub;
+
 /// Unform state management. The currently available uniform state can be
 /// set and queried from this interface.
 class ShaderUniformStateMan
 {
 public:
-  ShaderUniformStateMan();
+  ShaderUniformStateMan(Hub& hub);
   virtual ~ShaderUniformStateMan();
   
   /// Adds a uniform to the global state.
+  /// Throws std::out_of_range if a uniform of corresponding name is not found
+  /// in UniformManager.
   /// \param  name    Name, as used in the shader, of the uniform.
   /// \param  data    Data to be associated with the uniform.
   ///                 If you supply an invalid type for data, you will encounter
@@ -67,9 +71,16 @@ public:
     // a watered down functional pattern matching using template specialization.
     // A static_assert will be issued if there exists no template specialization
     // for the template type T.
-
-    mGlobalState[name] = std::unique_ptr<AbstractUniformStateItem>(UniformStateItem<T>(data));
+    updateGlobalUniform(
+        name,std::shared_ptr<AbstractUniformStateItem>(UniformStateItem<T>(data)));
   }
+
+  /// Updates the global uniform state with the given state item.
+  /// If the item does not already exist, it will be created.
+  /// Throws std::out_of_range if a uniform of corresponding name is not found
+  /// in UniformManager.
+  void updateGlobalUniform(const std::string& name, 
+                           std::shared_ptr<AbstractUniformStateItem> item);
 
   /// Applies the specified uniform to the current shader state.
   /// Throws std::out_of_range if the key was not found in the map.
@@ -80,7 +91,9 @@ private:
   /// Contains all current global uniform state. I would use an ordered map,
   /// but less than is used as the comparison operator. I would need to hash
   /// the strings then insert the hashed value into the map.
-  std::unordered_map<std::string, std::unique_ptr<AbstractUniformStateItem>> mGlobalState;
+  std::unordered_map<std::string, std::shared_ptr<AbstractUniformStateItem>> mGlobalState;
+
+  Hub& mHub;
 };
 
 

@@ -48,6 +48,9 @@ public:
   /// Applies uniform value.
   virtual void applyUniform(int location) const = 0;
 
+  /// Returns appropriate OpenGL type
+  virtual GLenum getGLType() const = 0;
+
   /// Retrieves uniform's name.
 
 protected:
@@ -68,8 +71,7 @@ protected:
 // Template specializations for types commonly used in shader uniforms.
 // This is essentially implementing funcitonal pattern matching.
 // When new C++ standard creeps up, use:
-// http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2012/n3449.pdf 
-// instead.
+// http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2012/n3449.pdf instead.
 //------------------------------------------------------------------------------
 
 // Type specializations derived off of UniformStateItem.
@@ -98,6 +100,10 @@ public:
     uniform3f(location, mData.x, mData.y, mData.z);
   }
 
+  virtual uint32_t getGLType() const override
+  {
+  }
+
 private:
   Type mData;
 };
@@ -122,6 +128,10 @@ public:
     // contiguous memory. This is a *very* dangerous cast that will ONLY work if
     // vectors are tightly packed.
     uniform3fv(location, mData.size(), reinterpret_cast<const float*>(&mData[0]));
+  }
+
+  virtual uint32_t getGLType() const override
+  {
   }
 
 private:

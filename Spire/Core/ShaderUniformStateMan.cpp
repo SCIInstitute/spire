@@ -31,11 +31,13 @@
 
 #include "Common.h"
 #include "ShaderUniformStateMan.h"
+#include "Hub.h"
 
 namespace Spire {
 
 //------------------------------------------------------------------------------
-ShaderUniformStateMan::ShaderUniformStateMan()
+ShaderUniformStateMan::ShaderUniformStateMan(Hub& hub) :
+    mHub(hub)
 {
 }
 
@@ -49,9 +51,21 @@ void ShaderUniformStateMan::applyUniform(const std::string& name, int location)
 {
   // We use mGlobalState.at instead of the [] operator because at throws an
   // exception if the key is not found in the container.
-  std::unique_ptr<AbstractUniformStateItem>& ptr = mGlobalState.at(name);
+  std::shared_ptr<AbstractUniformStateItem>& ptr = mGlobalState.at(name);
   ptr->applyUniform(location);
 }
 
+//------------------------------------------------------------------------------
+void ShaderUniformStateMan::updateGlobalUniform(const std::string& name, 
+                                                std::shared_ptr<AbstractUniformStateItem> item)
+{
+  std::shared_ptr<const UniformState> uniform = 
+      mHub.getShaderUniformManager().getUniformWithName(name); // std::out_of_range
+  
+  // Double check that the uniform we are receiving matches types.
+
+
+  mGlobalState[name] = item;
+}
 
 } // end of namespace Spire

@@ -117,6 +117,14 @@ TEST_F(StuPipeTestFixture, TestPublicInterface)
 }
 
 //------------------------------------------------------------------------------
+TEST_F(StuPipeTestFixture, TestShaders)
+{
+  // Test that shader uniforms are correctly handled. Will need a couple of test
+  // shaders that expose bad uniforms. This is so testing can be done to verify
+  // that type checking and name checking is being done correctly.
+}
+
+//------------------------------------------------------------------------------
 TEST_F(StuPipeTestFixture, TestTriangle)
 {
   // Test the rendering of a triangle with StuPipe.
@@ -250,7 +258,8 @@ TEST_F(StuPipeTestFixture, TestTriangle)
   EXPECT_THROW(mStuInterface->addPassToObject(obj1, pass1, shader1, vbo1, ibo1, StuInterface::TRIANGLES),
                Duplicate);
 
-  // No longer need VBO and IBO.
+  // No longer need VBO and IBO (will stay resident in the passes -- when the
+  // passes are destroyed, the VBO / IBOs will be destroyed).
   mStuInterface->removeIBO(ibo1);
   mStuInterface->removeVBO(vbo1);
   EXPECT_THROW(mStuInterface->removeIBO(ibo1), std::out_of_range);
@@ -262,6 +271,12 @@ TEST_F(StuPipeTestFixture, TestTriangle)
 
   // Extract results
   Spire::GlobalTestEnvironment::instance()->writeFBO("/tmp/test.png");
+
+  // Attempt to set global uniform value that is at odds with information found
+  // in the uniform manager (should induce a type error).
+
+  /// \todo Test adding a uniform to the global state which does not have a
+  ///       corresponding entry in the UniformManager.
 
   /// \todo Test uniforms.
   ///       1 - No uniforms set: should attempt to access global uniform state

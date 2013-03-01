@@ -366,6 +366,26 @@ void StuInterface::addPassUniformInternal(const std::string& object,
 
 
 //------------------------------------------------------------------------------
+void StuInterface::addGlobalUniformInternalImpl(Hub& hub, StuInterface* iface,
+                                              std::string uniformName,
+                                              std::shared_ptr<AbstractUniformStateItem> item)
+{
+  // Access uniform state manager and apply/update uniform value.
+  hub.getShaderUniformStateMan().updateGlobalUniform(uniformName, item);
+}
+
+//------------------------------------------------------------------------------
+void StuInterface::addGlobalUniformInternal(const std::string& uniformName,
+                                            std::shared_ptr<AbstractUniformStateItem> item)
+{
+  Hub::RemoteFunction fun =
+      std::bind(addGlobalUniformInternalImpl, _1, this, uniformName, item);
+  mHub.addFunctionToThreadQueue(fun);
+}
+
+
+
+//------------------------------------------------------------------------------
 void StuInterface::addPersistentShaderImpl(
     Hub& hub, StuInterface* iface,
     std::string programName,

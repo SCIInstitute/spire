@@ -234,7 +234,8 @@ public:
   void removeGeomPassFromObject(const std::string& object,
                                 const std::string& pass);
 
-  /// Associates a uniform value to the specified object's pass.
+  /// Associates a uniform value to the specified object's pass. If the uniform
+  /// already exists, then its value will be updated if it passes a type check.
   /// During rendering the uniform value will be returned to its default value 
   /// once this pass has been completed.
   /// Throws an std::out_of_range exception if the object or pass is not found 
@@ -249,6 +250,17 @@ public:
                            std::shared_ptr<AbstractUniformStateItem>(
                                new UniformStateItem<T>(uniformData)));
   }
+
+  template <typename T>
+  void addGlobalUniform(const std::string& uniformName, T uniformData)
+  {
+    addGlobalUniformInternal(uniformName, 
+                             std::shared_ptr<AbstractUniformStateItem>(
+                                 new UniformStateItem<T>(uniformData)));
+  }
+
+  /// \todo Create method to add uniforms to the UniformManager (NOT the state
+  ///       manager -- uniform manager is the type checker).
 
   //----------
   // Uniforms
@@ -323,6 +335,9 @@ private:
                               const std::string& uniformName,
                               std::shared_ptr<AbstractUniformStateItem> item);
 
+  void addGlobalUniformInternal(const std::string& uniformName,
+                                std::shared_ptr<AbstractUniformStateItem> item);
+
   /// Remove the specified object from the order list.
   void removeObjectFromOrderList(const std::string& objectName, int32_t objectOrder);
 
@@ -391,6 +406,10 @@ private:
                                          std::string pass,
                                          std::string uniformName,
                                          std::shared_ptr<AbstractUniformStateItem> item);
+
+  static void addGlobalUniformInternalImpl(Hub& hub, StuInterface* iface,
+                                           std::string uniformName,
+                                           std::shared_ptr<AbstractUniformStateItem> item);
 
   static void removeGeomPassFromObjectImpl(Hub& hub, StuInterface* iface,
                                            std::string object,
