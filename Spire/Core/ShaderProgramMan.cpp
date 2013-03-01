@@ -76,8 +76,7 @@ ShaderProgramAsset::ShaderProgramAsset(
       const std::list<std::tuple<std::string, GLenum>>& shaders) :
     BaseAsset(name),
     mHub(hub),
-    mAttributes(mHub.getShaderAttributeManager()),
-    mUniforms(mHub.getShaderUniformManager())
+    mAttributes(mHub.getShaderAttributeManager())
 {
   GLuint program = glCreateProgram();
   GL_CHECK();
@@ -86,6 +85,8 @@ ShaderProgramAsset::ShaderProgramAsset(
     Log::error() << "Unable to create GL program using glCreateProgram.\n";
     throw GLError("Unable to create shader program.");
   }
+  mUniforms = std::unique_ptr<ShaderUniformCollection>(
+      new ShaderUniformCollection(mHub.getShaderUniformManager(), program));
 
   // Load and attach all shaders.
   for (auto it = shaders.begin(); it != shaders.end(); ++it)
@@ -173,9 +174,9 @@ ShaderProgramAsset::ShaderProgramAsset(
 
       try
       {
-        mUniforms.addUniform(uniformName);
+        mUniforms->addUniform(uniformName);
       }
-      catch (ShaderUniformNotFound&)
+      catch (std::out_of_range&)
       {
         Log::warning() << "Unable to find uniform: '" << uniformName << "'"
                        << " in ShaderUniformMan." << std::endl;

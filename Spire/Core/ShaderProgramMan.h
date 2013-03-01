@@ -53,7 +53,7 @@ public:
   const ShaderAttributeCollection& getAttributes() const  {return mAttributes;}
 
   /// Shader uniform collection.
-  const ShaderUniformCollection& getUniforms() const      {return mUniforms;}
+  const ShaderUniformCollection& getUniforms() const      {return *mUniforms;}
 
   /// Returns false if 'shaders' does not match our program definition.
   /// O(n^2)
@@ -67,7 +67,7 @@ protected:
   Hub&                      mHub;             ///< Reference to render hub.
 
   ShaderAttributeCollection mAttributes;      ///< All program attributes.
-  ShaderUniformCollection   mUniforms;        ///< All program uniforms.
+  std::unique_ptr<ShaderUniformCollection> mUniforms;
 
   ///< This list is used to verify that requested shader programs are not at
   ///< odds with each other.

@@ -51,9 +51,9 @@ struct UniformState
 class ShaderUniformCollection
 {
 public:
-  ShaderUniformCollection(const ShaderUniformMan& man) :
+  ShaderUniformCollection(const ShaderUniformMan& man, GLuint program) :
       mUniformMan(man),
-      mProgram(getInvalidProgramHandle())
+      mProgram(program)
   {}
 
   struct UniformSpecificData
@@ -71,9 +71,6 @@ public:
 
   /// \todo Change back to constexpr
   static const GLuint getInvalidProgramHandle()  {return static_cast<GLuint>(0);}
-
-  /// Sets the shader program to check the uniforms against.
-  void setShaderProgram(GLuint program);
 
   /// Adds a uniform with the specified name.
   /// Also queries the OpenGL shader program for the position of the uniform.
