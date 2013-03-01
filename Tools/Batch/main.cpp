@@ -67,6 +67,32 @@ public:
     }
     if ( mRawImage.empty() )
       throw std::runtime_error("Unable to allocate space for image.");
+
+    mContext->makeCurrent();
+
+    // Build an FBO (the only thing we can render to when rendering offscreen)
+    /// \todo Migrate this code elsewhere when we add tuvok / a compasited
+    ///       renderer as it will no longer work.
+    GL(glGenFramebuffersEXT(1, &mGLFrameBuffer));
+    GL(glGenRenderbuffersEXT(1, &mGLDepthBuffer));
+    GL(glGenTextures(1, &mGLColorTexture));
+
+    GL(glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, mGLFrameBuffer));
+
+    GL(glBindTexture(GL_TEXTURE_2D, mGLColorTexture));
+    GL(glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR));
+    GL(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, mWidth, mHeight, 0,
+                 GL_RGBA, GL_INT, NULL));
+    GL(glFramebufferTexture2DEXT(GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT,
+                              GL_TEXTURE_2D, mGLColorTexture, 0));
+
+
+    // initialize depth renderbuffer
+    GL(glBindRenderbufferEXT(GL_RENDERBUFFER_EXT, mGLDepthBuffer));
+    GL(glRenderbufferStorageEXT(GL_RENDERBUFFER_EXT, GL_DEPTH_COMPONENT24,
+                             mWidth, mHeight));
+    GL(glFramebufferRenderbufferEXT(GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT,
+                                 GL_RENDERBUFFER_EXT, mGLDepthBuffer));
   }
 
 
@@ -74,6 +100,7 @@ public:
   /// Otherwise, it returns the currently active context.
   std::shared_ptr<Spire::Context> getContext() const override
   {
+    GL(glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, mGLFrameBuffer));
     return std::dynamic_pointer_cast<Spire::Context>(mContext);
   }
 
@@ -90,28 +117,41 @@ public:
 
     GL(glPixelStorei(GL_PACK_ALIGNMENT, 1));
     GL(glPixelStorei(GL_UNPACK_ALIGNMENT, 1));
-    GL(glReadBuffer(GL_BACK));
-    mRawImage[0] = 255;
-    mRawImage[1] = 255;
-    mRawImage[2] = 255;
-    mRawImage[3] = 177;
-    GL_CHECK();
+    GL(glReadBuffer(GL_COLOR_ATTACHMENT0));     // Reading straight from the FBO
     GL(glReadPixels(0,0,viewport[2],viewport[3],GL_RGBA,GL_UNSIGNED_BYTE,&mRawImage[0]));
-    GL_CHECK();
-#ifdef SPIRE_DEBUG
-    Spire::Log::debug() << "Test" << std::endl;
-#endif
-    std::cerr << "Image Data: " << static_cast<int>(mRawImage[0]) 
-                                << static_cast<int>(mRawImage[1]) 
-                                << static_cast<int>(mRawImage[2]) 
-                                << static_cast<int>(mRawImage[3]) << std::endl;
 
-    //CImg<uint8_t> img(viewport[2], viewport[3], 1, 4, 0);
     // We are using shared memory for the CImg class so it doesn't have to allocate its own.
     // It would be better to std::move vector into CImg though.
     // \todo image flipped?
-    CImg<uint8_t> img(reinterpret_cast<uint8_t*>(&mRawImage[0]), viewport[2],
-                      viewport[3], 1, 4, true);
+    CImg<uint8_t> img(&mRawImage[0], viewport[2], viewport[3], 1, 4, false);
+
+    // 'De-interleave' the image data - extremelly inneficient seeing as we are
+    // going to writing the output data in interleaved format anyways...
+    uint8_t* glData = &mRawImage[0];
+    uint8_t* cimgData = img.data();
+
+    size_t channelSize = viewport[2] * viewport[3];
+    size_t imgSize = channelSize * 4;
+
+    int ci = 0; // channel index.
+    for (size_t i = 0, ci = 0; i < imgSize; i += 4, ++ci)
+    {
+      //cimgData[ci + channelSize*0] = glData[i + 0];
+      //cimgData[ci + channelSize*1] = glData[i + 1]; 
+      //cimgData[ci + channelSize*2] = glData[i + 2];
+      //cimgData[ci + channelSize*3] = glData[i + 3];
+
+      // Origin is at bottom left for OpenGL. So while we are de-interleaving,
+      // we may as well flip the image. This is what the subtraction is all
+      // about.
+      int row = (ci / viewport[2] + 1) * viewport[2]; // Expect this to be floored.
+      int offset = ci % viewport[2];  // Offset from the beginning of the row.
+      int rowoff = row + offset;      // Combined row / offset.
+      cimgData[channelSize*1 - rowoff] = glData[i + 0];
+      cimgData[channelSize*2 - rowoff] = glData[i + 1]; 
+      cimgData[channelSize*3 - rowoff] = glData[i + 2];
+      cimgData[channelSize*4 - rowoff] = glData[i + 3];
+    }
     img.save(file.c_str());
   }
 
@@ -147,6 +187,11 @@ private:
   std::vector<uint8_t> mRawImage;
   uint32_t mWidth;
   uint32_t mHeight;
+
+  GLuint mGLFrameBuffer;
+  GLuint mGLColorTexture;
+
+  GLuint mGLDepthBuffer;
 };
 
 

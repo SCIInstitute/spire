@@ -55,7 +55,7 @@ Driver::~Driver()
 void Driver::doFrame()
 {
   // Clear the screen
-  GL(glClearColor(0.9f, 0.9f, 0.9f, 1.0f));
+  GL(glClearColor(0.1f, 0.4f, 0.6f, 1.0f));
   GL(glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT));
 
   //mView = mView * M44::rotationY(0.1f);

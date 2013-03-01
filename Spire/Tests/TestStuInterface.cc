@@ -252,19 +252,9 @@ TEST_F(StuPipeTestFixture, TestTriangle)
   EXPECT_THROW(mStuInterface->removeIBO(ibo1), std::out_of_range);
   EXPECT_THROW(mStuInterface->removeVBO(vbo1), std::out_of_range);
 
-  // Ensure context is current.
-  std::shared_ptr<Spire::Context> ctx = Spire::GlobalTestEnvironment::instance()->getContext();
-  ctx->makeCurrent();
-
-  //M44 rot = M44::rotationX(PI);
-  //mHub.getCamera()->setViewTransform(mView);
-  //mSpireInterface->cameraSetTransform();
-
-  // Attempt to render the triangle using synchronous interface (mind camera position).
-  //mSpireInterface->doFrame();
-  //ctx->swapBuffers();
-  //mSpireInterface->doFrame();
-  //ctx->swapBuffers();
+  M44 rot = M44::rotationX(PI);
+  mSpireInterface->cameraSetTransform(rot);
+  mSpireInterface->doFrame();
 
   // Extract results
   Spire::GlobalTestEnvironment::instance()->writeFBO("/tmp/test.png");
