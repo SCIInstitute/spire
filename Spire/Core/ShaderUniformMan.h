@@ -66,6 +66,7 @@ public:
                             ///< glGetUniformLocation.
     GLint     glSize;       ///< 'size' of the uniform variable.
     GLenum    glType;       ///< Type of the uniform variable (see: http://www.opengl.org/sdk/docs/man/xhtml/glGetActiveUniform.xml)
+                            ///< Should match type of UniformState exactly.
     /// @}
   };
 
@@ -78,6 +79,13 @@ public:
 
   /// Retrieves number of uniforms stored in mUniforms.
   size_t getNumUniforms() const;
+
+  /// Retrieves the uniform at 'index'.
+  const UniformSpecificData& getUniformAtIndex(size_t index) const;
+
+  /// Throws out_of_range exception if the uniform with 'uniformName' is
+  /// not found in the list of uniforms.
+  const UniformSpecificData& getUniformData(const std::string& uniformName) const;
 
   /// If 'uniformName' is contained herein, returns true.
   bool hasUniform(const std::string& uniformName) const;

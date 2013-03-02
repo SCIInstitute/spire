@@ -31,6 +31,7 @@
 
 #include "StuObject.h"
 #include "Core/Hub.h"
+#include "Core/ShaderUniformStateMan.h"
 
 namespace Spire {
 
@@ -57,7 +58,19 @@ StuPass::StuPass(
   mShader = man.findProgram(programName);
 
   // Ensure there is at least enough space in the mUniforms vector. 
-  mUniforms.reserve(mShader->getUniforms().getNumUniforms());
+  size_t numUniforms = mShader->getUniforms().getNumUniforms();
+  mUniforms.reserve(numUniforms);
+  mUnsatisfiedUniforms.reserve(numUniforms);
+
+  // Add uniforms present in the shader to the unsatisfied uniforms vector.
+  // Not constructing an iterator interface as it's just easier to index.
+  for (int i = 0; i < numUniforms; i++)
+  {
+    const ShaderUniformCollection::UniformSpecificData& uniformData = 
+        mShader->getUniforms().getUniformAtIndex(i);
+
+    mUnsatisfiedUniforms.push_back(uniformData.uniform->codeName);
+  }
 }
 
 //------------------------------------------------------------------------------
@@ -91,17 +104,51 @@ void StuPass::renderPass()
   GL(glDrawElements(mPrimitiveType, mIBO->getNumElements(), mIBO->getType(), 0));
 }
 
+//------------------------------------------------------------------------------
 void StuPass::addPassUniform(const std::string uniformName,
                              std::shared_ptr<AbstractUniformStateItem> item)
 {
-  /// \todo Implement local uniforms.
-  // Ensure that the shader contains a uniform of this name.
+  // This will throw std::out_of_range.
+  const ShaderUniformCollection::UniformSpecificData& uniformData = 
+      mShader->getUniforms().getUniformData(uniformName);
 
   // Check uniform type (see UniformStateMan).
+  if (uniformData.glType != ShaderUniformStateMan::uniformTypeToGL(item->getGLType()))
+    throw ShaderUniformTypeError("Uniform must be the same type as that found in the shader.");
 
-  // Update mUnsatisfiedUniforms list (by adding to the list, if the uniform
-  // is NOT already present).
+  // Find the uniform in our vector. If it is not already present, then that
+  // means we will have to also remove it from our unsatisfied uniforms vector.
+  bool foundUniform = false;
+  for (auto it = mUniforms.begin(); it != mUniforms.end(); ++it)
+  {
+    if (it->uniformName == uniformName)
+    {
+      foundUniform = true;
+      it->item = item;
+    }
+  }
+
+  if (foundUniform == false)
+  {
+    mUniforms.emplace_back(UniformItem(uniformName, item));
+
+    // Update unsatisfied uniforms list. We know that the vector MUST contain
+    // the uniform item because we did not find it while looping through our
+    // pre-existing uniforms. It has also passed an existence check against
+    // the shader and a type check.
+    for (auto it = mUnsatisfiedUniforms.begin(); it != mUnsatisfiedUniforms.end(); ++it)
+    {
+      if (*it == uniformName)
+      {
+        mUnsatisfiedUniforms.erase(it);
+        break;
+      }
+    }
+  }
 }
+
+/// \note If we ever implement a remove pass uniform function, be *sure* to
+///       update the unsatisfied uniforms vector!
 
 //------------------------------------------------------------------------------
 // StuObject

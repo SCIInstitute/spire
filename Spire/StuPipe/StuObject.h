@@ -66,6 +66,8 @@ public:
   GLenum getPrimitiveType() const       {return mPrimitiveType;}
 
   /// Adds a local uniform to the pass.
+  /// throws std::out_of_range if 'uniformName' is not found in the shader's
+  /// uniform list.
   void addPassUniform(const std::string uniformName,
                       std::shared_ptr<AbstractUniformStateItem> item);
 
@@ -73,6 +75,12 @@ protected:
 
   struct UniformItem
   {
+    UniformItem(const std::string& name,
+                std::shared_ptr<AbstractUniformStateItem> uniformItem) :
+        uniformName(name),
+        item(uniformItem)
+    {}
+
     std::string                               uniformName;
     std::shared_ptr<AbstractUniformStateItem> item;
   };
@@ -87,7 +95,7 @@ protected:
   /// uniform state. Otherwise the shader cannot be properly satisfied and a
   /// runtime exception will be thrown.
   /// This list is updated everytime we add or remove elements from mUniforms.
-  std::list<std::string>                mUnsatisfiedUniforms;
+  std::vector<std::string>              mUnsatisfiedUniforms;
 
   /// Local uniforms.
   std::vector<UniformItem>              mUniforms;

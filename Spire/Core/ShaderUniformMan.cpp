@@ -130,9 +130,32 @@ bool ShaderUniformCollection::hasUniform(const std::string& uniformName) const
 }
 
 //------------------------------------------------------------------------------
+const ShaderUniformCollection::UniformSpecificData&
+ShaderUniformCollection::getUniformData(const std::string& uniformName) const
+{
+  for (auto it = mUniforms.begin(); it != mUniforms.end(); ++it)
+  {
+    std::shared_ptr<const UniformState> state = it->uniform;
+    if (state->codeName == uniformName)
+    {
+      return *it;
+    }
+  }
+
+  throw std::out_of_range("Unable to find uniform with name specified.");
+}
+
+//------------------------------------------------------------------------------
 size_t ShaderUniformCollection::getNumUniforms() const
 {
   return mUniforms.size();
+}
+
+//------------------------------------------------------------------------------
+const ShaderUniformCollection::UniformSpecificData&
+ShaderUniformCollection::getUniformAtIndex(size_t index) const
+{
+  return mUniforms[index];
 }
 
 } // end of namespace Spire
