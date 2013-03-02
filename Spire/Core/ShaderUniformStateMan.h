@@ -35,6 +35,7 @@
 #include <map>
 #include <unordered_map>
 
+#include "Common.h"
 #include "Core/ShaderUniformStateManTemplates.h"
 
 namespace Spire {
@@ -85,6 +86,11 @@ public:
   /// Applies the specified uniform to the current shader state.
   /// Throws std::out_of_range if the key was not found in the map.
   void applyUniform(const std::string& name, int location);
+
+  /// Static function to convert Spire::UNIFORM_TYPE to GLenum.
+  /// This function does not exist in the UniformStateManTemplates header file
+  /// because we don't want to expose the GLenum type to an interface.
+  static GLenum uniformTypeToGL(UNIFORM_TYPE type);
 
 private:
 

@@ -65,21 +65,32 @@ public:
   int32_t getPassOrder() const          {return mPassOrder;}
   GLenum getPrimitiveType() const       {return mPrimitiveType;}
 
+  /// Adds a local uniform to the pass.
+  void addPassUniform(const std::string uniformName,
+                      std::shared_ptr<AbstractUniformStateItem> item);
+
 protected:
+
+  struct UniformItem
+  {
+    std::string                               uniformName;
+    std::shared_ptr<AbstractUniformStateItem> item;
+  };
 
   std::string                           mName;      ///< Simple pass name.
   int32_t                               mPassOrder; ///< Pass order.
   GLenum                                mPrimitiveType;
-
-  /// List of uniforms to apply before this shader gets executed.
-  std::vector<std::unique_ptr<AbstractUniformStateItem>>  mUniforms;
 
   /// List of unsatisfied uniforms (the list of uniforms that are not covered
   /// by our mUniforms list).
   /// The set of unsatisfied uniforms should be a subset of the global
   /// uniform state. Otherwise the shader cannot be properly satisfied and a
   /// runtime exception will be thrown.
+  /// This list is updated everytime we add or remove elements from mUniforms.
   std::list<std::string>                mUnsatisfiedUniforms;
+
+  /// Local uniforms.
+  std::vector<UniformItem>              mUniforms;
 
   std::shared_ptr<VBOObject>            mVBO;     ///< ID of VBO to use during pass.
   std::shared_ptr<IBOObject>            mIBO;     ///< ID of IBO to use during pass.

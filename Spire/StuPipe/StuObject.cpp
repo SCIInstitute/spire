@@ -55,6 +55,9 @@ StuPass::StuPass(
   // not found.
   ShaderProgramMan& man = mHub.getShaderProgramManager();
   mShader = man.findProgram(programName);
+
+  // Ensure there is at least enough space in the mUniforms vector. 
+  mUniforms.reserve(mShader->getUniforms().getNumUniforms());
 }
 
 //------------------------------------------------------------------------------
@@ -86,6 +89,18 @@ void StuPass::renderPass()
   /// \todo Ensure attributes are always sorted in ascending order...
 
   GL(glDrawElements(mPrimitiveType, mIBO->getNumElements(), mIBO->getType(), 0));
+}
+
+void StuPass::addPassUniform(const std::string uniformName,
+                             std::shared_ptr<AbstractUniformStateItem> item)
+{
+  /// \todo Implement local uniforms.
+  // Ensure that the shader contains a uniform of this name.
+
+  // Check uniform type (see UniformStateMan).
+
+  // Update mUnsatisfiedUniforms list (by adding to the list, if the uniform
+  // is NOT already present).
 }
 
 //------------------------------------------------------------------------------
@@ -152,10 +167,16 @@ void StuObject::removePassFromOrderList(const std::string& passName,
 }
 
 //------------------------------------------------------------------------------
-void StuObject::addPassUniform(const std::string& pass,
+void StuObject::addPassUniform(const std::string& passName,
                       const std::string uniformName,
                       std::shared_ptr<AbstractUniformStateItem> item)
 {
+  // We are going to have a facility similar to UniformStateMan, but we are
+  // going to use a more cache-coherent vector. It's unlikely that we ever need
+  // to grow the vector beyond the number of uniforms already present in the
+  // shader.
+  std::shared_ptr<StuPass> pass = getPassByName(passName);
+  pass->addPassUniform(uniformName, item);
 }
 
 
