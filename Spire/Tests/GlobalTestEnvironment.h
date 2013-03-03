@@ -58,6 +58,9 @@ public:
   // Writes the current FBO to the designated file. Should be a valid image file.
   virtual void writeFBO(const std::string& file) = 0;
 
+  virtual uint32_t getScreenWidth() const = 0;
+  virtual uint32_t getScreenHeight() const = 0;
+
 protected:
 
   GlobalTestEnvironment()

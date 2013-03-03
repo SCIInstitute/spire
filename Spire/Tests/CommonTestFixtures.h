@@ -39,6 +39,8 @@
 #include "AppSpecific/SCIRun/SRInterface.h"
 #include "StuPipe/StuInterface.h"
 
+#include "TestCamera.h"
+
 //------------------------------------------------------------------------------
 // Basic StuPipe test fixture.
 //------------------------------------------------------------------------------
@@ -62,6 +64,9 @@ public:
     mStuInterface = std::shared_ptr<Spire::StuInterface>(
         new Spire::StuInterface(mSpireInterface));
     mSpireInterface->pipePushBack(mStuInterface);
+
+    // Build camera that we will use for testing purposes.
+    mCamera = std::unique_ptr<TestCamera>(new TestCamera);
   }
 
   virtual void TearDown() override
@@ -71,6 +76,8 @@ public:
 
   std::shared_ptr<Spire::Interface>     mSpireInterface;
   std::shared_ptr<Spire::StuInterface>  mStuInterface;
+
+  std::unique_ptr<TestCamera>           mCamera;
 };
 
 //------------------------------------------------------------------------------
@@ -95,6 +102,9 @@ public:
     mStuInterface = std::shared_ptr<Spire::StuInterface>(
         new Spire::StuInterface(mSpireInterface));
     mSpireInterface->pipePushBack(mStuInterface);
+
+    // Build camera that we will use for testing purposes.
+    mCamera = std::unique_ptr<TestCamera>(new TestCamera);
   }
 
   virtual void TearDown() override
@@ -104,6 +114,8 @@ public:
 
   std::shared_ptr<Spire::SCIRun::SRInterface> mSpireInterface;
   std::shared_ptr<Spire::StuInterface>        mStuInterface;
+
+  std::unique_ptr<TestCamera>                 mCamera;
 };
 
 #endif 

@@ -265,6 +265,9 @@ TEST_F(StuPipeTestFixture, TestTriangle)
   EXPECT_THROW(mStuInterface->removeIBO(ibo1), std::out_of_range);
   EXPECT_THROW(mStuInterface->removeVBO(vbo1), std::out_of_range);
 
+  // Setup camera so that it can be passed to the Uniform Color shader.
+  // Camera has been setup in the test fixture.
+
   M44 rot = M44::rotationX(PI);
   mSpireInterface->cameraSetTransform(rot);
   mSpireInterface->doFrame();
