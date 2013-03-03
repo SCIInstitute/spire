@@ -69,7 +69,9 @@ StuPass::StuPass(
     const ShaderUniformCollection::UniformSpecificData& uniformData = 
         mShader->getUniforms().getUniformAtIndex(i);
 
-    mUnsatisfiedUniforms.push_back(uniformData.uniform->codeName);
+    mUnsatisfiedUniforms.push_back(
+        UnsastisfiedUniformItem(uniformData.uniform->codeName, 
+                                uniformData.glUniformLoc));
   }
 }
 
@@ -82,8 +84,7 @@ StuPass::~StuPass()
 void StuPass::renderPass()
 {
   /// \todo Should route through the shader man so we don't re-apply programs
-  ///       that are already active (likely the driver will handle this for
-  ///       us, however).
+  ///       that are already active.
   GL(glUseProgram(mShader->getProgramID()));
 
   GL(glBindBuffer(GL_ARRAY_BUFFER, mVBO->getGLIndex()));
@@ -96,8 +97,17 @@ void StuPass::renderPass()
   const ShaderAttributeCollection& attribs  = mShader->getAttributes();
   attribs.bindAttributes(mShader);
   
-  /// \todo Setup all uniforms for this pass... extracting uniforms from the
-  ///       global state if necessary.
+  // Assign local uniforms.
+  for (auto it = mUniforms.begin(); it != mUniforms.end(); ++it)
+  {
+    it->item->applyUniform(it->shaderLocation);
+  }
+
+  // Assign global uniforms.
+  for (auto it = mUnsatisfiedUniforms.begin(); it != mUnsatisfiedUniforms.end(); ++it)
+  {
+    mHub.getShaderUniformStateMan().applyUniform(it->uniformName, it->shaderLocation);
+  }
 
   /// \todo Ensure attributes are always sorted in ascending order...
 
@@ -130,7 +140,7 @@ void StuPass::addPassUniform(const std::string uniformName,
 
   if (foundUniform == false)
   {
-    mUniforms.emplace_back(UniformItem(uniformName, item));
+    mUniforms.emplace_back(UniformItem(uniformName, item, uniformData.glUniformLoc));
 
     // Update unsatisfied uniforms list. We know that the vector MUST contain
     // the uniform item because we did not find it while looping through our
@@ -138,7 +148,7 @@ void StuPass::addPassUniform(const std::string uniformName,
     // the shader and a type check.
     for (auto it = mUnsatisfiedUniforms.begin(); it != mUnsatisfiedUniforms.end(); ++it)
     {
-      if (*it == uniformName)
+      if (it->uniformName == uniformName)
       {
         mUnsatisfiedUniforms.erase(it);
         break;

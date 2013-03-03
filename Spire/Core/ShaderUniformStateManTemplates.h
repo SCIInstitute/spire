@@ -251,6 +251,28 @@ private:
   std::vector<V3>   mData;
 };
 
+template <>
+class UniformStateItem<V4> : public AbstractUniformStateItem
+{
+public:
+  typedef V4 Type;
+
+  UniformStateItem(const Type& in) : mData(in) {}
+
+  void applyUniform(int location) const override
+  {
+    uniform4f(location, mData.x, mData.y, mData.z, mData.w);
+  }
+
+  UNIFORM_TYPE getGLType() const override
+  {
+    return UNIFORM_FLOAT_VEC4;
+  }
+
+private:
+  Type mData;
+};
+
 //------------------------------------------------------------------------------
 // M44
 //------------------------------------------------------------------------------

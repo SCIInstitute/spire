@@ -68,6 +68,20 @@ void StuInterface::ntsInitOnRenderThread()
 //------------------------------------------------------------------------------
 void StuInterface::ntsDoPass()
 {
+  /// \todo GPUState should be a member variable (can't expose in the interface
+  ///       class however)
+  GPUState          mInitialState;
+  mInitialState.mDepthTestEnable = false;
+  mInitialState.mCullFaceEnable = false;  /// \todo Set to true for geometry.
+                                          ///       Should not be true for volumes.
+  mInitialState.mBlendEnable = true;
+
+  /// \todo Move this outside of the interfcace!
+  GL(glClearColor(0.1f, 0.4f, 0.6f, 1.0f));
+  GL(glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT));
+
+  mHub.getGPUStateManager().apply(mInitialState, true);
+
   for (auto it = mRenderOrderToObjects.begin(); it != mRenderOrderToObjects.end(); ++it)
   {
     it->second->renderAllPasses();

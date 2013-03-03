@@ -240,6 +240,8 @@ public:
   /// once this pass has been completed.
   /// Throws an std::out_of_range exception if the object or pass is not found 
   /// in the system.
+  /// Throws ShaderUniformTypeError if the types do not match what is stored
+  /// in the shader.
   template <typename T>
   void addPassUniform(const std::string& object,
                       const std::string& pass,

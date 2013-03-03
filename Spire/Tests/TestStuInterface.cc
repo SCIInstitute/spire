@@ -265,11 +265,20 @@ TEST_F(StuPipeTestFixture, TestTriangle)
   EXPECT_THROW(mStuInterface->removeIBO(ibo1), std::out_of_range);
   EXPECT_THROW(mStuInterface->removeVBO(vbo1), std::out_of_range);
 
+  // Test global uniforms -- test run-time type validation.
+  /// \todo Come back and properly test global uniforms when we have removed
+  ///       the global uniform list.
+
   // Setup camera so that it can be passed to the Uniform Color shader.
   // Camera has been setup in the test fixture.
+  mStuInterface->addGlobalUniform("uProjIVWorld", mCamera->getWorldToProjection());
+  EXPECT_THROW(mStuInterface->addGlobalUniform("uProjIVWorld", V3(0.0f, 0.0f, 0.0f)), ShaderUniformTypeError);
 
-  M44 rot = M44::rotationX(PI);
-  mSpireInterface->cameraSetTransform(rot);
+  // Add color to the pass (which will lookup the type via the shader).
+  EXPECT_THROW(mStuInterface->addPassUniform(obj1, pass1, "uColor", V3(0.0f, 0.0f, 0.0f)), ShaderUniformTypeError);
+  EXPECT_THROW(mStuInterface->addPassUniform(obj1, pass1, "uColor", M44()), ShaderUniformTypeError);
+  mStuInterface->addPassUniform(obj1, pass1, "uColor", V4(1.0f, 0.0f, 0.0f, 1.0f));
+
   mSpireInterface->doFrame();
 
   // Extract results

@@ -76,13 +76,28 @@ protected:
   struct UniformItem
   {
     UniformItem(const std::string& name,
-                std::shared_ptr<AbstractUniformStateItem> uniformItem) :
+                std::shared_ptr<AbstractUniformStateItem> uniformItem,
+                GLint location) :
         uniformName(name),
-        item(uniformItem)
+        item(uniformItem),
+        shaderLocation(location)
     {}
 
     std::string                               uniformName;
     std::shared_ptr<AbstractUniformStateItem> item;
+    GLint                                     shaderLocation;
+  };
+
+  struct UnsastisfiedUniformItem
+  {
+    UnsastisfiedUniformItem(const std::string& name,
+                            GLint location) :
+        uniformName(name),
+        shaderLocation(location)
+    {}
+
+    std::string                         uniformName;
+    GLint                               shaderLocation;
   };
 
   std::string                           mName;      ///< Simple pass name.
@@ -95,7 +110,7 @@ protected:
   /// uniform state. Otherwise the shader cannot be properly satisfied and a
   /// runtime exception will be thrown.
   /// This list is updated everytime we add or remove elements from mUniforms.
-  std::vector<std::string>              mUnsatisfiedUniforms;
+  std::vector<UnsastisfiedUniformItem>  mUnsatisfiedUniforms;
 
   /// Local uniforms.
   std::vector<UniformItem>              mUniforms;

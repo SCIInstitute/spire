@@ -122,10 +122,11 @@ void Hub::oneTimeInitOnThread()
   const GLubyte* versionl   = glGetString(GL_VERSION);
   GL_CHECK();
 
+  Log::message() << std::endl << "------------------------------" << std::endl;
   Log::message() << "OpenGL initialization. Running on a " << vendor << " "
-                 << renderer << " with OpenGL version " << versionl << std::endl
+                 << renderer << " with OpenGL version " << versionl
 #ifdef SPIRE_USE_STD_THREADS
-                 << "GL made current on thread " << std::this_thread::get_id()
+                 << std::endl << "GL made current on thread " << std::this_thread::get_id()
 #endif
                  << std::endl;
 
