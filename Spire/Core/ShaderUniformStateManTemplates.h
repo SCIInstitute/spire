@@ -33,6 +33,7 @@
 #define SPIRE_CORE_SHADERUNIFORMSTATEMANTEMPLATES_H
 
 #include <cstddef>
+#include <sstream>
 #include "Core/Math.h"
 #include "Core/GLMathUtil.h"
 
@@ -162,7 +163,8 @@ public:
   /// Returns appropriate OpenGL type
   virtual UNIFORM_TYPE getGLType() const = 0;
 
-  /// Retrieves uniform's name.
+  /// Retrieve textual representation of uniform.
+  virtual std::string asString() const = 0;
 
 protected:
 
@@ -216,6 +218,13 @@ public:
     return UNIFORM_FLOAT_VEC3;
   }
 
+  std::string asString() const override
+  {
+    std::stringstream stream;
+    stream << "Vec3 - (" << mData.x << ", " << mData.y << ", " << mData.z << ")";
+    return stream.str();
+  }
+
 private:
   Type mData;
 };
@@ -247,6 +256,13 @@ public:
     return UNIFORM_FLOAT_VEC3;
   }
 
+  std::string asString() const override
+  {
+    std::stringstream stream;
+    stream << "Vector3 Array - Output not implemented.";
+    return stream.str();
+  }
+
 private:
   std::vector<V3>   mData;
 };
@@ -267,6 +283,14 @@ public:
   UNIFORM_TYPE getGLType() const override
   {
     return UNIFORM_FLOAT_VEC4;
+  }
+
+  std::string asString() const override
+  {
+    std::stringstream stream;
+    stream << "Vec4 - (" << mData.x << ", " << mData.y << ", " << mData.z 
+           << ", " << mData.w << ")";
+    return stream.str();
   }
 
 private:
@@ -296,6 +320,19 @@ public:
   UNIFORM_TYPE getGLType() const override
   {
     return UNIFORM_FLOAT_MAT4;
+  }
+
+  std::string asString() const override
+  {
+    // OpenGL matrices are represented in Column-Major order.
+    // We will print off the matrix not as it appears in memory, but its
+    // transpose instead (so rows are displayed contiguously).
+    std::stringstream stream;
+    stream << "Mat4 - (" << glMatrix[0] << " " << glMatrix[4] << " " << glMatrix[8]  << " " << glMatrix[12] << std::endl
+           << "        " << glMatrix[1] << " " << glMatrix[5] << " " << glMatrix[9]  << " " << glMatrix[13] << std::endl
+           << "        " << glMatrix[2] << " " << glMatrix[6] << " " << glMatrix[10] << " " << glMatrix[14] << std::endl
+           << "        " << glMatrix[3] << " " << glMatrix[7] << " " << glMatrix[11] << " " << glMatrix[15];
+    return stream.str();
   }
 
 private:

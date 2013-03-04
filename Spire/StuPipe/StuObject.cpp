@@ -90,26 +90,54 @@ void StuPass::renderPass()
   GL(glBindBuffer(GL_ARRAY_BUFFER, mVBO->getGLIndex()));
   GL(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mIBO->getGLIndex()));
 
+  /// \todo Ensure attributes are always sorted in ascending order...
   // We have already verified that the attributes contained in the shader
   // are consistent with the attributes we have in the VBO. Therefore, it's
   // okay to calculate the attribute stride based on the shader's stride, and
   // bind all of the shader's attributes.
   const ShaderAttributeCollection& attribs  = mShader->getAttributes();
   attribs.bindAttributes(mShader);
+
   
+#ifdef SPIRE_DEBUG
+  // Gather all uniforms from shader and build a list. Ensure that all uniforms
+  // processed by spire match up.
+  Log::debug() << "Debugging!" << std::endl;
+  std::list<std::string> allUniforms;
+  for (int i = 0; i < mShader->getUniforms().getNumUniforms(); i++)
+  {
+    allUniforms.push_back(mShader->getUniforms().getUniformAtIndex(i).uniform->codeName);
+  }
+#endif
+
   // Assign local uniforms.
   for (auto it = mUniforms.begin(); it != mUniforms.end(); ++it)
   {
+#ifdef SPIRE_DEBUG
+    allUniforms.remove(it->uniformName);
+    Log::debug() << "Uniform " << it->uniformName << ": " << it->item->asString() << std::endl;
+#endif
     it->item->applyUniform(it->shaderLocation);
   }
 
   // Assign global uniforms.
   for (auto it = mUnsatisfiedUniforms.begin(); it != mUnsatisfiedUniforms.end(); ++it)
   {
+#ifdef SPIRE_DEBUG
+    allUniforms.remove(it->uniformName);
+    Log::debug() << "Uniform " << it->uniformName << ": " << std::endl
+        << mHub.getShaderUniformStateMan().uniformAsString(it->uniformName) << std::endl;
+#endif
     mHub.getShaderUniformStateMan().applyUniform(it->uniformName, it->shaderLocation);
   }
 
-  /// \todo Ensure attributes are always sorted in ascending order...
+#ifdef SPIRE_DEBUG
+  if (allUniforms.size() != 0)
+  {
+    assert(0);
+    throw std::runtime_error("Spire should have consumed all uniforms!");
+  }
+#endif
 
   GL(glDrawElements(mPrimitiveType, mIBO->getNumElements(), mIBO->getType(), 0));
 }

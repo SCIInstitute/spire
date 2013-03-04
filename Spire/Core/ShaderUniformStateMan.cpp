@@ -72,6 +72,13 @@ void ShaderUniformStateMan::updateGlobalUniform(const std::string& name,
 }
 
 //------------------------------------------------------------------------------
+std::string ShaderUniformStateMan::uniformAsString(const std::string& name) const
+{
+  const std::shared_ptr<const AbstractUniformStateItem>& ptr = mGlobalState.at(name);
+  return ptr->asString();
+}
+
+//------------------------------------------------------------------------------
 GLenum ShaderUniformStateMan::uniformTypeToGL(UNIFORM_TYPE type)
 {
   // Vim'd

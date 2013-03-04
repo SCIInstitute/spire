@@ -50,15 +50,20 @@ GLWidget::GLWidget(const QGLFormat& format) :
 
   // Create a threaded spire renderer.
 #ifdef SPIRE_USE_STD_THREADS
-  mGraphics = std::shared_ptr<Spire::Interface>(
+  mSpire = std::shared_ptr<Spire::Interface>(
       new Spire::Interface(mContext, shaderSearchDirs, true));
 #else
-  mGraphics = std::shared_ptr<Spire::Interface>(
+  mSpire = std::shared_ptr<Spire::Interface>(
       new Spire::Interface(mContext, shaderSearchDirs, false));
   mTimer = new QTimer(this);
   connect(mTimer, SIGNAL(timeout()), this, SLOT(updateRenderer()));
   mTimer->start(35);
 #endif
+
+  // Build and bind StuPipe.
+  mStuInterface = std::shared_ptr<Spire::StuInterface>(
+      new Spire::StuInterface(mSpire));
+  mSpire->pipePushBack(mStuInterface);
 
   // Setup default camera to look down the negative Z axis.
   V3 eye(0.0f, 0.0f, 5.0f);
@@ -70,7 +75,7 @@ GLWidget::GLWidget(const QGLFormat& format) :
   // matrix.
   M44 invCam  = M44::lookAt(eye, lookAt, upVec);
   mCamWorld   = M44::orthoInverse(invCam);
-  mGraphics->cameraSetTransform(mCamWorld);
+  mSpire->cameraSetTransform(mCamWorld);
 
   // We must disable auto buffer swap on the 'paintEvent'.
   setAutoBufferSwap(false);
@@ -80,14 +85,14 @@ GLWidget::GLWidget(const QGLFormat& format) :
 void GLWidget::resizeEvent(QResizeEvent *evt)
 {
   /// @todo Inform the renderer that screen dimensions have changed.
-  //mGraphics.resizeViewport(evt->size());
+  //mSpire.resizeViewport(evt->size());
 }
 
 //------------------------------------------------------------------------------
 void GLWidget::closeEvent(QCloseEvent *evt)
 {
   // Kill off the graphics thread.
-  mGraphics.reset();
+  mSpire.reset();
   QGLWidget::closeEvent(evt);
 }
 
@@ -95,7 +100,7 @@ void GLWidget::closeEvent(QCloseEvent *evt)
 void GLWidget::updateRenderer()
 {
   mContext->makeCurrent();    // Required on windows...
-  mGraphics->doFrame();
+  mSpire->doFrame();
   mContext->swapBuffers();
 }
 
@@ -121,7 +126,7 @@ void GLWidget::mouseMoveEvent(QMouseEvent* event)
   mCamWorld = mCamWorld * ty * tx;
 
   // Send new camera transform to spire.
-  mGraphics->cameraSetTransform(mCamWorld);
+  mSpire->cameraSetTransform(mCamWorld);
 
   mLastMousePos = thisPos;
 }

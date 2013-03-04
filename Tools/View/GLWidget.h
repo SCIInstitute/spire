@@ -41,6 +41,7 @@
 
 // From spire
 #include "Spire/Interface.h"
+#include "Spire/StuPipe/StuInterface.h"
 
 class GLWidget : public QGLWidget
 {
@@ -61,10 +62,11 @@ protected slots:
 
 private:
 
-  std::shared_ptr<GLContext>        mContext;
-  std::shared_ptr<Spire::Interface> mGraphics;
-  Spire::Vector2<int>               mLastMousePos;
-  Spire::M44                        mCamWorld;
+  std::shared_ptr<GLContext>            mContext;
+  std::shared_ptr<Spire::Interface>     mSpire;
+  std::shared_ptr<Spire::StuInterface>  mStuInterface;
+  Spire::Vector2<int>                   mLastMousePos;
+  Spire::M44                            mCamWorld;
 
 #ifndef SPIRE_USE_STD_THREADS
   QTimer*                           mTimer;

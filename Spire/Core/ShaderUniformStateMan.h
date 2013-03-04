@@ -87,6 +87,9 @@ public:
   /// Throws std::out_of_range if the key was not found in the map.
   void applyUniform(const std::string& name, int location);
 
+  /// Retrieves the texture representation of the uniform with 'name'.
+  std::string uniformAsString(const std::string& name) const;
+
   /// Static function to convert Spire::UNIFORM_TYPE to GLenum.
   /// This function does not exist in the UniformStateManTemplates header file
   /// because we don't want to expose the GLenum type to an interface.
