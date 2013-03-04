@@ -286,6 +286,7 @@ void ShaderAttributeCollection::bindAttributes(std::shared_ptr<ShaderProgramAsse
     if (it->attrib.index != ShaderAttributeMan::getUnknownAttributeIndex())
     {
       AttribState attrib = it->attrib;
+      Log::debug() << "Binding attribute: " << it->attrib.codeName << " to " << i << std::endl;
       GL(glBindAttribLocation(program->getProgramID(), i, attrib.codeName.c_str()));
     }
     ++i;

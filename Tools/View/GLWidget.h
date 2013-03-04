@@ -57,6 +57,8 @@ protected:
   virtual void mouseMoveEvent(QMouseEvent* event);
   virtual void mouseReleaseEvent(QMouseEvent* event);
 
+  void buildScene();
+
 protected slots:
   void updateRenderer();
 

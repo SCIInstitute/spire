@@ -102,7 +102,6 @@ void StuPass::renderPass()
 #ifdef SPIRE_DEBUG
   // Gather all uniforms from shader and build a list. Ensure that all uniforms
   // processed by spire match up.
-  Log::debug() << "Debugging!" << std::endl;
   std::list<std::string> allUniforms;
   for (int i = 0; i < mShader->getUniforms().getNumUniforms(); i++)
   {

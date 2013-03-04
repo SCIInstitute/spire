@@ -139,9 +139,9 @@ TEST_F(StuPipeTestFixture, TestTriangle)
   std::vector<float> vboData = 
   {
     -1.0f,  1.0f,  0.0f,
-    1.0f,  1.0f,  0.0f,
+     1.0f,  1.0f,  0.0f,
     -1.0f, -1.0f,  0.0f,
-    1.0f, -1.0f,  0.0f
+     1.0f, -1.0f,  0.0f
   };
   std::vector<std::string> attribNames = {"aPos"};
 

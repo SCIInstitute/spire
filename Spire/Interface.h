@@ -103,6 +103,9 @@ public:
   // Camera
   //--------
 
+  /// \todo Completely remove this camera interface. This is all done through
+  ///       uniforms now.
+
   /// \todo Set projection and inverse view transform *ONLY*.
   ///       Spire doesn't need to know anything else in order to render the
   ///       scene. This will decouple spire and make it a renderer only, we

@@ -35,6 +35,7 @@
 #include "GLWidget.h"
 
 // List off the classes we are using.
+using Spire::V4;
 using Spire::V3;
 using Spire::V2;
 using Spire::Vector2;
@@ -65,20 +66,73 @@ GLWidget::GLWidget(const QGLFormat& format) :
       new Spire::StuInterface(mSpire));
   mSpire->pipePushBack(mStuInterface);
 
-  // Setup default camera to look down the negative Z axis.
-  V3 eye(0.0f, 0.0f, 5.0f);
-  V3 lookAt(0.0f, 0.0f, 0.0f);
-  V3 upVec(0.0f, 1.0f, 0.0f);
-
-  // M44::lookAt builds an inverted view matrix that is ready to be multiplied
-  // against a projection matrix. For our purposes, we need the *actual* view
-  // matrix.
-  M44 invCam  = M44::lookAt(eye, lookAt, upVec);
-  mCamWorld   = M44::orthoInverse(invCam);
-  mSpire->cameraSetTransform(mCamWorld);
+  buildScene();
 
   // We must disable auto buffer swap on the 'paintEvent'.
   setAutoBufferSwap(false);
+}
+
+//------------------------------------------------------------------------------
+void GLWidget::buildScene()
+{
+  // Simple plane -- complex method of transfering to spire.
+  std::vector<float> vboData = 
+  {
+    -1.0f,  1.0f, -5.0f,
+     1.0f,  1.0f, -5.0f,
+    -1.0f, -1.0f, -5.0f,
+     1.0f, -1.0f, -5.0f
+  };
+  std::vector<std::string> attribNames = {"aPos"};
+
+  std::vector<uint16_t> iboData =
+  {
+    0, 1, 2, 3
+  };
+  Spire::StuInterface::IBO_TYPE iboType = Spire::StuInterface::IBO_16BIT;
+  
+  uint8_t*  rawBegin;
+  size_t    rawSize;
+
+  // Copy vboData into vector of uint8_t. Using std::copy.
+  std::shared_ptr<std::vector<uint8_t>> rawVBO(new std::vector<uint8_t>());
+  rawSize = vboData.size() * (sizeof(float) / sizeof(uint8_t));
+  rawVBO->reserve(rawSize);
+  rawBegin = reinterpret_cast<uint8_t*>(&vboData[0]); // Remember, standard guarantees that vectors are contiguous in memory.
+  std::copy(rawBegin, rawBegin + rawSize, rawVBO->begin());
+
+  // Copy iboData into vector of uint8_t. Using std::vector::assign.
+  std::shared_ptr<std::vector<uint8_t>> rawIBO(new std::vector<uint8_t>());
+  rawSize = iboData.size() * (sizeof(float) / sizeof(uint8_t));
+  rawIBO->reserve(rawSize);
+  rawBegin = reinterpret_cast<uint8_t*>(&iboData[0]); // Remember, standard guarantees that vectors are contiguous in memory.
+  rawIBO->assign(rawBegin, rawBegin + rawSize);
+
+  // Add necessary VBO's and IBO's
+  std::string vbo1 = "vbo1";
+  std::string ibo1 = "ibo1";
+  mStuInterface->addVBO(vbo1, rawVBO, attribNames);
+  mStuInterface->addIBO(ibo1, rawIBO, iboType);
+
+  // Add object
+  std::string obj1 = "obj1";
+  mStuInterface->addObject(obj1);
+
+  // Ensure shader is resident.
+  std::string shader1 = "UniformColor";
+  mStuInterface->addPersistentShader(
+      shader1, 
+      { {"UniformColor.vs", Spire::StuInterface::VERTEX_SHADER}, 
+        {"UniformColor.fs", Spire::StuInterface::FRAGMENT_SHADER},
+      });
+
+  // Build the pass
+  std::string pass1 = "pass1";
+  mStuInterface->addPassToObject(obj1, pass1, shader1, vbo1, ibo1, Spire::StuInterface::TRIANGLES);
+
+  // Be sure the global uniform 'uProjIVWorld' is set appropriately...
+  mStuInterface->addGlobalUniform("uProjIVWorld", M44());
+  mStuInterface->addPassUniform(obj1, pass1, "uColor", V4(1.0f, 0.0f, 0.0f, 1.0f));
 }
 
 //------------------------------------------------------------------------------
