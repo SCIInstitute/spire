@@ -68,11 +68,6 @@ GLWidget::GLWidget(const QGLFormat& format) :
   mTimer->start(35);
 #endif
 
-  // Build and bind StuPipe.
-  mStuInterface = std::shared_ptr<Spire::StuInterface>(
-      new Spire::StuInterface(*mSpire.get()));
-  mSpire->pipePushBack(mStuInterface);
-
   buildScene();
 
   // We must disable auto buffer swap on the 'paintEvent'.
@@ -82,6 +77,8 @@ GLWidget::GLWidget(const QGLFormat& format) :
 //------------------------------------------------------------------------------
 void GLWidget::buildScene()
 {
+  std::shared_ptr<Spire::StuInterface> stuPipe = mSpire->getStuPipe();
+
   // Two faces of a cube (the only thing that changes for a cube are the
   // indices). Note: we may be adding normals to the vbo in the future...
   // Actually, since we just want face normals, we'll compute it using
@@ -135,16 +132,16 @@ void GLWidget::buildScene()
   // Add necessary VBO's and IBO's
   std::string vbo1 = "vbo1";
   std::string ibo1 = "ibo1";
-  mStuInterface->addVBO(vbo1, rawVBO, attribNames);
-  mStuInterface->addIBO(ibo1, rawIBO, iboType);
+  stuPipe->addVBO(vbo1, rawVBO, attribNames);
+  stuPipe->addIBO(ibo1, rawIBO, iboType);
 
   // Add object
   std::string obj1 = "obj1";
-  mStuInterface->addObject(obj1);
+  stuPipe->addObject(obj1);
 
   // Ensure shader is resident.
   std::string shader1 = "UniformColor";
-  mStuInterface->addPersistentShader(
+  stuPipe->addPersistentShader(
       shader1, 
       { {"UniformColor.vs", Spire::StuInterface::VERTEX_SHADER}, 
         {"UniformColor.fs", Spire::StuInterface::FRAGMENT_SHADER},
@@ -152,11 +149,11 @@ void GLWidget::buildScene()
 
   // Build the pass
   std::string pass1 = "pass1";
-  mStuInterface->addPassToObject(obj1, pass1, shader1, vbo1, ibo1, Spire::StuInterface::TRIANGLES);
+  stuPipe->addPassToObject(obj1, pass1, shader1, vbo1, ibo1, Spire::StuInterface::TRIANGLES);
 
   // Be sure the global uniform 'uProjIVWorld' is set appropriately...
-  mStuInterface->addGlobalUniform("uProjIVWorld", M44());
-  mStuInterface->addPassUniform(obj1, pass1, "uColor", V4(1.0f, 0.0f, 0.0f, 1.0f));
+  stuPipe->addGlobalUniform("uProjIVWorld", M44());
+  stuPipe->addPassUniform(obj1, pass1, "uColor", V4(1.0f, 0.0f, 0.0f, 1.0f));
 }
 
 //------------------------------------------------------------------------------

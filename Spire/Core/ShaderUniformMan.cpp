@@ -42,6 +42,9 @@ ShaderUniformMan::ShaderUniformMan(bool addDefaultUniforms)
 {
   addUniform(getUnknownName(), GL_FLOAT);
 
+  /// \todo Remove these values. Let the application decide what uniforms
+  ///       are useful and add those. Also, uniforms should be added by default
+  ///       if no uniforms are found in the uniform manager.
   if (addDefaultUniforms)
   {
     addUniform("uProj",         GL_FLOAT_MAT4);

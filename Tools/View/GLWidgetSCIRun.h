@@ -74,7 +74,6 @@ private:
 
   std::shared_ptr<GLContext>                  mContext;       ///< Graphics context.
   std::shared_ptr<Spire::SCIRun::SRInterface> mSpire;         ///< Interface to spire.
-  std::shared_ptr<Spire::StuInterface>        mStuInterface;  ///< Stupipe interface.
 
 #ifndef SPIRE_USE_STD_THREADS
   QTimer*                                     mTimer;
