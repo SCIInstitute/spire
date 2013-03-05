@@ -34,7 +34,6 @@
 
 #include "GLWidget.h"
 
-// List off the classes we are using.
 using Spire::V4;
 using Spire::V3;
 using Spire::V2;

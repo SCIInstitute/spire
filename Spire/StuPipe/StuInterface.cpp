@@ -47,8 +47,9 @@ namespace Spire {
 // nothing GL specific in them).
 GLenum getGLPrimitive(StuInterface::PRIMITVE_TYPES type);
 
+
 //------------------------------------------------------------------------------
-StuInterface::StuInterface(std::weak_ptr<Interface> iface) :
+StuInterface::StuInterface(Interface& iface) :
     PipeInterface(iface),
     mCurrentRenderOrder(0),
     mCurrentPassOrder(0)

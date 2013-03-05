@@ -47,10 +47,12 @@ class Hub;
 class PipeInterface
 {
 public:
-  PipeInterface(std::weak_ptr<Interface> iface) : 
+  // Does NOT store a reference to the interface...
+  PipeInterface(Interface& iface) :
       mSubmittedToSpire(false),
-      mHub(*iface.lock()->mHub)
+      mHub(*iface.mHub)
   {}
+
   virtual ~PipeInterface()                    {}
   
   //============================================================================

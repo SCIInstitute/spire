@@ -33,6 +33,7 @@
 #define SPIRE_APPSPECIFIC_SCIRUN_SCIRUNINTERFACE_H
 
 #include "../../Interface.h"
+#include "../../StuPipe/StuInterface.h"
 
 namespace Spire {
 namespace SCIRun {
@@ -62,12 +63,18 @@ public:
 
   void inputMouseWheel(int32_t delta);
 
+  /// Stupipe interface. This is the pipe that SCIRun uses to render its
+  /// geometry.
+  std::shared_ptr<Spire::StuInterface> getStuPipe() {return mStuInterface;}
+
   /// \todo Selecting objects...
 
   /// \todo Obtaining data from mesh objects in order to spatially partition
   ///       them and provide quick object feedback.
 
 private:
+
+  std::shared_ptr<Spire::StuInterface>    mStuInterface;
 
   Vector2<int>              mWindowDims;    ///< Current window dimensions.
 

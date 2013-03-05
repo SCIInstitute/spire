@@ -42,7 +42,8 @@ SRInterface::SRInterface(std::shared_ptr<Context> context,
                          bool createThread, LogFunction logFP) :
     Interface(context, shaderDirs, createThread, logFP),
     mArcBall(new ArcBall),
-    mCamDistance(7.0f)
+    mCamDistance(7.0f),
+    mStuInterface(new StuInterface(*this))
 {
   //mCamWorld.setTranslation(V3(0.0f, 0.0f, 5.0f));
   //mArcBall->setUseTranslation(true);

@@ -39,6 +39,7 @@
 #include "GLContext.h"
 #include "Spire/Interface.h"
 #include "Spire/AppSpecific/SCIRun/SRInterface.h"
+#include "Spire/StuPipe/StuInterface.h"
 
 namespace SCIRun {
 namespace Gui {
@@ -51,7 +52,7 @@ public:
   GLWidget(const QGLFormat& format);
   ~GLWidget();
 
-  std::shared_ptr<Spire::SCIRun::SRInterface> getSpire() const      {return mGraphics;}
+  std::shared_ptr<Spire::SCIRun::SRInterface> getSpire() const      {return mSpire;}
   std::shared_ptr<GLContext>                  getContext() const    {return mContext;}
 
 protected:
@@ -63,14 +64,17 @@ protected:
   virtual void initializeGL();
   virtual void resizeGL(int width, int height);
 
+  void buildScene();
+
 protected slots:
   // Only used when not using std threads.
   void updateRenderer();
 
 private:
 
-  std::shared_ptr<GLContext>                  mContext;   ///< Graphics context.
-  std::shared_ptr<Spire::SCIRun::SRInterface> mGraphics;  ///< Interface to spire.
+  std::shared_ptr<GLContext>                  mContext;       ///< Graphics context.
+  std::shared_ptr<Spire::SCIRun::SRInterface> mSpire;         ///< Interface to spire.
+  std::shared_ptr<Spire::StuInterface>        mStuInterface;  ///< Stupipe interface.
 
 #ifndef SPIRE_USE_STD_THREADS
   QTimer*                                     mTimer;

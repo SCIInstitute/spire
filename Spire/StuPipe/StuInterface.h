@@ -67,7 +67,7 @@ class IBOObject;
 class StuInterface : public PipeInterface
 {
 public:
-  StuInterface(std::weak_ptr<Interface> iface);
+  StuInterface(Interface& iface);
   virtual ~StuInterface();
   
   /// Initialization as performed on the renderer thread.
