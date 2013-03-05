@@ -32,6 +32,10 @@
 #ifndef SPIRE_APPSPECIFIC_SCIRUN_SRCOMMONUNIFORMS_H
 #define SPIRE_APPSPECIFIC_SCIRUN_SRCOMMONUNIFORMS_H
 
+#include <tuple>
+
+#include "../../Core/ShaderUniformStateManTemplates.h"
+
 namespace Spire
 {
 
@@ -49,7 +53,36 @@ public:
   /// Inverse world view - projection matrix.
   /// Used by vertex shaders to transform from object coordinates into 
   /// projected coordinates.
-  static const char* getCameraWorldToProjection()    {return "uProjIVWorld";}
+  static std::tuple<const char*, UNIFORM_TYPE> getCameraWorldToProjection()   
+  {return std::make_pair("uProjIVWorld", UNIFORM_FLOAT_MAT4);}
+
+  /// Inverse view to world matrix.
+  static std::tuple<const char*, UNIFORM_TYPE> getCameraWorldToView()
+  {return std::make_pair("uProjIV", UNIFORM_FLOAT_MAT4);}
+
+  /// Projection matrix.
+  static std::tuple<const char*, UNIFORM_TYPE> getCameraProjection()
+  {return std::make_pair("uProj", UNIFORM_FLOAT_MAT4);}
+
+  /// View to world.
+  static std::tuple<const char*, UNIFORM_TYPE> getCameraWorld()
+  {return std::make_pair("uView", UNIFORM_FLOAT_MAT4);}
+
+  //----------------------------------------------------------------------------
+  // Lighting uniforms
+  //----------------------------------------------------------------------------
+
+  /// Directional light vector
+  static std::tuple<const char*, UNIFORM_TYPE> getLightDir()
+  {return std::make_pair("uDirLight", UNIFORM_FLOAT_VEC4);}
+
+  //----------------------------------------------------------------------------
+  // Misc. uniforms
+  //----------------------------------------------------------------------------
+
+  /// Floating point color vector
+  static std::tuple<const char*, UNIFORM_TYPE> getColorFloat()
+  {return std::make_pair("uColor", UNIFORM_FLOAT_VEC4);}
 
 };
 

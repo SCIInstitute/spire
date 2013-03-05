@@ -42,7 +42,7 @@ namespace {
 //------------------------------------------------------------------------------
 TEST(ShaderUniformManBasic, TestUnknownUniform)
 {
-  ShaderUniformMan uniformMan(false);
+  ShaderUniformMan uniformMan;
   ASSERT_EQ(1, uniformMan.getNumUniforms());
 
   // Test unknown name (the 1 uniform initially placed in the uniform man).
@@ -54,18 +54,11 @@ TEST(ShaderUniformManBasic, TestUnknownUniform)
 }
 
 //------------------------------------------------------------------------------
-TEST(ShaderUniformManBasic, TestDefaultUniforms)
-{
-  ShaderUniformMan uniformMan(true);
-  EXPECT_LE(1, uniformMan.getNumUniforms());
-}
-
-//------------------------------------------------------------------------------
 class ShaderUniformManInvolved : public testing::Test
 {
 protected:
   ShaderUniformManInvolved() :
-      mUniformMan(true)
+      mUniformMan()
   {}
 
   virtual void SetUp()    {}

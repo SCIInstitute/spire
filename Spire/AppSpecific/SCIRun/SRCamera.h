@@ -34,6 +34,8 @@
 
 #include "Common.h"
 
+#include "SRInterface.h"
+
 namespace Spire {
 namespace SCIRun {
 
@@ -41,12 +43,49 @@ namespace SCIRun {
 class SRCamera
 {
 public:
-  SRCamera();
+  SRCamera(SRInterface& interface);
   virtual ~SRCamera();
-  
-protected:
 
-  M44   mCamWorld;
+  // V  = View matrix
+  // IV = Inverse view matrix
+  // P  = Projection matrix
+  // m  = multiplication
+  const Spire::M44& getWorldToProjection() const  {return mPIV;}
+  const Spire::M44& getWorldToView() const        {return mIV;}
+  const Spire::M44& getViewToProjection() const   {return mP;}
+
+  /// Sets this camera to use a perspective projection transformation.
+  void setAsPerspective();
+
+  /// Sets this camera to use an orthographic projection transformation.
+  void setAsOrthographic(float halfWidth, float halfHeight);
+
+  /// Sets the current view transform (view to world space).
+  void setViewTransform(const Spire::M44& view);
+
+  /// Default camera settings
+  /// @{
+  static float getDefaultFOVY()   {return 32.0f * (Spire::PI / 18.0f);}
+  static float getDefaultZNear()  {return 0.1f;}
+  static float getDefaultZFar()   {return 1350.0f;}
+  /// @}
+
+private:
+
+  Spire::M44            mPIV;         ///< Projection * Inverse View transformation.
+  Spire::M44            mIV;          ///< Inverse view transformation.
+  Spire::M44            mV;           ///< View matrix.
+  Spire::M44            mP;           ///< Projection transformation.
+  size_t                mTrafoSeq;    ///< Current sequence of the view transform.
+                                      ///< Helps us determine when a camera is 'dirty'.
+
+  bool                  mPerspective; ///< True if we are using a perspective 
+                                      ///< transformation. 
+  float                 mFOV;         ///< Field of view.
+  float                 mZNear;       ///< Position of near plane along view vec.
+  float                 mZFar;        ///< Position of far plane along view vec.
+
+  SRInterface&          mInterface;   ///< SRInterface.
 
 };
 

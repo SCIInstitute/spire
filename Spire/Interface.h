@@ -99,26 +99,6 @@ public:
   // THREAD SAFE - Remember, only one consistent thread should call these
   //============================================================================
 
-  //--------
-  // Camera
-  //--------
-
-  /// \todo Completely remove this camera interface. This is all done through
-  ///       uniforms now.
-
-  /// \todo Set projection and inverse view transform *ONLY*.
-  ///       Spire doesn't need to know anything else in order to render the
-  ///       scene. This will decouple spire and make it a renderer only, we
-  ///       don't need to extract any information from it.
-
-  /// \todo In order to pick objects in the scene all we need is the inverse
-  ///       view and projection matrix in order to  build a ray. Therefore, 
-  ///       we will be able to unproject a 2D point without the help of spire.
-
-
-  /// Sets the camera's world-space transformation.
-  void cameraSetTransform(const M44& transform);
-
   //-------
   // Pipes
   //-------

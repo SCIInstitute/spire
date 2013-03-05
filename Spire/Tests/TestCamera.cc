@@ -93,13 +93,6 @@ void TestCamera::setAsOrthographic(float halfWidth, float halfHeight)
 }
 
 //------------------------------------------------------------------------------
-void TestCamera::setEyePosition(const Spire::V3& eye)
-{
-  mV.setTranslation(eye);
-  setViewTransform(mV);
-}
-
-//------------------------------------------------------------------------------
 void TestCamera::setViewTransform(const Spire::M44& trafo)
 {
   ++mTrafoSeq;

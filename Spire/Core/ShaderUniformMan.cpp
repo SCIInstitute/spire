@@ -38,21 +38,9 @@
 namespace Spire {
 
 //------------------------------------------------------------------------------
-ShaderUniformMan::ShaderUniformMan(bool addDefaultUniforms)
+ShaderUniformMan::ShaderUniformMan()
 {
   addUniform(getUnknownName(), GL_FLOAT);
-
-  /// \todo Remove these values. Let the application decide what uniforms
-  ///       are useful and add those. Also, uniforms should be added by default
-  ///       if no uniforms are found in the uniform manager.
-  if (addDefaultUniforms)
-  {
-    addUniform("uProj",         GL_FLOAT_MAT4);
-    addUniform("uProjIV",       GL_FLOAT_MAT4);
-    addUniform("uProjIVWorld",  GL_FLOAT_MAT4);
-    addUniform("uColor",        GL_FLOAT_VEC4);
-    addUniform("uDirLight",     GL_FLOAT_VEC3);
-  }
 }
 
 //------------------------------------------------------------------------------
@@ -84,12 +72,7 @@ ShaderUniformMan::getUniformWithName(const std::string& codeName) const
 //------------------------------------------------------------------------------
 void ShaderUniformCollection::addUniform(const std::string& uniformName)
 {
-  // std::out_of_range will be thrown here if uniform is not found.
-  std::shared_ptr<const UniformState> state = mUniformMan.getUniformWithName(uniformName);
-
   UniformSpecificData uniformData;
-  uniformData.uniform = state;
-
   if (getInvalidProgramHandle() != mProgram)
   {
     uniformData.glUniformLoc = glGetUniformLocation(mProgram, uniformName.c_str());
@@ -102,6 +85,21 @@ void ShaderUniformCollection::addUniform(const std::string& uniformName)
                        nameSize, &bytesWritten,
                        &uniformData.glSize, &uniformData.glType,
                        uniformName);
+
+    // std::out_of_range will be thrown here if uniform is not found.
+    std::shared_ptr<const UniformState> state;
+    try
+    {
+      state = mUniformMan.getUniformWithName(uniformName);
+    }
+    catch (std::out_of_range&)
+    {
+      // By default, add the uniform with the shader's type to the uniform
+      // registry.
+      mUniformMan.addUniform(uniformName, uniformData.glType);
+      state = mUniformMan.getUniformWithName(uniformName);
+    }
+    uniformData.uniform = state;
 
     // Perform a type check against uniform type.
     if (state->type != uniformData.glType)

@@ -60,9 +60,18 @@ void ShaderUniformStateMan::applyUniform(const std::string& name, int location)
 void ShaderUniformStateMan::updateGlobalUniform(const std::string& name, 
                                                 std::shared_ptr<AbstractUniformStateItem> item)
 {
-  std::shared_ptr<const UniformState> uniform = 
-      mHub.getShaderUniformManager().getUniformWithName(name); // std::out_of_range
-  
+  std::shared_ptr<const UniformState> uniform;
+  try
+  {
+    uniform = mHub.getShaderUniformManager().getUniformWithName(name); // std::out_of_range
+  }
+  catch (std::out_of_range& e)
+  {
+    // Default to adding the uniform to the uniform manager.
+    mHub.getShaderUniformManager().addUniform(name, uniformTypeToGL(item->getGLType()));
+    uniform = mHub.getShaderUniformManager().getUniformWithName(name); // std::out_of_range
+  }
+
   // Double check that the uniform we are receiving matches types.
   GLenum incomingType = uniformTypeToGL(item->getGLType());
   if (incomingType != uniform->type)

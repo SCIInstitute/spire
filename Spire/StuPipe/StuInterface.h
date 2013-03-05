@@ -253,6 +253,10 @@ public:
                                new UniformStateItem<T>(uniformData)));
   }
 
+  /// Will add *or* update the global uniform if it already exsits.
+  /// A shader of a given name is only allowed to be one type. If you attempt
+  /// to bind different values to a uniform, this function will throw a
+  /// ShaderUniformTypeError.
   template <typename T>
   void addGlobalUniform(const std::string& uniformName, T uniformData)
   {

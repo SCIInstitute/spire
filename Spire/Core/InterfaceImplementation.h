@@ -82,12 +82,6 @@ public:
   /// See corresponding Interface definition.
   static void pipeRemove(Hub& hub, std::shared_ptr<PipeInterface> pipe);
 
-  //--------
-  // Camera
-  //--------
-  /// Sets the camera's transformation in world space.
-  static void cameraSetTransform(Hub& hub, M44 transform);
-
   //------------------
   // HACKED Interface
   //------------------

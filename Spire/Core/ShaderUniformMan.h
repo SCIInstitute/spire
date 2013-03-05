@@ -51,7 +51,7 @@ struct UniformState
 class ShaderUniformCollection
 {
 public:
-  ShaderUniformCollection(const ShaderUniformMan& man, GLuint program) :
+  ShaderUniformCollection(ShaderUniformMan& man, GLuint program) :
       mUniformMan(man),
       mProgram(program)
   {}
@@ -97,7 +97,7 @@ private:
 
   /// Reference to the uniform manager.
   /// The uniform manager is queried regarding available uniforms.
-  const ShaderUniformMan&           mUniformMan;
+  ShaderUniformMan&                 mUniformMan;
 
   /// GL shader program 
   GLuint                            mProgram;
@@ -107,7 +107,7 @@ private:
 class ShaderUniformMan
 {
 public:
-  ShaderUniformMan(bool addDefaultUniforms = true);
+  ShaderUniformMan();
   virtual ~ShaderUniformMan();
 
   /// These two functions represent the unknown's index and name.

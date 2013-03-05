@@ -51,8 +51,6 @@ public:
   const Spire::M44& getWorldToView() const           {return mIV;}       // IV
   const Spire::M44& getViewToProjection() const      {return mP;}        // P
 
-  /// \todo Expose settings for perspective and orthographic camera.
-
   /// Sets this camera to use a perspective projection transformation.
   void setAsPerspective();
 
@@ -62,15 +60,7 @@ public:
   /// Sets the current view transform (view to world space).
   void setViewTransform(const Spire::M44& view);
 
-  /// Sets the current 'eye' position. This modifies the translation column
-  /// of the view matrix. Does not change the last row of the matrix.
-  void setEyePosition(const Spire::V3& eye);
-
-  /// Retrieves the eye position in world space.
-  Spire::V3 getEyePosition() const                 {return mV.getTranslation();}
-
   /// Default camera settings
-  /// \todo Switch back to constexpr
   /// @{
   static float getDefaultFOVY()   {return 32.0f * (Spire::PI / 18.0f);}
   static float getDefaultZNear()  {return 0.1f;}

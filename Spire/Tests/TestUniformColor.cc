@@ -34,6 +34,7 @@
 
 #include "Core/GLMathUtil.h"
 #include "Core/Hub.h"
+#include "Core/Camera.h"
 
 using namespace Spire;
 
@@ -100,7 +101,7 @@ TestUniformColor::~TestUniformColor()
 void TestUniformColor::doFrame()
 {
   GLuint program = mShader->getProgramID();
-  std::shared_ptr<Camera> cam = mHub.getCamera();
+  std::shared_ptr<Camera> cam;// = mHub.getCamera(); // Broken now! Camera no longer exists in hub.
 
   // Obtain the first attribute in the shader (should be position).
   AttribState pos = mHub.getShaderAttributeManager().getAttributeWithName("aPos");

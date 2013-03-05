@@ -73,7 +73,7 @@ HackedUCRenderer::~HackedUCRenderer()
 void HackedUCRenderer::doFrame()
 {
   GLuint program = mShader->getProgramID();
-  std::shared_ptr<Camera> cam = mHub.getCamera();
+  std::shared_ptr<Camera> cam;// = mHub.getCamera();   // Broken now! No more camera in mHub.
 
   // Obtain the first attribute in the shader (should be position).
   AttribState pos = mHub.getShaderAttributeManager().getAttributeWithName("aPos");

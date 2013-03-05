@@ -32,6 +32,8 @@
 #include "Interface.h"
 #include "SRInterface.h"
 #include "ArcBall.h"
+#include "SRCommonUniforms.h"
+#include "SRCamera.h"
 
 namespace Spire {
 namespace SCIRun {
@@ -41,9 +43,10 @@ SRInterface::SRInterface(std::shared_ptr<Context> context,
                          const std::vector<std::string>& shaderDirs,
                          bool createThread, LogFunction logFP) :
     Interface(context, shaderDirs, createThread, logFP),
+    mStuInterface(new StuInterface(*this)),
     mArcBall(new ArcBall),
-    mCamDistance(7.0f),
-    mStuInterface(new StuInterface(*this))
+    mCamera(new SRCamera(*this)),
+    mCamDistance(7.0f)
 {
   //mCamWorld.setTranslation(V3(0.0f, 0.0f, 5.0f));
   //mArcBall->setUseTranslation(true);
@@ -57,10 +60,10 @@ SRInterface::~SRInterface()
 }
 
 //------------------------------------------------------------------------------
-void SRInterface::eventResize(int32_t width, int32_t height)
+void SRInterface::eventResize(size_t width, size_t height)
 {
-  mWindowDims.x = width;
-  mWindowDims.y = height;
+  mScreenWidth = width;
+  mScreenHeight = height; 
 
   mArcBall->setWindowSize(width, height);
 }
@@ -75,6 +78,8 @@ void SRInterface::inputMouseDown(const Vector2<int32_t>& pos)
 //------------------------------------------------------------------------------
 void SRInterface::inputMouseMove(const Vector2<int32_t>& pos)
 {
+  /// \todo Change back to old SCI-Run 4.0 camera interaction.
+
   /// \todo Only do arc ball if the correct mouse button is down!
   Quat q = mArcBall->drag(pos);
   M44 rot = q.computeRotation();
@@ -90,7 +95,7 @@ void SRInterface::inputMouseMove(const Vector2<int32_t>& pos)
   M44 finalTrafo = mCamWorld * M44::rotationY(PI);
   finalTrafo.setTranslation(mCamWorld.getCol2().xyz() * mCamDistance);
 
-  this->cameraSetTransform(finalTrafo);
+  mCamera->setViewTransform(finalTrafo);
 }
 
 //------------------------------------------------------------------------------
@@ -102,7 +107,7 @@ void SRInterface::inputMouseWheel(int32_t delta)
   M44 finalTrafo = mCamWorld * M44::rotationY(PI);
   finalTrafo.setTranslation(mCamWorld.getCol2().xyz() * mCamDistance);
 
-  this->cameraSetTransform(finalTrafo);
+  mCamera->setViewTransform(finalTrafo);
 }
 
 //------------------------------------------------------------------------------

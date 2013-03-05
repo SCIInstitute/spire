@@ -73,18 +73,6 @@ void Interface::doFrame()
 using namespace std::placeholders;
 
 //------------------------------------------------------------------------------
-void Interface::cameraSetTransform(const M44& transform)
-{
-  // Bind the cameraSetTransform function in the interface implementation.
-  Hub::RemoteFunction fun =
-      std::bind(InterfaceImplementation::cameraSetTransform,
-                _1, transform);
-
-  // Now place the remote function in the queue...
-  mHub->addFunctionToThreadQueue(fun);
-}
-
-//------------------------------------------------------------------------------
 void Interface::renderHACKSetCommonVBO(uint8_t* vertexBuffer, size_t vboSize)
 {
   Hub::RemoteFunction fun =

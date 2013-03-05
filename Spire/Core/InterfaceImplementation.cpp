@@ -71,12 +71,6 @@ void InterfaceImplementation::executeQueue()
 }
 
 //------------------------------------------------------------------------------
-void InterfaceImplementation::cameraSetTransform(Hub& hub, M44 transform)
-{
-  hub.getCamera()->setViewTransform(transform);
-}
-
-//------------------------------------------------------------------------------
 void InterfaceImplementation::pipePushBack(Hub& hub,
                                            std::shared_ptr<PipeInterface> pipe)
 {

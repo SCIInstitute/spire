@@ -39,6 +39,7 @@ namespace Spire {
 namespace SCIRun {
 
 class ArcBall;
+class SRCamera;
 
 /// A wrapper around spire that provides higher level functionality required
 /// to operate SCIRun.
@@ -52,7 +53,7 @@ public:
               bool createThread, LogFunction logFP = LogFunction());
   virtual ~SRInterface();
 
-  void eventResize(int32_t width, int32_t height);
+  void eventResize(size_t width, size_t height);
 
   /// \todo Specify what buttons are pressed.
   /// @{
@@ -72,13 +73,19 @@ public:
   /// \todo Obtaining data from mesh objects in order to spatially partition
   ///       them and provide quick object feedback.
 
+  /// Screen width retrieval. Dimensions are pixels.
+  size_t getScreenWidthPixels() const       {return mScreenWidth;}
+  size_t getScreenHeightPixels() const      {return mScreenHeight;}
+
 private:
 
   std::shared_ptr<Spire::StuInterface>    mStuInterface;
 
-  Vector2<int>              mWindowDims;    ///< Current window dimensions.
+  size_t                    mScreenWidth;   ///< Screen width in pixels.
+  size_t                    mScreenHeight;  ///< Screen height in pixels.
 
   std::unique_ptr<ArcBall>  mArcBall;       ///< ArcBall delta transform calculator.
+  std::unique_ptr<SRCamera> mCamera;        ///< Primary camera.
   M44                       mCamWorld;      ///< Camera in world space.
 
   float                     mCamDistance;   ///< Camera's distance from the origin.

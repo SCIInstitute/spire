@@ -179,9 +179,6 @@ void Hub::oneTimeInitOnThread()
   //const bool bOpenGLSO12     = atof((const char*)versionl) >= 1.2;
   //const bool bOpenGLSO20     = atof((const char*)versionl) >= 2.0;
 
-  // Setup camera
-  mCamera = std::shared_ptr<Camera>(new Camera(*this));
-
   /// \todo Remove the hacked renderer.
   mHackedRenderer = std::shared_ptr<HackedUCRenderer>(new HackedUCRenderer(*this));
 }
