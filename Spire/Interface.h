@@ -115,36 +115,6 @@ public:
   /// the stack.
   void pipeRemove(std::shared_ptr<PipeInterface> pipe);
 
-  //------------------
-  // HACKED Interface
-  //------------------
-  /// \todo Get rid of this when we have the pipes interface completely fleshed
-  ///       out.
-  // Everything in this interface will be rendered using the uniform color
-  // shader.
-
-  /// Sets the common VBO that will feed edge/face/point data.
-  void renderHACKSetCommonVBO(uint8_t* vertexBuffer, size_t vboSize);
-
-  /// HACKED  Uniform color face attributes.
-  ///         Once your the buffer is passed into this function, spire assumes
-  ///         all ownership of it. It will call std::free on the buffer.
-  ///         Expects that the indexBuffer is an uint32_t buffer.
-  void renderHACKSetUCFace(uint8_t* indexBuffer, size_t iboSize);
-
-  /// HACKED  Uniform face color
-  void renderHACKSetUCFaceColor(const V4& color);
-
-  /// HACKED  Uniform color edge attributes.
-  ///         Expects that the indexBuffer is an uint32_t buffer.
-  void renderHACKSetUCEdge(uint8_t* indexBuffer, size_t iboSize);
-
-  /// HACKED  Uniform face color
-  void renderHACKSetUCEdgeColor(const V4& color);
-
-  /// HACKED  ZTest setting.
-  void renderHACKSetUseZTest(bool test);
-
   //============================================================================
   // NOT THREAD SAFE
   //============================================================================

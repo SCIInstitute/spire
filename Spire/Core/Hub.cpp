@@ -38,7 +38,6 @@
 #include "Core/Log.h"
 #include "Core/FileUtil.h"
 #include "Core/InterfaceImplementation.h"
-#include "Core/HackedUCRenderer.h"
 
 #include "StuPipe/Driver.h"
 
@@ -178,9 +177,6 @@ void Hub::oneTimeInitOnThread()
   // Pulled from Tuvok
   //const bool bOpenGLSO12     = atof((const char*)versionl) >= 1.2;
   //const bool bOpenGLSO20     = atof((const char*)versionl) >= 2.0;
-
-  /// \todo Remove the hacked renderer.
-  mHackedRenderer = std::shared_ptr<HackedUCRenderer>(new HackedUCRenderer(*this));
 }
 
 //------------------------------------------------------------------------------

@@ -35,6 +35,8 @@
 namespace Spire { 
 namespace StuPipe {
 
+/// \todo Either remove this class or use it as the renderer backend for stupipe
+
 //------------------------------------------------------------------------------
 Driver::Driver(Hub& hub) :
     PipeDriver(hub)
@@ -58,19 +60,8 @@ void Driver::doFrame()
   GL(glClearColor(0.1f, 0.4f, 0.6f, 1.0f));
   GL(glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT));
 
-  //mView = mView * M44::rotationY(0.1f);
-  //mHub.getCamera()->setViewTransform(mView);
-
-  mInitialState.mDepthTestEnable = mHub.getHackedRenderer()->getUseZTest();
-
   // Force a known GPU state
   mHub.getGPUStateManager().apply(mInitialState, true);
-  mHub.getHackedRenderer()->doFrame();
-
-  // Render a latvolume...
-
-  // Render a volume...
-
 }
 
 } } // end of namespace Spire::StuPipe
