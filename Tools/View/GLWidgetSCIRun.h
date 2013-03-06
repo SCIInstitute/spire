@@ -35,6 +35,7 @@
 #define INTERFACE_MODULES_GLWIDGET_H
 
 #include <QtOpenGL/QGLWidget>
+#include <QTimer>
 
 #include "GLContext.h"
 #include "Spire/Interface.h"
