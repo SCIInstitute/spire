@@ -46,7 +46,9 @@ SRInterface::SRInterface(std::shared_ptr<Context> context,
     mStuInterface(new StuInterface(*this)),
     mArcBall(new ArcBall),
     mCamera(new SRCamera(*this)),
-    mCamDistance(7.0f)
+    mCamDistance(7.0f),
+    mScreenWidth(640),
+    mScreenHeight(480)
 {
   //mCamWorld.setTranslation(V3(0.0f, 0.0f, 5.0f));
   //mArcBall->setUseTranslation(true);
@@ -98,6 +100,7 @@ void SRInterface::inputMouseMove(const Vector2<int32_t>& pos)
   M44 finalTrafo = mCamWorld * M44::rotationY(PI);
   finalTrafo.setTranslation(mCamWorld.getCol2().xyz() * mCamDistance);
 
+  Log::debug() << "View trafo: " << finalTrafo << std::endl;
   mCamera->setViewTransform(finalTrafo);
 }
 
