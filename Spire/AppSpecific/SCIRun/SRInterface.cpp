@@ -52,6 +52,9 @@ SRInterface::SRInterface(std::shared_ptr<Context> context,
   //mArcBall->setUseTranslation(true);
   //mArcBall->setTranslation(mCamWorld);
   mArcBall->setRadius(2.0f);
+
+  // Add stu pipe to the current pipes.
+  pipePushBack(mStuInterface);
 }
 
 //------------------------------------------------------------------------------
