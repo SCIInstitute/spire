@@ -46,16 +46,9 @@ SRCamera::SRCamera(SRInterface& interface) :
 {
   setAsPerspective();
 
-  // Setup default camera to look down the negative Z axis.
-  Spire::V3 eye(0.0f, 0.0f, 5.0f);
-  Spire::V3 lookAt(0.0f, 0.0f, 0.0f);
-  Spire::V3 upVec(0.0f, 1.0f, 0.0f);
-
-  // M44::lookAt builds an inverted view matrix that is ready to be multiplied
-  // against a projection matrix. For our purposes, we need the *actual* view
-  // matrix.
-  Spire::M44 invCam  = Spire::M44::lookAt(eye, lookAt, upVec);
-  Spire::M44 cam     = Spire::M44::orthoInverse(invCam);
+  // Camera looking down positive Z axis, located at -5.0f z.
+  Spire::M44 cam;
+  cam.setCol3(Spire::V4(0.0f, 0.0f, -5.0f, 1.0f));
   
   setViewTransform(cam);
 }
