@@ -138,6 +138,8 @@ void StuPass::renderPass()
   }
 #endif
 
+  Log::debug() << "Rendering with prim type " << mPrimitiveType << " num elements "
+               << mIBO->getNumElements() << " ibo type " << mIBO->getType() << std::endl;
   GL(glDrawElements(mPrimitiveType, mIBO->getNumElements(), mIBO->getType(), 0));
 }
 

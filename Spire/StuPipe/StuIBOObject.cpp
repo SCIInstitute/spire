@@ -49,6 +49,7 @@ IBOObject::IBOObject(std::shared_ptr<std::vector<uint8_t>> iboData,
       break;
 
     case StuInterface::IBO_16BIT:
+      Log::debug() << iboData->size() << std::endl;
       mNumElements = iboData->size() / sizeof(uint16_t);
       mType = GL_UNSIGNED_SHORT;
       break;

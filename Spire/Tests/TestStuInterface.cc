@@ -165,11 +165,11 @@ TEST_F(StuPipeTestFixture, TestTriangle)
   rawSize = vboData.size() * (sizeof(float) / sizeof(uint8_t));
   rawVBO->reserve(rawSize);
   rawBegin = reinterpret_cast<uint8_t*>(&vboData[0]); // Remember, standard guarantees that vectors are contiguous in memory.
-  std::copy(rawBegin, rawBegin + rawSize, rawVBO->begin());
+  rawVBO->assign(rawBegin, rawBegin + rawSize);
 
   // Copy iboData into vector of uint8_t. Using std::vector::assign.
   std::shared_ptr<std::vector<uint8_t>> rawIBO(new std::vector<uint8_t>());
-  rawSize = iboData.size() * (sizeof(float) / sizeof(uint8_t));
+  rawSize = iboData.size() * (sizeof(uint16_t) / sizeof(uint8_t));
   rawIBO->reserve(rawSize);
   rawBegin = reinterpret_cast<uint8_t*>(&iboData[0]); // Remember, standard guarantees that vectors are contiguous in memory.
   rawIBO->assign(rawBegin, rawBegin + rawSize);
@@ -252,10 +252,10 @@ TEST_F(StuPipeTestFixture, TestTriangle)
 
   // Build a good pass.
   std::string pass1 = "pass1";
-  mStuInterface->addPassToObject(obj1, pass1, shader1, vbo1, ibo1, StuInterface::TRIANGLES);
+  mStuInterface->addPassToObject(obj1, pass1, shader1, vbo1, ibo1, StuInterface::TRIANGLE_STRIP);
 
   // Attempt to re-add the good pass.
-  EXPECT_THROW(mStuInterface->addPassToObject(obj1, pass1, shader1, vbo1, ibo1, StuInterface::TRIANGLES),
+  EXPECT_THROW(mStuInterface->addPassToObject(obj1, pass1, shader1, vbo1, ibo1, StuInterface::TRIANGLE_STRIP),
                Duplicate);
 
   // No longer need VBO and IBO (will stay resident in the passes -- when the
