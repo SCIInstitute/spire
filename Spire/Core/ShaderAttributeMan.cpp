@@ -288,9 +288,9 @@ void ShaderAttributeCollection::bindAttributes(std::shared_ptr<ShaderProgramAsse
       AttribState attrib = it->attrib;
       GLuint attribPos = glGetAttribLocation(program->getProgramID(), attrib.codeName.c_str());
       GL(glEnableVertexAttribArray(attribPos));
-      Log::debug() << "Binding attribute " << attribPos << " with name '" << attrib.codeName << "' "
-                   << "with num components " << attrib.numComponents << " type " << attrib.type
-                   << " normalize " << attrib.normalize << " and stride: " << stride << std::endl;
+      //Log::debug() << "Binding attribute " << attribPos << " with name '" << attrib.codeName << "' "
+      //             << "with num components " << attrib.numComponents << " type " << attrib.type
+      //             << " normalize " << attrib.normalize << " and stride: " << stride << std::endl;
       GL(glVertexAttribPointer(attribPos,
                                static_cast<GLint>(attrib.numComponents),
                                attrib.type, static_cast<GLboolean>(attrib.normalize),

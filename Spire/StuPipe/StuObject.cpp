@@ -114,7 +114,7 @@ void StuPass::renderPass()
   {
 #ifdef SPIRE_DEBUG
     allUniforms.remove(it->uniformName);
-    Log::debug() << "Uniform " << it->uniformName << ": " << it->item->asString() << std::endl;
+    //Log::debug() << "Uniform " << it->uniformName << ": " << it->item->asString() << std::endl;
 #endif
     it->item->applyUniform(it->shaderLocation);
   }
@@ -124,8 +124,8 @@ void StuPass::renderPass()
   {
 #ifdef SPIRE_DEBUG
     allUniforms.remove(it->uniformName);
-    Log::debug() << "Uniform " << it->uniformName << ": " << std::endl
-        << mHub.getShaderUniformStateMan().uniformAsString(it->uniformName) << std::endl;
+    //Log::debug() << "Uniform " << it->uniformName << ": " << std::endl
+    //    << mHub.getShaderUniformStateMan().uniformAsString(it->uniformName) << std::endl;
 #endif
     mHub.getShaderUniformStateMan().applyUniform(it->uniformName, it->shaderLocation);
   }
@@ -138,8 +138,8 @@ void StuPass::renderPass()
   }
 #endif
 
-  Log::debug() << "Rendering with prim type " << mPrimitiveType << " num elements "
-               << mIBO->getNumElements() << " ibo type " << mIBO->getType() << std::endl;
+  //Log::debug() << "Rendering with prim type " << mPrimitiveType << " num elements "
+  //             << mIBO->getNumElements() << " ibo type " << mIBO->getType() << std::endl;
   GL(glDrawElements(mPrimitiveType, mIBO->getNumElements(), mIBO->getType(), 0));
 }
 
