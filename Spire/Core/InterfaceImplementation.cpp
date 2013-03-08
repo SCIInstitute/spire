@@ -62,7 +62,14 @@ void InterfaceImplementation::executeQueue()
   ThreadMessage msg;
   while (mQueue.pop(msg))
   {
-    msg.execute(mHub);
+    try
+    {
+      msg.execute(mHub);
+    }
+    catch (std::exception& e)
+    {
+      Log::error() << "Spire exception thrown: " << e.what() << std::endl;
+    }
     msg.clear();
   }
 #else
