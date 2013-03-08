@@ -82,42 +82,6 @@ public:
   /// See corresponding Interface definition.
   static void pipeRemove(Hub& hub, std::shared_ptr<PipeInterface> pipe);
 
-  //--------
-  // Camera
-  //--------
-  /// Sets the camera's transformation in world space.
-  static void cameraSetTransform(Hub& hub, M44 transform);
-
-  //------------------
-  // HACKED Interface
-  //------------------
-  // Everything in this interface will be rendered using the uniform color
-  // shader.
-
-  /// HACKED  Common vertex buffer.
-  ///         Sets the shared vertex buffer.
-  static void renderHACKSetCommonVBO(Hub& hub,
-                                     uint8_t* vertexBuffer, size_t vboSize);
-
-  /// HACKED  Uniform color face attributes.
-  ///         Once your the buffer is passed into this function, spire assumes
-  ///         all ownership of it. It will call delete[] on the buffer.
-  static void renderHACKSetUCFace(Hub& hub,
-                                  uint8_t* indexBuffer, size_t iboSize);
-
-  /// HACKED  Uniform face color
-  static void renderHACKSetUCFaceColor(Hub& hub, const V4& color);
-
-  /// HACKED  Uniform color edge attributes.
-  static void renderHACKSetUCEdge(Hub& hub,
-                                  uint8_t* indexBuffer, size_t iboSize);
-
-  /// HACKED  Uniform face color
-  static void renderHACKSetUCEdgeColor(Hub& hub, const V4& color);
-
-  /// HACKED  Set use ztest
-  static void renderHACKSetUseZTest(Hub& hub, bool useZTest);
-
 private:
 
 #ifdef SPIRE_USE_STD_THREADS

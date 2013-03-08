@@ -39,6 +39,8 @@
 #include "AppSpecific/SCIRun/SRInterface.h"
 #include "StuPipe/StuInterface.h"
 
+#include "TestCamera.h"
+
 //------------------------------------------------------------------------------
 // Basic StuPipe test fixture.
 //------------------------------------------------------------------------------
@@ -55,22 +57,27 @@ public:
     // Build StuPipe using the context from GlobalTestEnvironment.
     std::shared_ptr<Spire::Context> ctx = Spire::GlobalTestEnvironment::instance()->getContext();
     ctx->makeCurrent();
-    mSpireInterface = std::shared_ptr<Spire::Interface>(new Spire::Interface(
+    mSpire = std::shared_ptr<Spire::Interface>(new Spire::Interface(
         ctx, shaderSearchDirs, false));
 
     // Build and bind StuPipe.
     mStuInterface = std::shared_ptr<Spire::StuInterface>(
-        new Spire::StuInterface(mSpireInterface));
-    mSpireInterface->pipePushBack(mStuInterface);
+        new Spire::StuInterface(*mSpire.get()));
+    mSpire->pipePushBack(mStuInterface);
+
+    // Build camera that we will use for testing purposes.
+    mCamera = std::unique_ptr<TestCamera>(new TestCamera);
   }
 
   virtual void TearDown() override
   {
-    mSpireInterface.reset();
+    mSpire.reset();
   }
 
-  std::shared_ptr<Spire::Interface>     mSpireInterface;
+  std::shared_ptr<Spire::Interface>     mSpire;
   std::shared_ptr<Spire::StuInterface>  mStuInterface;
+
+  std::unique_ptr<TestCamera>           mCamera;
 };
 
 //------------------------------------------------------------------------------
@@ -88,22 +95,27 @@ public:
 
     // Build StuPipe using the context from GlobalTestEnvironment.
     std::shared_ptr<Spire::Context> ctx = Spire::GlobalTestEnvironment::instance()->getContext();
-    mSpireInterface = std::shared_ptr<Spire::SCIRun::SRInterface>(
+    mSpire = std::shared_ptr<Spire::SCIRun::SRInterface>(
         new Spire::SCIRun::SRInterface(ctx, shaderSearchDirs, false));
 
     // Build and bind StuPipe.
     mStuInterface = std::shared_ptr<Spire::StuInterface>(
-        new Spire::StuInterface(mSpireInterface));
-    mSpireInterface->pipePushBack(mStuInterface);
+        new Spire::StuInterface(*mSpire.get()));
+    mSpire->pipePushBack(mStuInterface);
+
+    // Build camera that we will use for testing purposes.
+    mCamera = std::unique_ptr<TestCamera>(new TestCamera);
   }
 
   virtual void TearDown() override
   {
-    mSpireInterface.reset();
+    mSpire.reset();
   }
 
-  std::shared_ptr<Spire::SCIRun::SRInterface> mSpireInterface;
+  std::shared_ptr<Spire::SCIRun::SRInterface> mSpire;
   std::shared_ptr<Spire::StuInterface>        mStuInterface;
+
+  std::unique_ptr<TestCamera>                 mCamera;
 };
 
 #endif 

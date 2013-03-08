@@ -34,7 +34,6 @@
 
 #include "Core/PipeDriver.h"
 #include "Core/GPUStateManager.h"
-#include "Core/HackedUCRenderer.h"
 
 namespace Spire {
 namespace StuPipe {

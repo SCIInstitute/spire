@@ -65,21 +65,55 @@ public:
   int32_t getPassOrder() const          {return mPassOrder;}
   GLenum getPrimitiveType() const       {return mPrimitiveType;}
 
+  /// Adds a local uniform to the pass.
+  /// throws std::out_of_range if 'uniformName' is not found in the shader's
+  /// uniform list.
+  void addPassUniform(const std::string uniformName,
+                      std::shared_ptr<AbstractUniformStateItem> item);
+
 protected:
+
+  struct UniformItem
+  {
+    UniformItem(const std::string& name,
+                std::shared_ptr<AbstractUniformStateItem> uniformItem,
+                GLint location) :
+        uniformName(name),
+        item(uniformItem),
+        shaderLocation(location)
+    {}
+
+    std::string                               uniformName;
+    std::shared_ptr<AbstractUniformStateItem> item;
+    GLint                                     shaderLocation;
+  };
+
+  struct UnsastisfiedUniformItem
+  {
+    UnsastisfiedUniformItem(const std::string& name,
+                            GLint location) :
+        uniformName(name),
+        shaderLocation(location)
+    {}
+
+    std::string                         uniformName;
+    GLint                               shaderLocation;
+  };
 
   std::string                           mName;      ///< Simple pass name.
   int32_t                               mPassOrder; ///< Pass order.
   GLenum                                mPrimitiveType;
-
-  /// List of uniforms to apply before this shader gets executed.
-  std::vector<std::unique_ptr<AbstractUniformStateItem>>  mUniforms;
 
   /// List of unsatisfied uniforms (the list of uniforms that are not covered
   /// by our mUniforms list).
   /// The set of unsatisfied uniforms should be a subset of the global
   /// uniform state. Otherwise the shader cannot be properly satisfied and a
   /// runtime exception will be thrown.
-  std::list<std::string>                mUnsatisfiedUniforms;
+  /// This list is updated everytime we add or remove elements from mUniforms.
+  std::vector<UnsastisfiedUniformItem>  mUnsatisfiedUniforms;
+
+  /// Local uniforms.
+  std::vector<UniformItem>              mUniforms;
 
   std::shared_ptr<VBOObject>            mVBO;     ///< ID of VBO to use during pass.
   std::shared_ptr<IBOObject>            mIBO;     ///< ID of IBO to use during pass.

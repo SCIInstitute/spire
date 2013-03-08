@@ -38,7 +38,11 @@
 #include "GLWidgetSCIRun.h"
 
 using namespace SCIRun::Gui;
+using Spire::V4;
+using Spire::V3;
+using Spire::V2;
 using Spire::Vector2;
+using Spire::M44;
 
 //------------------------------------------------------------------------------
 GLWidget::GLWidget(const QGLFormat& format) :
@@ -50,12 +54,12 @@ GLWidget::GLWidget(const QGLFormat& format) :
   // Create a threaded spire renderer. This should be created at the module
   // level once it has access to the context, should be passed using Transients.
 #ifdef SPIRE_USE_STD_THREADS
-  mGraphics = std::shared_ptr<Spire::SCIRun::SRInterface>(
+  mSpire = std::shared_ptr<Spire::SCIRun::SRInterface>(
       new Spire::SCIRun::SRInterface(
           std::dynamic_pointer_cast<Spire::Context>(mContext),
           shaderSearchDirs, true));
 #else
-  mGraphics = std::shared_ptr<Spire::SCIRun::SRInterface>(
+  mSpire = std::shared_ptr<Spire::SCIRun::SRInterface>(
       new Spire::SCIRun::SRInterface(
           std::dynamic_pointer_cast<Spire::Context>(mContext),
           shaderSearchDirs, false));
@@ -63,6 +67,17 @@ GLWidget::GLWidget(const QGLFormat& format) :
   connect(mTimer, SIGNAL(timeout()), this, SLOT(updateRenderer()));
   mTimer->start(35);
 #endif
+
+  buildScene();
+
+  // We must disable auto buffer swap on the 'paintEvent'.
+  setAutoBufferSwap(false);
+}
+
+//------------------------------------------------------------------------------
+void GLWidget::buildScene()
+{
+  std::shared_ptr<Spire::StuInterface> stuPipe = mSpire->getStuPipe();
 
   // Two faces of a cube (the only thing that changes for a cube are the
   // indices). Note: we may be adding normals to the vbo in the future...
@@ -73,35 +88,79 @@ GLWidget::GLWidget(const QGLFormat& format) :
   float*    vbo = static_cast<float*>(std::malloc(vboSize));
   uint32_t* ibo = static_cast<uint32_t*>(std::malloc(iboSize));
 
-  vbo[0 ] = -1.0f; vbo[1 ] =  1.0f; vbo[2 ] = -1.0f; // 0
-  vbo[3 ] =  1.0f; vbo[4 ] =  1.0f; vbo[5 ] = -1.0f; // 1
-  vbo[6 ] = -1.0f; vbo[7 ] = -1.0f; vbo[8 ] = -1.0f; // 2
-  vbo[9 ] =  1.0f; vbo[10] = -1.0f; vbo[11] = -1.0f; // 3
+  std::vector<float> vboData =
+  {
+    -1.0f,  1.0f, -1.0f,
+     1.0f,  1.0f, -1.0f,
+    -1.0f, -1.0f, -1.0f,
+     1.0f, -1.0f, -1.0f,
 
-  vbo[12] = -1.0f; vbo[13] =  1.0f; vbo[14] =  1.0f; // 4
-  vbo[15] =  1.0f; vbo[16] =  1.0f; vbo[17] =  1.0f; // 5
-  vbo[18] = -1.0f; vbo[19] = -1.0f; vbo[20] =  1.0f; // 6
-  vbo[21] =  1.0f; vbo[22] = -1.0f; vbo[23] =  1.0f; // 7
+    -1.0f,  1.0f,  1.0f,
+     1.0f,  1.0f,  1.0f,
+    -1.0f, -1.0f,  1.0f,
+     1.0f, -1.0f,  1.0f,
+  };
+  std::vector<std::string> attribNames = {"aPos"};
 
-  ibo[0 ] = 0; ibo[1 ] = 1; ibo[2 ] = 2;
-  ibo[3 ] = 1; ibo[4 ] = 2; ibo[5 ] = 3;
+  std::vector<uint16_t> iboData =
+  {
+    0, 1, 2, 
+    1, 2, 3,
 
-  ibo[6 ] = 4; ibo[7 ] = 5; ibo[8 ] = 6;
-  ibo[9 ] = 5; ibo[10] = 6; ibo[11] = 7;
+    4, 5, 6,
+    5, 6, 7
+  };
+  Spire::StuInterface::IBO_TYPE iboType = Spire::StuInterface::IBO_16BIT;
+  
+  uint8_t*  rawBegin;
+  size_t    rawSize;
 
-  mGraphics->renderHACKSetCommonVBO((uint8_t*)(vbo), vboSize);
-  mGraphics->renderHACKSetUCFace((uint8_t*)(ibo), iboSize);
-  mGraphics->renderHACKSetUCFaceColor(Spire::V4(1.0f, 1.0f, 1.0f, 0.5f));
+  // Copy vboData into vector of uint8_t. Using std::copy.
+  std::shared_ptr<std::vector<uint8_t>> rawVBO(new std::vector<uint8_t>());
+  rawSize = vboData.size() * (sizeof(float) / sizeof(uint8_t));
+  rawVBO->reserve(rawSize);
+  rawBegin = reinterpret_cast<uint8_t*>(&vboData[0]); // Remember, standard guarantees that vectors are contiguous in memory.
+  rawVBO->assign(rawBegin, rawBegin + rawSize);
 
-  // We must disable auto buffer swap on the 'paintEvent'.
-  setAutoBufferSwap(false);
+  // Copy iboData into vector of uint8_t. Using std::vector::assign.
+  std::shared_ptr<std::vector<uint8_t>> rawIBO(new std::vector<uint8_t>());
+  rawSize = iboData.size() * (sizeof(uint16_t) / sizeof(uint8_t));
+  rawIBO->reserve(rawSize);
+  rawBegin = reinterpret_cast<uint8_t*>(&iboData[0]); // Remember, standard guarantees that vectors are contiguous in memory.
+  rawIBO->assign(rawBegin, rawBegin + rawSize);
+
+  // Add necessary VBO's and IBO's
+  std::string vbo1 = "vbo1";
+  std::string ibo1 = "ibo1";
+  stuPipe->addVBO(vbo1, rawVBO, attribNames);
+  stuPipe->addIBO(ibo1, rawIBO, iboType);
+
+  // Add object
+  std::string obj1 = "obj1";
+  stuPipe->addObject(obj1);
+
+  // Ensure shader is resident.
+  std::string shader1 = "UniformColor";
+  stuPipe->addPersistentShader(
+      shader1, 
+      { {"UniformColor.vs", Spire::StuInterface::VERTEX_SHADER}, 
+        {"UniformColor.fs", Spire::StuInterface::FRAGMENT_SHADER},
+      });
+
+  // Build the pass
+  std::string pass1 = "pass1";
+  stuPipe->addPassToObject(obj1, pass1, shader1, vbo1, ibo1, Spire::StuInterface::TRIANGLES);
+
+  // Be sure the global uniform 'uProjIVWorld' is set appropriately...
+  stuPipe->addGlobalUniform("uProjIVWorld", M44());
+  stuPipe->addPassUniform(obj1, pass1, "uColor", V4(1.0f, 0.0f, 0.0f, 1.0f));
 }
 
 //------------------------------------------------------------------------------
 GLWidget::~GLWidget()
 {
   // Need to inform module that the context is being destroyed.
-  mGraphics.reset();
+  mSpire.reset();
 }
 
 //------------------------------------------------------------------------------
@@ -115,33 +174,33 @@ void GLWidget::initializeGL()
 void GLWidget::mouseMoveEvent(QMouseEvent* event)
 {
   /// \todo Include specific button info.
-  mGraphics->inputMouseMove(Vector2<int32_t>(event->x(), event->y()));
+  mSpire->inputMouseMove(Vector2<int32_t>(event->x(), event->y()));
 }
 
 //------------------------------------------------------------------------------
 void GLWidget::mousePressEvent(QMouseEvent* event)
 {
   /// \todo Include specific button info.
-  mGraphics->inputMouseDown(Vector2<int32_t>(event->x(), event->y()));
+  mSpire->inputMouseDown(Vector2<int32_t>(event->x(), event->y()));
 }
 
 //------------------------------------------------------------------------------
 void GLWidget::mouseReleaseEvent(QMouseEvent* event)
 {
   /// \todo Include specific button info.
-  mGraphics->inputMouseUp(Vector2<int32_t>(event->x(), event->y()));
+  mSpire->inputMouseUp(Vector2<int32_t>(event->x(), event->y()));
 }
 
 //------------------------------------------------------------------------------
 void GLWidget::wheelEvent(QWheelEvent * event)
 {
-  mGraphics->inputMouseWheel(event->delta());
+  mSpire->inputMouseWheel(event->delta());
 }
 
 //------------------------------------------------------------------------------
 void GLWidget::resizeGL(int width, int height)
 {
-  mGraphics->eventResize(static_cast<int32_t>(width),
+  mSpire->eventResize(static_cast<int32_t>(width),
                          static_cast<int32_t>(height));
 }
 
@@ -149,8 +208,8 @@ void GLWidget::resizeGL(int width, int height)
 void GLWidget::closeEvent(QCloseEvent *evt)
 {
   // Kill off the graphics thread.
-  mGraphics->terminate();
-  mGraphics.reset();
+  mSpire->terminate();
+  mSpire.reset();
   //QGLWidget::closeEvent(evt);
 }
 
@@ -158,7 +217,7 @@ void GLWidget::closeEvent(QCloseEvent *evt)
 void GLWidget::updateRenderer()
 {
   mContext->makeCurrent();    // Required on windows...
-  mGraphics->doFrame();
+  mSpire->doFrame();
   mContext->swapBuffers();
 }
 

@@ -31,6 +31,8 @@
 /// \brief  These functions exist primarily to locate shader files.
 ///         Inherits heavily from the SysTools library in IV3D's Tuvok.
 ///         There is currently no wstring implementation.
+///         Really should be replaced with boost::filesystem on appropriate
+///         platforms.
 
 #ifndef SPIRE_HIGH_FILEUTIL_H
 #define SPIRE_HIGH_FILEUTIL_H
@@ -47,6 +49,7 @@ std::string findFileInDirs(const std::string& file,
 bool fileExists(const std::string& strFileName);
 std::vector<std::string> getSubDirList(const std::string& dir);
 std::string getCurrentWorkingDir();
+bool getTempDirectory(std::string& path);
 
 } // namespace Spire
 

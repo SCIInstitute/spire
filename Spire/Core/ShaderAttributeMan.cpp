@@ -280,15 +280,22 @@ size_t ShaderAttributeCollection::getFullAttributeSize(const AttribSpecificData&
 //------------------------------------------------------------------------------
 void ShaderAttributeCollection::bindAttributes(std::shared_ptr<ShaderProgramAsset> program) const
 {
-  int i = 0;
+  GLsizei stride = static_cast<GLsizei>(calculateStride());
   for (auto it = mAttributes.begin(); it != mAttributes.end(); ++it)
   {
     if (it->attrib.index != ShaderAttributeMan::getUnknownAttributeIndex())
     {
       AttribState attrib = it->attrib;
-      GL(glBindAttribLocation(program->getProgramID(), i, attrib.codeName.c_str()));
+      GLuint attribPos = glGetAttribLocation(program->getProgramID(), attrib.codeName.c_str());
+      GL(glEnableVertexAttribArray(attribPos));
+      //Log::debug() << "Binding attribute " << attribPos << " with name '" << attrib.codeName << "' "
+      //             << "with num components " << attrib.numComponents << " type " << attrib.type
+      //             << " normalize " << attrib.normalize << " and stride: " << stride << std::endl;
+      GL(glVertexAttribPointer(attribPos,
+                               static_cast<GLint>(attrib.numComponents),
+                               attrib.type, static_cast<GLboolean>(attrib.normalize),
+                               stride, NULL));
     }
-    ++i;
   }
 }
 

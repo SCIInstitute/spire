@@ -38,7 +38,6 @@
 #include "Core/Log.h"
 #include "Core/FileUtil.h"
 #include "Core/InterfaceImplementation.h"
-#include "Core/HackedUCRenderer.h"
 
 #include "StuPipe/Driver.h"
 
@@ -64,7 +63,8 @@ Hub::Hub(std::shared_ptr<Context> context,
     mThreadRunning(false),
 #endif
     mPixScreenWidth(640),
-    mPixScreenHeight(480)
+    mPixScreenHeight(480),
+    mShaderUniformStateMan(*this)
 {
   // Add default relative shader directory.
   std::string workingDay = getCurrentWorkingDir();
@@ -121,10 +121,11 @@ void Hub::oneTimeInitOnThread()
   const GLubyte* versionl   = glGetString(GL_VERSION);
   GL_CHECK();
 
+  Log::message() << std::endl << "------------------------------" << std::endl;
   Log::message() << "OpenGL initialization. Running on a " << vendor << " "
-                 << renderer << " with OpenGL version " << versionl << std::endl
+                 << renderer << " with OpenGL version " << versionl
 #ifdef SPIRE_USE_STD_THREADS
-                 << "GL made current on thread " << std::this_thread::get_id()
+                 << std::endl << "GL made current on thread " << std::this_thread::get_id()
 #endif
                  << std::endl;
 
@@ -176,12 +177,6 @@ void Hub::oneTimeInitOnThread()
   // Pulled from Tuvok
   //const bool bOpenGLSO12     = atof((const char*)versionl) >= 1.2;
   //const bool bOpenGLSO20     = atof((const char*)versionl) >= 2.0;
-
-  // Setup camera
-  mCamera = std::shared_ptr<Camera>(new Camera(*this));
-
-  /// \todo Remove the hacked renderer.
-  mHackedRenderer = std::shared_ptr<HackedUCRenderer>(new HackedUCRenderer(*this));
 }
 
 //------------------------------------------------------------------------------

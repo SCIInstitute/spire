@@ -47,14 +47,12 @@
 #include "Core/ShaderProgramMan.h"
 #include "Core/ShaderAttributeMan.h"
 #include "Core/ShaderUniformStateMan.h"
-#include "Core/Camera.h"
 
 namespace Spire {
 
 class Log;
 class PipeDriver;
 class InterfaceImplementation;
-class HackedUCRenderer;
 
 /// Using thread local storage ONLY for logging purposes, nothing else.
 
@@ -105,12 +103,6 @@ public:
   /// Retrieves the shader program manager.
   ShaderProgramMan& getShaderProgramManager()     {return mShaderProgramMan;}
 
-  /// Retrieves the default camera.
-  std::shared_ptr<Camera> getCamera()             {return mCamera;}
-
-  /// Retrieves the hacked renderer.
-  std::shared_ptr<HackedUCRenderer> getHackedRenderer() {return mHackedRenderer;}
-
   /// Retrieves the actual screen width in pixels.
   size_t getActualScreenWidth() const             {return mPixScreenWidth;}
 
@@ -147,13 +139,10 @@ private:
   ShaderAttributeMan          mShaderAttributes;///< Shader attribute manager.
   ShaderUniformMan            mShaderUniforms;  ///< Shader attribute manager.
   ShaderUniformStateMan       mShaderUniformStateMan; ///< Uniform state manager.
-  std::shared_ptr<Camera>     mCamera;          ///< Basic GL Camera 
-                                                ///< (this should not be here... move in the future)
   std::vector<std::string>    mShaderDirs;      ///< Shader directories to search.
 
   std::list<std::shared_ptr<PipeInterface>> mPipes;         ///< Rendering pipes in-order.
   std::shared_ptr<InterfaceImplementation>  mInterfaceImpl; ///< Interface implementation.
-  std::shared_ptr<HackedUCRenderer>         mHackedRenderer;///< Hacked uniform color renderer.
 
   // Threading variables / functions
 

@@ -27,95 +27,74 @@
 */
 
 /// \author James Hughes
-/// \date   January 2013
+/// \date   March 2013
 
-#include "Common.h"
-#include "Core/Hub.h"
-#include "Core/Log.h"
-#include "Camera.h"
-
-namespace Spire {
+#include "TestCamera.h"
+#include "GlobalTestEnvironment.h"
 
 //------------------------------------------------------------------------------
-Camera::Camera(Hub& hub) :
+TestCamera::TestCamera() :
     mTrafoSeq(0),
     mPerspective(true),
     mFOV(getDefaultFOVY()),
     mZNear(getDefaultZNear()),
-    mZFar(getDefaultZFar()),
-    mHub(hub)
+    mZFar(getDefaultZFar())
 {
   setAsPerspective();
 
-  // Setup default camera to look down the negative Z axis.
-  V3 eye(0.0f, 0.0f, 5.0f);
-  V3 lookAt(0.0f, 0.0f, 0.0f);
-  V3 upVec(0.0f, 1.0f, 0.0f);
+  // Camera looking down positive Z axis, located at -5.0f z.
+  Spire::M44 cam;
+  cam.setCol3(Spire::V4(0.0f, 0.0f, -5.0f, 1.0f));
 
-  // M44::lookAt builds an inverted view matrix that is ready to be multiplied
-  // against a projection matrix. For our purposes, we need the *actual* view
-  // matrix.
-  M44 invCam  = M44::lookAt(eye, lookAt, upVec);
-  M44 cam     = M44::orthoInverse(invCam);
-  
   setViewTransform(cam);
 }
 
 //------------------------------------------------------------------------------
-Camera::~Camera()
+TestCamera::~TestCamera()
 {
 }
 
 //------------------------------------------------------------------------------
-void Camera::setAsPerspective()
+void TestCamera::setAsPerspective()
 {
   mPerspective = true;
 
-  float aspect = static_cast<float>(mHub.getActualScreenWidth()) / 
-                 static_cast<float>(mHub.getActualScreenHeight());
-  mP = M44::perspective(mFOV, aspect, mZNear, mZFar);
+  float aspect = static_cast<float>(Spire::GlobalTestEnvironment::instance()->getScreenWidth()) / 
+                 static_cast<float>(Spire::GlobalTestEnvironment::instance()->getScreenHeight());
+  mP = Spire::M44::perspective(mFOV, aspect, mZNear, mZFar);
 
   // Rotate about the Y axis by 180 degrees. Many perspective matrices
   // (see Hughes, et al...) are built looking down negative Z. This is the case
   // with our perspective matrices. As such, we rotate by 180 degrees to re-orient
   // our matrix down positive Z.
-  M44 y180 = M44::rotationY(PI);
+  Spire::M44 y180 = Spire::M44::rotationY(Spire::PI);
   mP = mP * y180;
 }
 
 //------------------------------------------------------------------------------
-void Camera::setAsOrthographic(float halfWidth, float halfHeight)
+void TestCamera::setAsOrthographic(float halfWidth, float halfHeight)
 {
   mPerspective = false;
 
-	mP = M44::orthographic(-halfWidth, halfWidth, 
+	mP = Spire::M44::orthographic(-halfWidth, halfWidth, 
                          -halfHeight, halfHeight, 
                          mZNear, mZFar);
 
   // Same reason we rotate the perspective camera by 180 degrees.
-  M44 y180 = M44::rotationY(PI);
+  Spire::M44 y180 = Spire::M44::rotationY(Spire::PI);
   mP = mP * y180;
 }
 
 //------------------------------------------------------------------------------
-void Camera::setEyePosition(const V3& eye)
-{
-  mV.setTranslation(eye);
-  setViewTransform(mV);
-}
-
-//------------------------------------------------------------------------------
-void Camera::setViewTransform(const M44& trafo)
+void TestCamera::setViewTransform(const Spire::M44& trafo)
 {
   ++mTrafoSeq;
 
   mV    = trafo;
-  mIV   = M44::orthoInverse(trafo);
+  mIV   = Spire::M44::orthoInverse(trafo);
   mPIV  = mP * mIV;
   //Log::message() << "mV" << std::endl << mV << std::endl;
   //Log::message() << "mIV" << std::endl << mIV << std::endl;
   //Log::message() << "mPIV" << std::endl << mPIV << std::endl;
 }
 
-
-} // end of namespace Spire

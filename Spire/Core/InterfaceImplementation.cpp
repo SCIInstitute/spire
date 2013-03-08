@@ -30,7 +30,6 @@
 /// \date   February 2013
 
 #include "Core/Hub.h"
-#include "Core/HackedUCRenderer.h"
 #include "InterfaceImplementation.h"
 
 namespace Spire {
@@ -78,12 +77,6 @@ void InterfaceImplementation::executeQueue()
 }
 
 //------------------------------------------------------------------------------
-void InterfaceImplementation::cameraSetTransform(Hub& hub, M44 transform)
-{
-  hub.getCamera()->setViewTransform(transform);
-}
-
-//------------------------------------------------------------------------------
 void InterfaceImplementation::pipePushBack(Hub& hub,
                                            std::shared_ptr<PipeInterface> pipe)
 {
@@ -95,47 +88,6 @@ void InterfaceImplementation::pipeRemove(Hub& hub,
                                          std::shared_ptr<PipeInterface> pipe)
 {
   hub.removePipe(pipe);
-}
-
-//------------------------------------------------------------------------------
-void InterfaceImplementation::renderHACKSetCommonVBO(Hub& hub,
-                                                     uint8_t* vertexBuffer,
-                                                     size_t vboSize)
-{
-  hub.getHackedRenderer()->setCommonVBO(vertexBuffer, vboSize);
-}
-
-//------------------------------------------------------------------------------
-void InterfaceImplementation::renderHACKSetUCEdge(Hub& hub,
-                                                  uint8_t* indexBuffer, size_t iboSize)
-{
-  // Destroy any previous vertex / index buffers
-  hub.getHackedRenderer()->setEdgeData(indexBuffer, iboSize);
-}
-
-//------------------------------------------------------------------------------
-void InterfaceImplementation::renderHACKSetUCEdgeColor(Hub& hub, const V4& color)
-{
-  hub.getHackedRenderer()->setEdgeColor(color);
-}
-
-//------------------------------------------------------------------------------
-void InterfaceImplementation::renderHACKSetUCFace(Hub& hub,
-                                                  uint8_t* indexBuffer, size_t iboSize)
-{
-  hub.getHackedRenderer()->setFaceData(indexBuffer, iboSize);
-}
-
-//------------------------------------------------------------------------------
-void InterfaceImplementation::renderHACKSetUCFaceColor(Hub& hub, const V4& color)
-{
-  hub.getHackedRenderer()->setFaceColor(color);
-}
-
-//------------------------------------------------------------------------------
-void InterfaceImplementation::renderHACKSetUseZTest(Hub& hub, bool useZTest)
-{
-  hub.getHackedRenderer()->setUseZTest(useZTest);
 }
 
 } // end of namespace Spire

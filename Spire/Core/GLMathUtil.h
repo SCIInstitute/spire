@@ -33,7 +33,7 @@
 #ifndef SPIRE_HIGH_GLMATHUTIL_H
 #define SPIRE_HIGH_GLMATHUTIL_H
 
-#include "Core/Math.h"
+#include "../Core/Math.h"
 
 namespace Spire {
 

@@ -309,6 +309,34 @@ std::string getCurrentWorkingDir()
   }
 
   return std::string(cCurrentPath);
+} 
+
+//------------------------------------------------------------------------------
+std::string getPath(const std::string& fileName)
+{
+  std::string path = fileName.substr(
+      0,std::max(int(fileName.find_last_of("\\")),int(fileName.find_last_of("/")))+1);
+  if(path.empty()) { path = "./"; }
+  return path;
+}
+
+//------------------------------------------------------------------------------
+bool getTempDirectory(std::string& path)
+{
+#ifdef DETECTED_OS_WINDOWS
+  DWORD result = ::GetTempPathA(0, "");
+  if(result == 0) return false;
+  std::vector<char> tempPath(result + 1);
+  result = ::GetTempPathA(static_cast<DWORD>(tempPath.size()), &tempPath[0]);
+  if((result == 0) || (result >= tempPath.size())) return false;
+  path = std::string( tempPath.begin(), tempPath.begin() + static_cast<std::size_t>(result)  );
+  return true;
+#else
+  char* pointer;
+  pointer = tmpnam(NULL);
+  path = getPath(std::string(pointer));
+  return true;
+#endif
 }
 
 } // end of names

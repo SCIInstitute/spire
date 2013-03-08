@@ -27,31 +27,29 @@
   */
 
 /// \author James Hughes
-/// \date   January 2013
+/// \date   March 2013
 
-#ifndef SPIRE_HIGH_CAMERA_H
-#define SPIRE_HIGH_CAMERA_H
+#ifndef SPIRE_TESTS_TESTCAMERA_H
+#define SPIRE_TESTS_TESTCAMERA_H
 
-#include "Core/Hub.h"
+// Include spire interface so that we have access to the mathematical types.
+#include "Spire/Common.h"
 
-namespace Spire {
-
-/// Basic camera.
-class Camera
+/// Basic camera. Pretty much torn straight from Spire when it had a camera
+/// class.
+class TestCamera
 {
 public:
-  Camera(Hub& hub);
-  virtual ~Camera();
+  TestCamera();
+  virtual ~TestCamera();
 
   // V  = View matrix
   // IV = Inverse view matrix
   // P  = Projection matrix
   // m  = multiplication
-  const M44& getWorldToProjection() const     {return mPIV;}      // P * IV
-  const M44& getWorldToView() const           {return mIV;}       // IV
-  const M44& getViewToProjection() const      {return mP;}        // P
-
-  /// \todo Expose settings for perspective and orthographic camera.
+  const Spire::M44& getWorldToProjection() const     {return mPIV;}      // P * IV
+  const Spire::M44& getWorldToView() const           {return mIV;}       // IV
+  const Spire::M44& getViewToProjection() const      {return mP;}        // P
 
   /// Sets this camera to use a perspective projection transformation.
   void setAsPerspective();
@@ -60,29 +58,21 @@ public:
   void setAsOrthographic(float halfWidth, float halfHeight);
 
   /// Sets the current view transform (view to world space).
-  void setViewTransform(const M44& view);
-
-  /// Sets the current 'eye' position. This modifies the translation column
-  /// of the view matrix. Does not change the last row of the matrix.
-  void setEyePosition(const V3& eye);
-
-  /// Retrieves the eye position in world space.
-  V3 getEyePosition() const                 {return mV.getTranslation();}
+  void setViewTransform(const Spire::M44& view);
 
   /// Default camera settings
-  /// \todo Switch back to constexpr
   /// @{
-  static float getDefaultFOVY()   {return 32.0f * (PI / 18.0f);}
+  static float getDefaultFOVY()   {return 32.0f * (Spire::PI / 18.0f);}
   static float getDefaultZNear()  {return 0.1f;}
   static float getDefaultZFar()   {return 1350.0f;}
   /// @}
 
 private:
 
-  M44                   mPIV;         ///< Projection * Inverse View transformation.
-  M44                   mIV;          ///< Inverse view transformation.
-  M44                   mV;           ///< View matrix.
-  M44                   mP;           ///< Projection transformation.
+  Spire::M44            mPIV;         ///< Projection * Inverse View transformation.
+  Spire::M44            mIV;          ///< Inverse view transformation.
+  Spire::M44            mV;           ///< View matrix.
+  Spire::M44            mP;           ///< Projection transformation.
   size_t                mTrafoSeq;    ///< Current sequence of the view transform.
                                       ///< Helps us determine when a camera is 'dirty'.
 
@@ -91,10 +81,6 @@ private:
   float                 mFOV;         ///< Field of view.
   float                 mZNear;       ///< Position of near plane along view vec.
   float                 mZFar;        ///< Position of far plane along view vec.
-
-  Hub&                  mHub;
 };
 
-} // namespace Spire
-
-#endif
+#endif // SPIRE_HIGH_CAMERA_H

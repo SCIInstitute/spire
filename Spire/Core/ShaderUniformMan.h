@@ -51,7 +51,7 @@ struct UniformState
 class ShaderUniformCollection
 {
 public:
-  ShaderUniformCollection(const ShaderUniformMan& man, GLuint program) :
+  ShaderUniformCollection(ShaderUniformMan& man, GLuint program) :
       mUniformMan(man),
       mProgram(program)
   {}
@@ -66,6 +66,7 @@ public:
                             ///< glGetUniformLocation.
     GLint     glSize;       ///< 'size' of the uniform variable.
     GLenum    glType;       ///< Type of the uniform variable (see: http://www.opengl.org/sdk/docs/man/xhtml/glGetActiveUniform.xml)
+                            ///< Should match type of UniformState exactly.
     /// @}
   };
 
@@ -79,6 +80,13 @@ public:
   /// Retrieves number of uniforms stored in mUniforms.
   size_t getNumUniforms() const;
 
+  /// Retrieves the uniform at 'index'.
+  const UniformSpecificData& getUniformAtIndex(size_t index) const;
+
+  /// Throws out_of_range exception if the uniform with 'uniformName' is
+  /// not found in the list of uniforms.
+  const UniformSpecificData& getUniformData(const std::string& uniformName) const;
+
   /// If 'uniformName' is contained herein, returns true.
   bool hasUniform(const std::string& uniformName) const;
 
@@ -89,7 +97,7 @@ private:
 
   /// Reference to the uniform manager.
   /// The uniform manager is queried regarding available uniforms.
-  const ShaderUniformMan&           mUniformMan;
+  ShaderUniformMan&                 mUniformMan;
 
   /// GL shader program 
   GLuint                            mProgram;
@@ -99,7 +107,7 @@ private:
 class ShaderUniformMan
 {
 public:
-  ShaderUniformMan(bool addDefaultUniforms = true);
+  ShaderUniformMan();
   virtual ~ShaderUniformMan();
 
   /// These two functions represent the unknown's index and name.

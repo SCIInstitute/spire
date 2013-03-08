@@ -67,7 +67,7 @@ class IBOObject;
 class StuInterface : public PipeInterface
 {
 public:
-  StuInterface(std::weak_ptr<Interface> iface);
+  StuInterface(Interface& iface);
   virtual ~StuInterface();
   
   /// Initialization as performed on the renderer thread.
@@ -240,6 +240,8 @@ public:
   /// once this pass has been completed.
   /// Throws an std::out_of_range exception if the object or pass is not found 
   /// in the system.
+  /// Throws ShaderUniformTypeError if the types do not match what is stored
+  /// in the shader.
   template <typename T>
   void addPassUniform(const std::string& object,
                       const std::string& pass,
@@ -251,6 +253,10 @@ public:
                                new UniformStateItem<T>(uniformData)));
   }
 
+  /// Will add *or* update the global uniform if it already exsits.
+  /// A shader of a given name is only allowed to be one type. If you attempt
+  /// to bind different values to a uniform, this function will throw a
+  /// ShaderUniformTypeError.
   template <typename T>
   void addGlobalUniform(const std::string& uniformName, T uniformData)
   {

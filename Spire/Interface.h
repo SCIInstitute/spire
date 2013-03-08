@@ -99,23 +99,6 @@ public:
   // THREAD SAFE - Remember, only one consistent thread should call these
   //============================================================================
 
-  //--------
-  // Camera
-  //--------
-
-  /// \todo Set projection and inverse view transform *ONLY*.
-  ///       Spire doesn't need to know anything else in order to render the
-  ///       scene. This will decouple spire and make it a renderer only, we
-  ///       don't need to extract any information from it.
-
-  /// \todo In order to pick objects in the scene all we need is the inverse
-  ///       view and projection matrix in order to  build a ray. Therefore, 
-  ///       we will be able to unproject a 2D point without the help of spire.
-
-
-  /// Sets the camera's world-space transformation.
-  void cameraSetTransform(const M44& transform);
-
   //-------
   // Pipes
   //-------
@@ -131,36 +114,6 @@ public:
   /// The equality operator, as defined for shared_ptr, is used when traversing
   /// the stack.
   void pipeRemove(std::shared_ptr<PipeInterface> pipe);
-
-  //------------------
-  // HACKED Interface
-  //------------------
-  /// \todo Get rid of this when we have the pipes interface completely fleshed
-  ///       out.
-  // Everything in this interface will be rendered using the uniform color
-  // shader.
-
-  /// Sets the common VBO that will feed edge/face/point data.
-  void renderHACKSetCommonVBO(uint8_t* vertexBuffer, size_t vboSize);
-
-  /// HACKED  Uniform color face attributes.
-  ///         Once your the buffer is passed into this function, spire assumes
-  ///         all ownership of it. It will call std::free on the buffer.
-  ///         Expects that the indexBuffer is an uint32_t buffer.
-  void renderHACKSetUCFace(uint8_t* indexBuffer, size_t iboSize);
-
-  /// HACKED  Uniform face color
-  void renderHACKSetUCFaceColor(const V4& color);
-
-  /// HACKED  Uniform color edge attributes.
-  ///         Expects that the indexBuffer is an uint32_t buffer.
-  void renderHACKSetUCEdge(uint8_t* indexBuffer, size_t iboSize);
-
-  /// HACKED  Uniform face color
-  void renderHACKSetUCEdgeColor(const V4& color);
-
-  /// HACKED  ZTest setting.
-  void renderHACKSetUseZTest(bool test);
 
   //============================================================================
   // NOT THREAD SAFE

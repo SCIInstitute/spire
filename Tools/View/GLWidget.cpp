@@ -34,7 +34,7 @@
 
 #include "GLWidget.h"
 
-// List off the classes we are using.
+using Spire::V4;
 using Spire::V3;
 using Spire::V2;
 using Spire::Vector2;
@@ -50,44 +50,102 @@ GLWidget::GLWidget(const QGLFormat& format) :
 
   // Create a threaded spire renderer.
 #ifdef SPIRE_USE_STD_THREADS
-  mGraphics = std::shared_ptr<Spire::Interface>(
+  mSpire = std::shared_ptr<Spire::Interface>(
       new Spire::Interface(mContext, shaderSearchDirs, true));
 #else
-  mGraphics = std::shared_ptr<Spire::Interface>(
+  mSpire = std::shared_ptr<Spire::Interface>(
       new Spire::Interface(mContext, shaderSearchDirs, false));
   mTimer = new QTimer(this);
   connect(mTimer, SIGNAL(timeout()), this, SLOT(updateRenderer()));
   mTimer->start(35);
 #endif
 
-  // Setup default camera to look down the negative Z axis.
-  V3 eye(0.0f, 0.0f, 5.0f);
-  V3 lookAt(0.0f, 0.0f, 0.0f);
-  V3 upVec(0.0f, 1.0f, 0.0f);
+  // Build and bind StuPipe.
+  mStuInterface = std::shared_ptr<Spire::StuInterface>(
+      new Spire::StuInterface(*mSpire));
+  mSpire->pipePushBack(mStuInterface);
 
-  // M44::lookAt builds an inverted view matrix that is ready to be multiplied
-  // against a projection matrix. For our purposes, we need the *actual* view
-  // matrix.
-  M44 invCam  = M44::lookAt(eye, lookAt, upVec);
-  mCamWorld   = M44::orthoInverse(invCam);
-  mGraphics->cameraSetTransform(mCamWorld);
+  buildScene();
 
   // We must disable auto buffer swap on the 'paintEvent'.
   setAutoBufferSwap(false);
 }
 
 //------------------------------------------------------------------------------
+void GLWidget::buildScene()
+{
+  // Simple plane -- complex method of transfering to spire.
+  std::vector<float> vboData = 
+  {
+    -1.0f,  1.0f, -5.0f,
+     1.0f,  1.0f, -5.0f,
+    -1.0f, -1.0f, -5.0f,
+     1.0f, -1.0f, -5.0f
+  };
+  std::vector<std::string> attribNames = {"aPos"};
+
+  std::vector<uint16_t> iboData =
+  {
+    0, 1, 2, 3
+  };
+  Spire::StuInterface::IBO_TYPE iboType = Spire::StuInterface::IBO_16BIT;
+  
+  uint8_t*  rawBegin;
+  size_t    rawSize;
+
+  // Copy vboData into vector of uint8_t. Using std::copy.
+  std::shared_ptr<std::vector<uint8_t>> rawVBO(new std::vector<uint8_t>());
+  rawSize = vboData.size() * (sizeof(float) / sizeof(uint8_t));
+  rawVBO->reserve(rawSize);
+  rawBegin = reinterpret_cast<uint8_t*>(&vboData[0]); // Remember, standard guarantees that vectors are contiguous in memory.
+  rawVBO->assign(rawBegin, rawBegin + rawSize);
+
+  // Copy iboData into vector of uint8_t. Using std::vector::assign.
+  std::shared_ptr<std::vector<uint8_t>> rawIBO(new std::vector<uint8_t>());
+  rawSize = iboData.size() * (sizeof(uint16_t) / sizeof(uint8_t));
+  rawIBO->reserve(rawSize);
+  rawBegin = reinterpret_cast<uint8_t*>(&iboData[0]); // Remember, standard guarantees that vectors are contiguous in memory.
+  rawIBO->assign(rawBegin, rawBegin + rawSize);
+
+  // Add necessary VBO's and IBO's
+  std::string vbo1 = "vbo1";
+  std::string ibo1 = "ibo1";
+  mStuInterface->addVBO(vbo1, rawVBO, attribNames);
+  mStuInterface->addIBO(ibo1, rawIBO, iboType);
+
+  // Add object
+  std::string obj1 = "obj1";
+  mStuInterface->addObject(obj1);
+
+  // Ensure shader is resident.
+  std::string shader1 = "UniformColor";
+  mStuInterface->addPersistentShader(
+      shader1, 
+      { {"UniformColor.vs", Spire::StuInterface::VERTEX_SHADER}, 
+        {"UniformColor.fs", Spire::StuInterface::FRAGMENT_SHADER},
+      });
+
+  // Build the pass
+  std::string pass1 = "pass1";
+  mStuInterface->addPassToObject(obj1, pass1, shader1, vbo1, ibo1, Spire::StuInterface::TRIANGLE_STRIP);
+
+  // Be sure the global uniform 'uProjIVWorld' is set appropriately...
+  mStuInterface->addGlobalUniform("uProjIVWorld", M44());
+  mStuInterface->addPassUniform(obj1, pass1, "uColor", V4(1.0f, 0.0f, 0.0f, 1.0f));
+}
+
+//------------------------------------------------------------------------------
 void GLWidget::resizeEvent(QResizeEvent *evt)
 {
   /// @todo Inform the renderer that screen dimensions have changed.
-  //mGraphics.resizeViewport(evt->size());
+  //mSpire.resizeViewport(evt->size());
 }
 
 //------------------------------------------------------------------------------
 void GLWidget::closeEvent(QCloseEvent *evt)
 {
   // Kill off the graphics thread.
-  mGraphics.reset();
+  mSpire.reset();
   QGLWidget::closeEvent(evt);
 }
 
@@ -95,7 +153,7 @@ void GLWidget::closeEvent(QCloseEvent *evt)
 void GLWidget::updateRenderer()
 {
   mContext->makeCurrent();    // Required on windows...
-  mGraphics->doFrame();
+  mSpire->doFrame();
   mContext->swapBuffers();
 }
 
@@ -121,7 +179,8 @@ void GLWidget::mouseMoveEvent(QMouseEvent* event)
   mCamWorld = mCamWorld * ty * tx;
 
   // Send new camera transform to spire.
-  mGraphics->cameraSetTransform(mCamWorld);
+  // BROKEN! -- Need to send camera transform via uniforms.
+  //mSpire->cameraSetTransform(mCamWorld);
 
   mLastMousePos = thisPos;
 }

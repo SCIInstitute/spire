@@ -33,10 +33,122 @@
 #define SPIRE_CORE_SHADERUNIFORMSTATEMANTEMPLATES_H
 
 #include <cstddef>
-#include "Core/Math.h"
-#include "Core/GLMathUtil.h"
+#include <sstream>
+#include "../Core/Math.h"
+#include "../Core/GLMathUtil.h"
 
 namespace Spire {
+
+// A good list of these types are here:
+// http://www.opengl.org/sdk/docs/man/xhtml/glGetActiveUniform.xml .
+enum UNIFORM_TYPE
+{
+  UNIFORM_FLOAT,
+  UNIFORM_FLOAT_VEC2,
+  UNIFORM_FLOAT_VEC3,
+  UNIFORM_FLOAT_VEC4,
+  UNIFORM_DOUBLE,
+  UNIFORM_DOUBLE_VEC2,
+  UNIFORM_DOUBLE_VEC3,
+  UNIFORM_DOUBLE_VEC4,
+  UNIFORM_INT,
+  UNIFORM_INT_VEC2,
+  UNIFORM_INT_VEC3,
+  UNIFORM_INT_VEC4,
+  UNIFORM_UNSIGNED_INT,
+  UNIFORM_UNSIGNED_INT_VEC2,
+  UNIFORM_UNSIGNED_INT_VEC3,
+  UNIFORM_UNSIGNED_INT_VEC4,
+  UNIFORM_BOOL,
+  UNIFORM_BOOL_VEC2,
+  UNIFORM_BOOL_VEC3,
+  UNIFORM_BOOL_VEC4,
+  UNIFORM_FLOAT_MAT2,
+  UNIFORM_FLOAT_MAT3,
+  UNIFORM_FLOAT_MAT4,
+  UNIFORM_FLOAT_MAT2x3,
+  UNIFORM_FLOAT_MAT2x4,
+  UNIFORM_FLOAT_MAT3x2,
+  UNIFORM_FLOAT_MAT3x4,
+  UNIFORM_FLOAT_MAT4x2,
+  UNIFORM_FLOAT_MAT4x3,
+  UNIFORM_DOUBLE_MAT2,
+  UNIFORM_DOUBLE_MAT3,
+  UNIFORM_DOUBLE_MAT4,
+  UNIFORM_DOUBLE_MAT2x3,
+  UNIFORM_DOUBLE_MAT2x4,
+  UNIFORM_DOUBLE_MAT3x2,
+  UNIFORM_DOUBLE_MAT3x4,
+  UNIFORM_DOUBLE_MAT4x2,
+  UNIFORM_DOUBLE_MAT4x3,
+  UNIFORM_SAMPLER_1D,
+  UNIFORM_SAMPLER_2D,
+  UNIFORM_SAMPLER_3D,
+  UNIFORM_SAMPLER_CUBE,
+  UNIFORM_SAMPLER_1D_SHADOW,
+  UNIFORM_SAMPLER_2D_SHADOW,
+  UNIFORM_SAMPLER_1D_ARRAY,
+  UNIFORM_SAMPLER_2D_ARRAY,
+  UNIFORM_SAMPLER_1D_ARRAY_SHADOW,
+  UNIFORM_SAMPLER_2D_ARRAY_SHADOW,
+  UNIFORM_SAMPLER_2D_MULTISAMPLE,
+  UNIFORM_SAMPLER_2D_MULTISAMPLE_ARRAY,
+  UNIFORM_SAMPLER_CUBE_SHADOW,
+  UNIFORM_SAMPLER_BUFFER,
+  UNIFORM_SAMPLER_2D_RECT,
+  UNIFORM_SAMPLER_2D_RECT_SHADOW,
+  UNIFORM_INT_SAMPLER_1D,
+  UNIFORM_INT_SAMPLER_2D,
+  UNIFORM_INT_SAMPLER_3D,
+  UNIFORM_INT_SAMPLER_CUBE,
+  UNIFORM_INT_SAMPLER_1D_ARRAY,
+  UNIFORM_INT_SAMPLER_2D_ARRAY,
+  UNIFORM_INT_SAMPLER_2D_MULTISAMPLE,
+  UNIFORM_INT_SAMPLER_2D_MULTISAMPLE_ARRAY,
+  UNIFORM_INT_SAMPLER_BUFFER,
+  UNIFORM_INT_SAMPLER_2D_RECT,
+  UNIFORM_UNSIGNED_INT_SAMPLER_1D,
+  UNIFORM_UNSIGNED_INT_SAMPLER_2D,
+  UNIFORM_UNSIGNED_INT_SAMPLER_3D,
+  UNIFORM_UNSIGNED_INT_SAMPLER_CUBE,
+  UNIFORM_UNSIGNED_INT_SAMPLER_1D_ARRAY,
+  UNIFORM_UNSIGNED_INT_SAMPLER_2D_ARRAY,
+  UNIFORM_UNSIGNED_INT_SAMPLER_2D_MULTISAMPLE,
+  UNIFORM_UNSIGNED_INT_SAMPLER_2D_MULTISAMPLE_ARRAY,
+  UNIFORM_UNSIGNED_INT_SAMPLER_BUFFER,
+  UNIFORM_UNSIGNED_INT_SAMPLER_2D_RECT,
+  UNIFORM_IMAGE_1D,
+  UNIFORM_IMAGE_2D,
+  UNIFORM_IMAGE_3D,
+  UNIFORM_IMAGE_2D_RECT,
+  UNIFORM_IMAGE_CUBE,
+  UNIFORM_IMAGE_BUFFER,
+  UNIFORM_IMAGE_1D_ARRAY,
+  UNIFORM_IMAGE_2D_ARRAY,
+  UNIFORM_IMAGE_2D_MULTISAMPLE,
+  UNIFORM_IMAGE_2D_MULTISAMPLE_ARRAY,
+  UNIFORM_INT_IMAGE_1D,
+  UNIFORM_INT_IMAGE_2D,
+  UNIFORM_INT_IMAGE_3D,
+  UNIFORM_INT_IMAGE_2D_RECT,
+  UNIFORM_INT_IMAGE_CUBE,
+  UNIFORM_INT_IMAGE_BUFFER,
+  UNIFORM_INT_IMAGE_1D_ARRAY,
+  UNIFORM_INT_IMAGE_2D_ARRAY,
+  UNIFORM_INT_IMAGE_2D_MULTISAMPLE,
+  UNIFORM_INT_IMAGE_2D_MULTISAMPLE_ARRAY,
+  UNIFORM_UNSIGNED_INT_IMAGE_1D,
+  UNIFORM_UNSIGNED_INT_IMAGE_2D,
+  UNIFORM_UNSIGNED_INT_IMAGE_3D,
+  UNIFORM_UNSIGNED_INT_IMAGE_2D_RECT,
+  UNIFORM_UNSIGNED_INT_IMAGE_CUBE,
+  UNIFORM_UNSIGNED_INT_IMAGE_BUFFER,
+  UNIFORM_UNSIGNED_INT_IMAGE_1D_ARRAY,
+  UNIFORM_UNSIGNED_INT_IMAGE_2D_ARRAY,
+  UNIFORM_UNSIGNED_INT_IMAGE_2D_MULTISAMPLE,
+  UNIFORM_UNSIGNED_INT_IMAGE_2D_MULTISAMPLE_ARRAY,
+  UNIFORM_UNSIGNED_INT_ATOMIC_COUNTER
+};
 
 /// Abstract base class interface for a single uinform state item.
 class AbstractUniformStateItem
@@ -49,9 +161,10 @@ public:
   virtual void applyUniform(int location) const = 0;
 
   /// Returns appropriate OpenGL type
-  virtual GLenum getGLType() const = 0;
+  virtual UNIFORM_TYPE getGLType() const = 0;
 
-  /// Retrieves uniform's name.
+  /// Retrieve textual representation of uniform.
+  virtual std::string asString() const = 0;
 
 protected:
 
@@ -100,8 +213,16 @@ public:
     uniform3f(location, mData.x, mData.y, mData.z);
   }
 
-  virtual uint32_t getGLType() const override
+  UNIFORM_TYPE getGLType() const override
   {
+    return UNIFORM_FLOAT_VEC3;
+  }
+
+  std::string asString() const override
+  {
+    std::stringstream stream;
+    stream << "Vec3 - (" << mData.x << ", " << mData.y << ", " << mData.z << ")";
+    return stream.str();
   }
 
 private:
@@ -130,12 +251,50 @@ public:
     uniform3fv(location, mData.size(), reinterpret_cast<const float*>(&mData[0]));
   }
 
-  virtual uint32_t getGLType() const override
+  UNIFORM_TYPE getGLType() const override
   {
+    return UNIFORM_FLOAT_VEC3;
+  }
+
+  std::string asString() const override
+  {
+    std::stringstream stream;
+    stream << "Vector3 Array - Output not implemented.";
+    return stream.str();
   }
 
 private:
   std::vector<V3>   mData;
+};
+
+template <>
+class UniformStateItem<V4> : public AbstractUniformStateItem
+{
+public:
+  typedef V4 Type;
+
+  UniformStateItem(const Type& in) : mData(in) {}
+
+  void applyUniform(int location) const override
+  {
+    uniform4f(location, mData.x, mData.y, mData.z, mData.w);
+  }
+
+  UNIFORM_TYPE getGLType() const override
+  {
+    return UNIFORM_FLOAT_VEC4;
+  }
+
+  std::string asString() const override
+  {
+    std::stringstream stream;
+    stream << "Vec4 - (" << mData.x << ", " << mData.y << ", " << mData.z 
+           << ", " << mData.w << ")";
+    return stream.str();
+  }
+
+private:
+  Type mData;
 };
 
 //------------------------------------------------------------------------------
@@ -156,6 +315,24 @@ public:
   void applyUniform(int location) const override
   {
     uniformMatrix4fv(location, 1, false, &glMatrix[0]);
+  }
+
+  UNIFORM_TYPE getGLType() const override
+  {
+    return UNIFORM_FLOAT_MAT4;
+  }
+
+  std::string asString() const override
+  {
+    // OpenGL matrices are represented in Column-Major order.
+    // We will print off the matrix not as it appears in memory, but its
+    // transpose instead (so rows are displayed contiguously).
+    std::stringstream stream;
+    stream << "Mat4 - (" << glMatrix[0] << " " << glMatrix[4] << " " << glMatrix[8]  << " " << glMatrix[12] << std::endl
+           << "        " << glMatrix[1] << " " << glMatrix[5] << " " << glMatrix[9]  << " " << glMatrix[13] << std::endl
+           << "        " << glMatrix[2] << " " << glMatrix[6] << " " << glMatrix[10] << " " << glMatrix[14] << std::endl
+           << "        " << glMatrix[3] << " " << glMatrix[7] << " " << glMatrix[11] << " " << glMatrix[15];
+    return stream.str();
   }
 
 private:

@@ -27,21 +27,90 @@
 */
 
 /// \author James Hughes
-/// \date   February 2013
+/// \date   March 2013
 
 #include "SRCamera.h"
+#include "SRCommonUniforms.h"
 
 namespace Spire {
 namespace SCIRun {
 
-SRCamera::SRCamera()
+//------------------------------------------------------------------------------
+SRCamera::SRCamera(SRInterface& interface) :
+    mTrafoSeq(0),
+    mPerspective(true),
+    mFOV(getDefaultFOVY()),
+    mZNear(getDefaultZNear()),
+    mZFar(getDefaultZFar()),
+    mInterface(interface)
 {
+  setAsPerspective();
+
+  // Camera looking down positive Z axis, located at -5.0f z.
+  Spire::M44 cam;
+  cam.setCol3(Spire::V4(0.0f, 0.0f, -5.0f, 1.0f));
+  
+  setViewTransform(cam);
 }
 
+//------------------------------------------------------------------------------
 SRCamera::~SRCamera()
 {
 }
 
-} // namespace Spire
-} // namespace SCIRun
+//------------------------------------------------------------------------------
+void SRCamera::setAsPerspective()
+{
+  mPerspective = true;
 
+  float aspect = static_cast<float>(mInterface.getScreenWidthPixels()) / 
+                 static_cast<float>(mInterface.getScreenHeightPixels());
+  mP = Spire::M44::perspective(mFOV, aspect, mZNear, mZFar);
+
+  // Rotate about the Y axis by 180 degrees. Many perspective matrices
+  // (see Hughes, et al...) are built looking down negative Z. This is the case
+  // with our perspective matrices. As such, we rotate by 180 degrees to re-orient
+  // our matrix down positive Z.
+  Spire::M44 y180 = Spire::M44::rotationY(Spire::PI);
+  mP = mP * y180;
+}
+
+//------------------------------------------------------------------------------
+void SRCamera::setAsOrthographic(float halfWidth, float halfHeight)
+{
+  mPerspective = false;
+
+	mP = Spire::M44::orthographic(-halfWidth, halfWidth, 
+                         -halfHeight, halfHeight, 
+                         mZNear, mZFar);
+
+  // Same reason we rotate the perspective camera by 180 degrees.
+  Spire::M44 y180 = Spire::M44::rotationY(Spire::PI);
+  mP = mP * y180;
+}
+
+//------------------------------------------------------------------------------
+void SRCamera::setViewTransform(const Spire::M44& trafo)
+{
+  ++mTrafoSeq;
+
+  mV    = trafo;
+  mIV   = Spire::M44::orthoInverse(trafo);
+  mPIV  = mP * mIV;
+
+  // Update appropriate uniforms.
+  mInterface.getStuPipe()->addGlobalUniform(
+      std::get<0>(SRCommonUniforms::getCameraWorldToProjection()), mPIV);
+
+  mInterface.getStuPipe()->addGlobalUniform(
+      std::get<0>(SRCommonUniforms::getCameraWorldToView()), mIV);
+
+  mInterface.getStuPipe()->addGlobalUniform(
+      std::get<0>(SRCommonUniforms::getCameraProjection()), mP);
+
+  mInterface.getStuPipe()->addGlobalUniform(
+      std::get<0>(SRCommonUniforms::getCameraWorld()), mV);
+}
+
+} // namespace SCIRun
+} // namespace Spire

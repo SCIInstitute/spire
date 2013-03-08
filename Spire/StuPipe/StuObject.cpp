@@ -31,6 +31,7 @@
 
 #include "StuObject.h"
 #include "Core/Hub.h"
+#include "Core/ShaderUniformStateMan.h"
 
 namespace Spire {
 
@@ -55,6 +56,23 @@ StuPass::StuPass(
   // not found.
   ShaderProgramMan& man = mHub.getShaderProgramManager();
   mShader = man.findProgram(programName);
+
+  // Ensure there is at least enough space in the mUniforms vector. 
+  size_t numUniforms = mShader->getUniforms().getNumUniforms();
+  mUniforms.reserve(numUniforms);
+  mUnsatisfiedUniforms.reserve(numUniforms);
+
+  // Add uniforms present in the shader to the unsatisfied uniforms vector.
+  // Not constructing an iterator interface as it's just easier to index.
+  for (int i = 0; i < numUniforms; i++)
+  {
+    const ShaderUniformCollection::UniformSpecificData& uniformData = 
+        mShader->getUniforms().getUniformAtIndex(i);
+
+    mUnsatisfiedUniforms.push_back(
+        UnsastisfiedUniformItem(uniformData.uniform->codeName, 
+                                uniformData.glUniformLoc));
+  }
 }
 
 //------------------------------------------------------------------------------
@@ -66,27 +84,110 @@ StuPass::~StuPass()
 void StuPass::renderPass()
 {
   /// \todo Should route through the shader man so we don't re-apply programs
-  ///       that are already active (likely the driver will handle this for
-  ///       us, however).
+  ///       that are already active.
   GL(glUseProgram(mShader->getProgramID()));
 
   GL(glBindBuffer(GL_ARRAY_BUFFER, mVBO->getGLIndex()));
   GL(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mIBO->getGLIndex()));
 
+  /// \todo Ensure attributes are always sorted in ascending order...
   // We have already verified that the attributes contained in the shader
   // are consistent with the attributes we have in the VBO. Therefore, it's
   // okay to calculate the attribute stride based on the shader's stride, and
   // bind all of the shader's attributes.
   const ShaderAttributeCollection& attribs  = mShader->getAttributes();
   attribs.bindAttributes(mShader);
+
   
-  /// \todo Setup all uniforms for this pass... extracting uniforms from the
-  ///       global state if necessary.
+#ifdef SPIRE_DEBUG
+  // Gather all uniforms from shader and build a list. Ensure that all uniforms
+  // processed by spire match up.
+  std::list<std::string> allUniforms;
+  for (int i = 0; i < mShader->getUniforms().getNumUniforms(); i++)
+  {
+    allUniforms.push_back(mShader->getUniforms().getUniformAtIndex(i).uniform->codeName);
+  }
+#endif
 
-  /// \todo Ensure attributes are always sorted in ascending order...
+  // Assign local uniforms.
+  for (auto it = mUniforms.begin(); it != mUniforms.end(); ++it)
+  {
+#ifdef SPIRE_DEBUG
+    allUniforms.remove(it->uniformName);
+    //Log::debug() << "Uniform " << it->uniformName << ": " << it->item->asString() << std::endl;
+#endif
+    it->item->applyUniform(it->shaderLocation);
+  }
 
+  // Assign global uniforms.
+  for (auto it = mUnsatisfiedUniforms.begin(); it != mUnsatisfiedUniforms.end(); ++it)
+  {
+#ifdef SPIRE_DEBUG
+    allUniforms.remove(it->uniformName);
+    //Log::debug() << "Uniform " << it->uniformName << ": " << std::endl
+    //    << mHub.getShaderUniformStateMan().uniformAsString(it->uniformName) << std::endl;
+#endif
+    mHub.getShaderUniformStateMan().applyUniform(it->uniformName, it->shaderLocation);
+  }
+
+#ifdef SPIRE_DEBUG
+  if (allUniforms.size() != 0)
+  {
+    assert(0);
+    throw std::runtime_error("Spire should have consumed all uniforms!");
+  }
+#endif
+
+  //Log::debug() << "Rendering with prim type " << mPrimitiveType << " num elements "
+  //             << mIBO->getNumElements() << " ibo type " << mIBO->getType() << std::endl;
   GL(glDrawElements(mPrimitiveType, mIBO->getNumElements(), mIBO->getType(), 0));
 }
+
+//------------------------------------------------------------------------------
+void StuPass::addPassUniform(const std::string uniformName,
+                             std::shared_ptr<AbstractUniformStateItem> item)
+{
+  // This will throw std::out_of_range.
+  const ShaderUniformCollection::UniformSpecificData& uniformData = 
+      mShader->getUniforms().getUniformData(uniformName);
+
+  // Check uniform type (see UniformStateMan).
+  if (uniformData.glType != ShaderUniformStateMan::uniformTypeToGL(item->getGLType()))
+    throw ShaderUniformTypeError("Uniform must be the same type as that found in the shader.");
+
+  // Find the uniform in our vector. If it is not already present, then that
+  // means we will have to also remove it from our unsatisfied uniforms vector.
+  bool foundUniform = false;
+  for (auto it = mUniforms.begin(); it != mUniforms.end(); ++it)
+  {
+    if (it->uniformName == uniformName)
+    {
+      foundUniform = true;
+      it->item = item;
+    }
+  }
+
+  if (foundUniform == false)
+  {
+    mUniforms.emplace_back(UniformItem(uniformName, item, uniformData.glUniformLoc));
+
+    // Update unsatisfied uniforms list. We know that the vector MUST contain
+    // the uniform item because we did not find it while looping through our
+    // pre-existing uniforms. It has also passed an existence check against
+    // the shader and a type check.
+    for (auto it = mUnsatisfiedUniforms.begin(); it != mUnsatisfiedUniforms.end(); ++it)
+    {
+      if (it->uniformName == uniformName)
+      {
+        mUnsatisfiedUniforms.erase(it);
+        break;
+      }
+    }
+  }
+}
+
+/// \note If we ever implement a remove pass uniform function, be *sure* to
+///       update the unsatisfied uniforms vector!
 
 //------------------------------------------------------------------------------
 // StuObject
@@ -152,10 +253,16 @@ void StuObject::removePassFromOrderList(const std::string& passName,
 }
 
 //------------------------------------------------------------------------------
-void StuObject::addPassUniform(const std::string& pass,
+void StuObject::addPassUniform(const std::string& passName,
                       const std::string uniformName,
                       std::shared_ptr<AbstractUniformStateItem> item)
 {
+  // We are going to have a facility similar to UniformStateMan, but we are
+  // going to use a more cache-coherent vector. It's unlikely that we ever need
+  // to grow the vector beyond the number of uniforms already present in the
+  // shader.
+  std::shared_ptr<StuPass> pass = getPassByName(passName);
+  pass->addPassUniform(uniformName, item);
 }
 
 

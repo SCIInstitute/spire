@@ -35,6 +35,7 @@
 #include "Exceptions.h"
 #include "StuPipe/StuInterface.h"
 #include "StuPipe/StuObject.h"
+#include "Core/FileUtil.h"
 
 #include "GlobalTestEnvironment.h"
 #include "CommonTestFixtures.h"
@@ -139,9 +140,9 @@ TEST_F(StuPipeTestFixture, TestTriangle)
   std::vector<float> vboData = 
   {
     -1.0f,  1.0f,  0.0f,
-    1.0f,  1.0f,  0.0f,
+     1.0f,  1.0f,  0.0f,
     -1.0f, -1.0f,  0.0f,
-    1.0f, -1.0f,  0.0f
+     1.0f, -1.0f,  0.0f
   };
   std::vector<std::string> attribNames = {"aPos"};
 
@@ -165,11 +166,11 @@ TEST_F(StuPipeTestFixture, TestTriangle)
   rawSize = vboData.size() * (sizeof(float) / sizeof(uint8_t));
   rawVBO->reserve(rawSize);
   rawBegin = reinterpret_cast<uint8_t*>(&vboData[0]); // Remember, standard guarantees that vectors are contiguous in memory.
-  std::copy(rawBegin, rawBegin + rawSize, rawVBO->begin());
+  rawVBO->assign(rawBegin, rawBegin + rawSize);
 
   // Copy iboData into vector of uint8_t. Using std::vector::assign.
   std::shared_ptr<std::vector<uint8_t>> rawIBO(new std::vector<uint8_t>());
-  rawSize = iboData.size() * (sizeof(float) / sizeof(uint8_t));
+  rawSize = iboData.size() * (sizeof(uint16_t) / sizeof(uint8_t));
   rawIBO->reserve(rawSize);
   rawBegin = reinterpret_cast<uint8_t*>(&iboData[0]); // Remember, standard guarantees that vectors are contiguous in memory.
   rawIBO->assign(rawBegin, rawBegin + rawSize);
@@ -252,10 +253,10 @@ TEST_F(StuPipeTestFixture, TestTriangle)
 
   // Build a good pass.
   std::string pass1 = "pass1";
-  mStuInterface->addPassToObject(obj1, pass1, shader1, vbo1, ibo1, StuInterface::TRIANGLES);
+  mStuInterface->addPassToObject(obj1, pass1, shader1, vbo1, ibo1, StuInterface::TRIANGLE_STRIP);
 
   // Attempt to re-add the good pass.
-  EXPECT_THROW(mStuInterface->addPassToObject(obj1, pass1, shader1, vbo1, ibo1, StuInterface::TRIANGLES),
+  EXPECT_THROW(mStuInterface->addPassToObject(obj1, pass1, shader1, vbo1, ibo1, StuInterface::TRIANGLE_STRIP),
                Duplicate);
 
   // No longer need VBO and IBO (will stay resident in the passes -- when the
@@ -265,12 +266,54 @@ TEST_F(StuPipeTestFixture, TestTriangle)
   EXPECT_THROW(mStuInterface->removeIBO(ibo1), std::out_of_range);
   EXPECT_THROW(mStuInterface->removeVBO(vbo1), std::out_of_range);
 
-  M44 rot = M44::rotationX(PI);
-  mSpireInterface->cameraSetTransform(rot);
-  mSpireInterface->doFrame();
+  // Test global uniforms -- test run-time type validation.
+  // Setup camera so that it can be passed to the Uniform Color shader.
+  // Camera has been setup in the test fixture.
+  mStuInterface->addGlobalUniform("uProjIVWorld", mCamera->getWorldToProjection());
+  EXPECT_THROW(mStuInterface->addGlobalUniform("uProjIVWorld", V3(0.0f, 0.0f, 0.0f)), ShaderUniformTypeError);
 
-  // Extract results
-  Spire::GlobalTestEnvironment::instance()->writeFBO("/tmp/test.png");
+  // Add color to the pass (which will lookup the type via the shader).
+  EXPECT_THROW(mStuInterface->addPassUniform(obj1, pass1, "uColor", V3(0.0f, 0.0f, 0.0f)), ShaderUniformTypeError);
+  EXPECT_THROW(mStuInterface->addPassUniform(obj1, pass1, "uColor", M44()), ShaderUniformTypeError);
+  mStuInterface->addPassUniform(obj1, pass1, "uColor", V4(1.0f, 0.0f, 0.0f, 1.0f));
+
+  mSpire->doFrame();
+
+  // Write the resultant png to a temporary directory and compare against
+  // the golden image results.
+  /// \todo Look into using boost filesystem (but it isn't header-only). 
+
+#ifdef TEST_OUTPUT_IMAGES
+  std::string imageName = "StuTriangle.png";
+
+  std::string targetImage = TEST_IMAGE_OUTPUT_DIR;
+  targetImage += "/" + imageName;
+  Spire::GlobalTestEnvironment::instance()->writeFBO(targetImage);
+
+  EXPECT_TRUE(Spire::fileExists(targetImage)) << "Failed to write output image! " << targetImage;
+
+#ifdef TEST_PERCEPTUAL_COMPARE
+  // Perform the perceptual comparison using the given regression directory.
+  std::string compImage = TEST_IMAGE_COMPARE_DIR;
+  compImage += "/" + imageName;
+
+  ASSERT_TRUE(Spire::fileExists(compImage)) << "Failed to find comparison image! " << compImage;
+  // Test using perceptula comparison program that the user has provided
+  // (hopefully).
+  std::string command = TEST_PERCEPTUAL_COMPARE_BINARY;
+  command += " -threshold 50 ";
+  command += targetImage + " " + compImage;
+
+  // Usually the return code of std::system is implementation specific. But the
+  // majority of systems end up returning the exit code of the program.
+  if (std::system(command.c_str()) != 0)
+  {
+    // The images are NOT the same. Alert the user.
+    FAIL() << "Perceptual compare of " << imageName << " failed.";
+  }
+#endif
+
+#endif
 
   // Attempt to set global uniform value that is at odds with information found
   // in the uniform manager (should induce a type error).

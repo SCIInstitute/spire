@@ -155,6 +155,9 @@ public:
     img.save(file.c_str());
   }
 
+  uint32_t getScreenWidth() const override  { return mWidth; }
+  uint32_t getScreenHeight() const override { return mHeight; }
+
   /// Overrides from gtest
   /// @{
   void SetUp() override     {}
