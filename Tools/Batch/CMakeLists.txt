@@ -4,6 +4,7 @@
 # CMake version and project name
 
 cmake_minimum_required(VERSION 2.8 FATAL_ERROR)
+INCLUDE(ExternalProject)
 
 project(SpireBatchRenderer)
 
@@ -37,6 +38,41 @@ endif()
 add_definitions(-DGTEST_USE_OWN_TR1_TUPLE=1)
 include_directories(${BASE_SPIRE_DIR}/Spire/3rdParty/gtest/include ${BASE_SPIRE_DIR} ${BASE_SPIRE_DIR}/Spire)
 # Note: The spire tests require that ${BASE_SPIRE_DIR}/Spire is in the include path.
+
+########################################################################
+# Find and configure Git
+
+find_package(Git)
+if(NOT GIT_FOUND)
+  message(FATAL_ERROR "Git not found.")
+endif()
+
+########################################################################
+# Grab Regression Data From GitHub
+
+set(REGRESSION_DATA_DIR "${BASE_SPIRE_DIR}/Spire/Regression")
+
+if(EXISTS "${REGRESSION_DATA_DIR}" AND IS_DIRECTORY "${REGRESSION_DATA_DIR}")
+  message(STATUS "Updating regression data")
+  execute_process(COMMAND ${GIT_EXECUTABLE} pull
+    WORKING_DIRECTORY ${REGRESSION_DATA_DIR}
+    RESULT_VARIABLE git_result)
+else()
+  message(STATUS "Downloading regression data")
+  execute_process(COMMAND ${GIT_EXECUTABLE} clone git://github.com/SCIInstitute/SpireRegression ${REGRESSION_DATA_DIR}
+    WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
+    RESULT_VARIABLE git_result)
+endif()
+
+########################################################################
+# Regression directory setup
+
+# TODO: Make all of these options.
+add_definitions(-DTEST_OUTPUT_IMAGES)
+add_definitions(-DTEST_IMAGE_OUTPUT_DIR="${REGRESSION_DATA_DIR}/Output")
+add_definitions(-DTEST_IMAGE_COMPARE_DIR="${REGRESSION_DATA_DIR}/Verified")
+add_definitions(-DTEST_PERCEPTUAL_COMPARE)
+add_definitions(-DTEST_PERCEPTUAL_COMPARE_BINARY="perceptualdiff")
 
 ########################################################################
 # Compiler settings
