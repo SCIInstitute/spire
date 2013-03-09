@@ -103,7 +103,7 @@ public:
   /// See: http://www.opengl.org/wiki/Primitive
   /// \todo Add patch tesselation primitives.
   /// \xxx  Place in GPUMan?
-  enum PRIMITVE_TYPES
+  enum PRIMITIVE_TYPES
   {
     POINTS,
     LINES,
@@ -217,13 +217,13 @@ public:
                        const std::string& program,
                        const std::string& vboName,
                        const std::string& iboName,
-                       PRIMITVE_TYPES type);
+                       PRIMITIVE_TYPES type);
   void addPassToObject(const std::string& object,
                        const std::string& pass,
                        const std::string& program,
                        const std::string& vboName,
                        const std::string& iboName,
-                       PRIMITVE_TYPES type,
+                       PRIMITIVE_TYPES type,
                        int32_t passOrder);
 
   /// Removes a geometry pass from the object.
@@ -404,7 +404,7 @@ private:
                                   std::string program,
                                   std::string vboID,
                                   std::string iboID,
-                                  PRIMITVE_TYPES type,
+                                  PRIMITIVE_TYPES type,
                                   int32_t passOrder);
 
   static void addPassUniformInternalImpl(Hub& hub, StuInterface* iface,

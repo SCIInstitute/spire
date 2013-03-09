@@ -45,7 +45,7 @@ namespace Spire {
 // Simple static function to convert from PRIMITIVE_TYPES to GL types.
 // Not part of the class due to the return type (interface class should have
 // nothing GL specific in them).
-GLenum getGLPrimitive(StuInterface::PRIMITVE_TYPES type);
+GLenum getGLPrimitive(StuInterface::PRIMITIVE_TYPES type);
 
 
 //------------------------------------------------------------------------------
@@ -185,7 +185,7 @@ void StuInterface::addPassToObjectImpl(Hub& hub, StuInterface* iface,
                                            std::string program,
                                            std::string vboName,
                                            std::string iboName,
-                                           PRIMITVE_TYPES type,
+                                           PRIMITIVE_TYPES type,
                                            int32_t passOrder)
 {
   std::shared_ptr<StuObject> obj = iface->mNameToObject.at(object);
@@ -201,7 +201,7 @@ void StuInterface::addPassToObject(const std::string& object,
                                        const std::string& program,
                                        const std::string& vboName,
                                        const std::string& iboName,
-                                       PRIMITVE_TYPES type)
+                                       PRIMITIVE_TYPES type)
 {
   Hub::RemoteFunction fun =
       std::bind(addPassToObjectImpl, _1, this, object, pass, program, 
@@ -216,7 +216,7 @@ void StuInterface::addPassToObject(const std::string& object,
                                        const std::string& program,
                                        const std::string& vboName,
                                        const std::string& iboName,
-                                       PRIMITVE_TYPES type,
+                                       PRIMITIVE_TYPES type,
                                        int32_t passOrder)
 {
   Hub::RemoteFunction fun =
@@ -490,7 +490,7 @@ bool StuInterface::ntsHasRenderingOrder(const std::vector<std::string>& renderOr
 }
 
 //------------------------------------------------------------------------------
-GLenum getGLPrimitive(StuInterface::PRIMITVE_TYPES type)
+GLenum getGLPrimitive(StuInterface::PRIMITIVE_TYPES type)
 {
   switch (type)
   {
