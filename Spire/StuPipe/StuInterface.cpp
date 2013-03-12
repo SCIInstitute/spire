@@ -539,7 +539,11 @@ GLenum getGLPrimitive(StuInterface::PRIMITIVE_TYPES type)
       break;
 
     default:
-      throw std::invalid_argument("Expected type to be one of PRIMITIVE_TYPES.");
+      {
+        std::stringstream stream;
+        stream << "Expected type to be one of PRIMITIVE_TYPES, received " << type;
+        throw std::invalid_argument(stream.str());
+      }
   }
 
   return GL_TRIANGLES;
