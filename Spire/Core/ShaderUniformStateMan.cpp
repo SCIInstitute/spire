@@ -52,6 +52,8 @@ void ShaderUniformStateMan::applyUniform(const std::string& name, int location)
 {
   // We use mGlobalState.at instead of the [] operator because at throws an
   // exception if the key is not found in the container.
+  /// \xxx  Possibly detect if the name exists, and if it does not then throw
+  ///       a different exception (instead of letting the map throw std::range_error).
   std::shared_ptr<AbstractUniformStateItem>& ptr = mGlobalState.at(name);
   ptr->applyUniform(location);
 }

@@ -163,26 +163,40 @@ void StuPass::addPassUniform(const std::string uniformName,
     if (it->uniformName == uniformName)
     {
       foundUniform = true;
+      // Replace the uniform's contents.
       it->item = item;
+      break;
     }
   }
 
+  // If we did not find the uniform, then ensure that it is present in the
+  // unsatisfied uniforms vector. If it is not, then the shader is not expecting
+  // this uniform.
   if (foundUniform == false)
   {
-    mUniforms.emplace_back(UniformItem(uniformName, item, uniformData.glUniformLoc));
-
     // Update unsatisfied uniforms list. We know that the vector MUST contain
     // the uniform item because we did not find it while looping through our
     // pre-existing uniforms. It has also passed an existence check against
     // the shader and a type check.
+    bool foundUnsatisfiedUniform = false;
     for (auto it = mUnsatisfiedUniforms.begin(); it != mUnsatisfiedUniforms.end(); ++it)
     {
       if (it->uniformName == uniformName)
       {
         mUnsatisfiedUniforms.erase(it);
+        foundUnsatisfiedUniform = true;
         break;
       }
     }
+
+    if (foundUnsatisfiedUniform == false)
+    {
+      std::stringstream stream;
+      stream << "This uniform (" << uniformName << "is not recognized by the shader.";
+      throw std::invalid_argument(stream.str());
+    }
+
+    mUniforms.emplace_back(UniformItem(uniformName, item, uniformData.glUniformLoc));
   }
 }
 
