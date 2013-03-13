@@ -248,10 +248,16 @@ public:
                       const std::string& uniformName,
                       T uniformData)
   {
-    addPassUniformInternal(object, pass, uniformName, 
+    addPassUniformConcrete(object, pass, uniformName, 
                            std::shared_ptr<AbstractUniformStateItem>(
                                new UniformStateItem<T>(uniformData)));
   }
+
+  /// Concrete implementation of the above templated function.
+  void addPassUniformConcrete(const std::string& object,
+                              const std::string& pass,
+                              const std::string& uniformName,
+                              std::shared_ptr<AbstractUniformStateItem> item);
 
   /// Will add *or* update the global uniform if it already exsits.
   /// A shader of a given name is only allowed to be one type. If you attempt
@@ -260,10 +266,15 @@ public:
   template <typename T>
   void addGlobalUniform(const std::string& uniformName, T uniformData)
   {
-    addGlobalUniformInternal(uniformName, 
+    addGlobalUniformConcrete(uniformName, 
                              std::shared_ptr<AbstractUniformStateItem>(
                                  new UniformStateItem<T>(uniformData)));
   }
+
+  /// Concrete implementation of the above templated function
+  void addGlobalUniformConcrete(const std::string& uniformName,
+                                std::shared_ptr<AbstractUniformStateItem> item);
+
 
   /// \todo Create method to add uniforms to the UniformManager (NOT the state
   ///       manager -- uniform manager is the type checker).
@@ -336,13 +347,6 @@ public:
 
 private:
 
-  void addPassUniformInternal(const std::string& object,
-                              const std::string& pass,
-                              const std::string& uniformName,
-                              std::shared_ptr<AbstractUniformStateItem> item);
-
-  void addGlobalUniformInternal(const std::string& uniformName,
-                                std::shared_ptr<AbstractUniformStateItem> item);
 
   /// Remove the specified object from the order list.
   void removeObjectFromOrderList(const std::string& objectName, int32_t objectOrder);

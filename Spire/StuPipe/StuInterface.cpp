@@ -367,7 +367,7 @@ void StuInterface::addPassUniformInternalImpl(Hub& hub, StuInterface* iface,
 }
 
 //------------------------------------------------------------------------------
-void StuInterface::addPassUniformInternal(const std::string& object,
+void StuInterface::addPassUniformConcrete(const std::string& object,
                                           const std::string& pass,
                                           const std::string& uniformName,
                                           std::shared_ptr<AbstractUniformStateItem> item)
@@ -390,7 +390,7 @@ void StuInterface::addGlobalUniformInternalImpl(Hub& hub, StuInterface* iface,
 }
 
 //------------------------------------------------------------------------------
-void StuInterface::addGlobalUniformInternal(const std::string& uniformName,
+void StuInterface::addGlobalUniformConcrete(const std::string& uniformName,
                                             std::shared_ptr<AbstractUniformStateItem> item)
 {
   Hub::RemoteFunction fun =
