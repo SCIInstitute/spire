@@ -150,10 +150,10 @@ void GLWidget::buildScene()
   // Build the pass
   std::string pass1 = "pass1";
   stuPipe->addPassToObject(obj1, pass1, shader1, vbo1, ibo1, Spire::StuInterface::TRIANGLES);
-
-  // Be sure the global uniform 'uProjIVWorld' is set appropriately...
-  stuPipe->addGlobalUniform("uProjIVWorld", M44());
   stuPipe->addPassUniform(obj1, pass1, "uColor", V4(1.0f, 0.0f, 0.0f, 1.0f));
+
+  // In SCIRun specific renderer, uProjIVworld is already set
+  //stuPipe->addGlobalUniform("uProjIVWorld", M44());
 }
 
 //------------------------------------------------------------------------------

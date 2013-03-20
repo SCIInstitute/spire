@@ -57,6 +57,12 @@ SRInterface::SRInterface(std::shared_ptr<Context> context,
 
   // Add stu pipe to the current pipes.
   pipePushBack(mStuInterface);
+
+  // Default camera (to be done AFTER stu pipe is added).
+  M44 finalTrafo = mCamWorld * M44::rotationY(PI);
+  finalTrafo.setTranslation(mCamWorld.getCol2().xyz() * mCamDistance);
+  mCamera->setViewTransform(finalTrafo);
+
 }
 
 //------------------------------------------------------------------------------
@@ -70,6 +76,7 @@ void SRInterface::eventResize(size_t width, size_t height)
   mScreenWidth = width;
   mScreenHeight = height; 
 
+  // Set viewport?
   mArcBall->setWindowSize(width, height);
 }
 

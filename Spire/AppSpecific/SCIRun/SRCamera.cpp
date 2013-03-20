@@ -48,7 +48,7 @@ SRCamera::SRCamera(SRInterface& interface) :
 
   // Camera looking down positive Z axis, located at -5.0f z.
   Spire::M44 cam;
-  cam.setCol3(Spire::V4(0.0f, 0.0f, -5.0f, 1.0f));
+  cam.setCol3(Spire::V4(0.0f, 0.0f, 7.0f, 1.0f));
   
   setViewTransform(cam);
 }
