@@ -77,9 +77,10 @@ void StuInterface::ntsDoPass()
                                           ///       Should not be true for volumes.
   mInitialState.mBlendEnable = true;
 
-  /// \todo Move this outside of the interfcace!
+  /// \todo Move this outside of the interface!
   GL(glClearColor(0.1f, 0.4f, 0.6f, 1.0f));
   GL(glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT));
+  glLineWidth(2.0f);
 
   mHub.getGPUStateManager().apply(mInitialState, true);
 
