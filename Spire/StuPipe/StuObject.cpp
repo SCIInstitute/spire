@@ -127,8 +127,8 @@ void StuPass::renderPass()
   {
 #ifdef SPIRE_DEBUG
     allUniforms.remove(it->uniformName);
-    Log::debug() << "Uniform " << it->uniformName << ": " << std::endl
-        << mHub.getShaderUniformStateMan().uniformAsString(it->uniformName) << std::endl;
+    //Log::debug() << "Uniform " << it->uniformName << ": " << std::endl
+    //    << mHub.getShaderUniformStateMan().uniformAsString(it->uniformName) << std::endl;
 #endif
     mHub.getShaderUniformStateMan().applyUniform(it->uniformName, it->shaderLocation);
   }
