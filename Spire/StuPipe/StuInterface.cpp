@@ -73,10 +73,6 @@ void StuInterface::ntsDoPass()
   GL(glClearColor(0.1f, 0.4f, 0.6f, 1.0f));
   GL(glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT));
 
-  /// \todo Make line width a part of the GPU state.
-  glLineWidth(2.0f);
-  //glEnable(GL_LINE_SMOOTH);
-
   GPUState defaultGPUState;
   mHub.getGPUStateManager().apply(defaultGPUState, true); // true = force application of state.
 

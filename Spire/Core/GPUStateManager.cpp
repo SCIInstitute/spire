@@ -201,6 +201,8 @@ void GPUStateManager::apply(const GPUState& state, bool force)
   setCullState(state.mCullState, force);
   setBlendEnable(state.mBlendEnable, force);
   setCullFrontFaceOrder(state.mCullOrder, force);
+  setLineWidth(state.mLineWidth, force);
+  setLineSmoothingEnable(state.mLineSmoothing, force);
 
   // Do this by hand to avoid the redundant glActiveTexture calls
   /// \todo Grab the maximum number of texture units and use that instead...
@@ -458,7 +460,7 @@ void GPUStateManager::setDepthTestEnable(bool value, bool force)
   if (force || value != mInternalState.mDepthTestEnable)
   {
     mInternalState.mDepthTestEnable = value;
-    if (mInternalState.mDepthTestEnable )
+    if (mInternalState.mDepthTestEnable)
     {
       GL(glEnable(GL_DEPTH_TEST));
     }
@@ -469,5 +471,31 @@ void GPUStateManager::setDepthTestEnable(bool value, bool force)
   }
 }
 
+//------------------------------------------------------------------------------
+void GPUStateManager::setLineWidth(float width, bool force)
+{
+  if (force || width != mInternalState.mLineWidth)
+  {
+    // Supported in GLES?
+    mInternalState.mLineWidth = width;
+    GL(glLineWidth(width));
+  }
+}
 
+//------------------------------------------------------------------------------
+void GPUStateManager::setLineSmoothingEnable(bool value, bool force)
+{
+  if (force || value != mInternalState.mLineSmoothing)
+  {
+    mInternalState.mLineSmoothing = value;
+    if (mInternalState.mLineSmoothing)
+    {
+      GL(glEnable(GL_LINE_SMOOTH));
+    }
+    else
+    {
+      GL(glDisable(GL_LINE_SMOOTH));
+    }
+  }
+}
 } // end of namespace Spire

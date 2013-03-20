@@ -117,6 +117,8 @@ public:
       mBlendFuncDst(BF_ONE_MINUS_SRC_ALPHA),
       mDepthMask(true),
       mColorMask(true),
+      mLineWidth(2.0f),
+      mLineSmoothing(false),
       mTexActiveUnit(0)
   {
     for (size_t i = 0; i < MAX_TEXTURE_UNITS ; i++) mTexEnable[i] = TEX_NONE;
@@ -141,6 +143,9 @@ public:
 
   bool        mDepthMask;
   bool        mColorMask;
+
+  float       mLineWidth;       ///< glLineWidth(...)
+  bool        mLineSmoothing;   ///< GL_LINE_SMOOTH - Anti-aliasing for lines
 
   size_t      mTexActiveUnit;
   STATE_TEX   mTexEnable[MAX_TEXTURE_UNITS];
@@ -181,6 +186,8 @@ public:
   void setBlendFunction(BLEND_FUNC src, BLEND_FUNC dest, bool force = false);
   void setDepthMask(bool value, bool force = false);
   void setColorMask(bool mask, bool force = false);
+  void setLineWidth(float width, bool force = false);
+  void setLineSmoothingEnable(bool value, bool force = false);
   /// @}
 
   /// Returns the maximum number of supported texture units.
