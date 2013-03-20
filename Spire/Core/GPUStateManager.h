@@ -120,7 +120,7 @@ public:
   {
     for (size_t i = 0; i < MAX_TEXTURE_UNITS ; i++) mTexEnable[i] = TEX_NONE;
   }
-  virtual ~GPUState() {}
+  ~GPUState() {}
 
   // Direct access to member variables to avoid a false sense of 'setting'
   // a GPU state. The only place where GPU state is modified is via the
