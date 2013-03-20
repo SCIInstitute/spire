@@ -72,7 +72,7 @@ void StuInterface::ntsDoPass()
   /// \todo GPUState should be a member variable (can't expose in the interface
   ///       class however)
   GPUState          mInitialState;
-  mInitialState.mDepthTestEnable = false;
+  mInitialState.mDepthTestEnable = true;
   mInitialState.mCullFaceEnable = false;  /// \todo Set to true for geometry.
                                           ///       Should not be true for volumes.
   mInitialState.mBlendEnable = true;
