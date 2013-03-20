@@ -102,7 +102,6 @@ void StuPass::renderPass()
   if (mGPUState != nullptr)
     mHub.getGPUStateManager().apply(*mGPUState);
 
-  
 #ifdef SPIRE_DEBUG
   // Gather all uniforms from shader and build a list. Ensure that all uniforms
   // processed by spire match up.

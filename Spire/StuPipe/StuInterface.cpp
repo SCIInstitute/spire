@@ -75,6 +75,7 @@ void StuInterface::ntsDoPass()
 
   /// \todo Make line width a part of the GPU state.
   glLineWidth(2.0f);
+  glEnable(GL_LINE_SMOOTH);
 
   GPUState defaultGPUState;
   mHub.getGPUStateManager().apply(defaultGPUState, true); // true = force application of state.
