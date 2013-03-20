@@ -123,9 +123,6 @@ public:
   // THREAD SAFE - Remember, the same thread should always be calling spire.
   //============================================================================
 
-  // Retrieval of default GPU state.
-  const GPUState& getDefaultState() {return mDefaultGPUState;}
-
   //---------
   // Objects
   //---------
@@ -263,6 +260,8 @@ public:
                               std::shared_ptr<AbstractUniformStateItem> item);
 
   /// GPU state that will be applied directly before the object is rendered.
+  /// Note: The default GPU state is consists of the default GPUState 
+  ///       constructor.
   void addPassGPUState(const std::string& object,
                        const std::string& pass,
                        const GPUState& state);
@@ -382,8 +381,6 @@ private:
   //        objects and you don't care about their order.
   int32_t mCurrentRenderOrder;    ///< Current rendering order. Used for automatic order assignment.
   int32_t mCurrentPassOrder;      ///< Current pass rendering order.
-
-  GPUState mDefaultGPUState;      ///< Default GPU state.
 
 private:
 

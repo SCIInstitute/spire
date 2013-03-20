@@ -110,7 +110,7 @@ public:
       mCullFaceEnable(false),
       mCullState(CULL_BACK),
       mCullOrder(ORDER_CCW),
-      mBlendEnable(false),
+      mBlendEnable(true),
       mBlendEquation(BE_FUNC_ADD),
       mBlendFuncSrc(BF_SRC_ALPHA),
       mBlendFuncDst(BF_ONE_MINUS_SRC_ALPHA),

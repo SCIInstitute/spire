@@ -54,10 +54,6 @@ StuInterface::StuInterface(Interface& iface) :
     mCurrentRenderOrder(0),
     mCurrentPassOrder(0)
 {
-  // Setup default GPU state.
-  mDefaultGPUState.mDepthTestEnable = true;
-  mDefaultGPUState.mCullFaceEnable  = false;
-  mDefaultGPUState.mBlendEnable     = true;
 }
 
 //------------------------------------------------------------------------------
@@ -80,7 +76,8 @@ void StuInterface::ntsDoPass()
   /// \todo Make line width a part of the GPU state.
   glLineWidth(2.0f);
 
-  mHub.getGPUStateManager().apply(mDefaultGPUState, true); // true = force application of state.
+  GPUState defaultGPUState;
+  mHub.getGPUStateManager().apply(defaultGPUState, true); // true = force application of state.
 
   for (auto it = mRenderOrderToObjects.begin(); it != mRenderOrderToObjects.end(); ++it)
   {
