@@ -98,6 +98,10 @@ void StuPass::renderPass()
   const ShaderAttributeCollection& attribs  = mShader->getAttributes();
   attribs.bindAttributes(mShader);
 
+  const GPUState& priorGPUState = mHub.getGPUStateManager().getState();
+  if (mGPUState != nullptr)
+    mHub.getGPUStateManager().apply(*mGPUState);
+
   
 #ifdef SPIRE_DEBUG
   // Gather all uniforms from shader and build a list. Ensure that all uniforms
@@ -141,6 +145,9 @@ void StuPass::renderPass()
   //Log::debug() << "Rendering with prim type " << mPrimitiveType << " num elements "
   //             << mIBO->getNumElements() << " ibo type " << mIBO->getType() << std::endl;
   GL(glDrawElements(mPrimitiveType, mIBO->getNumElements(), mIBO->getType(), 0));
+
+  if (mGPUState != nullptr)
+    mHub.getGPUStateManager().apply(priorGPUState);
 }
 
 //------------------------------------------------------------------------------
