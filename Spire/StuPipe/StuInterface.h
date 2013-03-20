@@ -144,6 +144,9 @@ public:
   /// system.
   void removeObject(const std::string& object);
 
+  /// Removes all objects from the system.
+  void removeAllObjects();
+
   /// Assigns a new rendering order to the object
   /// Throws std::range_error if object is not found.
   void assignRenderOrder(const std::string& object, int32_t renderOrder);
@@ -439,6 +442,7 @@ private:
 
   static void removeObjectImpl(Hub& hub, StuInterface* iface,
                                std::string object);
+  static void removeAllObjectsImpl(Hub& hub, StuInterface* iface);
 
   static void addPersistentShaderImpl(Hub& hub, StuInterface* iface,
                                       std::string programName,
