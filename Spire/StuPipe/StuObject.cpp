@@ -98,7 +98,7 @@ void StuPass::renderPass()
   const ShaderAttributeCollection& attribs  = mShader->getAttributes();
   attribs.bindAttributes(mShader);
 
-  const GPUState& priorGPUState = mHub.getGPUStateManager().getState();
+  GPUState priorGPUState = mHub.getGPUStateManager().getState(); // Do NOT store a reference to the state...
   if (mGPUState != nullptr)
     mHub.getGPUStateManager().apply(*mGPUState);
 
