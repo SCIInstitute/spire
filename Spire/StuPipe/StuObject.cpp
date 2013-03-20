@@ -200,6 +200,14 @@ void StuPass::addPassUniform(const std::string uniformName,
   }
 }
 
+//------------------------------------------------------------------------------
+void StuPass::addGPUState(const GPUState& state)
+{
+  // This will destroy any prior gpu state.
+  mGPUState = std::unique_ptr<GPUState>(new GPUState(state));
+}
+
+
 /// \note If we ever implement a remove pass uniform function, be *sure* to
 ///       update the unsatisfied uniforms vector!
 
@@ -279,6 +287,12 @@ void StuObject::addPassUniform(const std::string& passName,
   pass->addPassUniform(uniformName, item);
 }
 
+//------------------------------------------------------------------------------
+void StuObject::addPassGPUState(const std::string& passName, const GPUState& state)
+{
+  std::shared_ptr<StuPass> pass = getPassByName(passName);
+  pass->addGPUState(state);
+}
 
 //------------------------------------------------------------------------------
 std::shared_ptr<StuPass> StuObject::getPassByName(const std::string& name)

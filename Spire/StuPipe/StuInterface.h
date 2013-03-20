@@ -40,6 +40,7 @@
 #include <map>
 #include "../Core/PipeInterface.h"
 #include "../Core/ShaderUniformStateManTemplates.h"
+#include "../Core/GPUStateManager.h"
 #include "../Exceptions.h"
 
 namespace Spire {
@@ -121,7 +122,9 @@ public:
   //============================================================================
   // THREAD SAFE - Remember, the same thread should always be calling spire.
   //============================================================================
-  // Most of these interfaces are implemented through the use of mutex
+
+  // Retrieval of default GPU state.
+  const GPUState& getDefaultState() {return mDefaultGPUState;}
 
   //---------
   // Objects
@@ -259,6 +262,11 @@ public:
                               const std::string& uniformName,
                               std::shared_ptr<AbstractUniformStateItem> item);
 
+  /// GPU state that will be applied directly before the object is rendered.
+  void addPassGPUState(const std::string& object,
+                       const std::string& pass,
+                       const GPUState& state);
+
   /// Will add *or* update the global uniform if it already exsits.
   /// A shader of a given name is only allowed to be one type. If you attempt
   /// to bind different values to a uniform, this function will throw a
@@ -375,6 +383,8 @@ private:
   int32_t mCurrentRenderOrder;    ///< Current rendering order. Used for automatic order assignment.
   int32_t mCurrentPassOrder;      ///< Current pass rendering order.
 
+  GPUState mDefaultGPUState;      ///< Default GPU state.
+
 private:
 
   /// Implementation functions executed on the renderer thread.
@@ -416,6 +426,11 @@ private:
                                          std::string pass,
                                          std::string uniformName,
                                          std::shared_ptr<AbstractUniformStateItem> item);
+
+  static void addPassGPUStateImpl(Hub& hub, StuInterface* iface,
+                                  std::string object,
+                                  std::string pass,
+                                  GPUState state);
 
   static void addGlobalUniformInternalImpl(Hub& hub, StuInterface* iface,
                                            std::string uniformName,

@@ -54,6 +54,10 @@ StuInterface::StuInterface(Interface& iface) :
     mCurrentRenderOrder(0),
     mCurrentPassOrder(0)
 {
+  // Setup default GPU state.
+  mDefaultGPUState.mDepthTestEnable = true;
+  mDefaultGPUState.mCullFaceEnable  = false;
+  mDefaultGPUState.mBlendEnable     = true;
 }
 
 //------------------------------------------------------------------------------
@@ -69,20 +73,14 @@ void StuInterface::ntsInitOnRenderThread()
 //------------------------------------------------------------------------------
 void StuInterface::ntsDoPass()
 {
-  /// \todo GPUState should be a member variable (can't expose in the interface
-  ///       class however)
-  GPUState          mInitialState;
-  mInitialState.mDepthTestEnable = true;
-  mInitialState.mCullFaceEnable = false;  /// \todo Set to true for geometry.
-                                          ///       Should not be true for volumes.
-  mInitialState.mBlendEnable = true;
-
   /// \todo Move this outside of the interface!
   GL(glClearColor(0.1f, 0.4f, 0.6f, 1.0f));
   GL(glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT));
+
+  /// \todo Make line width a part of the GPU state.
   glLineWidth(2.0f);
 
-  mHub.getGPUStateManager().apply(mInitialState, true);
+  mHub.getGPUStateManager().apply(mDefaultGPUState, true); // true = force application of state.
 
   for (auto it = mRenderOrderToObjects.begin(); it != mRenderOrderToObjects.end(); ++it)
   {
@@ -379,6 +377,25 @@ void StuInterface::addPassUniformConcrete(const std::string& object,
 }
 
 
+//------------------------------------------------------------------------------
+void StuInterface::addPassGPUStateImpl(Hub& hub, StuInterface* iface,
+                                       std::string object,
+                                       std::string pass,
+                                       GPUState state)
+{
+  std::shared_ptr<StuObject> obj = iface->mNameToObject.at(object);
+  obj->addPassGPUState(pass, state);
+}
+
+//------------------------------------------------------------------------------
+void StuInterface::addPassGPUState(const std::string& object,
+                                   const std::string& pass,
+                                   const GPUState& state)
+{
+  Hub::RemoteFunction fun =
+      std::bind(addPassGPUStateImpl, _1, this, object, pass, state);
+  mHub.addFunctionToThreadQueue(fun);
+}
 
 
 //------------------------------------------------------------------------------
