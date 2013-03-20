@@ -100,7 +100,8 @@ enum DEPTH_FUNC {
 /// In order for changes to be reflected on the GPU, state must be modified
 /// through the StateManager. This class only represents a snapshot of some GPU 
 /// state. It knows nothing about the current state of the GPU.
-class GPUState
+/// \todo re-add final.
+class GPUState //final
 {
 public:
 
