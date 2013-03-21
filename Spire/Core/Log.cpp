@@ -47,44 +47,44 @@ Log::Log(const Interface::LogFunction& logFunction) :
     mWarningStream(logFunction, Interface::LOG_WARNING),
     mErrorStream(logFunction, Interface::LOG_ERROR)
 {
-  if (logFunction == nullptr)
-  {
-#ifndef WIN32
-    std::stringstream osFilename;
-    osFilename << "/tmp/SpireLog";//_" << std::this_thread::get_id();
-    mOutputFile.open(osFilename.str());
-    Interface::LogFunction fun = std::bind(&Log::logFunction, this,
-                                           std::placeholders::_1, 
-                                           std::placeholders::_2);
-
-    // Reset all of the streams' logging functions.
-    mDebugStream.setLogFunction(fun);
-    mMessageStream.setLogFunction(fun);
-    mWarningStream.setLogFunction(fun);
-    mErrorStream.setLogFunction(fun);
-#endif
-  }
-
-#ifdef SPIRE_USE_STD_THREAD
-  // Check to see if any thread has paired.
-  if (mHasPairedThread.exchange(true) == false)
-  {
-    // No thread has paired, we are free to pair.
-    mPairedThreadID = std::this_thread::get_id();
-    mLog = this;
-
-    message() << std::endl;
-    message() << "================================================================================" << std::endl;
-    message() << "Spire logging - Paired with thread " << std::this_thread::get_id() << std::endl;
-    message() << "================================================================================" << std::endl;
-  }
-  else
-  {
-    // Do nothing, since another thread has paired.
-  }
-#else
-  mLog = this;
-#endif
+//  if (logFunction == nullptr)
+//  {
+//#ifndef WIN32
+//    std::stringstream osFilename;
+//    osFilename << "/tmp/SpireLog";//_" << std::this_thread::get_id();
+//    mOutputFile.open(osFilename.str());
+//    Interface::LogFunction fun = std::bind(&Log::logFunction, this,
+//                                           std::placeholders::_1, 
+//                                           std::placeholders::_2);
+//
+//    // Reset all of the streams' logging functions.
+//    mDebugStream.setLogFunction(fun);
+//    mMessageStream.setLogFunction(fun);
+//    mWarningStream.setLogFunction(fun);
+//    mErrorStream.setLogFunction(fun);
+//#endif
+//  }
+//
+//#ifdef SPIRE_USE_STD_THREAD
+//  // Check to see if any thread has paired.
+//  if (mHasPairedThread.exchange(true) == false)
+//  {
+//    // No thread has paired, we are free to pair.
+//    mPairedThreadID = std::this_thread::get_id();
+//    mLog = this;
+//
+//    message() << std::endl;
+//    message() << "================================================================================" << std::endl;
+//    message() << "Spire logging - Paired with thread " << std::this_thread::get_id() << std::endl;
+//    message() << "================================================================================" << std::endl;
+//  }
+//  else
+//  {
+//    // Do nothing, since another thread has paired.
+//  }
+//#else
+//  mLog = this;
+//#endif
 }
 
 //------------------------------------------------------------------------------
