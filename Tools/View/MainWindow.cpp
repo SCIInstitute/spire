@@ -53,7 +53,6 @@ MainWindow::MainWindow(QWidget *parent) :
 
 MainWindow::~MainWindow()
 {
-  delete mGLWidget;
   delete ui;
 }
 

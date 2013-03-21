@@ -90,7 +90,7 @@ Log::Log(const Interface::LogFunction& logFunction) :
 //------------------------------------------------------------------------------
 Log::~Log()
 {
-  message() << "Destroying spire logging class." << std::endl;
+  //message() << "Destroying spire logging class." << std::endl;
   if (mOutputFile.is_open())
     mOutputFile.close();
 
