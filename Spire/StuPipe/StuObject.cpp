@@ -29,8 +29,7 @@
 /// \author James Hughes
 /// \date   February 2013
 
-#include <tuple>
-#include <map>
+#include <utility>
 
 #include "StuObject.h"
 #include "Exceptions.h"
@@ -252,8 +251,8 @@ void StuObject::addPass(
   std::shared_ptr<StuPass> pass(new StuPass(mHub, passName, program, passOrder,
                                             vbo, ibo, type));
   
-  mPasses.insert(make_pair(passName, pass));
-  mPassRenderOrder.insert(make_pair(passOrder, pass));
+  mPasses.insert(std::make_pair(passName, pass));
+  mPassRenderOrder.insert(std::make_pair(passOrder, pass));
 }
 
 //------------------------------------------------------------------------------
