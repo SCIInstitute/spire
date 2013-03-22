@@ -36,6 +36,7 @@
 #include <string>
 #include <algorithm>
 
+#include "Common.h"
 #include "Core/Log.h"
 #include "FileUtil.h"
 
