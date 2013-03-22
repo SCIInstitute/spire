@@ -43,7 +43,7 @@ namespace SCIRun {
 class SRCamera
 {
 public:
-  SRCamera(SRInterface& interface);
+  SRCamera(SRInterface& iface);
   virtual ~SRCamera();
 
   // V  = View matrix

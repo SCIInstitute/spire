@@ -29,6 +29,8 @@
 /// \author James Hughes
 /// \date   February 2013
 
+#include <utility>
+
 #include "StuObject.h"
 #include "Exceptions.h"
 #include "Core/Hub.h"

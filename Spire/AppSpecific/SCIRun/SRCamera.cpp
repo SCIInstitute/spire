@@ -36,13 +36,13 @@ namespace Spire {
 namespace SCIRun {
 
 //------------------------------------------------------------------------------
-SRCamera::SRCamera(SRInterface& interface) :
+SRCamera::SRCamera(SRInterface& iface) :
     mTrafoSeq(0),
     mPerspective(true),
     mFOV(getDefaultFOVY()),
     mZNear(getDefaultZNear()),
     mZFar(getDefaultZFar()),
-    mInterface(interface)
+    mInterface(iface)
 {
   setAsPerspective();
 
