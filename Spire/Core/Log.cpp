@@ -56,7 +56,6 @@ Log::Log(const Interface::LogFunction& logFunction) :
   if (fun == nullptr)
   {
 #ifndef WIN32
-
     // Scoped lock guard
     {
 #ifdef SPIRE_USE_STD_THREADS
@@ -210,6 +209,10 @@ std::ostream& Log::error()
 //------------------------------------------------------------------------------
 void Log::logFunction(const std::string& msg, Interface::LOG_LEVEL level)
 {
+#ifdef SPIRE_USE_STD_THREADS
+  std::lock_guard<std::mutex> lock(mOutputLock);
+#endif
+
   switch (level)
   {
     case Interface::LOG_DEBUG:

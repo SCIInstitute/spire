@@ -111,9 +111,6 @@ private:
       {
         if (mLogFun != nullptr)
         {
-#ifdef SPIRE_USE_STD_THREADS
-          std::lock_guard<std::mutex> lock(mOutputLock);
-#endif
           std::string outputStr = str();
           mLogFun(outputStr, mLevel);
           str("");
