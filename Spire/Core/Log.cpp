@@ -39,7 +39,7 @@ std::mutex                      Log::mLogLookupLock;
 std::mutex                      Log::mOutputLock;
 std::map<std::thread::id, Log*> Log::mLogInstances;
 #else
-Log*                            Log::mSingleton(nullptr);
+Log*                            Log::mLog(nullptr);
 #endif
 
 std::ostream                    Log::mCNull(0);
@@ -93,12 +93,6 @@ Log::Log(const Interface::LogFunction& logFunction) :
     std::lock_guard<std::mutex> lock(mLogLookupLock);
     mLogInstances.insert(make_pair(threadID, this));
   }
-#else
-  // We will only use one logger... this is a very clumsy implementation,
-  // but we should only have one instance of the logger which will not get
-  // destroyed along with the graphics system.
-  if (mSingleton == nullptr)  
-    mSingleton = new Log(fun);
 #endif
 }
 

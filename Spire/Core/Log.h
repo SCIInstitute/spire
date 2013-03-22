@@ -152,7 +152,7 @@ private:
   static std::mutex                       mOutputLock;    ///< Guard for output.
   static std::map<std::thread::id, Log*>  mLogInstances;  ///< Map of log instances.
 #else
-  static Log*                             mSingleton;
+  static Log*                             mLog;
 #endif
 };
 
