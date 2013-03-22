@@ -38,12 +38,13 @@
 #ifdef SPIRE_USE_STD_THREADS
 #include <atomic>
 #include <thread>
-#endif
-
 // In the future, when there are multiple spire threads, use a mutex to
 // protect calls to a vector that stores std::this_thread::get_id()s
 // and their associated Logging instances.
-//#include <mutex>
+#include <mutex>
+#include <map>
+#endif
+
 
 namespace Spire {
 
@@ -68,16 +69,11 @@ public:
   /// storage mechanism. Currently, logging is supported for only 1 thread.
   /// Will return false if a safe stream does not exist (not paired).
   /// @{
-  //static std::ostream& getThreadDebugStream();
-  //static std::ostream& getThreadMessageStream();
-  //static std::ostream& getThreadWarningStream();
-  //static std::ostream& getThreadErrorStream();
   static std::ostream& debug();
   static std::ostream& message();
   static std::ostream& warning();
   static std::ostream& error();
   /// @}
-
 
 private:
 
@@ -115,6 +111,9 @@ private:
       {
         if (mLogFun != nullptr)
         {
+#ifdef SPIRE_USE_STD_THREADS
+          std::lock_guard<std::mutex> lock(mOutputLock);
+#endif
           std::string outputStr = str();
           mLogFun(outputStr, mLevel);
           str("");
@@ -124,7 +123,7 @@ private:
 
     private:
       Interface::LogFunction      mLogFun;
-      Interface::LOG_LEVEL  mLevel;
+      Interface::LOG_LEVEL        mLevel;
     };
 
     CustomStringBuf   mBuf;
@@ -139,26 +138,22 @@ private:
   CustomStream      mWarningStream;
   CustomStream      mErrorStream;
 
-  std::ofstream     mOutputFile;      ///< Output file to use when
-                                      ///< logging output.
+  static std::ofstream     mOutputFile;     ///< Output file to use when
+                                            ///< logging output. Will be closed
+                                            ///< when static value is destroyed.
 
-  /// @todo Add thread local storage for platforms that support it instead of
-  ///       using this hack.
-  ///       Linux (SPIRE_USING_LINUX) and Windows (SPIRE_USING_WIN) both support this.
-  ///       Clang does not currently support it.
+  /// Null output stream should NOT be accessed by multiple different threads.
+  static std::ostream                     mCNull;
 
 #ifdef SPIRE_USE_STD_THREADS
-  /// True if a thread has paired with this logger.
-  static std::atomic<bool>          mHasPairedThread;
-  /// The ID of the thread that has paired with the logger
-  /// Should this be volatile?
-  static std::thread::id            mPairedThreadID;
-  /// 'Singleton' instance of the logger. Should be turned into a vector
-  /// if we want multiple instances.
+  /// Implementation of my own version of thread local storage based on thread
+  /// IDs...
+  static std::mutex                       mLogLookupLock; ///< Guard for map.
+  static std::mutex                       mOutputLock;    ///< Guard for output.
+  static std::map<std::thread::id, Log*>  mLogInstances;  ///< Map of log instances.
+#else
+  static Log*                             mSingleton;
 #endif
-  static Log*                       mLog;
-  /// Null output stream.
-  static std::ostream               mCNull;
 };
 
 } // namespace Spire 
