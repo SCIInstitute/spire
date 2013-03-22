@@ -38,6 +38,7 @@
 #include <string>
 #include <unordered_map>
 #include <map>
+#include <tuple>
 #include <cstdint>
 #include "../Core/PipeInterface.h"
 #include "../Core/ShaderUniformStateManTemplates.h"
