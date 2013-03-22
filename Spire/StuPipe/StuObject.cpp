@@ -30,6 +30,7 @@
 /// \date   February 2013
 
 #include <tuple>
+#include <map>
 
 #include "StuObject.h"
 #include "Exceptions.h"
