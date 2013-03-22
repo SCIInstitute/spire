@@ -30,15 +30,20 @@
 /// \date   November 2012
 
 #include "Core/Log.h"
+#include "Exceptions.h"
 
 namespace Spire {
 
-#ifdef SPIRE_USE_STD_THREAD
-std::atomic<bool>         Log::mHasPairedThread(false);
-std::thread::id           Log::mPairedThreadID;
+#ifdef SPIRE_USE_STD_THREADS
+std::mutex                      Log::mLogLookupLock;
+std::mutex                      Log::mOutputLock;
+std::map<std::thread::id, Log*> Log::mLogInstances;
+#else
+Log*                            Log::mLog(nullptr);
 #endif
-Log*                      Log::mLog(nullptr);
-std::ostream              Log::mCNull(0); // See: http://stackoverflow.com/questions/6240950/platform-independent-dev-null-in-c 
+
+std::ostream                    Log::mCNull(0);
+std::ofstream                   Log::mOutputFile;
 
 //------------------------------------------------------------------------------
 Log::Log(const Interface::LogFunction& logFunction) :
@@ -47,73 +52,76 @@ Log::Log(const Interface::LogFunction& logFunction) :
     mWarningStream(logFunction, Interface::LOG_WARNING),
     mErrorStream(logFunction, Interface::LOG_ERROR)
 {
-//  if (logFunction == nullptr)
-//  {
-//#ifndef WIN32
-//    std::stringstream osFilename;
-//    osFilename << "/tmp/SpireLog";//_" << std::this_thread::get_id();
-//    mOutputFile.open(osFilename.str());
-//    Interface::LogFunction fun = std::bind(&Log::logFunction, this,
-//                                           std::placeholders::_1, 
-//                                           std::placeholders::_2);
-//
-//    // Reset all of the streams' logging functions.
-//    mDebugStream.setLogFunction(fun);
-//    mMessageStream.setLogFunction(fun);
-//    mWarningStream.setLogFunction(fun);
-//    mErrorStream.setLogFunction(fun);
-//#endif
-//  }
-//
-//#ifdef SPIRE_USE_STD_THREAD
-//  // Check to see if any thread has paired.
-//  if (mHasPairedThread.exchange(true) == false)
-//  {
-//    // No thread has paired, we are free to pair.
-//    mPairedThreadID = std::this_thread::get_id();
-//    mLog = this;
-//
-//    message() << std::endl;
-//    message() << "================================================================================" << std::endl;
-//    message() << "Spire logging - Paired with thread " << std::this_thread::get_id() << std::endl;
-//    message() << "================================================================================" << std::endl;
-//  }
-//  else
-//  {
-//    // Do nothing, since another thread has paired.
-//  }
-//#else
-//  mLog = this;
-//#endif
+  Interface::LogFunction fun = logFunction;
+  if (fun == nullptr)
+  {
+#ifndef WIN32
+    // Scoped lock guard
+    {
+#ifdef SPIRE_USE_STD_THREADS
+      std::lock_guard<std::mutex> lock(mLogLookupLock);
+#endif
+
+      if (mOutputFile.is_open() == false)
+      {
+        // When serializing the log data we will be under the log lookup mutex lock.
+        std::stringstream osFilename;
+        osFilename << "/tmp/SpireLog";//_" << std::this_thread::get_id();
+        mOutputFile.open(osFilename.str());
+      }
+    }
+
+    fun = std::bind(&Log::logFunction, this,
+                    std::placeholders::_1, 
+                    std::placeholders::_2);
+
+    // Reset all of the streams' logging functions.
+    mDebugStream.setLogFunction(fun);
+    mMessageStream.setLogFunction(fun);
+    mWarningStream.setLogFunction(fun);
+    mErrorStream.setLogFunction(fun);
+#endif
+  }
+
+#ifdef SPIRE_USE_STD_THREADS
+  // Add our thread to the mutex locked map (we will be unique).
+  std::thread::id threadID = std::this_thread::get_id();
+
+  // Scope lock the mutex ensuring exception safety with RAII.
+  {
+    std::lock_guard<std::mutex> lock(mLogLookupLock);
+    mLogInstances.insert(make_pair(threadID, this));
+  }
+#endif
 }
 
 //------------------------------------------------------------------------------
 Log::~Log()
 {
-  //message() << "Destroying spire logging class." << std::endl;
-  if (mOutputFile.is_open())
-    mOutputFile.close();
-
-#ifdef SPIRE_USE_STD_THREAD
-  if (    mHasPairedThread.load() == true 
-      &&  mPairedThreadID == std::this_thread::get_id())
-  {
-    mHasPairedThread.store(false);
-  }
+#ifdef SPIRE_USE_STD_THREADS
+  std::thread::id threadID = std::this_thread::get_id();
+  std::lock_guard<std::mutex> lock(mLogLookupLock);
+  mLogInstances.erase(threadID);
 #endif
 }
 
 //------------------------------------------------------------------------------
 std::ostream& Log::debug()
 {
-#ifdef SPIRE_USE_STD_THREAD
-  if (    mHasPairedThread.load() == true 
-      &&  mPairedThreadID == std::this_thread::get_id())
+#ifdef SPIRE_USE_STD_THREADS
+  // Find our logger.
+  std::thread::id threadID = std::this_thread::get_id();
+  std::lock_guard<std::mutex> lock(mLogLookupLock);
+  auto it = mLogInstances.find(threadID);
+  if (it != mLogInstances.end())
   {
-    return mLog->mDebugStream;
+    return it->second->mDebugStream;
   }
   else
   {
+    throw new Exception("Could not find thread in logging map.");
+    // Returning this is dangerous in a multithreaded environment. Hence
+    // the exception.
     return mCNull;
   }
 #else
@@ -126,14 +134,20 @@ std::ostream& Log::debug()
 //------------------------------------------------------------------------------
 std::ostream& Log::message()
 {
-#ifdef SPIRE_USE_STD_THREAD
-  if (    mHasPairedThread.load() == true 
-      &&  mPairedThreadID == std::this_thread::get_id())
+#ifdef SPIRE_USE_STD_THREADS
+  // Find our logger.
+  std::thread::id threadID = std::this_thread::get_id();
+  std::lock_guard<std::mutex> lock(mLogLookupLock);
+  auto it = mLogInstances.find(threadID);
+  if (it != mLogInstances.end())
   {
-    return mLog->mMessageStream;
+    return it->second->mMessageStream;
   }
   else
   {
+    throw new Exception("Could not find thread in logging map.");
+    // Returning this is dangerous in a multithreaded environment. Hence
+    // the exception.
     return mCNull;
   }
 #else
@@ -145,14 +159,20 @@ std::ostream& Log::message()
 //------------------------------------------------------------------------------
 std::ostream& Log::warning()
 {
-#ifdef SPIRE_USE_STD_THREAD
-  if (    mHasPairedThread.load() == true 
-      &&  mPairedThreadID == std::this_thread::get_id())
+#ifdef SPIRE_USE_STD_THREADS
+  // Find our logger.
+  std::thread::id threadID = std::this_thread::get_id();
+  std::lock_guard<std::mutex> lock(mLogLookupLock);
+  auto it = mLogInstances.find(threadID);
+  if (it != mLogInstances.end())
   {
-    return mLog->mWarningStream;
+    return it->second->mWarningStream;
   }
   else
   {
+    throw new Exception("Could not find thread in logging map.");
+    // Returning this is dangerous in a multithreaded environment. Hence
+    // the exception.
     return mCNull;
   }
 #else
@@ -164,14 +184,20 @@ std::ostream& Log::warning()
 //------------------------------------------------------------------------------
 std::ostream& Log::error()
 {
-#ifdef SPIRE_USE_STD_THREAD
-  if (    mHasPairedThread.load() == true 
-      &&  mPairedThreadID == std::this_thread::get_id())
+#ifdef SPIRE_USE_STD_THREADS
+  // Find our logger.
+  std::thread::id threadID = std::this_thread::get_id();
+  std::lock_guard<std::mutex> lock(mLogLookupLock);
+  auto it = mLogInstances.find(threadID);
+  if (it != mLogInstances.end())
   {
-    return mLog->mErrorStream;
+    return it->second->mErrorStream;
   }
   else
   {
+    throw new Exception("Could not find thread in logging map.");
+    // Returning this is dangerous in a multithreaded environment. Hence
+    // the exception.
     return mCNull;
   }
 #else
@@ -183,26 +209,33 @@ std::ostream& Log::error()
 //------------------------------------------------------------------------------
 void Log::logFunction(const std::string& msg, Interface::LOG_LEVEL level)
 {
+#ifdef SPIRE_USE_STD_THREADS
+  std::lock_guard<std::mutex> lock(mOutputLock);
+  std::thread::id threadID = std::this_thread::get_id();
+#else
+  int threadID = 0;
+#endif
+
   switch (level)
   {
     case Interface::LOG_DEBUG:
       //mOutputFile << "Debug:   " << msg;
-      mOutputFile << msg;
+      mOutputFile << "(" << threadID << ") - " << msg;
       break;
 
     case Interface::LOG_MESSAGE:
       //mOutputFile << "General: " << msg;
-      mOutputFile << msg;
+      mOutputFile << "(" << threadID << ") - " << msg;
       break;
 
     case Interface::LOG_WARNING:
       //mOutputFile << "Warning: " << msg;
-      mOutputFile << msg;
+      mOutputFile << "(" << threadID << ") - " << msg;
       break;
 
     case Interface::LOG_ERROR:
       //mOutputFile << "Error:   " << msg;
-      mOutputFile << msg;
+      mOutputFile << "(" << threadID << ") - " << msg;
       break;
   }
   mOutputFile.flush();

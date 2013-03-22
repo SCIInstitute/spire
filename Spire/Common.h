@@ -64,7 +64,7 @@
 
 #define MAX_GL_ERROR_COUNT 10 
 
-#ifndef SPIRE_DEBUG
+#ifdef SPIRE_DEBUG
 # define GL(stmt)                                                      \
   do {                                                                 \
     GLenum glerr;                                                      \
