@@ -211,28 +211,31 @@ void Log::logFunction(const std::string& msg, Interface::LOG_LEVEL level)
 {
 #ifdef SPIRE_USE_STD_THREADS
   std::lock_guard<std::mutex> lock(mOutputLock);
+  std::thread::id threadID = std::this_thread::get_id();
+#else
+  int threadID = 0;
 #endif
 
   switch (level)
   {
     case Interface::LOG_DEBUG:
       //mOutputFile << "Debug:   " << msg;
-      mOutputFile << msg;
+      mOutputFile << "(" << threadID << ") - " << msg;
       break;
 
     case Interface::LOG_MESSAGE:
       //mOutputFile << "General: " << msg;
-      mOutputFile << msg;
+      mOutputFile << "(" << threadID << ") - " << msg;
       break;
 
     case Interface::LOG_WARNING:
       //mOutputFile << "Warning: " << msg;
-      mOutputFile << msg;
+      mOutputFile << "(" << threadID << ") - " << msg;
       break;
 
     case Interface::LOG_ERROR:
       //mOutputFile << "Error:   " << msg;
-      mOutputFile << msg;
+      mOutputFile << "(" << threadID << ") - " << msg;
       break;
   }
   mOutputFile.flush();
