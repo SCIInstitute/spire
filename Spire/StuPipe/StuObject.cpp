@@ -30,6 +30,7 @@
 /// \date   February 2013
 
 #include "StuObject.h"
+#include "Exceptions.h"
 #include "Core/Hub.h"
 #include "Core/ShaderUniformStateMan.h"
 
@@ -64,7 +65,7 @@ StuPass::StuPass(
 
   // Add uniforms present in the shader to the unsatisfied uniforms vector.
   // Not constructing an iterator interface as it's just easier to index.
-  for (int i = 0; i < numUniforms; i++)
+  for (size_t i = 0; i < numUniforms; i++)
   {
     const ShaderUniformCollection::UniformSpecificData& uniformData = 
         mShader->getUniforms().getUniformAtIndex(i);
