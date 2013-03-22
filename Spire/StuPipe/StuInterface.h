@@ -42,7 +42,6 @@
 #include "../Core/PipeInterface.h"
 #include "../Core/ShaderUniformStateManTemplates.h"
 #include "../Core/GPUStateManager.h"
-#include "../Exceptions.h"
 
 namespace Spire {
 

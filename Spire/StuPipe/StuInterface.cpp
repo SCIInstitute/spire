@@ -37,6 +37,7 @@
 #include "StuObject.h"
 #include "Core/ShaderProgramMan.h"
 #include "Core/Hub.h"
+#include "../Exceptions.h"
 
 using namespace std::placeholders;
 
