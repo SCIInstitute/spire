@@ -43,6 +43,14 @@
 #include "StuVBOObject.h"
 #include "StuIBOObject.h"
 
+#if defined(_WIN32)
+// One dllexport must be present in a shared library in order for a .lib
+// file to be generated...
+#define WIN_DLL_EXPORT __declspec(dllexport)
+#else
+#define WIN_DLL_EXPORT
+#endif
+
 namespace Spire {
 
 //------------------------------------------------------------------------------
@@ -132,7 +140,7 @@ protected:
 //------------------------------------------------------------------------------
 // StuObject
 //------------------------------------------------------------------------------
-class StuObject
+class WIN_DLL_EXPORT StuObject
 {
 public:
 

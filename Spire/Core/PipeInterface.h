@@ -34,14 +34,6 @@
 
 #include "../Interface.h"
 
-#if defined(_WIN32)
-// One dllexport must be present in a shared library in order for a .lib
-// file to be generated...
-#define WIN_DLL_EXPORT __declspec(dllexport)
-#else
-#define WIN_DLL_EXPORT
-#endif
-
 namespace Spire
 {
 
@@ -52,7 +44,7 @@ class Hub;
 ///       should become more clear.
 /// It will be mandatory to pointer cast this pipe to its derived
 /// type in order to access the majority of the interface.
-class WIN_DLL_EXPORT PipeInterface
+class PipeInterface
 {
 public:
   // Does NOT store a reference to the interface...
