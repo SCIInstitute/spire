@@ -32,6 +32,7 @@
 #ifndef SPIRE_CORE_PIPEINTERFACE_H
 #define SPIRE_CORE_PIPEINTERFACE_H
 
+#include "InterfaceCommon.h"
 #include "../Interface.h"
 
 namespace Spire
@@ -44,7 +45,7 @@ class Hub;
 ///       should become more clear.
 /// It will be mandatory to pointer cast this pipe to its derived
 /// type in order to access the majority of the interface.
-class PipeInterface
+class WIN_DLL PipeInterface
 {
 public:
   // Does NOT store a reference to the interface...

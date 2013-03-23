@@ -38,6 +38,7 @@
 #include <memory>
 
 #include "Context.h"
+#include "InterfaceCommon.h"
 #include "Core/Math.h"  // Necessary in order to communicate vector types.
 
 namespace Spire {

@@ -27,40 +27,16 @@
 */
 
 /// \author James Hughes
-/// \date   September 2012
+/// \date   March 2013
 
-#ifndef SPIRE_CONTEXT_H
-#define SPIRE_CONTEXT_H
+#ifndef SPIRE_INTERFACE_COMMON_H
+#define SPIRE_INTERFACE_COMMON_H
 
-#include "InterfaceCommon.h"
+#if defined(_WIN32)
+#define WIN_DLL __declspec(dllexport)
+#else
+#define WIN_DLL
+#endif
 
-namespace Spire {
+#endif
 
-/// Generalized OpenGL context.
-/// With the existence of wrappers like http://code.google.com/p/angleproject/,
-/// writing OpenGL ES 2.0 compliant code means we can run using DirectX on 
-/// windows (better driver support).
-/// All functions contained herein must be thread safe as they will be executed
-/// from the Spire's thread.
-class WIN_DLL Context
-{
-public:
-  Context()             {}
-  virtual ~Context()    {}
-
-  //============================================================================
-  // Mandatory OpenGL-context related functions
-  //============================================================================
-
-  /// Make the context current on the active thread.
-  virtual void makeCurrent()    = 0;
-
-  /// Swap the front and back buffers.
-  virtual void swapBuffers()    = 0;
-
-private:
-};
-
-} // namespace spire
-
-#endif // SPIRE_CONTEXT_H

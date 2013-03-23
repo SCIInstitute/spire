@@ -40,6 +40,7 @@
 #include <map>
 #include <tuple>
 #include <cstdint>
+#include "InterfaceCommon.h"
 #include "../Core/PipeInterface.h"
 #include "../Core/ShaderUniformStateManTemplates.h"
 #include "../Core/GPUStateManager.h"
@@ -66,7 +67,7 @@ class IBOObject;
 /// No frame buffer management or advanced rendering (although this kind of
 /// advanced rendering would be more suited towards a programmable module that
 /// you hook into spire). This pipe was only created for ease-of-use.
-class StuInterface : public PipeInterface
+class WIN_DLL StuInterface : public PipeInterface
 {
 public:
   StuInterface(Interface& iface);

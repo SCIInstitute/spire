@@ -33,6 +33,7 @@
 #define SPIRE_APPSPECIFIC_SCIRUN_SCIRUNINTERFACE_H
 
 #include "../../Interface.h"
+#include "../../InterfaceCommon.h"
 #include "../../StuPipe/StuInterface.h"
 
 namespace Spire {
@@ -45,7 +46,7 @@ class SRCamera;
 /// to operate SCIRun.
 /// \todo Think about how we are going to break apart this class.
 ///       There will be a lot of functionality behind it.
-class SRInterface : public Interface
+class WIN_DLL SRInterface : public Interface
 {
 public:
   SRInterface(std::shared_ptr<Context> context,
