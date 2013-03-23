@@ -55,7 +55,6 @@ Log::Log(const Interface::LogFunction& logFunction) :
   Interface::LogFunction fun = logFunction;
   if (fun == nullptr)
   {
-#ifndef WIN32
     // Scoped lock guard
     {
 #ifdef SPIRE_USE_STD_THREADS
@@ -66,7 +65,11 @@ Log::Log(const Interface::LogFunction& logFunction) :
       {
         // When serializing the log data we will be under the log lookup mutex lock.
         std::stringstream osFilename;
+#ifndef WIN32
         osFilename << "/tmp/SpireLog";//_" << std::this_thread::get_id();
+#else
+        osFilename << "C:\\SpireLog";
+#endif
         mOutputFile.open(osFilename.str());
       }
     }
@@ -80,7 +83,6 @@ Log::Log(const Interface::LogFunction& logFunction) :
     mMessageStream.setLogFunction(fun);
     mWarningStream.setLogFunction(fun);
     mErrorStream.setLogFunction(fun);
-#endif
   }
 
 #ifdef SPIRE_USE_STD_THREADS
