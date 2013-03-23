@@ -29,6 +29,10 @@
 #ifndef SPIRE_CORE_VECTORS_H
 #define SPIRE_CORE_VECTORS_H
 
+// Undefine max and min just in case we are on windows.
+#undef max
+#undef min
+
 #include <cstdint>
 #include <cassert>
 #include <cmath>
