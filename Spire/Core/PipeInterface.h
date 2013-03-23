@@ -32,7 +32,7 @@
 #ifndef SPIRE_CORE_PIPEINTERFACE_H
 #define SPIRE_CORE_PIPEINTERFACE_H
 
-#include "InterfaceCommon.h"
+#include "../InterfaceCommon.h"
 #include "../Interface.h"
 
 namespace Spire

@@ -40,7 +40,7 @@
 #include <map>
 #include <tuple>
 #include <cstdint>
-#include "InterfaceCommon.h"
+#include "../InterfaceCommon.h"
 #include "../Core/PipeInterface.h"
 #include "../Core/ShaderUniformStateManTemplates.h"
 #include "../Core/GPUStateManager.h"
