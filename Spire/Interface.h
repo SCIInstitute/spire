@@ -51,7 +51,7 @@ class PipeInterface;
 /// A new interface will need to be created per-context.
 /// Spire expects that only one thread will be communicating with it at any
 /// given time.
-class Interface
+class WIN_DLL Interface
 {
 public:
   /// All possible log outputs from the renderer. Used via the logging function.
