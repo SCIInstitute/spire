@@ -141,12 +141,9 @@ ShaderProgramAsset::ShaderProgramAsset(
       GL(glGetActiveAttrib(program, i, maxAttribNameSize, &charsWritten,
                            &attribSize, &type, attributeName));
 
-      std::string attributeNameStd = attributeName; // Required for MSVC or name will come out garbage.
-                                                    // when passed to addUniform.
-
       try
       {
-        mAttributes.addAttribute(attributeNameStd);
+        mAttributes.addAttribute(attributeName);
       }
       catch (ShaderAttributeNotFound&)
       {
@@ -175,12 +172,9 @@ ShaderProgramAsset::ShaderProgramAsset(
       GL(glGetActiveUniform(program, i, maxUniformNameSize, &charsWritten,
                             &uniformSize, &type, uniformName));
 
-      std::string uniformNameStd = uniformName; // Required for MSVC or name will come out garbage.
-                                                // when passed to addUniform.
-
       try
       {
-        mUniforms->addUniform(uniformNameStd);
+        mUniforms->addUniform(uniformName);
       }
       catch (std::out_of_range&)
       {

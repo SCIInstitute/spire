@@ -80,11 +80,11 @@ void ShaderUniformCollection::addUniform(const std::string& uniformName)
     // Now query even more data about the uniform.
     const GLsizei nameSize = 128;
     GLsizei bytesWritten = 0;
-    char uniformName[nameSize]; // Name which we already know..
+    char uniformName_ignore[nameSize]; // Name which we already know..
     glGetActiveUniform(mProgram, uniformData.glUniformLoc, 
                        nameSize, &bytesWritten,
                        &uniformData.glSize, &uniformData.glType,
-                       uniformName);
+                       uniformName_ignore);
 
     // std::out_of_range will be thrown here if uniform is not found.
     std::shared_ptr<const UniformState> state;
