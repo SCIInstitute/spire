@@ -34,6 +34,7 @@
 
 #include <cstddef>
 #include <sstream>
+#include "../InterfaceCommon.h"
 #include "../Core/Math.h"
 #include "../Core/GLMathUtil.h"
 
@@ -151,7 +152,7 @@ enum UNIFORM_TYPE
 };
 
 /// Abstract base class interface for a single uinform state item.
-class AbstractUniformStateItem
+class WIN_DLL AbstractUniformStateItem
 {
 public:
   AbstractUniformStateItem()            {}
