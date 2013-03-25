@@ -82,6 +82,12 @@ public:
   /// See corresponding Interface definition.
   static void pipeRemove(Hub& hub, std::shared_ptr<PipeInterface> pipe);
 
+  //----------
+  // Graphics
+  //----------
+  /// Called in the event of a resize. This calls glViewport with 0, 0, width, height.
+  static void resize(Hub& hub, size_t width, size_t height);
+
 private:
 
 #ifdef SPIRE_USE_STD_THREADS

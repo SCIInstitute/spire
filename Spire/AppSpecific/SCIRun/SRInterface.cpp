@@ -35,6 +35,11 @@
 #include "SRCommonUniforms.h"
 #include "SRCamera.h"
 
+#include "Core/Hub.h"
+#include "Core/InterfaceImplementation.h"
+
+using namespace std::placeholders;
+
 namespace Spire {
 namespace SCIRun {
 
@@ -78,6 +83,11 @@ void SRInterface::eventResize(size_t width, size_t height)
 
   // Set viewport?
   mArcBall->setWindowSize(width, height);
+
+  // Ensure glViewport is called appropriately.
+  Hub::RemoteFunction resizeFun =
+      std::bind(InterfaceImplementation::resize, _1, width, height);
+  mHub->addFunctionToThreadQueue(resizeFun);
 }
 
 //------------------------------------------------------------------------------

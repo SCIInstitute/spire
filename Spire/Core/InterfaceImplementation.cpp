@@ -90,5 +90,12 @@ void InterfaceImplementation::pipeRemove(Hub& hub,
   hub.removePipe(pipe);
 }
 
+
+//------------------------------------------------------------------------------
+void InterfaceImplementation::resize(Hub& hub, size_t width, size_t height)
+{
+  GL(glViewport(0, 0, width, height));
+}
+
 } // end of namespace Spire
 

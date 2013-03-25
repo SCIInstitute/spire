@@ -138,9 +138,11 @@ public:
 
   /// @}
 
-private:
+protected:
 
   std::unique_ptr<Hub>      mHub;   ///< Rendering hub.
+
+private:
 
   friend class PipeInterface;       // Technically, only PipeInterface's constructor
                                     // needs friend status. Needed to extract hub

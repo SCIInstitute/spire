@@ -36,6 +36,8 @@
 #include "Core/Log.h"
 #include "Core/InterfaceImplementation.h"
 
+using namespace std::placeholders;
+
 namespace Spire {
 
 //------------------------------------------------------------------------------
@@ -69,8 +71,6 @@ void Interface::doFrame()
 
   mHub->doFrame();
 }
-
-using namespace std::placeholders;
 
 //------------------------------------------------------------------------------
 void Interface::pipePushBack(std::shared_ptr<PipeInterface> pipe)
