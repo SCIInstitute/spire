@@ -82,7 +82,7 @@ public:
   virtual ~ShaderProgramMan()             {}
   
   /// Loads a shader program. Accepts a list of couples 
-  // (shader name, shader type) to compile and link together.
+  /// (shader name, shader type) to compile and link together.
   std::shared_ptr<ShaderProgramAsset> loadProgram(
       const std::string& programName,
       const std::list<std::tuple<std::string, GLenum>>& shaders);

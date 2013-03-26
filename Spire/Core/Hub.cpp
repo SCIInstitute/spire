@@ -263,10 +263,12 @@ void Hub::rendererThread()
     std::this_thread::sleep_for(dur);
   }
 
-  Log::message() << "Terminating rendering thread" << std::endl;
-
-  // Hub should really be destroyed here... mHub should be a part of HubThread.
-  // Create hub non-threaded class.
+  Log::message() << "Terminating render thread and cleaning up GPU resources." << std::endl;
+  for (auto it = mPipes.begin(); it != mPipes.end(); ++it)
+  {
+    (*it)->clearGLResources();
+    it->reset();
+  }
 
   mThreadRunning.store(false);
 }

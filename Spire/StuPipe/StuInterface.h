@@ -357,6 +357,12 @@ public:
   /// specified order.
   bool ntsHasRenderingOrder(const std::vector<std::string>& renderOrder) const;
 
+  /// Cleans up all GL resources.
+  /// Should ONLY be called from the rendering thread.
+  /// In our case, this amounts to disposing of all of our objects and VBO/IBOs
+  /// and persistent shader objects.
+  virtual void clearGLResources();
+
 private:
 
 

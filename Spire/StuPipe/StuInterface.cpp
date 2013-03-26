@@ -523,6 +523,16 @@ bool StuInterface::ntsHasRenderingOrder(const std::vector<std::string>& renderOr
 }
 
 //------------------------------------------------------------------------------
+void StuInterface::clearGLResources()
+{
+  mNameToObject.clear();
+  mRenderOrderToObjects.clear();
+  mPersistentShaders.clear();
+  mVBOMap.clear();
+  mIBOMap.clear();
+}
+
+//------------------------------------------------------------------------------
 GLenum getGLPrimitive(StuInterface::PRIMITIVE_TYPES type)
 {
   switch (type)

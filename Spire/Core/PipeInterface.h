@@ -85,6 +85,8 @@ public:
   /// Perform a rendering pass.
   virtual void ntsDoPass() = 0;
 
+  /// Cleans up all GL resources.
+  virtual void clearGLResources() = 0;
 
 protected:
   /// Reference to the hub class. Should only be used when on the renderer
