@@ -106,6 +106,10 @@ public:
   void holdAsset(std::shared_ptr<BaseAsset> asset, 
                  std::chrono::milliseconds absReleaseTime);
 
+  /// Clear all held assets.
+  void clearHeldAssets();
+
+
 protected:
 
   /// Attempts to find the asset with the name given.

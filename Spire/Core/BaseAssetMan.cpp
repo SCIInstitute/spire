@@ -61,6 +61,13 @@ void BaseAssetMan::holdAsset(std::shared_ptr<BaseAsset> asset,
 }
 
 //------------------------------------------------------------------------------
+void BaseAssetMan::clearHeldAssets()
+{
+  while (mHeldAssets.empty() == false)
+    mHeldAssets.pop();
+}
+
+//------------------------------------------------------------------------------
 void BaseAssetMan::updateOrphanedAssets(std::chrono::milliseconds absTime)
 {
   // Check the first held asset and if it is less than the absolute time,

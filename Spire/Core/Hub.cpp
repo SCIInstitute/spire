@@ -264,6 +264,16 @@ void Hub::rendererThread()
   }
 
   Log::message() << "Terminating render thread and cleaning up GPU resources." << std::endl;
+
+  /// \todo Pass a hub reference into BaseAssetMan and construct an ongoing
+  ///       list of base asset managers. That way we can simply loop through
+  ///       any assets holding graphics resources.
+  mShaderMan.clearHeldAssets();
+  mShaderProgramMan.clearHeldAssets();
+
+
+  // The following needs to be done whether or not the hub is destroyed in this
+  // function.
   for (auto it = mPipes.begin(); it != mPipes.end(); ++it)
   {
     (*it)->clearGLResources();
