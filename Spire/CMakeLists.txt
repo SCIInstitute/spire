@@ -16,6 +16,7 @@ if(WIN32)
 else()
   option(USE_STD_THREADS "Use standard library threads. If turned off, no threading support is available." ON)
 endif()
+option(USE_GOOGLE_PERF "Use google perf tools to profile Spire." OFF)
 
 if(USE_TUVOK)
   add_definitions(-DSPIRE_USE_TUVOK)
@@ -31,6 +32,11 @@ endif()
 
 if(CMAKE_BUILD_TYPE MATCHES DEBUG)
   add_definitions(-DSPIRE_DEBUG)
+endif()
+
+if (USE_GOOGLE_PERF)
+  add_definitions(-DSPIRE_PROFILE)
+  set(PROFILE_LIBS profiler)
 endif()
 
 ########################################################################
@@ -218,5 +224,6 @@ target_link_libraries(
   ${TUVOK_LIB}
   ${OS_SPECIFIC_LIBS}
   ${TESTING_LIBS}
+  ${PROFILING_LIBS}
   )
 
