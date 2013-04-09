@@ -34,9 +34,10 @@
 namespace Spire {
 namespace SCIRun {
 
-SciBall::SciBall(const V3& center, float radius) :
-    mScreenCenter(center),
-    mScreenRadius(radius)
+SciBall::SciBall(const V3& center, float radius, const M44& screenToTCS) :
+    mCenter(center),
+    mRadius(radius),
+    mScreenToTCS(screenToTCS)
 {
 }
 
@@ -46,6 +47,7 @@ SciBall::~SciBall()
 
 V3 SciBall::mouseOnSphere(const V2& mouseScreenCoords)
 {
+  return V3();
 }
 
 void SciBall::beginDrag(const V2& mouseScreenCoords)
@@ -58,6 +60,11 @@ void SciBall::drag(const V2& mouseScreenCoords)
 
 void SciBall::endDrag(const V2& mouseScreenCoords)
 {
+}
+
+M44 SciBall::getTransformation() const
+{
+  return M44();
 }
 
 

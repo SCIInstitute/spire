@@ -44,11 +44,11 @@ namespace SCIRun {
 /// 
 /// Unless specified otherwise, all calculations and variables stored in this
 /// class are relative to the target coordinate system (TCS) for which there is
-/// a transformation from screen space to TCS given by the screenToWorld
+/// a transformation from screen space to TCS given by the screenToTCS
 /// constructor parameter.
 ///
-/// If the screenToWorld parameter to the constructor is left as the identity
-/// matrix, then all values are given in screen coordinates.
+/// If the screenToTCS parameter in the constructor is left as the identity
+/// matrix then all values are given in screen coordinates.
 /// Screen coordinates are (x \in [-1,1]) and (y \in [-1,1]) where (0,0) is the
 /// center of the screen.
 /// \todo Extend this class to include Mouse screen coords -> object space
@@ -60,14 +60,14 @@ class SciBall
 {
 public:
   /// \param center         Center of the arcball in TCS (screen coordinates if 
-  ///                       screenToWorld = identity). Generally this will 
+  ///                       screenToTCS = identity). Generally this will 
   ///                       always be (0,0,0). But you may move the center
   ///                       in and out of the screen plane to various effect.
   /// \param radius         Radius in TCS. For screen coordinates, a good
   ///                       default is 0.75.
-  /// \param screenToWorld  Transformation from screen coordinates
+  /// \param screenToTCS  Transformation from screen coordinates
   ///                       to TCS. 'center' and 'radius' are given in TCS.
-  SciBall(const V3& center, float radius, const M44& screenToWorld = M44());
+  SciBall(const V3& center, float radius, const M44& screenToTCS = M44());
   virtual ~SciBall();
   
   /// Initiate an arc ball drag given the mouse click in screen coordinates.
@@ -84,7 +84,7 @@ public:
   void endDrag(const V2& mouseScreenCoords);
 
   /// Retrieves the current transformation in TCS.
-  M44 getTransformation();
+  M44 getTransformation() const;
 
 private:
 
@@ -98,8 +98,24 @@ private:
   V3    mCenter;  /// Center of the arcball in target coordinate system.
   float mRadius;  /// Radius of the arcball in target coordinate system.
 
+  /// \note Both mQNow and mQDown would need to be updated if we allowed
+  ///       default transformations.
+
+  Quat  mQNow;    ///< Current state of the rotation taking into account mouse.
+                  ///< Essentially QDrag * QDown (QDown is a applied first, just
+                  ///< as in matrix multiplication).
+  Quat  mQDown;   ///< State of the rotation since mouse down.
+  Quat  mDrag;    ///< Dragged transform. Knows nothing of any prior 
+                  ///< transformations.
+
+  V3    mVNow;    ///< 
+
+  V3    mVNow;    ///<
+
+
   /// Transform from screen coordinates to the target coordinate system.
-  M44   mScreenTransform;
+  M44   mScreenToTCS;
+
 
 };
 
