@@ -32,16 +32,18 @@
 #ifndef SPIRE_APPSPECIFIC_SCIRUN_SCIBALL_H
 #define SPIRE_APPSPECIFIC_SCIRUN_SCIBALL_H
 
-namespace Spire { 
-namespace SCIRun { 
-
 #include <cstdint>
 #include "Core/Math.h"
+
+namespace Spire { 
+namespace SCIRun { 
 
 /// A re-implementation of Ken Shoemake's arcball camera. SCIRun 4's camera
 /// system is based completely off of Ken's code. The Code appears in
 /// Graphics Gems 4, III.1.
 /// 
+/// If the screenToWorld parameter to the constructor is left as the identity
+/// matrix, then all values are given in screen coordinates.
 /// Screen coordinates are (x \in [-1,1]) and (y \in [-1,1]) where (0,0) is the
 /// center of the screen.
 /// \todo Extend this class to include Mouse screen coords -> object space
@@ -51,21 +53,27 @@ namespace SCIRun {
 class SciBall
 {
 public:
-  /// \param center   Center of the arcball in screen coordinates. Generally
-  ///                 this will always be (0,0,0). But you may move the center
-  ///                 in and out of the screen plane to various effect.
-  /// \param radius   In screen coordinates. A good default is 0.75.
-  SciBall(const V3& center, float radius);
+  /// \param center         Center of the arcball (in screen coordinates if 
+  ///                       screenToWorld = identity). Generally this will 
+  ///                       always be (0,0,0). But you may move the center
+  ///                       in and out of the screen plane to various effect.
+  /// \param radius         If in screen coordinates, a good default is 0.75.
+  /// \param screenToWorld  Transformation to transform screen coordinates
+  ///                       into the appropriate coordinate system in which
+  ///                       'center' and 'radius' are given.
+  SciBall(const V3& center, float radius, const M44& screenToWorld = M44());
   virtual ~SciBall();
   
   /// Initiate an arc ball drag given the mouse click in screen coordinates.
   void beginDrag(const V2& mouseScreenCoords);
 
-  /// Dragging the mouse. Returns the appropriate
+  /// Dragging the mouse.
   void drag(const V2& mouseScreenCoords);
 
   /// End the arc ball drag given the ending coordinates.
   void endDrag(const V2& mouseScreenCoords);
+
+  /// Retrieves the current rotation.
 
 private:
 
@@ -76,11 +84,11 @@ private:
   /// \param
   V3 mouseOnSphere(const V2& mouseScreenCoords);
 
-  /// *Screen coordinates* of the center of the arcball.
-  V3    mScreenCenter;
+  V3    mCenter;  /// Center of the arcball in target coordinate system.
+  float mRadius;  /// Radius of the arcball in target coordinate system.
 
-  /// Screen radius of the arcball.
-  float mScreenRadius;
+  /// Transform from screen coordinates to the target coordinate system.
+  M44   mScreenTransform;
 
 };
 

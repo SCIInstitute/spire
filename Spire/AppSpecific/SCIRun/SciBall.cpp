@@ -34,7 +34,9 @@
 namespace Spire {
 namespace SCIRun {
 
-SciBall::SciBall(const V3& center, float radius)
+SciBall::SciBall(const V3& center, float radius) :
+    mScreenCenter(center),
+    mScreenRadius(radius)
 {
 }
 
