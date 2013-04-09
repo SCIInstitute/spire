@@ -42,6 +42,11 @@ namespace SCIRun {
 /// system is based completely off of Ken's code. The Code appears in
 /// Graphics Gems 4, III.1.
 /// 
+/// Unless specified otherwise, all calculations and variables stored in this
+/// class are relative to the target coordinate system (TCS) for which there is
+/// a transformation from screen space to TCS given by the screenToWorld
+/// constructor parameter.
+///
 /// If the screenToWorld parameter to the constructor is left as the identity
 /// matrix, then all values are given in screen coordinates.
 /// Screen coordinates are (x \in [-1,1]) and (y \in [-1,1]) where (0,0) is the
@@ -50,30 +55,36 @@ namespace SCIRun {
 ///       calculations. That way we can rotate around a particular object.
 ///       May also want to visually represent the sphere when we perform this
 ///       calculation.
+/// \todo Provide method of setting the default orientation of the object.
 class SciBall
 {
 public:
-  /// \param center         Center of the arcball (in screen coordinates if 
+  /// \param center         Center of the arcball in TCS (screen coordinates if 
   ///                       screenToWorld = identity). Generally this will 
   ///                       always be (0,0,0). But you may move the center
   ///                       in and out of the screen plane to various effect.
-  /// \param radius         If in screen coordinates, a good default is 0.75.
-  /// \param screenToWorld  Transformation to transform screen coordinates
-  ///                       into the appropriate coordinate system in which
-  ///                       'center' and 'radius' are given.
+  /// \param radius         Radius in TCS. For screen coordinates, a good
+  ///                       default is 0.75.
+  /// \param screenToWorld  Transformation from screen coordinates
+  ///                       to TCS. 'center' and 'radius' are given in TCS.
   SciBall(const V3& center, float radius, const M44& screenToWorld = M44());
   virtual ~SciBall();
   
   /// Initiate an arc ball drag given the mouse click in screen coordinates.
+  /// \param mouseScreenCoords  Mouse screen coordinates.
   void beginDrag(const V2& mouseScreenCoords);
 
-  /// Dragging the mouse.
+  /// Informs the arcball when the mouse has been dragged.
+  /// \param mouseScreenCoords  Mouse screen coordinates.
   void drag(const V2& mouseScreenCoords);
 
-  /// End the arc ball drag given the ending coordinates.
+  /// End arc ball drag. Must be called to ensure appropriate values are
+  /// generated for the next drag sequence.
+  /// \param mouseScreenCoords  Mouse screen coordinates.
   void endDrag(const V2& mouseScreenCoords);
 
-  /// Retrieves the current rotation.
+  /// Retrieves the current transformation in TCS.
+  M44 getTransformation();
 
 private:
 
