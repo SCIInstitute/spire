@@ -53,5 +53,6 @@ const float   PI    = 3.14159265358979f;
 // Include Sony's vector-math library.
 //#include "AOS_VectorMath.h"
 #include "Vectors.h"
+#include "VectorOps.h"
 
 #endif 

@@ -226,7 +226,7 @@ inline const Vector4<T> select( const Vector4<T> & vec0, const Vector4<T> & vec1
 //------------------------------------------------------------------------------
 
 template <class T>
-inline const Vector3<T><T> mulPerElem( const Vector3<T><T> & vec0, const Vector3<T><T> & vec1 )
+inline const Vector3<T> mulPerElem( const Vector3<T> & vec0, const Vector3<T> & vec1 )
 {
     return Vector3<T>(
         ( vec0.x * vec1.x ),
