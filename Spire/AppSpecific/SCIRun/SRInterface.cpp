@@ -104,6 +104,10 @@ V2 SRInterface::calculateScreenSpaceCoords(const Vector2<int32_t>& mousePos)
   mouseScreenSpace.y = 2.0f * (static_cast<float>(mousePos.y) - windowOriginY)
       / static_cast<float>(mScreenHeight) - 1.0f;
 
+  // We negate the y coordinate because we know that the window origin
+  // is in the upper left hand side.
+  mouseScreenSpace.y = -mouseScreenSpace.y;
+
   return mouseScreenSpace;
 }
 
