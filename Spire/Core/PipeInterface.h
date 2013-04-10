@@ -89,16 +89,17 @@ public:
   virtual void clearGLResources() = 0;
 
 protected:
-  /// Reference to the hub class. Should only be used when on the renderer
-  /// thread.
-  Hub&  mHub;
-
-private:
 
   /// Simple boolean value indicating whether or not this pipe has been 
   /// submitted to Spire. If it has not, then we should error out when making
   /// 'thread safe' calls as the spire thread will not recognize them.
   bool mSubmittedToSpire;
+
+  /// Reference to the hub class. Should only be used when on the renderer
+  /// thread.
+  Hub&  mHub;
+
+private:
 
 };
 
