@@ -38,7 +38,7 @@
 namespace Spire { 
 namespace SCIRun { 
 
-/// A re-implementation of Ken Shoemake's arcball camera. SCIRun 4's camera
+/// A reimplementation of Ken Shoemake's arcball camera. SCIRun 4's camera
 /// system is based completely off of Ken's code. The Code appears in
 /// Graphics Gems 4, III.1.
 /// 
@@ -101,22 +101,28 @@ private:
   /// \note Both mQNow and mQDown would need to be updated if we allowed
   ///       default transformations.
 
-  Quat  mQNow;    ///< Current state of the rotation taking into account mouse.
-                  ///< Essentially QDrag * QDown (QDown is a applied first, just
-                  ///< as in matrix multiplication).
-  Quat  mQDown;   ///< State of the rotation since mouse down.
-  Quat  mDrag;    ///< Dragged transform. Knows nothing of any prior 
-                  ///< transformations.
+  Quat  mQNow;          ///< Current state of the rotation taking into account mouse.
+                        ///< Essentially QDrag * QDown (QDown is a applied first, just
+                        ///< as in matrix multiplication).
+  Quat  mQDown;         ///< State of the rotation since mouse down.
+  Quat  mDrag;          ///< Dragged transform. Knows nothing of any prior 
+                        ///< transformations.
 
-  V3    mVNow;    ///< 
+  V3    mVNow;          ///< Most current TCS position of mouse (during drag).
+  V3    mVDown;         ///< TCS position of mouse when the drag was begun.
+  V3    mVSphereFrom;   ///< vDown mapped to the sphere of 'mRadius' centered at 'mCenter' in TCS.
+  V3    mVSphereTo;     ///< vNow mapped to the sphere of 'mRadius' centered at 'mCenter' in TCS.
 
-  V3    mVNow;    ///<
+  M44   mNow;           ///< Matrix representing the current rotation.
+  M44   mDown;          ///< Matrix representing the rotation when the mouse was first clicked.
 
+  bool  mDragging;      ///< True if the user is currently dragging the mouse.
+
+  /// \todo Add in constraint sets (you can display handles and constrain
+  ///       rotations along those handles).
 
   /// Transform from screen coordinates to the target coordinate system.
   M44   mScreenToTCS;
-
-
 };
 
 } // namespace SCIRun

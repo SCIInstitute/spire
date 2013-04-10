@@ -39,6 +39,14 @@ SciBall::SciBall(const V3& center, float radius, const M44& screenToTCS) :
     mRadius(radius),
     mScreenToTCS(screenToTCS)
 {
+  Quat qOne(0.0f, 0.0f, 0.0f, 1.0f);
+  V3   vZero(0.0f, 0.0f, 0.0f);
+
+  mVDown    = vZero;
+  mVNow     = vZero;
+  mQDown    = qOne;
+  mQNow     = qOne;
+  mDragging = false;
 }
 
 SciBall::~SciBall()
@@ -47,7 +55,29 @@ SciBall::~SciBall()
 
 V3 SciBall::mouseOnSphere(const V2& mouseScreenCoords)
 {
-  return V3();
+  V3 ballMouse;
+
+  // (m - C) / R
+  ballMouse.x = (mouseScreenCoords.x - mCenter.x) / mRadius;
+  ballMouse.y = (mouseScreenCoords.y - mCenter.y) / mRadius;
+
+  float mag = VecOps::dot(ballMouse, ballMouse);
+
+  if (mag > 1.0f)
+  {
+    // Since we are outside of the sphere, map to the visible boundary of
+    // the sphere.
+    ballMouse *= 1.0f / sqrtf(mag);
+    ballMouse.z = 0.0f;
+  }
+  else
+  {
+    // We are not at the edge of the sphere, we are inside of it.
+    // Essentially, we are normalizing the vector.
+    ballMouse.z = sqrt(1.0f - mag);
+  }
+
+  return ballMouse;
 }
 
 void SciBall::beginDrag(const V2& mouseScreenCoords)
