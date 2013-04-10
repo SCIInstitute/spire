@@ -39,7 +39,6 @@
 namespace Spire {
 namespace SCIRun {
 
-class ArcBall;
 class SRCamera;
 class SciBall;
 

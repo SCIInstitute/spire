@@ -132,7 +132,6 @@ void SRInterface::inputMouseWheel(int32_t delta)
   // Reason why we subtract: Feels more natural to me =/.
   mCamDistance -= static_cast<float>(delta) / 100.0f;
 
-  /// \todo Need to recompute entire camera transform from ArcBall.
   M44 camRot = mSciBall->getTransformation();
   M44 finalTrafo = camRot * M44::rotationY(PI);
   finalTrafo.setTranslation(camRot.getCol2().xyz() * mCamDistance);
