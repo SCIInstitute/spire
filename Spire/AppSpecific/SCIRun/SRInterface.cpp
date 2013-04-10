@@ -31,7 +31,6 @@
 
 #include "Interface.h"
 #include "SRInterface.h"
-#include "ArcBall.h"
 #include "SciBall.h"
 #include "SRCommonUniforms.h"
 #include "SRCamera.h"
@@ -50,24 +49,19 @@ SRInterface::SRInterface(std::shared_ptr<Context> context,
                          bool createThread, LogFunction logFP) :
     Interface(context, shaderDirs, createThread, logFP),
     mStuInterface(new StuInterface(*this)),
-    mArcBall(new ArcBall),
     mSciBall(new SciBall(V3(0.0f, 0.0f, 0.0f), 1.0f)),
     mCamera(new SRCamera(*this)),
     mCamDistance(7.0f),
     mScreenWidth(640),
     mScreenHeight(480)
 {
-  //mCamWorld.setTranslation(V3(0.0f, 0.0f, 5.0f));
-  //mArcBall->setUseTranslation(true);
-  //mArcBall->setTranslation(mCamWorld);
-  mArcBall->setRadius(2.0f);
-
   // Add stu pipe to the current pipes.
   pipePushBack(mStuInterface);
 
   // Default camera (to be done AFTER stu pipe is added).
-  M44 finalTrafo = mCamWorld * M44::rotationY(PI);
-  finalTrafo.setTranslation(mCamWorld.getCol2().xyz() * mCamDistance);
+  M44 camRot = mSciBall->getTransformation();
+  M44 finalTrafo = camRot * M44::rotationY(PI);
+  finalTrafo.setTranslation(camRot.getCol2().xyz() * mCamDistance);
   mCamera->setViewTransform(finalTrafo);
 }
 
@@ -81,9 +75,6 @@ void SRInterface::eventResize(size_t width, size_t height)
 {
   mScreenWidth = width;
   mScreenHeight = height; 
-
-  // Set viewport?
-  mArcBall->setWindowSize(width, height);
 
   // Ensure glViewport is called appropriately.
   Hub::RemoteFunction resizeFun =
@@ -104,10 +95,8 @@ V2 SRInterface::calculateScreenSpaceCoords(const Vector2<int32_t>& mousePos)
   mouseScreenSpace.y = 2.0f * (static_cast<float>(mousePos.y) - windowOriginY)
       / static_cast<float>(mScreenHeight) - 1.0f;
 
-  // We negate the y coordinate because we know that the window origin
-  // is in the upper left hand side.
+  // Rotation with flipped axes feels much more natural.
   mouseScreenSpace.x = -mouseScreenSpace.x;
-  //mouseScreenSpace.y = -mouseScreenSpace.y;
 
   return mouseScreenSpace;
 }
@@ -116,8 +105,6 @@ V2 SRInterface::calculateScreenSpaceCoords(const Vector2<int32_t>& mousePos)
 void SRInterface::inputMouseDown(const Vector2<int32_t>& pos)
 {
   /// \todo Only do arc ball if the correct mouse button is down!
-  mArcBall->click(pos);
-
   V2 mouseScreenSpace = calculateScreenSpaceCoords(pos);
   mSciBall->beginDrag(mouseScreenSpace);
 }
@@ -128,29 +115,13 @@ void SRInterface::inputMouseMove(const Vector2<int32_t>& pos)
   V2 mouseScreenSpace = calculateScreenSpaceCoords(pos);
 
   mSciBall->drag(mouseScreenSpace);
-  M44 rot = mSciBall->getTransformation();
+  M44 camRot = mSciBall->getTransformation();
 
-  /// \todo Add in components from dolly and pan.
-  ///       I believe they should be added in relative to the coordinate system
-  ///       of the arcball.
-  ///       There is a primitive version of the dolly mechanism given below.
-  mCamWorld = rot;
+  // Reorient camera down the Z axis.
+  M44 finalTrafo = camRot * M44::rotationY(PI);
 
-  //// ArcBall calculations.
-  ///// \todo Only do arc ball if the correct mouse button is down!
-  //Quat q = mArcBall->drag(pos);
-  //M44 rot = q.computeRotation();
-  //mCamWorld = mCamWorld * rot;
-
-  //mArcBall->click(pos);
-
-  // Make rotation relative to the origin.
-  // Super big hack, change when demo is over.
-  // Pan is just the distance along the camera's coordinate system's x/y.
-
-  // The y rotation is to re-orient the camera so it is looking down the z axis.
-  M44 finalTrafo = mCamWorld * M44::rotationY(PI);
-  finalTrafo.setTranslation(mCamWorld.getCol2().xyz() * mCamDistance);
+  // Add camera dolly.
+  finalTrafo.setTranslation(camRot.getCol2().xyz() * mCamDistance);
 
   mCamera->setViewTransform(finalTrafo);
 }
@@ -162,8 +133,9 @@ void SRInterface::inputMouseWheel(int32_t delta)
   mCamDistance -= static_cast<float>(delta) / 100.0f;
 
   /// \todo Need to recompute entire camera transform from ArcBall.
-  M44 finalTrafo = mCamWorld * M44::rotationY(PI);
-  finalTrafo.setTranslation(mCamWorld.getCol2().xyz() * mCamDistance);
+  M44 camRot = mSciBall->getTransformation();
+  M44 finalTrafo = camRot * M44::rotationY(PI);
+  finalTrafo.setTranslation(camRot.getCol2().xyz() * mCamDistance);
 
   mCamera->setViewTransform(finalTrafo);
 }

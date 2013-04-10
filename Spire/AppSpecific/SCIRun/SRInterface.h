@@ -88,10 +88,8 @@ private:
   size_t                    mScreenWidth;   ///< Screen width in pixels.
   size_t                    mScreenHeight;  ///< Screen height in pixels.
 
-  std::unique_ptr<ArcBall>  mArcBall;       ///< ArcBall delta transform calculator.
   std::unique_ptr<SRCamera> mCamera;        ///< Primary camera.
   std::unique_ptr<SciBall>  mSciBall;       ///< SCIRun 4's arcball camera.
-  M44                       mCamWorld;      ///< Camera in world space.
 
   float                     mCamDistance;   ///< Camera's distance from the origin.
 };
