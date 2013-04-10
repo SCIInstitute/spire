@@ -78,11 +78,6 @@ public:
   /// \param mouseScreenCoords  Mouse screen coordinates.
   void drag(const V2& mouseScreenCoords);
 
-  /// End arc ball drag. Must be called to ensure appropriate values are
-  /// generated for the next drag sequence.
-  /// \param mouseScreenCoords  Mouse screen coordinates.
-  void endDrag(const V2& mouseScreenCoords);
-
   /// Retrieves the current transformation in TCS.
   /// Obtains full transformation of object in question. If the arc ball is 
   /// being used to control camera rotation, then this will contain all

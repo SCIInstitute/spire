@@ -174,7 +174,6 @@ void GLWidget::initializeGL()
 //------------------------------------------------------------------------------
 Spire::SCIRun::SRInterface::MouseButton GLWidget::getSpireButton(QMouseEvent* event)
 {
-  // Extract appropriate key.
   Spire::SCIRun::SRInterface::MouseButton btn = Spire::SCIRun::SRInterface::MOUSE_NONE;
   if (event->buttons() & Qt::LeftButton)
     btn = Spire::SCIRun::SRInterface::MOUSE_LEFT;

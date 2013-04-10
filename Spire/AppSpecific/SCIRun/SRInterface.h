@@ -90,7 +90,11 @@ public:
 
 private:
 
+  /// Calculates the screen space coordinates given the window coordinates.
   V2 calculateScreenSpaceCoords(const Vector2<int32_t>& mousePos);
+
+  /// Recalculates camera transform using the most relevant data.
+  void buildAndApplyCameraTransform();
 
   std::shared_ptr<Spire::StuInterface>    mStuInterface;
 
@@ -99,6 +103,13 @@ private:
 
   std::unique_ptr<SRCamera> mCamera;        ///< Primary camera.
   std::unique_ptr<SciBall>  mSciBall;       ///< SCIRun 4's arcball camera.
+
+
+  V2                        mTransClick;    ///< Start of the translation.
+  V2                        mTransDown;     ///< Translation delta when the mouse was down.
+  V2                        mTransNow;      ///< Accumulators for the translation.
+
+  MouseButton               mActiveDrag;    ///< The button we are currently dragging.
 
   float                     mCamDistance;   ///< Camera's distance from the origin.
 };

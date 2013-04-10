@@ -112,31 +112,34 @@ void SRInterface::inputMouseDown(const Vector2<int32_t>& pos, MouseButton btn)
   else if (btn == MOUSE_RIGHT)
   {
     // Store translation starting position.
-
+    mTransClick = calculateScreenSpaceCoords(pos);
+    mTransDown = mTransNow;
   }
+  mActiveDrag = btn;
 }
 
 //------------------------------------------------------------------------------
 void SRInterface::inputMouseMove(const Vector2<int32_t>& pos, MouseButton btn)
 {
-  if (btn == MOUSE_LEFT)
+  if (mActiveDrag == btn)
   {
-    V2 mouseScreenSpace = calculateScreenSpaceCoords(pos);
+    if (btn == MOUSE_LEFT)
+    {
+      V2 mouseScreenSpace = calculateScreenSpaceCoords(pos);
+      mSciBall->drag(mouseScreenSpace);
 
-    mSciBall->drag(mouseScreenSpace);
-    M44 camRot = mSciBall->getTransformation();
+      buildAndApplyCameraTransform();
+    }
+    else if (btn == MOUSE_RIGHT)
+    {
+      /// \todo Perform translation by delta.
+      V2 curTrans = calculateScreenSpaceCoords(pos);
+      V2 delta = curTrans - mTransClick;
 
-    // Reorient camera down the Z axis.
-    M44 finalTrafo = camRot * M44::rotationY(PI);
-
-    // Add camera dolly.
-    finalTrafo.setTranslation(camRot.getCol2().xyz() * mCamDistance);
-
-    mCamera->setViewTransform(finalTrafo);
-  }
-  else if (btn == MOUSE_RIGHT)
-  {
-    /// \todo Perform translation by delta.
+      mTransNow = mTransDown + (-delta);
+      
+      buildAndApplyCameraTransform();
+    }
   }
 }
 
@@ -145,19 +148,26 @@ void SRInterface::inputMouseWheel(int32_t delta)
 {
   // Reason why we subtract: Feels more natural to me =/.
   mCamDistance -= static_cast<float>(delta) / 100.0f;
-
-  M44 camRot = mSciBall->getTransformation();
-  M44 finalTrafo = camRot * M44::rotationY(PI);
-  finalTrafo.setTranslation(camRot.getCol2().xyz() * mCamDistance);
-
-  mCamera->setViewTransform(finalTrafo);
+  buildAndApplyCameraTransform();
 }
 
 //------------------------------------------------------------------------------
 void SRInterface::inputMouseUp(const Vector2<int32_t>& pos, MouseButton btn)
 {
-  V2 mouseScreenSpace = calculateScreenSpaceCoords(pos);
-  mSciBall->endDrag(mouseScreenSpace);
+}
+
+//------------------------------------------------------------------------------
+void SRInterface::buildAndApplyCameraTransform()
+{
+  M44 camRot      = mSciBall->getTransformation();
+  M44 finalTrafo  = camRot * M44::rotationY(PI); // Reorient camera down the Z axis.
+
+  // Camera dolly (zoom)
+  finalTrafo.setTranslation(  camRot.getCol2().xyz() * mCamDistance
+                            + camRot.getCol0().xyz() * mTransNow.x
+                            + camRot.getCol1().xyz() * mTransNow.y);
+
+  mCamera->setViewTransform(finalTrafo);
 }
 
 } // namespace SCIRun

@@ -85,12 +85,19 @@ V3 SciBall::mouseOnSphere(const V3& tscMouse)
 //------------------------------------------------------------------------------
 void SciBall::beginDrag(const V2& msc)
 {
+  // The next two lines are usually a part of end drag. But end drag introduces
+  // too much statefullness, so we are shortcircuiting it.
+  mQDown      = mQNow;
+  mMatDown    = mMatNow;
+
+  // Normal 'begin' code.
   mVDown      = mScreenToTCS * V3(msc.x, msc.y, 0.0f);
 }
 
 //------------------------------------------------------------------------------
 void SciBall::drag(const V2& msc)
 {
+  // Regular drag code to follow...
   mVNow       = mScreenToTCS * V3(msc.x, msc.y, 0.0f);
   mVSphereFrom= mouseOnSphere(mVDown);
   mVSphereTo  = mouseOnSphere(mVNow);
@@ -108,13 +115,6 @@ void SciBall::drag(const V2& msc)
   q.z = -q.z;
   q.w =  q.w;
   mMatNow = q.computeRotation();
-}
-
-//------------------------------------------------------------------------------
-void SciBall::endDrag(const V2& msc)
-{
-  mQDown      = mQNow;
-  mMatDown    = mMatNow;
 }
 
 //------------------------------------------------------------------------------
