@@ -136,7 +136,7 @@ void SRInterface::inputMouseMove(const Vector2<int32_t>& pos, MouseButton btn)
       V2 curTrans = calculateScreenSpaceCoords(pos);
       V2 delta = curTrans - mTransClick;
 
-      mTransNow = mTransDown + (-delta);
+      mTransNow = mTransDown + (-delta) * 2.5f;
       
       buildAndApplyCameraTransform();
     }
@@ -162,7 +162,6 @@ void SRInterface::buildAndApplyCameraTransform()
   M44 camRot      = mSciBall->getTransformation();
   M44 finalTrafo  = camRot * M44::rotationY(PI); // Reorient camera down the Z axis.
 
-  // Camera dolly (zoom)
   finalTrafo.setTranslation(  camRot.getCol2().xyz() * mCamDistance
                             + camRot.getCol0().xyz() * mTransNow.x
                             + camRot.getCol1().xyz() * mTransNow.y);
