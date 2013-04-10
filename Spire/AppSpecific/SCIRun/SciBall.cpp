@@ -34,6 +34,7 @@
 namespace Spire {
 namespace SCIRun {
 
+//------------------------------------------------------------------------------
 SciBall::SciBall(const V3& center, float radius, const M44& screenToTCS) :
     mCenter(center),
     mRadius(radius),
@@ -49,17 +50,19 @@ SciBall::SciBall(const V3& center, float radius, const M44& screenToTCS) :
   mDragging = false;
 }
 
+//------------------------------------------------------------------------------
 SciBall::~SciBall()
 {
 }
 
-V3 SciBall::mouseOnSphere(const V2& mouseScreenCoords)
+//------------------------------------------------------------------------------
+V3 SciBall::mouseOnSphere(const V3& tscMouse)
 {
   V3 ballMouse;
 
   // (m - C) / R
-  ballMouse.x = (mouseScreenCoords.x - mCenter.x) / mRadius;
-  ballMouse.y = (mouseScreenCoords.y - mCenter.y) / mRadius;
+  ballMouse.x = (tscMouse.x - mCenter.x) / mRadius;
+  ballMouse.y = (tscMouse.y - mCenter.y) / mRadius;
 
   float mag = VecOps::dot(ballMouse, ballMouse);
 
@@ -73,28 +76,66 @@ V3 SciBall::mouseOnSphere(const V2& mouseScreenCoords)
   else
   {
     // We are not at the edge of the sphere, we are inside of it.
-    // Essentially, we are normalizing the vector.
+    // Essentially, we are normalizing the vector by adding the missing z
+    // component.
     ballMouse.z = sqrt(1.0f - mag);
   }
 
   return ballMouse;
 }
 
-void SciBall::beginDrag(const V2& mouseScreenCoords)
+//------------------------------------------------------------------------------
+void SciBall::beginDrag(const V2& msc)
 {
+  mDragging   = true;
+  mVDown      = mScreenToTCS * V3(msc.x, msc.y, 0.0f);
 }
 
-void SciBall::drag(const V2& mouseScreenCoords)
+//------------------------------------------------------------------------------
+void SciBall::drag(const V2& msc)
 {
+  mVNow       = mScreenToTCS * V3(msc.x, msc.y, 0.0f);
+  mVSphereFrom= mouseOnSphere(mVDown);
+  mVSphereTo  = mouseOnSphere(mVNow);
+  if (mDragging)
+  {
+    /// \todo Perform constraints here.
+
+    // Construct a quaternion from two points on the unit sphere.
+    mQDrag = quatFromUnitSphere(mVSphereFrom, mVSphereTo); 
+    mQNow = mQDrag * mQNow;
+  }
+  else
+  {
+    /// \todo Perform constraints here.
+  }
+
+  mMatNow = mQNow.computeRotation();
 }
 
-void SciBall::endDrag(const V2& mouseScreenCoords)
+//------------------------------------------------------------------------------
+void SciBall::endDrag(const V2& msc)
 {
+  mDragging   = false;
+  mQDown      = mQNow;
+  mMatDown    = mMatNow;
 }
 
+//------------------------------------------------------------------------------
+Quat SciBall::quatFromUnitSphere(const V3& from, const V3& to)
+{
+  Quat q;
+  q.x = from.y*to.z - from.z*to.y;
+  q.y = from.z*to.x - from.x*to.z;
+  q.z = from.x*to.y - from.y*to.x;
+  q.w = from.x*to.x + from.y*to.y + from.z*to.z;
+  return q;
+}
+
+//------------------------------------------------------------------------------
 M44 SciBall::getTransformation() const
 {
-  return M44();
+  return mMatNow;
 }
 
 

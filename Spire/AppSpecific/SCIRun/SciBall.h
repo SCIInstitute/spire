@@ -84,16 +84,19 @@ public:
   void endDrag(const V2& mouseScreenCoords);
 
   /// Retrieves the current transformation in TCS.
+  /// Obtains full transformation of object in question. If the arc ball is 
+  /// being used to control camera rotation, then this will contain all
+  /// concatenated camera transformations.
   M44 getTransformation() const;
 
 private:
 
   /// Calculates our position on the ArcBall from 2D mouse position.
-  /// \param mousePos   Screen coordinates of mouse click. Screen coordinates
-  ///                   are (x \in [-1,1]) and (y \in [-1,1]) where (0,0) is
-  ///                   the center of the screen.
-  /// \param
-  V3 mouseOnSphere(const V2& mouseScreenCoords);
+  /// \param tscMouse   TSC coordinates of mouse click.
+  V3 mouseOnSphere(const V3& tscMouse);
+
+  /// Construct a unit quaternion from two points on the unit sphere.
+  static Quat quatFromUnitSphere(const V3& from, const V3& to);
 
   V3    mCenter;  /// Center of the arcball in target coordinate system.
   float mRadius;  /// Radius of the arcball in target coordinate system.
@@ -105,7 +108,7 @@ private:
                         ///< Essentially QDrag * QDown (QDown is a applied first, just
                         ///< as in matrix multiplication).
   Quat  mQDown;         ///< State of the rotation since mouse down.
-  Quat  mDrag;          ///< Dragged transform. Knows nothing of any prior 
+  Quat  mQDrag;         ///< Dragged transform. Knows nothing of any prior 
                         ///< transformations.
 
   V3    mVNow;          ///< Most current TCS position of mouse (during drag).
@@ -113,8 +116,8 @@ private:
   V3    mVSphereFrom;   ///< vDown mapped to the sphere of 'mRadius' centered at 'mCenter' in TCS.
   V3    mVSphereTo;     ///< vNow mapped to the sphere of 'mRadius' centered at 'mCenter' in TCS.
 
-  M44   mNow;           ///< Matrix representing the current rotation.
-  M44   mDown;          ///< Matrix representing the rotation when the mouse was first clicked.
+  M44   mMatNow;        ///< Matrix representing the current rotation.
+  M44   mMatDown;       ///< Matrix representing the rotation when the mouse was first clicked.
 
   bool  mDragging;      ///< True if the user is currently dragging the mouse.
 
