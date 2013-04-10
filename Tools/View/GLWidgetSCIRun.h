@@ -73,6 +73,9 @@ protected slots:
 
 private:
 
+  /// Retrieve SRInterface mouse button from mouse event.
+  Spire::SCIRun::SRInterface::MouseButton getSpireButton(QMouseEvent* event);
+
   std::shared_ptr<GLContext>                  mContext;       ///< Graphics context.
   std::shared_ptr<Spire::SCIRun::SRInterface> mSpire;         ///< Interface to spire.
 

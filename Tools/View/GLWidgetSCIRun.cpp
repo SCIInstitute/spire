@@ -31,6 +31,7 @@
 /// \brief  Not sure this file should go in Modules/Render. But it is an 
 ///         auxiliary file to the ViewScene render module.
 
+#include <iostream>
 #include <cstdlib>
 #include <QMouseEvent>
 #include <QWheelEvent>
@@ -171,24 +172,40 @@ void GLWidget::initializeGL()
 }
 
 //------------------------------------------------------------------------------
+Spire::SCIRun::SRInterface::MouseButton GLWidget::getSpireButton(QMouseEvent* event)
+{
+  // Extract appropriate key.
+  Spire::SCIRun::SRInterface::MouseButton btn = Spire::SCIRun::SRInterface::MOUSE_NONE;
+  if (event->buttons() & Qt::LeftButton)
+    btn = Spire::SCIRun::SRInterface::MOUSE_LEFT;
+  else if (event->buttons() & Qt::RightButton)
+    btn = Spire::SCIRun::SRInterface::MOUSE_RIGHT;
+  else if (event->buttons() & Qt::MidButton)
+    btn = Spire::SCIRun::SRInterface::MOUSE_MIDDLE;
+  
+  return btn;
+}
+
+//------------------------------------------------------------------------------
 void GLWidget::mouseMoveEvent(QMouseEvent* event)
 {
-  /// \todo Include specific button info.
-  mSpire->inputMouseMove(Vector2<int32_t>(event->x(), event->y()));
+  // Extract appropriate key.
+  Spire::SCIRun::SRInterface::MouseButton btn = getSpireButton(event);
+  mSpire->inputMouseMove(Vector2<int32_t>(event->x(), event->y()), btn);
 }
 
 //------------------------------------------------------------------------------
 void GLWidget::mousePressEvent(QMouseEvent* event)
 {
-  /// \todo Include specific button info.
-  mSpire->inputMouseDown(Vector2<int32_t>(event->x(), event->y()));
+  Spire::SCIRun::SRInterface::MouseButton btn = getSpireButton(event);
+  mSpire->inputMouseDown(Vector2<int32_t>(event->x(), event->y()), btn);
 }
 
 //------------------------------------------------------------------------------
 void GLWidget::mouseReleaseEvent(QMouseEvent* event)
 {
-  /// \todo Include specific button info.
-  mSpire->inputMouseUp(Vector2<int32_t>(event->x(), event->y()));
+  Spire::SCIRun::SRInterface::MouseButton btn = getSpireButton(event);
+  mSpire->inputMouseUp(Vector2<int32_t>(event->x(), event->y()), btn);
 }
 
 //------------------------------------------------------------------------------

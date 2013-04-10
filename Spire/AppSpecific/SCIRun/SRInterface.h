@@ -54,13 +54,23 @@ public:
               bool createThread, LogFunction logFP = LogFunction());
   virtual ~SRInterface();
 
+  /// Call this whenever the window is resized. This will modify the viewport
+  /// appropriately.
   void eventResize(size_t width, size_t height);
 
   /// \todo Specify what buttons are pressed.
   /// @{
-  void inputMouseDown(const Vector2<int32_t>& pos);
-  void inputMouseMove(const Vector2<int32_t>& pos);
-  void inputMouseUp(const Vector2<int32_t>& pos);
+  enum MouseButton
+  {
+    MOUSE_NONE,
+    MOUSE_LEFT,
+    MOUSE_RIGHT,
+    MOUSE_MIDDLE,
+  };
+
+  void inputMouseDown(const Vector2<int32_t>& pos, MouseButton btn);
+  void inputMouseMove(const Vector2<int32_t>& pos, MouseButton btn);
+  void inputMouseUp(const Vector2<int32_t>& pos, MouseButton btn);
   /// @}
 
   void inputMouseWheel(int32_t delta);

@@ -102,28 +102,42 @@ V2 SRInterface::calculateScreenSpaceCoords(const Vector2<int32_t>& mousePos)
 }
 
 //------------------------------------------------------------------------------
-void SRInterface::inputMouseDown(const Vector2<int32_t>& pos)
+void SRInterface::inputMouseDown(const Vector2<int32_t>& pos, MouseButton btn)
 {
-  /// \todo Only do arc ball if the correct mouse button is down!
-  V2 mouseScreenSpace = calculateScreenSpaceCoords(pos);
-  mSciBall->beginDrag(mouseScreenSpace);
+  if (btn == MOUSE_LEFT)
+  {
+    V2 mouseScreenSpace = calculateScreenSpaceCoords(pos);
+    mSciBall->beginDrag(mouseScreenSpace);
+  }
+  else if (btn == MOUSE_RIGHT)
+  {
+    // Store translation starting position.
+
+  }
 }
 
 //------------------------------------------------------------------------------
-void SRInterface::inputMouseMove(const Vector2<int32_t>& pos)
+void SRInterface::inputMouseMove(const Vector2<int32_t>& pos, MouseButton btn)
 {
-  V2 mouseScreenSpace = calculateScreenSpaceCoords(pos);
+  if (btn == MOUSE_LEFT)
+  {
+    V2 mouseScreenSpace = calculateScreenSpaceCoords(pos);
 
-  mSciBall->drag(mouseScreenSpace);
-  M44 camRot = mSciBall->getTransformation();
+    mSciBall->drag(mouseScreenSpace);
+    M44 camRot = mSciBall->getTransformation();
 
-  // Reorient camera down the Z axis.
-  M44 finalTrafo = camRot * M44::rotationY(PI);
+    // Reorient camera down the Z axis.
+    M44 finalTrafo = camRot * M44::rotationY(PI);
 
-  // Add camera dolly.
-  finalTrafo.setTranslation(camRot.getCol2().xyz() * mCamDistance);
+    // Add camera dolly.
+    finalTrafo.setTranslation(camRot.getCol2().xyz() * mCamDistance);
 
-  mCamera->setViewTransform(finalTrafo);
+    mCamera->setViewTransform(finalTrafo);
+  }
+  else if (btn == MOUSE_RIGHT)
+  {
+    /// \todo Perform translation by delta.
+  }
 }
 
 //------------------------------------------------------------------------------
@@ -140,7 +154,7 @@ void SRInterface::inputMouseWheel(int32_t delta)
 }
 
 //------------------------------------------------------------------------------
-void SRInterface::inputMouseUp(const Vector2<int32_t>& pos)
+void SRInterface::inputMouseUp(const Vector2<int32_t>& pos, MouseButton btn)
 {
   V2 mouseScreenSpace = calculateScreenSpaceCoords(pos);
   mSciBall->endDrag(mouseScreenSpace);
