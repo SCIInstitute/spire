@@ -51,7 +51,7 @@ SRInterface::SRInterface(std::shared_ptr<Context> context,
     Interface(context, shaderDirs, createThread, logFP),
     mStuInterface(new StuInterface(*this)),
     mArcBall(new ArcBall),
-    mSciBall(new SciBall(V3(0.0f, 0.0f, 0.0f), 0.75)),
+    mSciBall(new SciBall(V3(0.0f, 0.0f, 0.0f), 1.0f)),
     mCamera(new SRCamera(*this)),
     mCamDistance(7.0f),
     mScreenWidth(640),
@@ -106,7 +106,8 @@ V2 SRInterface::calculateScreenSpaceCoords(const Vector2<int32_t>& mousePos)
 
   // We negate the y coordinate because we know that the window origin
   // is in the upper left hand side.
-  mouseScreenSpace.y = -mouseScreenSpace.y;
+  mouseScreenSpace.x = -mouseScreenSpace.x;
+  //mouseScreenSpace.y = -mouseScreenSpace.y;
 
   return mouseScreenSpace;
 }
