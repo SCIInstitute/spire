@@ -47,7 +47,6 @@ SciBall::SciBall(const V3& center, float radius, const M44& screenToTCS) :
   mVNow     = vZero;
   mQDown    = qOne;
   mQNow     = qOne;
-  mDragging = false;
 }
 
 //------------------------------------------------------------------------------
@@ -65,7 +64,6 @@ V3 SciBall::mouseOnSphere(const V3& tscMouse)
   ballMouse.y = (tscMouse.y - mCenter.y) / mRadius;
 
   float mag = VecOps::dot(ballMouse, ballMouse);
-
   if (mag > 1.0f)
   {
     // Since we are outside of the sphere, map to the visible boundary of
@@ -87,7 +85,6 @@ V3 SciBall::mouseOnSphere(const V3& tscMouse)
 //------------------------------------------------------------------------------
 void SciBall::beginDrag(const V2& msc)
 {
-  mDragging   = true;
   mVDown      = mScreenToTCS * V3(msc.x, msc.y, 0.0f);
 }
 
@@ -97,18 +94,12 @@ void SciBall::drag(const V2& msc)
   mVNow       = mScreenToTCS * V3(msc.x, msc.y, 0.0f);
   mVSphereFrom= mouseOnSphere(mVDown);
   mVSphereTo  = mouseOnSphere(mVNow);
-  if (mDragging)
-  {
-    /// \todo Perform constraints here.
 
-    // Construct a quaternion from two points on the unit sphere.
-    mQDrag = quatFromUnitSphere(mVSphereFrom, mVSphereTo); 
-    mQNow = mQDrag * mQNow;
-  }
-  else
-  {
-    /// \todo Perform constraints here.
-  }
+  /// \todo Perform constraints here.
+
+  // Construct a quaternion from two points on the unit sphere.
+  mQDrag = quatFromUnitSphere(mVSphereFrom, mVSphereTo); 
+  mQNow = mQDrag * mQDown;
 
   mMatNow = mQNow.computeRotation();
 }
@@ -116,7 +107,6 @@ void SciBall::drag(const V2& msc)
 //------------------------------------------------------------------------------
 void SciBall::endDrag(const V2& msc)
 {
-  mDragging   = false;
   mQDown      = mQNow;
   mMatDown    = mMatNow;
 }

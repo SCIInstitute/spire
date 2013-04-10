@@ -119,8 +119,6 @@ private:
   M44   mMatNow;        ///< Matrix representing the current rotation.
   M44   mMatDown;       ///< Matrix representing the rotation when the mouse was first clicked.
 
-  bool  mDragging;      ///< True if the user is currently dragging the mouse.
-
   /// \todo Add in constraint sets (you can display handles and constrain
   ///       rotations along those handles).
 

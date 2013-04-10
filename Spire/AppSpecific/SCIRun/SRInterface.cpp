@@ -32,6 +32,7 @@
 #include "Interface.h"
 #include "SRInterface.h"
 #include "ArcBall.h"
+#include "SciBall.h"
 #include "SRCommonUniforms.h"
 #include "SRCamera.h"
 
@@ -50,6 +51,7 @@ SRInterface::SRInterface(std::shared_ptr<Context> context,
     Interface(context, shaderDirs, createThread, logFP),
     mStuInterface(new StuInterface(*this)),
     mArcBall(new ArcBall),
+    mSciBall(new SciBall(V3(0.0f, 0.0f, 0.0f), 0.75)),
     mCamera(new SRCamera(*this)),
     mCamDistance(7.0f),
     mScreenWidth(640),
@@ -67,7 +69,6 @@ SRInterface::SRInterface(std::shared_ptr<Context> context,
   M44 finalTrafo = mCamWorld * M44::rotationY(PI);
   finalTrafo.setTranslation(mCamWorld.getCol2().xyz() * mCamDistance);
   mCamera->setViewTransform(finalTrafo);
-
 }
 
 //------------------------------------------------------------------------------
@@ -91,23 +92,52 @@ void SRInterface::eventResize(size_t width, size_t height)
 }
 
 //------------------------------------------------------------------------------
+V2 SRInterface::calculateScreenSpaceCoords(const Vector2<int32_t>& mousePos)
+{
+  float windowOriginX = 0.0f;
+  float windowOriginY = 0.0f;
+
+  // Transform incoming mouse coordinates into screen space.
+  V2 mouseScreenSpace;
+  mouseScreenSpace.x = 2.0f * (static_cast<float>(mousePos.x) - windowOriginX) 
+      / static_cast<float>(mScreenWidth) - 1.0f;
+  mouseScreenSpace.y = 2.0f * (static_cast<float>(mousePos.y) - windowOriginY)
+      / static_cast<float>(mScreenHeight) - 1.0f;
+
+  return mouseScreenSpace;
+}
+
+//------------------------------------------------------------------------------
 void SRInterface::inputMouseDown(const Vector2<int32_t>& pos)
 {
   /// \todo Only do arc ball if the correct mouse button is down!
   mArcBall->click(pos);
+
+  V2 mouseScreenSpace = calculateScreenSpaceCoords(pos);
+  mSciBall->beginDrag(mouseScreenSpace);
 }
 
 //------------------------------------------------------------------------------
 void SRInterface::inputMouseMove(const Vector2<int32_t>& pos)
 {
-  /// \todo Change back to old SCI-Run 4.0 camera interaction.
+  V2 mouseScreenSpace = calculateScreenSpaceCoords(pos);
 
-  /// \todo Only do arc ball if the correct mouse button is down!
-  Quat q = mArcBall->drag(pos);
-  M44 rot = q.computeRotation();
-  mCamWorld = mCamWorld * rot;
+  mSciBall->drag(mouseScreenSpace);
+  M44 rot = mSciBall->getTransformation();
 
-  mArcBall->click(pos);
+  /// \todo Add in components from dolly and pan.
+  ///       I believe they should be added in relative to the coordinate system
+  ///       of the arcball.
+  ///       There is a primitive version of the dolly mechanism given below.
+  mCamWorld = rot;
+
+  //// ArcBall calculations.
+  ///// \todo Only do arc ball if the correct mouse button is down!
+  //Quat q = mArcBall->drag(pos);
+  //M44 rot = q.computeRotation();
+  //mCamWorld = mCamWorld * rot;
+
+  //mArcBall->click(pos);
 
   // Make rotation relative to the origin.
   // Super big hack, change when demo is over.
@@ -126,6 +156,7 @@ void SRInterface::inputMouseWheel(int32_t delta)
   // Reason why we subtract: Feels more natural to me =/.
   mCamDistance -= static_cast<float>(delta) / 100.0f;
 
+  /// \todo Need to recompute entire camera transform from ArcBall.
   M44 finalTrafo = mCamWorld * M44::rotationY(PI);
   finalTrafo.setTranslation(mCamWorld.getCol2().xyz() * mCamDistance);
 
@@ -135,7 +166,8 @@ void SRInterface::inputMouseWheel(int32_t delta)
 //------------------------------------------------------------------------------
 void SRInterface::inputMouseUp(const Vector2<int32_t>& pos)
 {
-
+  V2 mouseScreenSpace = calculateScreenSpaceCoords(pos);
+  mSciBall->endDrag(mouseScreenSpace);
 }
 
 } // namespace SCIRun

@@ -41,6 +41,7 @@ namespace SCIRun {
 
 class ArcBall;
 class SRCamera;
+class SciBall;
 
 /// A wrapper around spire that provides higher level functionality required
 /// to operate SCIRun.
@@ -80,6 +81,8 @@ public:
 
 private:
 
+  V2 calculateScreenSpaceCoords(const Vector2<int32_t>& mousePos);
+
   std::shared_ptr<Spire::StuInterface>    mStuInterface;
 
   size_t                    mScreenWidth;   ///< Screen width in pixels.
@@ -87,6 +90,7 @@ private:
 
   std::unique_ptr<ArcBall>  mArcBall;       ///< ArcBall delta transform calculator.
   std::unique_ptr<SRCamera> mCamera;        ///< Primary camera.
+  std::unique_ptr<SciBall>  mSciBall;       ///< SCIRun 4's arcball camera.
   M44                       mCamWorld;      ///< Camera in world space.
 
   float                     mCamDistance;   ///< Camera's distance from the origin.
