@@ -101,7 +101,13 @@ void SciBall::drag(const V2& msc)
   mQDrag = quatFromUnitSphere(mVSphereFrom, mVSphereTo); 
   mQNow = mQDrag * mQDown;
 
-  mMatNow = mQNow.computeRotation();
+  // Perform complex conjugate (ends up being a matrix transpose)
+  Quat q = mQNow;
+  q.x = -q.x;
+  q.y = -q.y;
+  q.z = -q.z;
+  q.w =  q.w;
+  mMatNow = q.computeRotation();
 }
 
 //------------------------------------------------------------------------------
