@@ -48,10 +48,9 @@ size_t intPow(size_t base, size_t exp)
   return ret;
 }
 
-
 //------------------------------------------------------------------------------
-void geomCreateSphere(std::vector<uint8_t>& vboOut, std::vector<uint16_t>& iboOut,
-                      int subdivisionLevel)
+int geomCreateSphere(std::vector<uint8_t>& vboOut, std::vector<uint16_t>& iboOut,
+                     int subdivisionLevel, bool smoothNormals)
 {
   size_t n = subdivisionLevel;
   size_t twoN = intPow(2, n);
@@ -70,17 +69,39 @@ void geomCreateSphere(std::vector<uint8_t>& vboOut, std::vector<uint16_t>& iboOu
   // The number of tesselated vertices along one edge of the untesselated 
   // face doubles with each subdivision level. Starting at one of the corners
   // of the to-be-tesselated face (triangle), we run down one of the edges.
-  // for every node that we find, the number of vertices along the line that
-  // intersects the adjacent edge and that node increases by one.
+  // For every tessellated vertex we run across, the number of vertices along 
+  // the line that intersects the adjacent edge and the current vertex increases
+  // by one. This explanation is better suited by a drawing.
+  
+  /// \todo Draw a diagram depicting the tessellation of a triangle.
 
   // 8 octants compose the sphere.
   // 2^(2n) + 3*2^n + 2
-  size_t numOctantNodes = (twoN + 1) * (twoN + 2) / 2;
-  size_t numEdgeNodes   = (twoN + 1);
-  size_t numFaces       = (twoN * twoN);
+  size_t numOctantVertices      = (twoN + 1) * (twoN + 2) / 2;
+  size_t numOctantEdgeVertices  = (twoN + 1);
+  size_t numOctantFaces         = (twoN * twoN);
 
+  /// \todo VBO should not duplicate octahedron's edge vertices.
   
-  
+  /// \todo Use this code in the tessellation shader when we want to speed
+  ///       this part of the rendering pipeline up.
+
+  size_t numVertices  = numOctantVertices * 8;
+  size_t numFaces     = numOctantFaces * 8;
+
+  // Construct 1 octant, and use a transform to build the other octants.
+  // Normals on the boundary of each octant are simply the normalized vectors
+  // from the boundary vertex to the center of the sphere.
+  size_t vboSize = numVertices * ((3 + 3) * sizeof(float));   // Vertex (3) + Normal (3)
+  size_t iboSize = numFaces * 3;  // The vector is already a uint16_t.
+
+  // There are two ways to build this sphere. One is using this division factor
+  // and imperatively running down one edge on one of the faces of the 
+  // octahedron. The other is to functionally recurse over the the face
+  // and calculate the appropriate IBO indices.
+  // The imperative version would be better for a tessellation shader.
+  size_t divFactor = numOctantEdgeVertices - 1;
+
 }
 
 //------------------------------------------------------------------------------
@@ -100,6 +121,5 @@ void geomCreateCapsule()
 {
   
 }
-
 
 } } // end of namespace Spire::SCIRun
