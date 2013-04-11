@@ -38,10 +38,12 @@
 namespace Spire {
 namespace SCIRun {
 
-// Constructs a sphere by normalizing the points of a tesselated octahedron.
-// We don't exploit the symmetry of the sphere to speed up the calculation.
-// Data is stored as vertex / normal.
-void geomCreateSphere(std::vector<uint8_t>& out);
+/// Constructs a sphere by normalizing the points of a tesselated octahedron.
+/// We don't exploit the symmetry of the sphere to speed up the calculation.
+/// Data is stored as vertex / normal.
+/// Regular 3,3,3,3,3,3 triangular tessellation.
+void geomCreateSphere(std::vector<uint8_t>& vboOut,
+                      std::vector<uint16_t>& iboOut, int subdivisionLevel);
 
 void geomCreateCappedCylinder();
 
