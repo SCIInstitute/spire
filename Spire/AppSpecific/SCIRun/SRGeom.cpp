@@ -30,6 +30,7 @@
 /// \date   April 2013
 
 #include "SRGeom.h"
+#include "Core/Math.h"
 
 namespace Spire {
 namespace SCIRun {
@@ -46,6 +47,51 @@ size_t intPow(size_t base, size_t exp)
     ret *= base;
   }
   return ret;
+}
+
+/// This tessellation is for a triangle. We can exploit symmetry and build the
+/// entire octahedron at once...
+/// Both upperBound and lowerBound refer to some 'n' referencing which tessellation
+/// edge we are on.
+/// indexOffset is used to offset the indices by some constant amount. This
+/// variable remains constant throughout the recursion.
+///
+/// This function ends up writing over data in the vertex buffer twice.
+/// The side effects of this function are stored in the given Vertex / Index
+/// buffers.
+void triangleTesselateRecurse(int indexOffset, size_t vboOffset, size_t iboOffset,
+                              size_t upperBoundN, const V3& upperCoords,
+                              size_t lowerBoundN, const V3& lowerCoords,
+                              int subdivisionsLeft)
+{
+  // Calculate our new position.
+  V3 lowerToUpper   = upperCoords - lowerCoords;
+  V3 ourPos         = lowerCoords + (lowerToUpper / 2);
+  size_t ourBoundN  = (upperBoundN - lowerBoundN) / 2;  // Both upperBoundN and lowerBoundN are even (some 2^n).
+
+  if (subdivisionsLeft == 0)
+  {
+    // We are at one of the leaf elements.
+
+    // Calculate appropriate indices from upperBoundN and lowerBoundN.
+    // These numbers represent our location along the tesselation edge, 0..2^n)
+  }
+  else
+  {
+    // Recalculate lower and upper bounds for each of our child elements.    
+
+    // Left
+    triangleTesselateRecurse(indexOffset, vboOffset, iboOffset,
+                             ourBoundN, ourPos,
+                             lowerBoundN, lowerCoords,
+                             subdivisionsLeft - 1);
+
+    // Right
+    triangleTesselateRecurse(indexOffset, vboOffset, iboOffset,
+                             upperBoundN, upperCoords,
+                             ourBoundN, ourPos,
+                             subdivisionsLeft - 1);
+  }
 }
 
 //------------------------------------------------------------------------------
@@ -78,7 +124,7 @@ int geomCreateSphere(std::vector<uint8_t>& vboOut, std::vector<uint16_t>& iboOut
   // 8 octants compose the sphere.
   // 2^(2n) + 3*2^n + 2
   size_t numOctantVertices      = (twoN + 1) * (twoN + 2) / 2;
-  size_t numOctantEdgeVertices  = (twoN + 1);
+  size_t numOctantEdgeVertices  = (twoN + 1);   // One minus this is always even.
   size_t numOctantFaces         = (twoN * twoN);
 
   /// \todo VBO should not duplicate octahedron's edge vertices.
@@ -95,13 +141,32 @@ int geomCreateSphere(std::vector<uint8_t>& vboOut, std::vector<uint16_t>& iboOut
   size_t vboSize = numVertices * ((3 + 3) * sizeof(float));   // Vertex (3) + Normal (3)
   size_t iboSize = numFaces * 3;  // The vector is already a uint16_t.
 
+  V3 upperControl;
+  V3 lowerControl;
+
+  // Face 1
+  V3 upperControl = ;
+  V3 lowerControl = ;
+  triangleTesselateRecurse(0, 0, 0,
+                           twoN, upperControl,
+                           0, lowerControl,
+                           subdivisionsLeft - 1);
+
+  // Determine control edge for face, and use that as the initial starting points.
+  /*
   // There are two ways to build this sphere. One is using this division factor
   // and imperatively running down one edge on one of the faces of the 
   // octahedron. The other is to functionally recurse over the the face
   // and calculate the appropriate IBO indices.
   // The imperative version would be better for a tessellation shader.
-  size_t divFactor = numOctantEdgeVertices - 1;
+  size_t divFactor = numOctantEdgeVertices - 1; // This is always an even number.
 
+  // Imperative method (floating point error may creep in)
+  for (int i = 1; i < numOctantEdgeVertices - 1; i++) // Subtract two for each of the edge's endpoints.
+  {
+    divFactor * i
+  }
+  */
 }
 
 //------------------------------------------------------------------------------
