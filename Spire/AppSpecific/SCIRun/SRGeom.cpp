@@ -59,19 +59,34 @@ size_t intPow(size_t base, size_t exp)
 /// This function ends up writing over data in the vertex buffer twice.
 /// The side effects of this function are stored in the given Vertex / Index
 /// buffers.
-void triangleTesselateRecurse(int indexOffset, size_t vboOffset, size_t iboOffset,
-                              size_t upperBoundN, const V3& upperCoords,
-                              size_t lowerBoundN, const V3& lowerCoords,
-                              int subdivisionsLeft)
+///
+/// Returns the number of elements added to the IBO.
+size_t triangleTesselateRecurse(int indexOffset, size_t vboOffset, size_t iboOffset,
+                                size_t upperBoundN, const V3& upperCoords, const V3& adjacentUpperCoords,
+                                size_t lowerBoundN, const V3& lowerCoords, const V3& adjacentLowerCoords,
+                                int subdivisionsLeft)
 {
   // Calculate our new position.
   V3 lowerToUpper   = upperCoords - lowerCoords;
   V3 ourPos         = lowerCoords + (lowerToUpper / 2);
+  V3 adjacentLowToUp= adjacentUpperCoords - adjacentLowerCoords;
+  V3 ourAdjacentPos = adjacentLowerCoords + (adjacentLowToUp / 2);
   size_t ourBoundN  = (upperBoundN - lowerBoundN) / 2;  // Both upperBoundN and lowerBoundN are even (some 2^n).
 
   if (subdivisionsLeft == 0)
   {
     // We are at one of the leaf elements.
+
+    // Calculate upper indices. Calculate number of vertices that must have come
+    // before this point and use that as the index offset.
+    size_t upperNumVerticesBefore = upperBoundN * (upperBoundN + 1) / 2;  
+
+    // upperNumVerticesBefore is our offset into the vertex buffer.
+    // It also determines what vertex index we should use for populating the
+    // IBO.
+
+    // Calculate lower indices.
+    size_t lowerNumVerticesBefore = lowerBoundN * (lowerBoundN + 1) / 2;  // This is our offset into the vertex buffer.
 
     // Calculate appropriate indices from upperBoundN and lowerBoundN.
     // These numbers represent our location along the tesselation edge, 0..2^n)
@@ -82,21 +97,21 @@ void triangleTesselateRecurse(int indexOffset, size_t vboOffset, size_t iboOffse
 
     // Left
     triangleTesselateRecurse(indexOffset, vboOffset, iboOffset,
-                             ourBoundN, ourPos,
-                             lowerBoundN, lowerCoords,
+                             ourBoundN, ourPos, ourAdjacentPos,
+                             lowerBoundN, lowerCoords, adjacentLowerCoords,
                              subdivisionsLeft - 1);
 
     // Right
     triangleTesselateRecurse(indexOffset, vboOffset, iboOffset,
-                             upperBoundN, upperCoords,
-                             ourBoundN, ourPos,
+                             upperBoundN, upperCoords, adjacentUpperCoords,
+                             ourBoundN, ourPos, ourAdjacentPos,
                              subdivisionsLeft - 1);
   }
 }
 
 //------------------------------------------------------------------------------
 int geomCreateSphere(std::vector<uint8_t>& vboOut, std::vector<uint16_t>& iboOut,
-                     int subdivisionLevel, bool smoothNormals)
+                     float radius, int subdivisionLevel, bool smoothNormals)
 {
   size_t n = subdivisionLevel;
   size_t twoN = intPow(2, n);
@@ -143,14 +158,18 @@ int geomCreateSphere(std::vector<uint8_t>& vboOut, std::vector<uint16_t>& iboOut
 
   V3 upperControl;
   V3 lowerControl;
+  V3 adjLowerControl;
 
-  // Face 1
-  V3 upperControl = ;
-  V3 lowerControl = ;
+  // Control face.
+  // We will simply increment the indices of the following faces by a constant
+  // factor.
+  upperControl    = V3(0.0f, radius, 0.0f);
+  lowerControl    = V3(radius, 0.0f, radius);
+  adjLowerControl = V3(-radius, 0.0f, radius);
   triangleTesselateRecurse(0, 0, 0,
-                           twoN, upperControl,
-                           0, lowerControl,
-                           subdivisionsLeft - 1);
+                           twoN, upperControl, upperControl,
+                           0, lowerControl, adjLowerControl,
+                           subdivisionLevel);
 
   // Determine control edge for face, and use that as the initial starting points.
   /*
