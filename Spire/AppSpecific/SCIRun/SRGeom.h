@@ -42,7 +42,7 @@ namespace SCIRun {
 /// We don't exploit the symmetry of the sphere to speed up the calculation.
 /// Data is stored as vertex / normal.
 /// Regular 3,3,3,3,3,3 triangular tessellation.
-/// \return Number of elements (triangles / faces in this case).
+/// \return A pair consisting of Number of elements (triangles / faces in this case).
 int geomCreateSphere(std::vector<uint8_t>& vboOut,
                      std::vector<uint16_t>& iboOut,
                      float radius,

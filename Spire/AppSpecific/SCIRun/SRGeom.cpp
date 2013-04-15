@@ -60,12 +60,18 @@ size_t intPow(size_t base, size_t exp)
 /// The side effects of this function are stored in the given Vertex / Index
 /// buffers.
 ///
-/// Returns the number of elements added to the IBO.
-size_t triangleTesselateRecurse(int indexOffset, size_t vboOffset, size_t iboOffset,
-                                size_t upperBoundN, const V3& upperCoords, const V3& adjacentUpperCoords,
-                                size_t lowerBoundN, const V3& lowerCoords, const V3& adjacentLowerCoords,
-                                int subdivisionsLeft)
+/// Returns the number of elements added to the IBO, and the number of vertices
+/// added to the VBO.
+///
+/// iboOffset is relative to uint16_t.
+void triangleTesselateRecurse(size_t lowerBoundN, const V3& lowerCoords, const V3& adjacentLowerCoords,
+                              size_t upperBoundN, const V3& upperCoords, const V3& adjacentUpperCoords,
+                              std::vector<uint8_t>& vboOut, size_t vboOffset,
+                              std::vector<uint16_t>& iboOut, size_t iboOffset,
+                              int subdivisionsLeft, int indexOffset)
 {
+  const int vboStride = sizeof(float) * (3 + 3);
+
   // Calculate our new position.
   V3 lowerToUpper   = upperCoords - lowerCoords;
   V3 ourPos         = lowerCoords + (lowerToUpper / 2);
@@ -73,39 +79,129 @@ size_t triangleTesselateRecurse(int indexOffset, size_t vboOffset, size_t iboOff
   V3 ourAdjacentPos = adjacentLowerCoords + (adjacentLowToUp / 2);
   size_t ourBoundN  = (upperBoundN - lowerBoundN) / 2;  // Both upperBoundN and lowerBoundN are even (some 2^n).
 
+
   if (subdivisionsLeft == 0)
   {
+    // Calculate normal common to all faces we are going to construct.
+    V3 normal = VecOps::cross(lowerCoords, adjacentLowerCoords);
+    {
+      V3 calcUpper = adjacentUpperCoords - upperCoords;
+      V3 calcLower = lowerCoords - upperCoords;
+      normal = VecOps::cross(calcUpper, calcLower);
+    }
+
     // We are at one of the leaf elements.
+
+
+    // Calculate lower indices.
+    // This is our offset into the vertex buffer.
+    size_t lowerNumVerticesBefore = lowerBoundN * (lowerBoundN + 1) / 2;
+    float* vboOffsetLower = reinterpret_cast<float*>(&vboOut[vboStride * lowerNumVerticesBefore] + vboOffset);
 
     // Calculate upper indices. Calculate number of vertices that must have come
     // before this point and use that as the index offset.
     size_t upperNumVerticesBefore = upperBoundN * (upperBoundN + 1) / 2;  
+    float* vboOffsetUpper = reinterpret_cast<float*>(&vboOut[vboStride * upperNumVerticesBefore] + vboOffset);
 
     // upperNumVerticesBefore is our offset into the vertex buffer.
     // It also determines what vertex index we should use for populating the
     // IBO.
 
-    // Calculate lower indices.
-    size_t lowerNumVerticesBefore = lowerBoundN * (lowerBoundN + 1) / 2;  // This is our offset into the vertex buffer.
-
     // Calculate appropriate indices from upperBoundN and lowerBoundN.
     // These numbers represent our location along the tesselation edge, 0..2^n)
+
+    // Construct upper VBO entries.
+    // Normals will be reconstructed when tesselation is 'applied'.
+    // Smooth normals are simply the normals directed outward from the center
+    // of the sphere. Face normals are much simpler than that, but a new
+    // vertex buffer would need to be created with distinct vertices for every
+    // single triangle element.
+    V3 upperVector = adjacentUpperCoords - upperCoords;
+    for (size_t i = 0; i <= upperBoundN; i++)
+    {
+      float fraction = static_cast<float>(i) / static_cast<float>(upperBoundN);
+      V3 fromUpperCoord = upperVector * fraction;
+      V3 newPos = upperCoords + fromUpperCoord;
+      
+      float* newOffset = vboOffsetUpper + i * (3 + 3) * sizeof(float);
+      newOffset[0] = newPos.x;
+      newOffset[1] = newPos.y;
+      newOffset[2] = newPos.z;
+      newOffset[3] = normal.x;
+      newOffset[4] = normal.y;
+      newOffset[5] = normal.z;
+    }
+    
+    // Construct lower VBO entries.
+    V3 lowerVector = adjacentLowerCoords - lowerCoords;
+    for (size_t i = 0; i <= lowerBoundN; i++)
+    {
+      float fraction = static_cast<float>(i) / static_cast<float>(lowerBoundN);
+      V3 fromLowerCoord = lowerVector * fraction;
+      V3 newPos = lowerCoords + fromLowerCoord;
+      
+      float* newOffset = vboOffsetLower + i * (3 + 3) * sizeof(float);
+      newOffset[0] = newPos.x;
+      newOffset[1] = newPos.y;
+      newOffset[2] = newPos.z;
+      newOffset[3] = normal.x;
+      newOffset[4] = normal.y;
+      newOffset[5] = normal.z;
+    }
+
+    // The IBO offset is the number of faces that came before the lower offset.
+    // Numbre of faces before.
+    size_t twoNLower = intPow(2, lowerBoundN);
+    size_t numFacesBefore = (twoNLower - 1) * (twoNLower) / 2;
+    uint16_t* iboOffsetLower = &iboOut[numFacesBefore * 3 + iboOffset];
+
+    // Construct IBO entries using the lower bound. Every iteration results
+    // in a new triangle.
+    int priorUpperIndex = upperNumVerticesBefore;
+    int priorLowerIndex = lowerNumVerticesBefore;
+    for (size_t i = 0; i <= lowerBoundN; i++)
+    {
+      uint16_t* iboLoc = iboOffsetLower + i * 3;
+      if (i % 2 == 0)
+      {
+        // 1 lower index and 2 upper indices used
+        // Use priorLowerIndex and (priorUpperIndex, priorUpperIndex + 1)
+        // Counter clockwise winding.
+        iboLoc[0] = priorLowerIndex;
+        iboLoc[1] = priorUpperIndex;
+        iboLoc[2] = priorUpperIndex + 1;
+
+        priorUpperIndex = priorUpperIndex + 1;
+      }
+      else
+      {
+        // 2 lower indices and 1 upper index used
+        // Counter clockwise winding.
+        iboLoc[0] = priorUpperIndex;
+        iboLoc[1] = priorLowerIndex + 1;
+        iboLoc[2] = priorLowerIndex;
+        
+        priorLowerIndex = priorLowerIndex + 1;
+      }
+    }
   }
   else
   {
     // Recalculate lower and upper bounds for each of our child elements.    
 
     // Left
-    triangleTesselateRecurse(indexOffset, vboOffset, iboOffset,
+    triangleTesselateRecurse(lowerBoundN, lowerCoords, adjacentLowerCoords,
                              ourBoundN, ourPos, ourAdjacentPos,
-                             lowerBoundN, lowerCoords, adjacentLowerCoords,
-                             subdivisionsLeft - 1);
+                             vboOut, vboOffset,
+                             iboOut, iboOffset,
+                             subdivisionsLeft - 1, indexOffset);
 
     // Right
-    triangleTesselateRecurse(indexOffset, vboOffset, iboOffset,
+    triangleTesselateRecurse(ourBoundN, ourPos, ourAdjacentPos,
                              upperBoundN, upperCoords, adjacentUpperCoords,
-                             ourBoundN, ourPos, ourAdjacentPos,
-                             subdivisionsLeft - 1);
+                             vboOut, vboOffset,
+                             iboOut, iboOffset,
+                             subdivisionsLeft - 1, indexOffset);
   }
 }
 
@@ -166,10 +262,11 @@ int geomCreateSphere(std::vector<uint8_t>& vboOut, std::vector<uint16_t>& iboOut
   upperControl    = V3(0.0f, radius, 0.0f);
   lowerControl    = V3(radius, 0.0f, radius);
   adjLowerControl = V3(-radius, 0.0f, radius);
-  triangleTesselateRecurse(0, 0, 0,
+  triangleTesselateRecurse(0, lowerControl, adjLowerControl,
                            twoN, upperControl, upperControl,
-                           0, lowerControl, adjLowerControl,
-                           subdivisionLevel);
+                           vboOut, 0,
+                           iboOut, 0,
+                           subdivisionLevel, 0);
 
   // Determine control edge for face, and use that as the initial starting points.
   /*
