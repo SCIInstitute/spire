@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="utf-8"?>
+<COLLADA xmlns="http://www.collada.org/2005/11/COLLADASchema" version="1.4.1">
+  <asset>
+    <contributor>
+      <author>Blender User</author>
+      <authoring_tool>Blender 2.66.1 r55057</authoring_tool>
+    </contributor>
+    <created>2013-04-16T12:34:20</created>
+    <modified>2013-04-16T12:34:20</modified>
+    <unit name="meter" meter="1"/>
+    <up_axis>Z_UP</up_axis>
+  </asset>
+  <library_cameras>
+    <camera id="Camera-camera" name="Camera">
+      <optics>
+        <technique_common>
+          <perspective>
+            <xfov sid="xfov">49.13434</xfov>
+            <aspect_ratio>1.777778</aspect_ratio>
+            <znear sid="znear">0.1</znear>
+            <zfar sid="zfar">100</zfar>
+          </perspective>
+        </technique_common>
+      </optics>
+    </camera>
+  </library_cameras>
+  <library_lights>
+    <light id="Lamp-light" name="Lamp">
+      <technique_common>
+        <point>
+          <color sid="color">1 1 1</color>
+          <constant_attenuation>1</constant_attenuation>
+          <linear_attenuation>0</linear_attenuation>
+          <quadratic_attenuation>0.00111109</quadratic_attenuation>
+        </point>
+      </technique_common>
+      <extra>
+        <technique profile="blender">
+          <adapt_thresh>0.000999987</adapt_thresh>
+          <area_shape>1</area_shape>
+          <area_size>0.1</area_size>
+          <area_sizey>0.1</area_sizey>
+          <area_sizez>1</area_sizez>
+          <atm_distance_factor>1</atm_distance_factor>
+          <atm_extinction_factor>1</atm_extinction_factor>
+          <atm_turbidity>2</atm_turbidity>
+          <att1>0</att1>
+          <att2>1</att2>
+          <backscattered_light>1</backscattered_light>
+          <bias>1</bias>
+          <blue>1</blue>
+          <buffers>1</buffers>
+          <bufflag>0</bufflag>
+          <bufsize>2880</bufsize>
+          <buftype>2</buftype>
+          <clipend>30.002</clipend>
+          <clipsta>1.000799</clipsta>
+          <compressthresh>0.04999995</compressthresh>
+          <dist sid="blender_dist">29.99998</dist>
+          <energy sid="blender_energy">1</energy>
+          <falloff_type>2</falloff_type>
+          <filtertype>0</filtertype>
+          <flag>0</flag>
+          <gamma sid="blender_gamma">1</gamma>
+          <green>1</green>
+          <halo_intensity sid="blnder_halo_intensity">1</halo_intensity>
+          <horizon_brightness>1</horizon_brightness>
+          <mode>8192</mode>
+          <ray_samp>1</ray_samp>
+          <ray_samp_method>1</ray_samp_method>
+          <ray_samp_type>0</ray_samp_type>
+          <ray_sampy>1</ray_sampy>
+          <ray_sampz>1</ray_sampz>
+          <red>1</red>
+          <samp>3</samp>
+          <shadhalostep>0</shadhalostep>
+          <shadow_b sid="blender_shadow_b">0</shadow_b>
+          <shadow_g sid="blender_shadow_g">0</shadow_g>
+          <shadow_r sid="blender_shadow_r">0</shadow_r>
+          <shadspotsize>45</shadspotsize>
+          <sky_colorspace>0</sky_colorspace>
+          <sky_exposure>1</sky_exposure>
+          <skyblendfac>1</skyblendfac>
+          <skyblendtype>1</skyblendtype>
+          <soft>3</soft>
+          <spotblend>0.15</spotblend>
+          <spotsize>75</spotsize>
+          <spread>1</spread>
+          <sun_brightness>1</sun_brightness>
+          <sun_effect_type>0</sun_effect_type>
+          <sun_intensity>1</sun_intensity>
+          <sun_size>1</sun_size>
+          <type>0</type>
+        </technique>
+      </extra>
+    </light>
+  </library_lights>
+  <library_images/>
+  <library_geometries>
+    <geometry id="Sphere-mesh" name="Sphere">
+      <mesh>
+        <source id="Sphere-mesh-positions">
+          <float_array id="Sphere-mesh-positions-array" count="126">-0.5 0 0.8660254 -0.8660255 0 0.5 -1 0 0 -0.5000001 0 -0.8660254 -0.3535534 0.3535533 0.8660255 -0.6123725 0.6123724 0.5 -0.7071068 0.7071067 0 -0.6123725 0.6123723 -0.5000001 -0.3535535 0.3535534 -0.8660254 0 0.4999998 0.8660255 0 0.8660253 0.5 0 0.9999999 0 0 0.8660253 -0.5000001 -1.21193e-7 0.5 -0.8660254 -2.57766e-7 0 1 0.3535532 0.3535532 0.8660255 0.6123723 0.6123723 0.5 0.7071067 0.7071067 0 0.6123723 0.6123723 -0.5000001 0.3535532 0.3535533 -0.8660254 -1.50996e-7 0 -1 0.4999997 0 0.8660255 0.8660252 -1.19209e-7 0.5 0.9999998 -1.49012e-7 0 0.8660252 -1.78814e-7 -0.5000001 0.4999998 0 -0.8660254 0.3535531 -0.3535534 0.8660255 0.6123722 -0.6123725 0.5 0.7071064 -0.7071069 0 0.6123721 -0.6123725 -0.5000001 0.3535531 -0.3535534 -0.8660254 -2.70205e-7 -0.4999999 0.8660255 -3.00007e-7 -0.8660255 0.5 -4.19217e-7 -1 0 -3.59612e-7 -0.8660254 -0.5000001 -2.85106e-7 -0.5 -0.8660254 -0.3535535 -0.3535532 0.8660255 -0.6123728 -0.6123723 0.5 -0.7071072 -0.7071066 0 -0.6123728 -0.6123723 -0.5000001 -0.3535537 -0.3535533 -0.8660254 -0.8660256 2.68221e-7 -0.5000001</float_array>
+          <technique_common>
+            <accessor source="#Sphere-mesh-positions-array" count="42" stride="3">
+              <param name="X" type="float"/>
+              <param name="Y" type="float"/>
+              <param name="Z" type="float"/>
+            </accessor>
+          </technique_common>
+        </source>
+        <source id="Sphere-mesh-normals">
+          <float_array id="Sphere-mesh-normals-array" count="144">-0.6785984 0.2810845 0.6785985 -0.8968089 0.3714703 0.2402991 -0.3714703 0.8968089 0.2402991 -0.2810845 0.6785983 0.6785984 -0.2810846 0.6785984 -0.6785984 -0.3714703 0.8968089 -0.2402992 0.3714705 0.8968089 0.2402991 0.2810847 0.6785982 0.6785984 0.2810846 0.6785983 -0.6785983 0.3714704 0.8968088 -0.2402992 0.8968089 0.3714702 -0.2402992 0.8968089 0.3714703 0.2402991 0.6785984 0.2810845 0.6785984 0.6785984 0.2810845 -0.6785983 0.8968088 -0.3714705 -0.2402992 0.8968088 -0.3714705 0.2402991 0.6785982 -0.2810847 0.6785984 0.6785982 -0.2810847 -0.6785984 0.2810845 -0.6785984 0.6785984 0.2810845 -0.6785984 -0.6785984 0.3714702 -0.8968089 -0.2402992 0.3714703 -0.8968089 0.2402991 -0.2810847 -0.6785982 0.6785985 -0.2810848 -0.6785982 -0.6785984 -0.3714705 -0.8968087 -0.2402992 -0.3714705 -0.8968088 0.2402991 -0.6785982 0.2810848 -0.6785985 -0.2573446 0.1065954 0.9604224 -0.8968088 0.3714706 -0.2402989 -0.2573445 0.1065955 -0.9604224 -0.1065955 0.2573445 -0.9604224 -0.1065955 0.2573444 0.9604224 0.1065955 0.2573444 -0.9604224 0.1065955 0.2573443 0.9604224 0.2573445 0.1065955 -0.9604224 0.2573443 0.1065955 0.9604225 0.2573443 -0.1065955 0.9604224 0.2573444 -0.1065956 -0.9604224 0.1065955 -0.2573444 0.9604224 0.1065955 -0.2573445 -0.9604225 -0.1065956 -0.2573444 -0.9604225 -0.1065956 -0.2573444 0.9604224 -0.8968091 -0.37147 0.2402992 -0.2573445 -0.1065954 -0.9604224 -0.6785984 -0.2810843 0.6785985 -0.6785983 -0.2810844 -0.6785985 -0.2573446 -0.1065953 0.9604225 -0.8968089 -0.3714701 -0.2402991</float_array>
+          <technique_common>
+            <accessor source="#Sphere-mesh-normals-array" count="48" stride="3">
+              <param name="X" type="float"/>
+              <param name="Y" type="float"/>
+              <param name="Z" type="float"/>
+            </accessor>
+          </technique_common>
+        </source>
+        <vertices id="Sphere-mesh-vertices">
+          <input semantic="POSITION" source="#Sphere-mesh-positions"/>
+        </vertices>
+        <polylist count="48">
+          <input semantic="VERTEX" source="#Sphere-mesh-vertices" offset="0"/>
+          <input semantic="NORMAL" source="#Sphere-mesh-normals" offset="1"/>
+          <vcount>4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 3 4 3 3 3 3 3 3 3 3 3 3 3 3 3 4 3 4 4 3 4 </vcount>
+          <p>1 0 0 0 4 0 5 0 2 1 1 1 5 1 6 1 6 2 5 2 10 2 11 2 5 3 4 3 9 3 10 3 8 4 7 4 12 4 13 4 7 5 6 5 11 5 12 5 11 6 10 6 16 6 17 6 10 7 9 7 15 7 16 7 13 8 12 8 18 8 19 8 12 9 11 9 17 9 18 9 18 10 17 10 23 10 24 10 17 11 16 11 22 11 23 11 16 12 15 12 21 12 22 12 19 13 18 13 24 13 25 13 24 14 23 14 28 14 29 14 23 15 22 15 27 15 28 15 22 16 21 16 26 16 27 16 25 17 24 17 29 17 30 17 27 18 26 18 31 18 32 18 30 19 29 19 34 19 35 19 29 20 28 20 33 20 34 20 28 21 27 21 32 21 33 21 32 22 31 22 36 22 37 22 35 23 34 23 39 23 40 23 34 24 33 24 38 24 39 24 33 25 32 25 37 25 38 25 3 26 41 26 7 26 8 26 0 27 14 27 4 27 41 28 2 28 6 28 7 28 20 29 3 29 8 29 20 30 8 30 13 30 4 31 14 31 9 31 20 32 13 32 19 32 9 33 14 33 15 33 20 34 19 34 25 34 15 35 14 35 21 35 21 36 14 36 26 36 20 37 25 37 30 37 26 38 14 38 31 38 20 39 30 39 35 39 20 40 35 40 40 40 31 41 14 41 36 41 38 42 37 42 1 42 2 42 20 43 40 43 3 43 0 44 1 44 37 44 36 44 40 45 39 45 41 45 3 45 14 46 0 46 36 46 39 47 38 47 2 47 41 47</p>
+        </polylist>
+      </mesh>
+      <extra><technique profile="MAYA"><double_sided>1</double_sided></technique></extra>
+    </geometry>
+  </library_geometries>
+  <library_controllers/>
+  <library_visual_scenes>
+    <visual_scene id="Scene" name="Scene">
+      <node id="Camera" name="Camera" type="NODE">
+        <matrix sid="transform">0.6858805 -0.3173701 0.6548619 7.481132 0.7276338 0.3124686 -0.6106656 -6.50764 -0.01081678 0.8953432 0.4452454 5.343665 0 0 0 1</matrix>
+        <instance_camera url="#Camera-camera"/>
+      </node>
+      <node id="Lamp" name="Lamp" type="NODE">
+        <matrix sid="transform">-0.2908646 -0.7711008 0.5663932 4.076245 0.9551712 -0.1998834 0.2183912 1.005454 -0.05518906 0.6045247 0.7946723 5.903862 0 0 0 1</matrix>
+        <instance_light url="#Lamp-light"/>
+      </node>
+      <node id="Sphere" name="Sphere" type="NODE">
+        <matrix sid="transform">1 0 0 0 0 1 0 0 0 0 1 0 0 0 0 1</matrix>
+        <instance_geometry url="#Sphere-mesh"/>
+      </node>
+    </visual_scene>
+  </library_visual_scenes>
+  <scene>
+    <instance_visual_scene url="#Scene"/>
+  </scene>
+</COLLADA>
