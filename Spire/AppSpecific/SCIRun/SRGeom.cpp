@@ -283,6 +283,8 @@ int geomCreateSphere(std::vector<uint8_t>& vboOut, std::vector<uint16_t>& iboOut
     divFactor * i
   }
   */
+
+  return numFaces;
 }
 
 //------------------------------------------------------------------------------
