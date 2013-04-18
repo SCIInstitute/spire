@@ -36,6 +36,7 @@
 #include <string>
 #include <map>
 #include <fstream>
+#include <boost/filesystem.hpp>
 
 // Include vector library.
 #include "../../Spire/Core/Math.h"
@@ -54,6 +55,9 @@
 #include <assimp/DefaultLogger.h>
 #include <assimp/LogStream.h>
 
+// Forward declarations
+int processFile(const std::string& inFile, const std::string& outputDirectory);
+
 //------------------------------------------------------------------------------
 void createAssimpLogger()
 {
@@ -71,30 +75,86 @@ void destroyAssimpLogger()
 //------------------------------------------------------------------------------
 int main(int argc, char* argv[])
 {
-  std::string inFile;
-  std::string outFile;
+  std::vector<std::string> inputFiles;
+  std::string outputDirectory;
   try
   {
     TCLAP::CmdLine cmd("Asset Converter");
-    TCLAP::ValueArg<std::string> input("i", "input", "Input file.", true, "", "String");
-    TCLAP::ValueArg<std::string> output("o", "output", "Output file.", true, "", "String");
 
-    //cmd.xorAdd(input, directory);
-    cmd.add(input);
-    cmd.add(output);
+    // Could let both the inputs and the directory options be optional.
+    // That would let us add both directories *and* files.
+    TCLAP::MultiArg<std::string> inputs("i", "input", "Input file(s).",
+                                        true, "Path");
+    TCLAP::ValueArg<std::string> directory("d", "directory", "input directory",
+                                           true, "", "Path");
+    TCLAP::ValueArg<std::string> outputDir("o", "output", "Output directory.",
+                                           false, "", "String");
+
+    cmd.xorAdd(inputs, directory);
+    cmd.add(outputDir);
     cmd.parse(argc, argv);
 
-    inFile = input.getValue();
-    outFile = output.getValue();
+    // If inputs have been set, go ahead and add them to the list of inut files.
+    if (inputs.isSet())
+    {
+      inputFiles = inputs.getValue();
+    }
+    
+    if (directory.isSet())
+    {
+      //using namespace boost::filesystem;
+
+      // Iterate over all files in directory and look for collada file
+      // extensions.
+      std::string dir = directory.getValue();
+      if (!boost::filesystem::exists(dir))
+      {
+        std::cout << "Unable to find directory: " << dir << std::endl;
+        return EXIT_FAILURE;
+      }
+
+      if (!boost::filesystem::is_directory(dir))
+      {
+        std::cout << dir << " is not a directory." << std::endl;
+        return EXIT_FAILURE;
+      }
+
+      boost::filesystem::recursive_directory_iterator it = 
+          boost::filesystem::recursive_directory_iterator(dir);
+      boost::filesystem::recursive_directory_iterator end; // Default constructor is the 'end' iterator.
+
+      while (it != end)
+      {
+        boost::filesystem::path path = *it;
+        
+        if (boost::filesystem::is_regular_file(path))
+          inputFiles.push_back(path.generic_string());
+
+        // Prevent unwanted recursion into symlink directories.
+        if (   boost::filesystem::is_directory(*it) 
+            && boost::filesystem::is_symlink(*it))
+          it.no_push();
+
+        try
+        {
+          ++it;
+        }
+        catch (std::exception& e)
+        {
+          std::cout << e.what() << std::endl;
+          it.no_push();
+          try { ++it; } catch (...) {std::cout << "!!" << std::endl; return EXIT_FAILURE;}
+        }
+      }
+    }
+
+    outputDirectory = outputDir.getValue();
   }
   catch (const TCLAP::ArgException& e)
   {
     std::cerr << "TCLAP exception: " << e.error() << " associated with arg " << e.argId() << "\n";
     return EXIT_FAILURE;
   }
-
-  std::cout << "Input file: " << inFile << std::endl;
-  std::cout << "Output file: " << outFile << std::endl;
 
   // Initialize assimp.
   createAssimpLogger();
@@ -112,6 +172,18 @@ int main(int argc, char* argv[])
 
   ilInit();
   
+
+  int lastExitCode = EXIT_SUCCESS;
+  for (auto i : inputFiles)
+  {
+    lastExitCode = processFile(i, outputDirectory);
+  }
+
+  return lastExitCode;
+}
+
+int processFile(const std::string& inFile, const std::string& outputDirectory)
+{
   const aiScene* scene = nullptr;
   Assimp::Importer importer;
 
@@ -228,4 +300,5 @@ int main(int argc, char* argv[])
 
   return EXIT_SUCCESS;
 }
+
 

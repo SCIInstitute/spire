@@ -41,6 +41,6 @@ add_executable( ${EXE_NAME}
                 ${Source_ProjectSourceDir}
                 )
 if (APPLE)
-  target_link_libraries(${EXE_NAME} assimp IL ILU jpeg tiff jasper)
+  target_link_libraries(${EXE_NAME} boost assimp IL ILU jpeg tiff jasper)
 endif()
 
