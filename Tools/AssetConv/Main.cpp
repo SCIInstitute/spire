@@ -160,7 +160,7 @@ int main(int argc, char* argv[])
   createAssimpLogger();
   std::cout << "Assimp initialized." << std::endl;
 
-  // Determine IL Version 
+  // Determine IL Version
   if (ilGetInteger(IL_VERSION_NUM) < IL_VERSION)
   {
     ILint test = ilGetInteger(IL_VERSION_NUM);
@@ -172,7 +172,6 @@ int main(int argc, char* argv[])
 
   ilInit();
   
-
   int lastExitCode = EXIT_SUCCESS;
   for (auto i : inputFiles)
   {
@@ -184,6 +183,25 @@ int main(int argc, char* argv[])
 
 int processFile(const std::string& inFile, const std::string& outputDirectory)
 {
+  std::string outFile;
+
+  if (outputDirectory.length() > 0)
+  {
+    // Convert the filename to a path so we can extract path information.
+    boost::filesystem::path boostPath(inFile);
+    std::string outFile = outputDirectory + "/" + boostPath.filename().string();
+
+    boost::filesystem::path outputFilePath(outFile);
+    outputFilePath.replace_extension(".sp");
+    outFile = outputFilePath.string();
+  }
+  else
+  {
+    boost::filesystem::path boostPath(inFile);
+    boostPath.replace_extension(".sp");
+    outFile = boostPath.string();
+  }
+
   const aiScene* scene = nullptr;
   Assimp::Importer importer;
 
