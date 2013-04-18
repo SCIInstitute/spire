@@ -128,7 +128,13 @@ int main(int argc, char* argv[])
         boost::filesystem::path path = *it;
         
         if (boost::filesystem::is_regular_file(path))
-          inputFiles.push_back(path.generic_string());
+        {
+          // Ensure the file has the correct extension (.dae)
+          std::string extension = path.extension().string();
+          std::transform(extension.begin(), extension.end(), extension.begin(), ::tolower);
+          if (extension == ".dae")
+            inputFiles.push_back(path.generic_string());
+        }
 
         // Prevent unwanted recursion into symlink directories.
         if (   boost::filesystem::is_directory(*it) 
@@ -154,6 +160,12 @@ int main(int argc, char* argv[])
   {
     std::cerr << "TCLAP exception: " << e.error() << " associated with arg " << e.argId() << "\n";
     return EXIT_FAILURE;
+  }
+
+  std::cout << "Input files:" << std::endl;
+  for (auto i : inputFiles)
+  {
+    std::cout << i << std::endl;
   }
 
   // Initialize assimp.
@@ -189,9 +201,8 @@ int processFile(const std::string& inFile, const std::string& outputDirectory)
   {
     // Convert the filename to a path so we can extract path information.
     boost::filesystem::path boostPath(inFile);
-    std::string outFile = outputDirectory + "/" + boostPath.filename().string();
+    boost::filesystem::path outputFilePath(outputDirectory + "/" + boostPath.filename().string());
 
-    boost::filesystem::path outputFilePath(outFile);
     outputFilePath.replace_extension(".sp");
     outFile = outputFilePath.string();
   }
@@ -201,6 +212,8 @@ int processFile(const std::string& inFile, const std::string& outputDirectory)
     boostPath.replace_extension(".sp");
     outFile = boostPath.string();
   }
+
+  std::cout << "Target output file: " << outFile << std::endl;
 
   const aiScene* scene = nullptr;
   Assimp::Importer importer;
