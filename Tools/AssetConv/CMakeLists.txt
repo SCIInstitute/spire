@@ -21,6 +21,15 @@ file(GLOB Source_ProjectSourceDir
   )
 
 ########################################################################
+# BOOST
+
+set(Boost_USE_STATIC_LIBS OFF)
+set(Boost_USE_MULTITHREADED ON) 
+set(Boost_USE_STATIC_RUNTIME OFF)
+FIND_PACKAGE( Boost 1.50.0 COMPONENTS filesystem system REQUIRED )
+INCLUDE_DIRECTORIES( ${Boost_INCLUDE_DIR} )
+
+########################################################################
 # Compiler settings
 
 if (UNIX)
@@ -41,6 +50,6 @@ add_executable( ${EXE_NAME}
                 ${Source_ProjectSourceDir}
                 )
 if (APPLE)
-  target_link_libraries(${EXE_NAME} assimp IL ILU jpeg tiff jasper)
+  target_link_libraries(${EXE_NAME} assimp IL ILU jpeg tiff jasper ${Boost_LIBRARIES})
 endif()
 
