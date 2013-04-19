@@ -57,12 +57,7 @@ SRInterface::SRInterface(std::shared_ptr<Context> context,
 {
   // Add stu pipe to the current pipes.
   pipePushBack(mStuInterface);
-
-  // Default camera (to be done AFTER stu pipe is added).
-  M44 camRot = mSciBall->getTransformation();
-  M44 finalTrafo = camRot * M44::rotationY(PI);
-  finalTrafo.setTranslation(camRot.getCol2().xyz() * mCamDistance);
-  mCamera->setViewTransform(finalTrafo);
+  buildAndApplyCameraTransform();
 }
 
 //------------------------------------------------------------------------------
@@ -104,6 +99,10 @@ V2 SRInterface::calculateScreenSpaceCoords(const Vector2<int32_t>& mousePos)
 //------------------------------------------------------------------------------
 void SRInterface::inputMouseDown(const Vector2<int32_t>& pos, MouseButton btn)
 {
+  // Translation variables.
+  mCamAccumPosDown  = mCamAccumPosNow;
+  mTransClick       = calculateScreenSpaceCoords(pos);
+
   if (btn == MOUSE_LEFT)
   {
     V2 mouseScreenSpace = calculateScreenSpaceCoords(pos);
@@ -112,8 +111,6 @@ void SRInterface::inputMouseDown(const Vector2<int32_t>& pos, MouseButton btn)
   else if (btn == MOUSE_RIGHT)
   {
     // Store translation starting position.
-    mTransClick = calculateScreenSpaceCoords(pos);
-    mTransDown = mTransNow;
   }
   mActiveDrag = btn;
 }
@@ -132,12 +129,19 @@ void SRInterface::inputMouseMove(const Vector2<int32_t>& pos, MouseButton btn)
     }
     else if (btn == MOUSE_RIGHT)
     {
-      /// \todo Perform translation by delta.
       V2 curTrans = calculateScreenSpaceCoords(pos);
       V2 delta = curTrans - mTransClick;
+      /// \todo This 2.5f value is a magic number, and it's real value should
+      ///       be calculated based off of the world space position of the
+      ///       camera. This value could easily be calculated based off of
+      ///       mCamDistance.
+      V2 trans = (-delta) * 2.5f;
 
-      mTransNow = mTransDown + (-delta) * 2.5f;
-      
+      M44 camRot = mSciBall->getTransformation();
+      V3 translation =   camRot.getCol0().xyz() * trans.x
+                       + camRot.getCol1().xyz() * trans.y;
+      mCamAccumPosNow = mCamAccumPosDown + translation;
+
       buildAndApplyCameraTransform();
     }
   }
@@ -162,9 +166,10 @@ void SRInterface::buildAndApplyCameraTransform()
   M44 camRot      = mSciBall->getTransformation();
   M44 finalTrafo  = camRot * M44::rotationY(PI); // Reorient camera down the Z axis.
 
-  finalTrafo.setTranslation(  camRot.getCol2().xyz() * mCamDistance
-                            + camRot.getCol0().xyz() * mTransNow.x
-                            + camRot.getCol1().xyz() * mTransNow.y);
+  // Translation is a post rotation operation where as zoom is a pre transform
+  // operation. We should probably ensure the user doesn't scroll passed zero.
+  finalTrafo.setTranslation(  mCamAccumPosNow 
+                            + camRot.getCol2().xyz() * mCamDistance);
 
   mCamera->setViewTransform(finalTrafo);
 }

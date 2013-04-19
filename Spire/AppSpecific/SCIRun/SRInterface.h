@@ -106,8 +106,9 @@ private:
 
 
   V2                        mTransClick;    ///< Start of the translation.
-  V2                        mTransDown;     ///< Translation delta when the mouse was down.
-  V2                        mTransNow;      ///< Accumulators for the translation.
+
+  V3                        mCamAccumPosDown; ///< Accumulated translation / zoom when first clicked down.
+  V3                        mCamAccumPosNow;  ///< Accumulated translation / zoom currently.
 
   MouseButton               mActiveDrag;    ///< The button we are currently dragging.
 
