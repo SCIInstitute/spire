@@ -178,7 +178,40 @@ void StuInterface::removeIBO(const std::string& iboName)
 void StuInterface::loadAssetFile(const std::string& filename,
                                  std::vector<uint8_t>& vbo, std::vector<uint8_t>& ibo)
 {
+  // Load up filename
+  std::ifstream assetFile(filename.c_str(), std::ios::binary);
+
+  // Read default SCIRun asset header.
+  std::string header = "SCR5";
+  char headerStr[5];
+  assetFile.read(headerStr, 4);
+  headerStr[4] = '\0';
+  if (strcmp(headerStr, header.c_str()) != 0)
+  {
+    /// \todo Use more appropriate I/O exception.
+    throw std::invalid_argument("Header does not match asset file.");
+  }
+
+  // Read in the number of meshes (this is ignored for now and the first mesh is
+  // used).
+  uint32_t numMeshes = 0;
+  assetFile.read(reinterpret_cast<char*>(&numMeshes), sizeof(uint32_t));
+  if (numMeshes == 0)
+  {
+    throw std::invalid_argument("Need at least one mesh in asset file.");
+  }
+
+  // Read in the first mesh.
+  uint32_t numVertices = 0;
+  assetFile.read(reinterpret_cast<char*>(&numVertices), sizeof(uint32_t));
+
+  // Allocate space for all vertices in the vertex buffer (only positions and normals).
+
   // Reserve appropriate space in the ibo / vbo.
+  std::shared_ptr<std::vector<uint8_t>> rawVBO(new std::vector<uint8_t>());
+  size_t vboSize = sizeof(float) * 3 * facade->numNodes();
+  rawVBO->resize(vboSize); // linear complexity.
+  float* vbo = reinterpret_cast<float*>(&(*rawVBO)[0]); // Remember, standard guarantees that vectors are contiguous in memory.
 }
 
 
