@@ -34,6 +34,7 @@
 #define SPIRE_APPSPECIFIC_SCIRUN_SRGEOM_H
 
 #include <vector>
+#include <cstdint>
 
 namespace Spire {
 namespace SCIRun {
