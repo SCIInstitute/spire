@@ -206,6 +206,11 @@ public:
   /// the passes are destroyed, their associated VBOs/IBOs will be destroyed.
   void removeIBO(const std::string& iboName);
 
+  /// Loads an asset file and populates the given vectors with vbo and ibo
+  /// data. In the future, we should expand this to include other asset types.
+  void loadAssetFile(const std::string& filename,
+                     std::vector<uint8_t>& vbo, std::vector<uint8_t>& ibo);
+
   /// Adds a geometry pass to an object given by the identifier 'object'.
   /// Throws an std::out_of_range exception if the object is not found in the 
   /// system. If there already exists a geometry pass, it throws a 'Duplicate' 

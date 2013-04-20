@@ -88,6 +88,12 @@ public:
   size_t getScreenWidthPixels() const       {return mScreenWidth;}
   size_t getScreenHeightPixels() const      {return mScreenHeight;}
 
+  /// Reads an asset file and returns the associated vertex buffer and index
+  /// buffer.
+  void readAsset(const std::string& filename,
+                 std::vector<uint8_t> vbo, std::vector<uint8_t> ibo);
+
+
 private:
 
   /// Calculates the screen space coordinates given the window coordinates.

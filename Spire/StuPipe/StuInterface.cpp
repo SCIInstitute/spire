@@ -174,6 +174,12 @@ void StuInterface::removeIBO(const std::string& iboName)
 }
 
 
+//------------------------------------------------------------------------------
+void StuInterface::loadAssetFile(const std::string& filename,
+                                 std::vector<uint8_t>& vbo, std::vector<uint8_t>& ibo)
+{
+  // Reserve appropriate space in the ibo / vbo.
+}
 
 
 //------------------------------------------------------------------------------
