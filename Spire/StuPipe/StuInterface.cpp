@@ -208,10 +208,10 @@ void StuInterface::loadAssetFile(const std::string& filename,
   // Allocate space for all vertices in the vertex buffer (only positions and normals).
 
   // Reserve appropriate space in the ibo / vbo.
-  std::shared_ptr<std::vector<uint8_t>> rawVBO(new std::vector<uint8_t>());
-  size_t vboSize = sizeof(float) * 3 * facade->numNodes();
-  rawVBO->resize(vboSize); // linear complexity.
-  float* vbo = reinterpret_cast<float*>(&(*rawVBO)[0]); // Remember, standard guarantees that vectors are contiguous in memory.
+  //std::shared_ptr<std::vector<uint8_t>> rawVBO(new std::vector<uint8_t>());
+  //size_t vboSize = sizeof(float) * 3 * facade->numNodes();
+  //rawVBO->resize(vboSize); // linear complexity.
+  //float* vbo = reinterpret_cast<float*>(&(*rawVBO)[0]); // Remember, standard guarantees that vectors are contiguous in memory.
 }
 
 
