@@ -37,6 +37,7 @@
 // TODO: Implement as a 1D texture sampler.
 uniform vec4  uColorZero;
 uniform vec4  uColorOne;
+uniform float uTransparency;
 
 varying vec4	fProcessedValue;
 

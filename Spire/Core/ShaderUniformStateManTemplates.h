@@ -172,6 +172,7 @@ protected:
   /// Series of static utility functions to avoid exposing OpenGL functions
   /// to classes outside of spire.
   ///@{
+  static void uniform1f(int location, float v0);
   static void uniform4f(int location, float v0, float v1, float v2, float v3);
   static void uniform3f(int location, float v0, float v1, float v2);
   static void uniformMatrix4fv(int location, size_t count, bool transpose,
@@ -291,6 +292,35 @@ public:
     std::stringstream stream;
     stream << "Vec4 - (" << mData.x << ", " << mData.y << ", " << mData.z 
            << ", " << mData.w << ")";
+    return stream.str();
+  }
+
+private:
+  Type mData;
+};
+
+template <>
+class UniformStateItem<float> : public AbstractUniformStateItem
+{
+public:
+  typedef float Type;
+
+  UniformStateItem(const Type& in) : mData(in) {}
+
+  void applyUniform(int location) const override
+  {
+    uniform1f(location, mData);
+  }
+
+  UNIFORM_TYPE getGLType() const override
+  {
+    return UNIFORM_FLOAT;
+  }
+
+  std::string asString() const override
+  {
+    std::stringstream stream;
+    stream << "Float - (" << mData << ")";
     return stream.str();
   }
 

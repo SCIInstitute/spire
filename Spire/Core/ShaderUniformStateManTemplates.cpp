@@ -39,6 +39,12 @@ namespace Spire {
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
+void AbstractUniformStateItem::uniform1f(int location, float v0)
+{
+  GL(glUniform1f(static_cast<GLint>(location), v0));
+}
+
+//------------------------------------------------------------------------------
 void AbstractUniformStateItem::uniform3f(int location, float v0, float v1,
                                          float v2)
 {
