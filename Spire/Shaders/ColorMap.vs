@@ -40,7 +40,7 @@ varying float   fProcessedValue;
 void main( void )
 {
   gl_Position = uProjIVWorld * vec4(aPos, 1.0);
-  float normalizedValue = (aFieldData - uMinMax.x) / uMinMax.y;
+  float normalizedValue = (aFieldData - uMinMax.x) / (uMinMax.y - uMinMax.x);
   fProcessedValue = normalizedValue;
 }
 
