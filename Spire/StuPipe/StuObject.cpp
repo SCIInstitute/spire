@@ -98,7 +98,6 @@ void StuPass::renderPass()
   // are consistent with the attributes we have in the VBO. Therefore, it's
   // okay to calculate the attribute stride based on the shader's stride, and
   // bind all of the shader's attributes.
-  //const ShaderAttributeCollection& attribs  = mShader->getAttributes();
   const ShaderAttributeCollection& attribs = mVBO->getAttributeCollection();
   attribs.bindAttributes(mShader);
 
