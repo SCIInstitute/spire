@@ -45,6 +45,14 @@ void AbstractUniformStateItem::uniform1f(int location, float v0)
 }
 
 //------------------------------------------------------------------------------
+void AbstractUniformStateItem::uniform2f(int location, float v0, float v1)
+              
+{
+  // Technically, vn should be cast to GLfloat...
+  GL(glUniform2f(static_cast<GLint>(location), v0, v1));
+}
+
+//------------------------------------------------------------------------------
 void AbstractUniformStateItem::uniform3f(int location, float v0, float v1,
                                          float v2)
 {

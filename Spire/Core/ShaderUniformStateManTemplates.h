@@ -173,8 +173,9 @@ protected:
   /// to classes outside of spire.
   ///@{
   static void uniform1f(int location, float v0);
-  static void uniform4f(int location, float v0, float v1, float v2, float v3);
+  static void uniform2f(int location, float v0, float v1);
   static void uniform3f(int location, float v0, float v1, float v2);
+  static void uniform4f(int location, float v0, float v1, float v2, float v3);
   static void uniformMatrix4fv(int location, size_t count, bool transpose,
                                const float*  value);
   static void uniform3fv(int location, size_t count, const float* value);
@@ -292,6 +293,35 @@ public:
     std::stringstream stream;
     stream << "Vec4 - (" << mData.x << ", " << mData.y << ", " << mData.z 
            << ", " << mData.w << ")";
+    return stream.str();
+  }
+
+private:
+  Type mData;
+};
+
+template <>
+class UniformStateItem<V2> : public AbstractUniformStateItem
+{
+public:
+  typedef V2 Type;
+
+  UniformStateItem(const Type& in) : mData(in) {}
+
+  void applyUniform(int location) const override
+  {
+    uniform2f(location, mData.x, mData.y);
+  }
+
+  UNIFORM_TYPE getGLType() const override
+  {
+    return UNIFORM_FLOAT_VEC2;
+  }
+
+  std::string asString() const override
+  {
+    std::stringstream stream;
+    stream << "Vec2 - (" << mData.x << ", " << mData.y << ")";
     return stream.str();
   }
 
