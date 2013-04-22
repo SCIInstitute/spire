@@ -44,6 +44,6 @@ varying vec4	fProcessedValue;
 void main()
 {
   // TODO: Lookup into color map sampled texture lookup).
-	gl_FragColor = fProcessedValue * uColorZero + (1.0 - fProcessedValue * uColorOne;
+	gl_FragColor = fProcessedValue * uColorZero + (1.0 - fProcessedValue) * uColorOne;
 }
 
