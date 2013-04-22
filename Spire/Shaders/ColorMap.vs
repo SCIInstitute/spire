@@ -41,6 +41,6 @@ void main( void )
 {
   gl_Position = uProjIVWorld * vec4(aPos, 1.0);
   float normalizedValue = (aFieldData - uMinMax.x) / uMinMax.y;
-  fProcessedValue = normalizeValue;
+  fProcessedValue = normalizedValue;
 }
 
