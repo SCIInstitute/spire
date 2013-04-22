@@ -36,6 +36,7 @@
 #include <memory>
 
 #include "Common.h"
+#include "Core/ShaderAttributeMan.h"
 
 namespace Spire
 {
@@ -49,15 +50,18 @@ class VBOObject
 {
 public:
   VBOObject(std::shared_ptr<std::vector<uint8_t>> vboData,
-            const std::vector<std::string>& attributes);
+            const std::vector<std::string>& attributes,
+            const ShaderAttributeMan& man);
   ~VBOObject();
 
   GLuint getGLIndex() const                             {return mGLIndex;}
   const std::vector<std::string>& getAttributes() const {return mAttributes;}
+  const ShaderAttributeCollection& getAttributeCollection() const {return mAttributeCollection;}
 
 private:
   GLuint                    mGLIndex;    ///< Corresponds to the map index but obtained from OpenGL.
   std::vector<std::string>  mAttributes; ///< Attributes for shader verification.
+  ShaderAttributeCollection mAttributeCollection;
 };
 
 } // namespace Spire

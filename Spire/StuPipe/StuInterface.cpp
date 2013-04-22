@@ -124,7 +124,7 @@ void StuInterface::addVBOImpl(Hub& hub, StuInterface* iface,
     throw Duplicate("Attempting to add duplicate VBO to object.");
 
   iface->mVBOMap.insert(std::make_pair(
-          vboName, std::shared_ptr<VBOObject>(new VBOObject(vboData, attribNames))));
+          vboName, std::shared_ptr<VBOObject>(new VBOObject(vboData, attribNames, hub.getShaderAttributeManager()))));
 }
 
 

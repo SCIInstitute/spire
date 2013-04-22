@@ -36,11 +36,18 @@ namespace Spire {
 //------------------------------------------------------------------------------
 VBOObject::VBOObject(
     std::shared_ptr<std::vector<uint8_t>> vboData,
-    const std::vector<std::string>& attributes)
+    const std::vector<std::string>& attributes,
+    const ShaderAttributeMan& man)
+    : mAttributeCollection(man)
 {
   GL(glGenBuffers(1, &mGLIndex));
   GL(glBindBuffer(GL_ARRAY_BUFFER, mGLIndex));
   GL(glBufferData(GL_ARRAY_BUFFER, vboData->size(), &(*vboData)[0], GL_STATIC_DRAW));
+
+  for (auto it = attributes.begin(); it != attributes.end(); ++it)
+  {
+    mAttributeCollection.addAttribute(*it, false);
+  }
 }
 
 //------------------------------------------------------------------------------

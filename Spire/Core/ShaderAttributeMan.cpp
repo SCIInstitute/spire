@@ -286,18 +286,22 @@ void ShaderAttributeCollection::bindAttributes(std::shared_ptr<ShaderProgramAsse
   GLsizei stride = static_cast<GLsizei>(calculateStride());
   for (auto it = mAttributes.begin(); it != mAttributes.end(); ++it)
   {
-    if (it->attrib.index != ShaderAttributeMan::getUnknownAttributeIndex())
+    /// \todo Make this check more efficient.
+    if (program->getAttributes().hasAttribute(it->attrib.codeName))
     {
-      AttribState attrib = it->attrib;
-      GLuint attribPos = glGetAttribLocation(program->getProgramID(), attrib.codeName.c_str());
-      GL(glEnableVertexAttribArray(attribPos));
-      //Log::debug() << "Binding attribute " << attribPos << " with name '" << attrib.codeName << "' "
-      //             << "with num components " << attrib.numComponents << " type " << attrib.type
-      //             << " normalize " << attrib.normalize << " and stride: " << stride << std::endl;
-      GL(glVertexAttribPointer(attribPos,
-                               static_cast<GLint>(attrib.numComponents),
-                               attrib.type, static_cast<GLboolean>(attrib.normalize),
-                               stride, NULL));
+      if (it->attrib.index != ShaderAttributeMan::getUnknownAttributeIndex())
+      {
+        AttribState attrib = it->attrib;
+        GLuint attribPos = glGetAttribLocation(program->getProgramID(), attrib.codeName.c_str());
+        GL(glEnableVertexAttribArray(attribPos));
+        //Log::debug() << "Binding attribute " << attribPos << " with name '" << attrib.codeName << "' "
+        //             << "with num components " << attrib.numComponents << " type " << attrib.type
+        //             << " normalize " << attrib.normalize << " and stride: " << stride << std::endl;
+        GL(glVertexAttribPointer(attribPos,
+                                 static_cast<GLint>(attrib.numComponents),
+                                 attrib.type, static_cast<GLboolean>(attrib.normalize),
+                                 stride, NULL));
+      }
     }
   }
 }

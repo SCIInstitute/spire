@@ -29,7 +29,7 @@
 // Uniforms
 uniform mat4    uProjIVWorld;       // Projection * Inverse View * World XForm
 uniform vec4    uColor;             // Uniform color
-uniform vec3    uLightDir;          // Directional light.
+uniform vec3    uLightDir;          // Directional light, in object space.
 
 // Attributes
 attribute vec3  aPos;
