@@ -34,11 +34,15 @@
   #endif
 #endif
 
+// TODO: Implement as a 1D texture sampler.
+uniform vec4  uColorZero;
+uniform vec4  uColorOne;
+
 varying vec4	fProcessedValue;
 
 void main()
 {
   // TODO: Lookup into color map sampled texture lookup).
-  // Need to round fProcessedValue between quantization range.
-	gl_FragColor 		= fColor;
+	gl_FragColor 		= fProcessValue * uColorZero + (1.0 - fProcessedValue) * uColorOne;
 }
+

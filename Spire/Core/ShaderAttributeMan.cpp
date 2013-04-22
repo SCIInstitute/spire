@@ -89,6 +89,9 @@ ShaderAttributeMan::ShaderAttributeMan(bool addDefaultAttributes)
     addAttribute("aGenFloat", 1, false, 
                  sizeof(float) * 1, sizeof(float) * 1,
                  GL_FLOAT, GL_FLOAT);
+    addAttribute("aFieldData", 1, false, 
+                 sizeof(float) * 1, sizeof(short) * 1,
+                 GL_FLOAT, GL_HALF_FLOAT_OES);
   }
 }
 

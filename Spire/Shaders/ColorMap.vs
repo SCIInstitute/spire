@@ -34,7 +34,7 @@ uniform float   uNumColorMapVals;   // Number of color map values.
 
 // Attributes
 attribute vec3  aPos;
-attribute float aValue;             // Value associated with this vertex (field data).
+attribute float aFieldData;         // Value associated with this vertex (field data).
 
 // Normalized value at this position.
 varying float   fProcessedValue;
@@ -42,7 +42,7 @@ varying float   fProcessedValue;
 void main( void )
 {
   gl_Position = uProjIVWorld * vec4(aPos, 1.0);
-  float normalizedValue = (aValue - uMinMax.x) / uMinMax.y;
+  float normalizedValue = (aFieldData - uMinMax.x) / uMinMax.y;
   fProcessedValue = uNumColorMapVals;
 }
 
