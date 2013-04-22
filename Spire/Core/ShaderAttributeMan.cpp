@@ -284,6 +284,7 @@ size_t ShaderAttributeCollection::getFullAttributeSize(const AttribSpecificData&
 void ShaderAttributeCollection::bindAttributes(std::shared_ptr<ShaderProgramAsset> program) const
 {
   GLsizei stride = static_cast<GLsizei>(calculateStride());
+  size_t offset = 0;
   for (auto it = mAttributes.begin(); it != mAttributes.end(); ++it)
   {
     /// \todo Make this check more efficient.
@@ -300,9 +301,11 @@ void ShaderAttributeCollection::bindAttributes(std::shared_ptr<ShaderProgramAsse
         GL(glVertexAttribPointer(attribPos,
                                  static_cast<GLint>(attrib.numComponents),
                                  attrib.type, static_cast<GLboolean>(attrib.normalize),
-                                 stride, NULL));
+                                 stride, reinterpret_cast<const void*>(offset)));
       }
     }
+
+    offset += it->attrib.size;
   }
 }
 
