@@ -28,7 +28,7 @@
 
 // Uniforms
 uniform mat4    uProjIVWorld;       // Projection * Inverse View * World XForm
-uniform vec3    uMinMax;            // Minimum / Maximum value range.
+uniform vec2    uMinMax;            // Minimum / Maximum value range.
 
 // Attributes
 attribute vec3  aPos;

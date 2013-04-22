@@ -75,17 +75,39 @@ void ShaderUniformCollection::addUniform(const std::string& uniformName)
   UniformSpecificData uniformData;
   if (getInvalidProgramHandle() != mProgram)
   {
+    // Search for the appropriate uniform.
+    bool foundActiveUniform = false;
+    int total = -1;
+    glGetProgramiv( mProgram, GL_ACTIVE_UNIFORMS, &total ); 
+    for (int i = 0; i < total; i++)
+    {
+      // Now query even more data about the uniform.
+      const GLsizei nameSize = 128;
+      GLsizei bytesWritten = 0;
+      char uniformName_ignore[nameSize]; // Name which we already know..
+      GL(glGetActiveUniform(mProgram, i,
+                            nameSize, &bytesWritten,
+                            &uniformData.glSize, &uniformData.glType,
+                            uniformName_ignore));
+      
+      std::string activeUniformName = uniformName_ignore;
+      if (activeUniformName == uniformName)
+      {
+        // If we get here, we have populated glSize and glType with the correct data.
+        foundActiveUniform = true;
+        break;
+      }
+    }
+
+    if (foundActiveUniform == false)
+    {
+      Log::error() << "Could not find active uniform with name: " << uniformName << "!";
+      throw GLError("Active uniform not found.");
+    }
+
+    // Set gl uniform location (this is NOT the same as the active uniform location!)
     uniformData.glUniformLoc = glGetUniformLocation(mProgram, uniformName.c_str());
     GL_CHECK();
-
-    // Now query even more data about the uniform.
-    const GLsizei nameSize = 128;
-    GLsizei bytesWritten = 0;
-    char uniformName_ignore[nameSize]; // Name which we already know..
-    GL(glGetActiveUniform(mProgram, uniformData.glUniformLoc, 
-                          nameSize, &bytesWritten,
-                          &uniformData.glSize, &uniformData.glType,
-                          uniformName_ignore));
 
     // std::out_of_range will be thrown here if uniform is not found.
     std::shared_ptr<const UniformState> state;
