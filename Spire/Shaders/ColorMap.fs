@@ -39,7 +39,7 @@ uniform vec4  uColorZero;
 uniform vec4  uColorOne;
 uniform float uTransparency;
 
-varying vec4	fProcessedValue
+varying vec4	fProcessedValue;
 
 void main()
 {
