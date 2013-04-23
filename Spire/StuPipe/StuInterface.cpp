@@ -71,7 +71,7 @@ void StuInterface::ntsInitOnRenderThread()
 void StuInterface::ntsDoPass()
 {
   /// \todo Move this outside of the interface!
-  GL(glClearColor(0.1f, 0.4f, 0.6f, 1.0f));
+  GL(glClearColor(0.0f, 0.0f, 0.0f, 1.0f));
   GL(glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT));
 
   /// \todo Make line width a part of the GPU state.
