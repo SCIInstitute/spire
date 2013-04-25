@@ -68,6 +68,10 @@ public:
   static std::tuple<const char*, UNIFORM_TYPE> getCameraWorld()
   {return std::make_pair("uView", UNIFORM_FLOAT_MAT4);}
 
+  /// World to view transformation.
+  static std::tuple<const char*, UNIFORM_TYPE> getWorldToViewTransformation()
+  {return std::make_pair("uModelView", UNIFORM_FLOAT_MAT4);}
+
   //----------------------------------------------------------------------------
   // Lighting uniforms
   //----------------------------------------------------------------------------

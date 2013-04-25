@@ -31,12 +31,20 @@ uniform mat4    uProjIVWorld;       // Projection * Inverse View * World XForm
 uniform vec4    uColor;             // Uniform color
 uniform vec3    uLightDir;          // Directional light, in object space.
 
+uniform mat4 mvpMatrix;     // mvp = ModelViewProjection
+uniform mat4 mvMatrix;      // mv = ModelView
+uniform mat3 normalMatrix;
+uniform vec3 vLightPosition;
+smooth out vec3 vVaryingNormal;
+smooth out vec3 vVaryingLightDir;
+
 // Attributes
 attribute vec3  aPos;
 attribute vec3  aNormal;
 
 // Outputs to the fragment shader.
-varying vec4    fColor;
+varying vec3    vVaryingNormal;
+varying vec3    vVaryingLightDir;
 
 void main( void )
 {
