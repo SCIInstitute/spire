@@ -65,22 +65,19 @@ public:
   std::chrono::milliseconds getAbsTimeHeld()                {return mAbsHoldTime;}
 
   /// Retrieves a hashed representation of the current string.
-  static uint32_t hashString(const std::string& string);
+  static size_t hashString(const std::string& string);
 
-  uint32_t getNameHash() const                              {return mNameHash;}
+  size_t getNameHash() const                                {return mNameHash;}
   std::string getName() const                               {return mName;}
 
 private:
 
-  uint32_t                  mNameHash;    ///< Hash representing this name.
+  size_t                    mNameHash;    ///< Hash representing this name.
   std::string               mName;        ///< Name of the asset.
 
   std::chrono::milliseconds mAbsHoldTime; ///< Absolute holding time for this object.
                                           ///< Used for sorting in the held assets
                                           ///< priority queue.
-
-  /// Seed to be used when hashing mName.
-  static const uint32_t getHashSeed()   {return 238929797;}
 
 };
 

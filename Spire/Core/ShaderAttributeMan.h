@@ -47,7 +47,7 @@ struct AttribState
 {
   size_t      index;          ///< Arbitrarily assigned index.
   std::string codeName;       ///< In-shader code name.
-  uint32_t    nameHash;       ///< Hash of 'codeName'.
+  size_t      nameHash;       ///< Hash of 'codeName'.
   size_t      numComponents;  ///< Number of attribute components.
   bool        normalize;      ///< True = normalize.
   size_t      size;           ///< Size, in bytes, of all components.
@@ -184,7 +184,7 @@ public:
 
   /// Hashes 'str' into a uint32_t using murmur hash.
   /// Uses MURMUR_SEED_VALUE.
-  static uint32_t hashString(const std::string& str);
+  static size_t hashString(const std::string& str);
 
 private:
 

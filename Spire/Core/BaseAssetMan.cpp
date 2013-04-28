@@ -32,7 +32,6 @@
 #include <algorithm>
 
 #include "BaseAssetMan.h"
-#include "MurmurHash3.h"
 
 namespace Spire {
 
@@ -100,7 +99,7 @@ void BaseAssetMan::updateOrphanedAssets(std::chrono::milliseconds absTime)
 std::shared_ptr<BaseAsset> 
 BaseAssetMan::findAsset(const std::string& str) const
 {
-  uint32_t targetHash = BaseAsset::hashString(str);
+  size_t targetHash = BaseAsset::hashString(str);
   for (auto it = mAssets.begin(); it != mAssets.end(); ++it)
   {
     // std::weak_ptr::lock will construct an empty shared_ptr, not throw an
@@ -139,15 +138,9 @@ BaseAsset::~BaseAsset()
 }
 
 //------------------------------------------------------------------------------
-uint32_t BaseAsset::hashString(const std::string& str)
+size_t BaseAsset::hashString(const std::string& str)
 {
-  uint32_t hashOut;
-  MurmurHash3_x86_32(
-      static_cast<const void*>(str.c_str()),
-      static_cast<int>(str.size()),
-      getHashSeed(),
-      static_cast<void*>(&hashOut));
-  return hashOut;
+  return std::hash<std::string>()(str);
 }
 
 } // end of namespace Spire

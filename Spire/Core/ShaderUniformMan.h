@@ -129,6 +129,9 @@ public:
   /// std::out_of_range is thrown.
   std::shared_ptr<const UniformState> getUniformWithName(const std::string& codeName) const;
 
+  /// Attempts to find the uniform with theh given codeName.
+  std::shared_ptr<const UniformState> findUniformWithName(const std::string& codeName) const;
+
   /// Returns number of uniforms currently registered.
   size_t getNumUniforms()   {return mUniforms.size();}
 

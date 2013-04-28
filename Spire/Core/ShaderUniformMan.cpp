@@ -33,7 +33,6 @@
 #include "Exceptions.h"
 
 #include "Core/ShaderUniformMan.h"
-#include "Core/MurmurHash3.h"
 
 namespace Spire {
 
@@ -63,6 +62,17 @@ std::shared_ptr<const UniformState>
 ShaderUniformMan::getUniformWithName(const std::string& codeName) const
 {
   return mUniforms.at(codeName);
+}
+
+//------------------------------------------------------------------------------
+std::shared_ptr<const UniformState>
+ShaderUniformMan::findUniformWithName(const std::string& codeName) const
+{
+  auto it = mUniforms.find(codeName);
+  if (it != mUniforms.end())
+    return (*it).second;
+  else
+    return std::shared_ptr<const UniformState>();
 }
 
 //------------------------------------------------------------------------------
@@ -109,13 +119,8 @@ void ShaderUniformCollection::addUniform(const std::string& uniformName)
     uniformData.glUniformLoc = glGetUniformLocation(mProgram, uniformName.c_str());
     GL_CHECK();
 
-    // std::out_of_range will be thrown here if uniform is not found.
-    std::shared_ptr<const UniformState> state;
-    try
-    {
-      state = mUniformMan.getUniformWithName(uniformName);
-    }
-    catch (std::out_of_range&)
+    std::shared_ptr<const UniformState> state = mUniformMan.findUniformWithName(uniformName);
+    if (state == nullptr)
     {
       // By default, add the uniform with the shader's type to the uniform
       // registry.

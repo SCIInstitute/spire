@@ -30,13 +30,13 @@
 /// \date   December 2012
 
 #include <algorithm>
+#include <iostream>
 
 #include "Common.h"
 #include "Exceptions.h"
 
 #include "Core/ShaderAttributeMan.h"
 #include "Core/ShaderProgramMan.h"
-#include "Core/MurmurHash3.h"
 
 namespace Spire {
 
@@ -126,7 +126,7 @@ ShaderAttributeMan::findAttributeWithName(const std::string& codeName) const
 {
   // Hash the string, search for the hash, then proceed with string compares
   // to check for collisions.
-  uint32_t targetHash = hashString(codeName);
+  size_t targetHash = hashString(codeName);
   for (auto it = mAttributes.begin(); it != mAttributes.end(); ++it)
   {
     if (it->nameHash == targetHash)
@@ -155,15 +155,9 @@ ShaderAttributeMan::getAttributeWithName(const std::string& codeName) const
 }
 
 //------------------------------------------------------------------------------
-uint32_t ShaderAttributeMan::hashString(const std::string& str)
+size_t ShaderAttributeMan::hashString(const std::string& str)
 {
-  uint32_t hashOut = 0;
-  MurmurHash3_x86_32(
-      static_cast<const void*>(str.c_str()),
-      static_cast<int>(str.size()),
-      getMurmurSeedValue(),
-      static_cast<void*>(&hashOut));
-  return hashOut;
+  return std::hash<std::string>()(str);
 }
 
 //------------------------------------------------------------------------------
@@ -198,7 +192,7 @@ size_t ShaderAttributeCollection::getNumAttributes() const
 //------------------------------------------------------------------------------
 bool ShaderAttributeCollection::hasAttribute(const std::string& attribName) const
 {
-  uint32_t hash = ShaderAttributeMan::hashString(attribName);
+  size_t hash = ShaderAttributeMan::hashString(attribName);
 
   for (auto it = mAttributes.begin(); it != mAttributes.end(); ++it)
   {
