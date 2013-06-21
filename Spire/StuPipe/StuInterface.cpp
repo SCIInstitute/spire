@@ -183,10 +183,13 @@ void StuInterface::loadAssetFile(const std::string& filename,
 
   // Read default SCIRun asset header.
   std::string header = "SCR5";
-  char headerStr[5];
-  assetFile.read(headerStr, 4);
-  headerStr[4] = '\0';
-  if (strcmp(headerStr, header.c_str()) != 0)
+
+  char headerStrIn_Raw[5];
+  assetFile.read(headerStrIn_Raw, 4);
+  headerStrIn_Raw[4] = '\0';
+  std::string headerStrIn = headerStrIn_Raw;
+
+  if (headerStrIn == header)
   {
     /// \todo Use more appropriate I/O exception.
     throw std::invalid_argument("Header does not match asset file.");
