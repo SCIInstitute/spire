@@ -34,6 +34,7 @@
 
 #include <cstddef>
 #include <sstream>
+#include <vector>
 #include "../InterfaceCommon.h"
 #include "../Core/Math.h"
 #include "../Core/GLMathUtil.h"
@@ -213,7 +214,7 @@ public:
 
   void applyUniform(int location) const override
   {
-    uniform3f(location, mData.x, mData.y, mData.z);
+    uniform3f(location, mData.x(), mData.y(), mData.z());
   }
 
   UNIFORM_TYPE getGLType() const override
@@ -224,7 +225,7 @@ public:
   std::string asString() const override
   {
     std::stringstream stream;
-    stream << "Vec3 - (" << mData.x << ", " << mData.y << ", " << mData.z << ")";
+    stream << "Vec3 - (" << mData.x() << ", " << mData.y() << ", " << mData.z() << ")";
     return stream.str();
   }
 
@@ -280,7 +281,7 @@ public:
 
   void applyUniform(int location) const override
   {
-    uniform4f(location, mData.x, mData.y, mData.z, mData.w);
+    uniform4f(location, mData.x(), mData.y(), mData.z(), mData.w());
   }
 
   UNIFORM_TYPE getGLType() const override
@@ -291,8 +292,8 @@ public:
   std::string asString() const override
   {
     std::stringstream stream;
-    stream << "Vec4 - (" << mData.x << ", " << mData.y << ", " << mData.z 
-           << ", " << mData.w << ")";
+    stream << "Vec4 - (" << mData.x() << ", " << mData.y() << ", " << mData.z() 
+           << ", " << mData.w() << ")";
     return stream.str();
   }
 
@@ -310,7 +311,7 @@ public:
 
   void applyUniform(int location) const override
   {
-    uniform2f(location, mData.x, mData.y);
+    uniform2f(location, mData.x(), mData.y());
   }
 
   UNIFORM_TYPE getGLType() const override
@@ -321,7 +322,7 @@ public:
   std::string asString() const override
   {
     std::stringstream stream;
-    stream << "Vec2 - (" << mData.x << ", " << mData.y << ")";
+    stream << "Vec2 - (" << mData.x() << ", " << mData.y() << ")";
     return stream.str();
   }
 
