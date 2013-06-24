@@ -89,9 +89,9 @@ void StuInterface::ntsDoPass()
 
 //------------------------------------------------------------------------------
 void StuInterface::addIBOImpl(Hub& hub, StuInterface* iface,
-                                      std::string iboName,
-                                      std::shared_ptr<std::vector<uint8_t>> iboData,
-                                      StuInterface::IBO_TYPE type)
+                              std::string iboName,
+                              std::shared_ptr<std::vector<uint8_t>> iboData,
+                              StuInterface::IBO_TYPE type)
 {
   if (iface->mIBOMap.find(iboName) != iface->mIBOMap.end())
     throw Duplicate("Attempting to add duplicate IBO to object.");
@@ -103,8 +103,8 @@ void StuInterface::addIBOImpl(Hub& hub, StuInterface* iface,
 
 //------------------------------------------------------------------------------
 void StuInterface::addIBO(const std::string& name,
-                                  std::shared_ptr<std::vector<uint8_t>> iboData,
-                                  IBO_TYPE type)
+                          std::shared_ptr<std::vector<uint8_t>> iboData,
+                          IBO_TYPE type)
 {
   Hub::RemoteFunction fun =
       std::bind(addIBOImpl, _1, this, name, iboData, type);
@@ -116,9 +116,9 @@ void StuInterface::addIBO(const std::string& name,
 
 //------------------------------------------------------------------------------
 void StuInterface::addVBOImpl(Hub& hub, StuInterface* iface,
-                                      std::string vboName,
-                                      std::shared_ptr<std::vector<uint8_t>> vboData,
-                                      std::vector<std::string> attribNames)
+                              std::string vboName,
+                              std::shared_ptr<std::vector<uint8_t>> vboData,
+                              std::vector<std::string> attribNames)
 {
   if (iface->mVBOMap.find(vboName) != iface->mVBOMap.end())
     throw Duplicate("Attempting to add duplicate VBO to object.");
@@ -130,8 +130,8 @@ void StuInterface::addVBOImpl(Hub& hub, StuInterface* iface,
 
 //------------------------------------------------------------------------------
 void StuInterface::addVBO(const std::string& name,
-                                  std::shared_ptr<std::vector<uint8_t>> vboData,
-                                  const std::vector<std::string>& attribNames)
+                          std::shared_ptr<std::vector<uint8_t>> vboData,
+                          const std::vector<std::string>& attribNames)
 {
   Hub::RemoteFunction fun =
       std::bind(addVBOImpl, _1, this, name, vboData, attribNames);
@@ -140,7 +140,7 @@ void StuInterface::addVBO(const std::string& name,
 
 //------------------------------------------------------------------------------
 void StuInterface::removeVBOImpl(Hub& hub, StuInterface* iface,
-                                           std::string vboName)
+                                 std::string vboName)
 {
   size_t numElementsRemoved = iface->mVBOMap.erase(vboName);
   if (numElementsRemoved == 0)
@@ -158,7 +158,7 @@ void StuInterface::removeVBO(const std::string& vboName)
 
 //------------------------------------------------------------------------------
 void StuInterface::removeIBOImpl(Hub& hub, StuInterface* iface,
-                                           std::string iboName)
+                                 std::string iboName)
 {
   size_t numElementsRemoved = iface->mIBOMap.erase(iboName);
   if (numElementsRemoved == 0)
@@ -220,13 +220,13 @@ void StuInterface::loadAssetFile(const std::string& filename,
 
 //------------------------------------------------------------------------------
 void StuInterface::addPassToObjectImpl(Hub& hub, StuInterface* iface,
-                                           std::string object,
-                                           std::string pass,
-                                           std::string program,
-                                           std::string vboName,
-                                           std::string iboName,
-                                           PRIMITIVE_TYPES type,
-                                           int32_t passOrder)
+                                       std::string object,
+                                       std::string pass,
+                                       std::string program,
+                                       std::string vboName,
+                                       std::string iboName,
+                                       PRIMITIVE_TYPES type,
+                                       int32_t passOrder)
 {
   std::shared_ptr<StuObject> obj = iface->mNameToObject.at(object);
   std::shared_ptr<VBOObject> vbo = iface->mVBOMap.at(vboName);
@@ -237,11 +237,11 @@ void StuInterface::addPassToObjectImpl(Hub& hub, StuInterface* iface,
 
 //------------------------------------------------------------------------------
 void StuInterface::addPassToObject(const std::string& object,
-                                       const std::string& pass,
-                                       const std::string& program,
-                                       const std::string& vboName,
-                                       const std::string& iboName,
-                                       PRIMITIVE_TYPES type)
+                                   const std::string& pass,
+                                   const std::string& program,
+                                   const std::string& vboName,
+                                   const std::string& iboName,
+                                   PRIMITIVE_TYPES type)
 {
   Hub::RemoteFunction fun =
       std::bind(addPassToObjectImpl, _1, this, object, pass, program, 
@@ -252,12 +252,12 @@ void StuInterface::addPassToObject(const std::string& object,
 
 //------------------------------------------------------------------------------
 void StuInterface::addPassToObject(const std::string& object,
-                                       const std::string& pass,
-                                       const std::string& program,
-                                       const std::string& vboName,
-                                       const std::string& iboName,
-                                       PRIMITIVE_TYPES type,
-                                       int32_t passOrder)
+                                   const std::string& pass,
+                                   const std::string& program,
+                                   const std::string& vboName,
+                                   const std::string& iboName,
+                                   PRIMITIVE_TYPES type,
+                                   int32_t passOrder)
 {
   Hub::RemoteFunction fun =
       std::bind(addPassToObjectImpl, _1, this, object, pass, program, 
