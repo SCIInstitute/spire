@@ -47,6 +47,12 @@ if (USE_SCIRUN_INTERFACE)
 endif()
 
 ########################################################################
+# Eigen
+
+# Eigen include directory.
+INCLUDE_DIRECTORIES( "${BASE_SPIRE_DIR}/Spire/3rdParty/eigen" )
+
+########################################################################
 # Compiler settings
 
 if (UNIX)

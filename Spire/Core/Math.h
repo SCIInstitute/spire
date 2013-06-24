@@ -54,5 +54,6 @@ const float   PI    = 3.14159265358979f;
 //#include "AOS_VectorMath.h"
 #include "Vectors.h"
 #include "VectorOps.h"
+#include "Eigen/Dense"
 
 #endif 

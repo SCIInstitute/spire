@@ -85,6 +85,12 @@ endif(UNIX)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/3rdParty/glew/include ${CMAKE_CURRENT_SOURCE_DIR}/3rdParty ${OPENGL_INCLUDE_DIRS})
 
 ########################################################################
+# Eigen
+
+# Eigen include directory.
+INCLUDE_DIRECTORIES( "${CMAKE_CURRENT_SOURCE_DIR}/3rdParty/eigen" )
+
+########################################################################
 # Tuvok
 
 if(USE_TUVOK)
