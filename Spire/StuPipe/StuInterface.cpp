@@ -204,9 +204,16 @@ void StuInterface::loadAssetFile(const std::string& filename,
     throw std::invalid_argument("Need at least one mesh in asset file.");
   }
 
-  // Read in the first mesh.
+  // Read in the first mesh (this is the only mesh we will read in)
   uint32_t numVertices = 0;
   assetFile.read(reinterpret_cast<char*>(&numVertices), sizeof(uint32_t));
+  float x,y,z;
+  for (size_t i = 0; i < numVertices; i++)
+  {
+    // Read position data
+    //assetFile.read(reinterpret_cast<char*>(&x), );
+
+  }
 
   // Allocate space for all vertices in the vertex buffer (only positions and normals).
 
