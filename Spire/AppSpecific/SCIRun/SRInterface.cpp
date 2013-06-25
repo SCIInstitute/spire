@@ -78,7 +78,7 @@ void SRInterface::eventResize(size_t width, size_t height)
 }
 
 //------------------------------------------------------------------------------
-V2 SRInterface::calculateScreenSpaceCoords(const Vector2<int32_t>& mousePos)
+V2 SRInterface::calculateScreenSpaceCoords(const glm::ivec2& mousePos)
 {
   float windowOriginX = 0.0f;
   float windowOriginY = 0.0f;
@@ -97,7 +97,7 @@ V2 SRInterface::calculateScreenSpaceCoords(const Vector2<int32_t>& mousePos)
 }
 
 //------------------------------------------------------------------------------
-void SRInterface::inputMouseDown(const Vector2<int32_t>& pos, MouseButton btn)
+void SRInterface::inputMouseDown(const glm::ivec2& pos, MouseButton btn)
 {
   // Translation variables.
   mCamAccumPosDown  = mCamAccumPosNow;
@@ -116,7 +116,7 @@ void SRInterface::inputMouseDown(const Vector2<int32_t>& pos, MouseButton btn)
 }
 
 //------------------------------------------------------------------------------
-void SRInterface::inputMouseMove(const Vector2<int32_t>& pos, MouseButton btn)
+void SRInterface::inputMouseMove(const glm::ivec2& pos, MouseButton btn)
 {
   if (mActiveDrag == btn)
   {
@@ -138,8 +138,8 @@ void SRInterface::inputMouseMove(const Vector2<int32_t>& pos, MouseButton btn)
       V2 trans = (-delta) * 2.5f;
 
       M44 camRot = mSciBall->getTransformation();
-      V3 translation =   camRot.getCol0().xyz() * trans.x
-                       + camRot.getCol1().xyz() * trans.y;
+      V3 translation =   camRot[0].xyz * trans.x
+                       + camRot[1].xyz * trans.y;
       mCamAccumPosNow = mCamAccumPosDown + translation;
 
       buildAndApplyCameraTransform();
@@ -156,7 +156,7 @@ void SRInterface::inputMouseWheel(int32_t delta)
 }
 
 //------------------------------------------------------------------------------
-void SRInterface::inputMouseUp(const Vector2<int32_t>& pos, MouseButton btn)
+void SRInterface::inputMouseUp(const glm::ivec2& pos, MouseButton btn)
 {
 }
 
@@ -164,12 +164,11 @@ void SRInterface::inputMouseUp(const Vector2<int32_t>& pos, MouseButton btn)
 void SRInterface::buildAndApplyCameraTransform()
 {
   M44 camRot      = mSciBall->getTransformation();
-  M44 finalTrafo  = camRot * M44::rotationY(PI); // Reorient camera down the Z axis.
+  M44 finalTrafo  = glm::rotate(M44(), PI, V3(0.0, 1.0, 0.0));
 
   // Translation is a post rotation operation where as zoom is a pre transform
   // operation. We should probably ensure the user doesn't scroll passed zero.
-  finalTrafo.setTranslation(  mCamAccumPosNow 
-                            + camRot.getCol2().xyz() * mCamDistance);
+  finalTrafo[3].xyz = mCamAccumPosNow + camRot[2].xyz * mCamDistance;
 
   mCamera->setViewTransform(finalTrafo);
 }

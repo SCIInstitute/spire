@@ -63,7 +63,7 @@ V3 SciBall::mouseOnSphere(const V3& tscMouse)
   ballMouse.x = (tscMouse.x - mCenter.x) / mRadius;
   ballMouse.y = (tscMouse.y - mCenter.y) / mRadius;
 
-  float mag = VecOps::dot(ballMouse, ballMouse);
+  float mag = glm::dot(ballMouse, ballMouse);
   if (mag > 1.0f)
   {
     // Since we are outside of the sphere, map to the visible boundary of
@@ -91,14 +91,14 @@ void SciBall::beginDrag(const V2& msc)
   mMatDown    = mMatNow;
 
   // Normal 'begin' code.
-  mVDown      = mScreenToTCS * V3(msc.x, msc.y, 0.0f);
+  mVDown      = (mScreenToTCS * V4(msc.x, msc.y, 0.0f, 0.0f)).xyz;
 }
 
 //------------------------------------------------------------------------------
 void SciBall::drag(const V2& msc)
 {
   // Regular drag code to follow...
-  mVNow       = mScreenToTCS * V3(msc.x, msc.y, 0.0f);
+  mVNow       = (mScreenToTCS * V4(msc.x, msc.y, 0.0f, 0.0f)).xyz;
   mVSphereFrom= mouseOnSphere(mVDown);
   mVSphereTo  = mouseOnSphere(mVNow);
 
@@ -114,7 +114,7 @@ void SciBall::drag(const V2& msc)
   q.y = -q.y;
   q.z = -q.z;
   q.w =  q.w;
-  mMatNow = q.computeRotation();
+  mMatNow = glm::mat4_cast(q);
 }
 
 //------------------------------------------------------------------------------

@@ -74,20 +74,20 @@ void triangleTesselateRecurse(size_t lowerBoundN, const V3& lowerCoords, const V
 
   // Calculate our new position.
   V3 lowerToUpper   = upperCoords - lowerCoords;
-  V3 ourPos         = lowerCoords + (lowerToUpper / 2);
+  V3 ourPos         = lowerCoords + (lowerToUpper / 2.0f);
   V3 adjacentLowToUp= adjacentUpperCoords - adjacentLowerCoords;
-  V3 ourAdjacentPos = adjacentLowerCoords + (adjacentLowToUp / 2);
-  size_t ourBoundN  = (upperBoundN - lowerBoundN) / 2;  // Both upperBoundN and lowerBoundN are even (some 2^n).
+  V3 ourAdjacentPos = adjacentLowerCoords + (adjacentLowToUp / 2.0f);
+  size_t ourBoundN  = (upperBoundN - lowerBoundN) / 2.0f;  // Both upperBoundN and lowerBoundN are even (some 2^n).
 
 
   if (subdivisionsLeft == 0)
   {
     // Calculate normal common to all faces we are going to construct.
-    V3 normal = VecOps::cross(lowerCoords, adjacentLowerCoords);
+    V3 normal = glm::cross(lowerCoords, adjacentLowerCoords);
     {
       V3 calcUpper = adjacentUpperCoords - upperCoords;
       V3 calcLower = lowerCoords - upperCoords;
-      normal = VecOps::cross(calcUpper, calcLower);
+      normal = glm::cross(calcUpper, calcLower);
     }
 
     // We are at one of the leaf elements.
@@ -180,7 +180,7 @@ void triangleTesselateRecurse(size_t lowerBoundN, const V3& lowerCoords, const V
         iboLoc[0] = priorUpperIndex;
         iboLoc[1] = priorLowerIndex + 1;
         iboLoc[2] = priorLowerIndex;
-        
+
         priorLowerIndex = priorLowerIndex + 1;
       }
     }

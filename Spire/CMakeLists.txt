@@ -98,6 +98,7 @@ add_definitions(-DEIGEN_INITIALIZE_MATRICES_BY_ZERO)
 INCLUDE_DIRECTORIES( "${CMAKE_CURRENT_SOURCE_DIR}/3rdParty/glm" )
 # We want C++11 swizzling support.
 add_definitions(-DGLM_SWIZZLE)
+add_definitions(-DGLM_FORCE_RADIANS)
 
 ########################################################################
 # Tuvok

@@ -40,19 +40,19 @@ void M33toArray9(const M33& in, float* out)
 	// OpenGL is column major.
 
 	// Column 1
-	out[0 ] = in.m11;
-	out[1 ] = in.m21;
-	out[2 ] = in.m31;
+	out[0 ] = in[0][0];
+	out[1 ] = in[1][0];
+	out[2 ] = in[2][0];
 
 	// Column 2
-	out[3 ] = in.m12;
-	out[4 ] = in.m22;
-	out[5 ] = in.m32;
+	out[3 ] = in[0][1];
+	out[4 ] = in[1][1];
+	out[5 ] = in[2][1];
 
 	// Column 3
-	out[6 ] = in.m13;
-	out[7 ] = in.m23;
-	out[8 ] = in.m33;
+	out[6 ] = in[0][2];
+	out[7 ] = in[1][2];
+	out[8 ] = in[2][2];
 }
 
 void M44toArray16(const M44& in, float* out)
@@ -60,28 +60,28 @@ void M44toArray16(const M44& in, float* out)
 	// OpenGL is column major.
 
 	// Column 1
-	out[0 ] = in.m11;
-	out[1 ] = in.m21;
-	out[2 ] = in.m31;
-	out[3 ] = in.m41;
+	out[0 ] = in[0][0];
+	out[1 ] = in[1][0];
+	out[2 ] = in[2][0];
+	out[3 ] = in[3][0];
 
 	// Column 2
-	out[4 ] = in.m12;
-	out[5 ] = in.m22;
-	out[6 ] = in.m32;
-	out[7 ] = in.m42;
+	out[4 ] = in[0][1];
+	out[5 ] = in[1][1];
+	out[6 ] = in[2][1];
+	out[7 ] = in[3][1];
 
 	// Column 3
-	out[8 ] = in.m13;
-	out[9 ] = in.m23;
-	out[10] = in.m33;
-	out[11] = in.m43;
+	out[8 ] = in[0][2];
+	out[9 ] = in[1][2];
+	out[10] = in[2][2];
+	out[11] = in[3][2];
 
 	// Column 4
-	out[12] = in.m14;
-	out[13] = in.m24;
-	out[14] = in.m34;
-	out[15] = in.m44;
+	out[12] = in[0][3];
+	out[13] = in[1][3];
+	out[14] = in[2][3];
+	out[15] = in[3][3];
 }
 
 void V3toArray3(const V3& in, float* out)

@@ -68,9 +68,9 @@ public:
     MOUSE_MIDDLE,
   };
 
-  void inputMouseDown(const Vector2<int32_t>& pos, MouseButton btn);
-  void inputMouseMove(const Vector2<int32_t>& pos, MouseButton btn);
-  void inputMouseUp(const Vector2<int32_t>& pos, MouseButton btn);
+  void inputMouseDown(const glm::ivec2& pos, MouseButton btn);
+  void inputMouseMove(const glm::ivec2& pos, MouseButton btn);
+  void inputMouseUp(const glm::ivec2& pos, MouseButton btn);
   /// @}
 
   void inputMouseWheel(int32_t delta);
@@ -97,7 +97,7 @@ public:
 private:
 
   /// Calculates the screen space coordinates given the window coordinates.
-  V2 calculateScreenSpaceCoords(const Vector2<int32_t>& mousePos);
+  V2 calculateScreenSpaceCoords(const glm::ivec2& mousePos);
 
   /// Recalculates camera transform using the most relevant data.
   void buildAndApplyCameraTransform();
