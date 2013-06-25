@@ -91,7 +91,7 @@ V2 SRInterface::calculateScreenSpaceCoords(const glm::ivec2& mousePos)
       / static_cast<float>(mScreenHeight) - 1.0f;
 
   // Rotation with flipped axes feels much more natural.
-  mouseScreenSpace.x = -mouseScreenSpace.x;
+  mouseScreenSpace.y = -mouseScreenSpace.y;
 
   return mouseScreenSpace;
 }
