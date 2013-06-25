@@ -41,17 +41,17 @@ void M33toArray9(const M33& in, float* out)
 
 	// Column 1
 	out[0 ] = in[0][0];
-	out[1 ] = in[1][0];
-	out[2 ] = in[2][0];
+	out[1 ] = in[0][1];
+	out[2 ] = in[0][2];
 
 	// Column 2
-	out[3 ] = in[0][1];
+	out[3 ] = in[1][0];
 	out[4 ] = in[1][1];
-	out[5 ] = in[2][1];
+	out[5 ] = in[1][2];
 
 	// Column 3
-	out[6 ] = in[0][2];
-	out[7 ] = in[1][2];
+	out[6 ] = in[2][0];
+	out[7 ] = in[2][1];
 	out[8 ] = in[2][2];
 }
 
@@ -61,26 +61,26 @@ void M44toArray16(const M44& in, float* out)
 
 	// Column 1
 	out[0 ] = in[0][0];
-	out[1 ] = in[1][0];
-	out[2 ] = in[2][0];
-	out[3 ] = in[3][0];
+	out[1 ] = in[0][1];
+	out[2 ] = in[0][2];
+	out[3 ] = in[0][3];
 
 	// Column 2
-	out[4 ] = in[0][1];
+	out[4 ] = in[1][0];
 	out[5 ] = in[1][1];
-	out[6 ] = in[2][1];
-	out[7 ] = in[3][1];
+	out[6 ] = in[1][2];
+	out[7 ] = in[1][3];
 
 	// Column 3
-	out[8 ] = in[0][2];
-	out[9 ] = in[1][2];
+	out[8 ] = in[2][0];
+	out[9 ] = in[2][1];
 	out[10] = in[2][2];
-	out[11] = in[3][2];
+	out[11] = in[2][3];
 
 	// Column 4
-	out[12] = in[0][3];
-	out[13] = in[1][3];
-	out[14] = in[2][3];
+	out[12] = in[3][0];
+	out[13] = in[3][1];
+	out[14] = in[3][2];
 	out[15] = in[3][3];
 }
 

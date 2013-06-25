@@ -95,7 +95,7 @@ void SRCamera::setViewTransform(const Spire::M44& trafo)
   ++mTrafoSeq;
 
   mV    = trafo;
-  mIV   = glm::inverseTranspose(trafo);
+  mIV   = glm::affineInverse(trafo);
   mPIV  = mP * mIV;
 
   // Update appropriate uniforms.

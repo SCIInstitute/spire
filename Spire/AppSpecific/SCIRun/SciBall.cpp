@@ -91,14 +91,14 @@ void SciBall::beginDrag(const V2& msc)
   mMatDown    = mMatNow;
 
   // Normal 'begin' code.
-  mVDown      = (mScreenToTCS * V4(msc.x, msc.y, 0.0f, 0.0f)).xyz;
+  mVDown      = (mScreenToTCS * V4(msc.x, msc.y, 0.0f, 1.0f)).xyz();
 }
 
 //------------------------------------------------------------------------------
 void SciBall::drag(const V2& msc)
 {
   // Regular drag code to follow...
-  mVNow       = (mScreenToTCS * V4(msc.x, msc.y, 0.0f, 0.0f)).xyz;
+  mVNow       = (mScreenToTCS * V4(msc.x, msc.y, 0.0f, 1.0f)).xyz();
   mVSphereFrom= mouseOnSphere(mVDown);
   mVSphereTo  = mouseOnSphere(mVNow);
 
