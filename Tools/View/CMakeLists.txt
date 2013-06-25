@@ -53,6 +53,15 @@ endif()
 INCLUDE_DIRECTORIES( "${BASE_SPIRE_DIR}/Spire/3rdParty/eigen" )
 
 ########################################################################
+# GLM
+
+# GLM include directory.
+INCLUDE_DIRECTORIES( "${BASE_SPIRE_DIR}/Spire/3rdParty/glm" )
+# We want C++11 swizzling support.
+add_definitions(-DGLM_SWIZZLE)
+add_definitions(-DGLM_FORCE_RADIANS)
+
+########################################################################
 # Compiler settings
 
 if (UNIX)

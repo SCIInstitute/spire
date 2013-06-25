@@ -42,7 +42,6 @@ using namespace SCIRun::Gui;
 using Spire::V4;
 using Spire::V3;
 using Spire::V2;
-using Spire::Vector2;
 using Spire::M44;
 
 //------------------------------------------------------------------------------
@@ -190,21 +189,21 @@ void GLWidget::mouseMoveEvent(QMouseEvent* event)
 {
   // Extract appropriate key.
   Spire::SCIRun::SRInterface::MouseButton btn = getSpireButton(event);
-  mSpire->inputMouseMove(Vector2<int32_t>(event->x(), event->y()), btn);
+  mSpire->inputMouseMove(glm::ivec2(event->x(), event->y()), btn);
 }
 
 //------------------------------------------------------------------------------
 void GLWidget::mousePressEvent(QMouseEvent* event)
 {
   Spire::SCIRun::SRInterface::MouseButton btn = getSpireButton(event);
-  mSpire->inputMouseDown(Vector2<int32_t>(event->x(), event->y()), btn);
+  mSpire->inputMouseDown(glm::ivec2(event->x(), event->y()), btn);
 }
 
 //------------------------------------------------------------------------------
 void GLWidget::mouseReleaseEvent(QMouseEvent* event)
 {
   Spire::SCIRun::SRInterface::MouseButton btn = getSpireButton(event);
-  mSpire->inputMouseUp(Vector2<int32_t>(event->x(), event->y()), btn);
+  mSpire->inputMouseUp(glm::ivec2(event->x(), event->y()), btn);
 }
 
 //------------------------------------------------------------------------------
@@ -217,7 +216,7 @@ void GLWidget::wheelEvent(QWheelEvent * event)
 void GLWidget::resizeGL(int width, int height)
 {
   mSpire->eventResize(static_cast<int32_t>(width),
-                         static_cast<int32_t>(height));
+                      static_cast<int32_t>(height));
 }
 
 //------------------------------------------------------------------------------
