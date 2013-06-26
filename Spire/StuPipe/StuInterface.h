@@ -208,9 +208,9 @@ public:
 
   /// Loads an asset file and populates the given vectors with vbo and ibo
   /// data. In the future, we should expand this to include other asset types.
-  void loadProprietarySR5AssetFile(const std::string& filename,
-                                   std::vector<uint8_t>& vbo,
-                                   std::vector<uint8_t>& ibo);
+  static void loadProprietarySR5AssetFile(const std::string& filename,
+                                          std::vector<uint8_t>& vbo,
+                                          std::vector<uint8_t>& ibo);
 
   /// Adds a geometry pass to an object given by the identifier 'object'.
   /// Throws an std::out_of_range exception if the object is not found in the 
