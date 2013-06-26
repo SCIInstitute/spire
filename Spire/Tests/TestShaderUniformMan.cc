@@ -32,7 +32,6 @@
 #include <gtest/gtest.h>
 #include "Common.h"
 #include "Exceptions.h"
-#include "Core/MurmurHash3.h"
 #include "Core/ShaderUniformMan.h"
 
 using namespace Spire;

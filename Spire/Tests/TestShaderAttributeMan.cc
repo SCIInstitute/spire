@@ -32,7 +32,6 @@
 #include <gtest/gtest.h>
 #include "Common.h"
 #include "Exceptions.h"
-#include "Core/MurmurHash3.h"
 #include "Core/ShaderAttributeMan.h"
 
 using namespace Spire;
@@ -54,16 +53,6 @@ TEST(ShaderAttributeManBasic, TestUnknownAttribute)
           ShaderAttributeMan::getUnknownAttributeIndex()));
   EXPECT_EQ(true, std::get<0>(attribMan.findAttributeWithName(unknownName)));
   EXPECT_EQ(0, std::get<1>(attribMan.findAttributeWithName(unknownName)));
-
-  // Test string hashing.
-  uint32_t hashOut = 0;
-  MurmurHash3_x86_32(
-      static_cast<const void*>(unknownName.c_str()),
-      static_cast<int>(unknownName.size()),
-      ShaderAttributeMan::getMurmurSeedValue(),
-      static_cast<void*>(&hashOut));
-  EXPECT_EQ(hashOut, state.nameHash);
-  EXPECT_EQ(hashOut, attribMan.hashString(unknownName));
 
   // Test returned attribMan.
   EXPECT_EQ(0, state.index);
