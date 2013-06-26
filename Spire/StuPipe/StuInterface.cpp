@@ -207,26 +207,50 @@ void StuInterface::loadProprietarySR5AssetFile(const std::string& filename,
   // Read in the first mesh (this is the only mesh we will read in)
   uint32_t numVertices = 0;
   assetFile.read(reinterpret_cast<char*>(&numVertices), sizeof(uint32_t));
-  /// \todo Load this into a VBO in preparation for rendering.
+
   V3 position;
   V3 normal;
+
+  // Reserve appropriate space in the vbo.
+  size_t vboSize = sizeof(float) * 6 * numVertices;
+  vbo.resize(vboSize); // linear complexity.
+  float* vboPtr = reinterpret_cast<float*>(&vbo[0]); // Remember, standard guarantees that vectors are contiguous in memory.
+
   for (size_t i = 0; i < numVertices; i++)
   {
     // Read position data
     assetFile.read(reinterpret_cast<char*>(&position.x), sizeof(float));
     assetFile.read(reinterpret_cast<char*>(&position.y), sizeof(float));
     assetFile.read(reinterpret_cast<char*>(&position.z), sizeof(float));
+    vboPtr[0] = position.x;
+    vboPtr[1] = position.y;
+    vboPtr[2] = position.z;
+    vboPtr += 3;
 
     // Read normal data
     assetFile.read(reinterpret_cast<char*>(&normal.x), sizeof(float));
     assetFile.read(reinterpret_cast<char*>(&normal.y), sizeof(float));
     assetFile.read(reinterpret_cast<char*>(&normal.z), sizeof(float));
+    vboPtr[0] = normal.x;
+    vboPtr[1] = normal.y;
+    vboPtr[2] = normal.z;
+    vboPtr += 3;
   }
 
   // Read in the IBO data.
   uint32_t numTriangles = 0;  // Will be counted when loading.
   uint32_t numFaces = 0;
   assetFile.read(reinterpret_cast<char*>(&numFaces), sizeof(uint32_t));
+
+  // Worst case number of triangles: 2 * numFaces (all quads).
+  // The following has pretty harsh algorithmic time -- 3*N. Can easily be sped
+  // up by using the preprocessing program to determine how many triangles there
+  // are in the object. This would reduce the complexity to 2*N.
+  uint32_t numTrianglesWorstCase = numFaces * 2;
+  size_t iboWorstCaseSize = numTrianglesWorstCase * sizeof(uint16_t) * 3;
+  ibo.resize(iboWorstCaseSize); // linear in complexity
+  uint16_t* iboPtr = reinterpret_cast<uint16_t*>(&ibo[0]); // Remember, standard guarantees that vectors are contiguous in memory.
+
   for (size_t i = 0; i < numFaces; i++)
   {
     uint8_t numIndices;
@@ -236,10 +260,14 @@ void StuInterface::loadProprietarySR5AssetFile(const std::string& filename,
       uint16_t index0;
       uint16_t index1;
       uint16_t index2;
-      assetFile.read(reinterpret_cast<char*>(&index0), sizeof(uint8_t));
-      assetFile.read(reinterpret_cast<char*>(&index1), sizeof(uint8_t));
-      assetFile.read(reinterpret_cast<char*>(&index2), sizeof(uint8_t));
+      assetFile.read(reinterpret_cast<char*>(&index0), sizeof(uint16_t));
+      assetFile.read(reinterpret_cast<char*>(&index1), sizeof(uint16_t));
+      assetFile.read(reinterpret_cast<char*>(&index2), sizeof(uint16_t));
+      iboPtr[0] = index0;
+      iboPtr[1] = index1;
+      iboPtr[2] = index2;
 
+      iboPtr += 3;
       ++numTriangles;
     }
     else if (numIndices == 4)
@@ -249,18 +277,30 @@ void StuInterface::loadProprietarySR5AssetFile(const std::string& filename,
         uint16_t index0;
         uint16_t index1;
         uint16_t index2;
-        assetFile.read(reinterpret_cast<char*>(&index0), sizeof(uint8_t));
-        assetFile.read(reinterpret_cast<char*>(&index1), sizeof(uint8_t));
-        assetFile.read(reinterpret_cast<char*>(&index2), sizeof(uint8_t));
+        assetFile.read(reinterpret_cast<char*>(&index0), sizeof(uint16_t));
+        assetFile.read(reinterpret_cast<char*>(&index1), sizeof(uint16_t));
+        assetFile.read(reinterpret_cast<char*>(&index2), sizeof(uint16_t));
+
+        iboPtr[0] = index0;
+        iboPtr[1] = index1;
+        iboPtr[2] = index2;
+
+        iboPtr += 3;
       }
 
       {
         uint16_t index0;
         uint16_t index1;
         uint16_t index2;
-        assetFile.read(reinterpret_cast<char*>(&index0), sizeof(uint8_t));
-        assetFile.read(reinterpret_cast<char*>(&index1), sizeof(uint8_t));
-        assetFile.read(reinterpret_cast<char*>(&index2), sizeof(uint8_t));
+        assetFile.read(reinterpret_cast<char*>(&index0), sizeof(uint16_t));
+        assetFile.read(reinterpret_cast<char*>(&index1), sizeof(uint16_t));
+        assetFile.read(reinterpret_cast<char*>(&index2), sizeof(uint16_t));
+
+        iboPtr[0] = index0;
+        iboPtr[1] = index1;
+        iboPtr[2] = index2;
+
+        iboPtr += 3;
       }
 
       numTriangles += 2;
@@ -268,14 +308,10 @@ void StuInterface::loadProprietarySR5AssetFile(const std::string& filename,
 
   }
 
-
-  // Allocate space for all vertices in the vertex buffer (only positions and normals).
-
-  // Reserve appropriate space in the ibo / vbo.
-  //std::shared_ptr<std::vector<uint8_t>> rawVBO(new std::vector<uint8_t>());
-  //size_t vboSize = sizeof(float) * 3 * facade->numNodes();
-  //rawVBO->resize(vboSize); // linear complexity.
-  //float* vbo = reinterpret_cast<float*>(&(*rawVBO)[0]); // Remember, standard guarantees that vectors are contiguous in memory.
+  // Resize the IBO appropriately (this is the operation that can be eliminated
+  // if we know how many triangles there will be beforehand).
+  size_t realIBOSize = numTriangles * sizeof(uint16_t) * 3;
+  ibo.resize(realIBOSize); // linear in complexity
 }
 
 
