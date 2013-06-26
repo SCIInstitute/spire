@@ -44,7 +44,7 @@ TestCamera::TestCamera() :
 
   // Camera looking down positive Z axis, located at -5.0f z.
   Spire::M44 cam;
-  cam.setCol3(Spire::V4(0.0f, 0.0f, -5.0f, 1.0f));
+  cam[3] = Spire::V4(0.0f, 0.0f, -5.0f, 1.0f);
 
   setViewTransform(cam);
 }
@@ -61,13 +61,13 @@ void TestCamera::setAsPerspective()
 
   float aspect = static_cast<float>(Spire::GlobalTestEnvironment::instance()->getScreenWidth()) / 
                  static_cast<float>(Spire::GlobalTestEnvironment::instance()->getScreenHeight());
-  mP = Spire::M44::perspective(mFOV, aspect, mZNear, mZFar);
+  mP = glm::perspective(mFOV, aspect, mZNear, mZFar);
 
   // Rotate about the Y axis by 180 degrees. Many perspective matrices
   // (see Hughes, et al...) are built looking down negative Z. This is the case
   // with our perspective matrices. As such, we rotate by 180 degrees to re-orient
   // our matrix down positive Z.
-  Spire::M44 y180 = Spire::M44::rotationY(Spire::PI);
+  Spire::M44 y180 = glm::rotate(Spire::M44(), Spire::PI, Spire::V3(0.0, 1.0, 0.0));
   mP = mP * y180;
 }
 
@@ -76,12 +76,12 @@ void TestCamera::setAsOrthographic(float halfWidth, float halfHeight)
 {
   mPerspective = false;
 
-	mP = Spire::M44::orthographic(-halfWidth, halfWidth, 
-                         -halfHeight, halfHeight, 
-                         mZNear, mZFar);
+	mP = glm::ortho(-halfWidth, halfWidth, 
+                  -halfHeight, halfHeight, 
+                  mZNear, mZFar);
 
   // Same reason we rotate the perspective camera by 180 degrees.
-  Spire::M44 y180 = Spire::M44::rotationY(Spire::PI);
+  Spire::M44 y180 = glm::rotate(Spire::M44(), Spire::PI, Spire::V3(0.0, 1.0, 0.0));
   mP = mP * y180;
 }
 
@@ -91,7 +91,7 @@ void TestCamera::setViewTransform(const Spire::M44& trafo)
   ++mTrafoSeq;
 
   mV    = trafo;
-  mIV   = Spire::M44::orthoInverse(trafo);
+  mIV   = glm::affineInverse(trafo);
   mPIV  = mP * mIV;
   //Log::message() << "mV" << std::endl << mV << std::endl;
   //Log::message() << "mIV" << std::endl << mIV << std::endl;

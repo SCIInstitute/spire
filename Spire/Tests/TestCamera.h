@@ -62,7 +62,7 @@ public:
 
   /// Default camera settings
   /// @{
-  static float getDefaultFOVY()   {return 32.0f * (Spire::PI / 18.0f);}
+  static float getDefaultFOVY()   {return 32.0f * (Spire::PI / 180.0f);}
   static float getDefaultZNear()  {return 0.1f;}
   static float getDefaultZFar()   {return 1350.0f;}
   /// @}
