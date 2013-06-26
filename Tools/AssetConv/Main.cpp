@@ -280,7 +280,9 @@ int processFile(const std::string& inFile, const std::string& outputDirectory)
     output.write(reinterpret_cast<const char*>(&mesh->mNumFaces), sizeof(uint32_t));
     for (size_t j = 0; j < mesh->mNumFaces; j++)
     {
-      if (mesh->mFaces[j].mNumIndices == 3)
+      uint8_t numIndices = &mesh->mFaces[j].mNumIndices;
+      output.write(reinterpret_cast<const char*>(&numIndices), sizeof(uint8_t));
+      if (numIndices == 3)
       {
         // Handle triangles.
 
@@ -297,7 +299,7 @@ int processFile(const std::string& inFile, const std::string& outputDirectory)
         output.write(reinterpret_cast<const char*>(&index1), sizeof(uint16_t));
         output.write(reinterpret_cast<const char*>(&index2), sizeof(uint16_t));
       }
-      else if (mesh->mFaces[j].mNumIndices == 4)
+      else if (numIndices == 4)
       {
         // Handle quads. Need to convert to triangles. Ensure to swap winding
         // order of the quads.
@@ -326,6 +328,8 @@ int processFile(const std::string& inFile, const std::string& outputDirectory)
       }
     }
   }
+  uint32_t voidIndex = 0;
+  output.write(reinterpret_cast<const char*>(&voidIndex), sizeof(uint32_t));
 
   output.close();
 

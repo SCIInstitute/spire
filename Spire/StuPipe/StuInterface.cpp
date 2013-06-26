@@ -175,10 +175,10 @@ void StuInterface::removeIBO(const std::string& iboName)
 
 
 //------------------------------------------------------------------------------
-void StuInterface::loadAssetFile(const std::string& filename,
-                                 std::vector<uint8_t>& vbo, std::vector<uint8_t>& ibo)
+void StuInterface::loadProprietarySR5AssetFile(const std::string& filename,
+                                               std::vector<uint8_t>& vbo,
+                                               std::vector<uint8_t>& ibo)
 {
-  // Load up filename
   std::ifstream assetFile(filename.c_str(), std::ios::binary);
 
   // Read default SCIRun asset header.
@@ -207,13 +207,67 @@ void StuInterface::loadAssetFile(const std::string& filename,
   // Read in the first mesh (this is the only mesh we will read in)
   uint32_t numVertices = 0;
   assetFile.read(reinterpret_cast<char*>(&numVertices), sizeof(uint32_t));
-  float x,y,z;
+  /// \todo Load this into a VBO in preparation for rendering.
+  V3 position;
+  V3 normal;
   for (size_t i = 0; i < numVertices; i++)
   {
     // Read position data
-    //assetFile.read(reinterpret_cast<char*>(&x), );
+    assetFile.read(reinterpret_cast<char*>(&position.x), sizeof(float));
+    assetFile.read(reinterpret_cast<char*>(&position.y), sizeof(float));
+    assetFile.read(reinterpret_cast<char*>(&position.z), sizeof(float));
+
+    // Read normal data
+    assetFile.read(reinterpret_cast<char*>(&normal.x), sizeof(float));
+    assetFile.read(reinterpret_cast<char*>(&normal.y), sizeof(float));
+    assetFile.read(reinterpret_cast<char*>(&normal.z), sizeof(float));
+  }
+
+  // Read in the IBO data.
+  uint32_t numTriangles = 0;  // Will be counted when loading.
+  uint32_t numFaces = 0;
+  assetFile.read(reinterpret_cast<char*>(&numFaces), sizeof(uint32_t));
+  for (size_t i = 0; i < numFaces; i++)
+  {
+    uint8_t numIndices;
+    assetFile.read(reinterpret_cast<char*>(&numIndices), sizeof(uint8_t));
+    if (numIndices == 3)
+    {
+      uint16_t index0;
+      uint16_t index1;
+      uint16_t index2;
+      assetFile.read(reinterpret_cast<char*>(&index0), sizeof(uint8_t));
+      assetFile.read(reinterpret_cast<char*>(&index1), sizeof(uint8_t));
+      assetFile.read(reinterpret_cast<char*>(&index2), sizeof(uint8_t));
+
+      ++numTriangles;
+    }
+    else if (numIndices == 4)
+    {
+      // Two triangles
+      {
+        uint16_t index0;
+        uint16_t index1;
+        uint16_t index2;
+        assetFile.read(reinterpret_cast<char*>(&index0), sizeof(uint8_t));
+        assetFile.read(reinterpret_cast<char*>(&index1), sizeof(uint8_t));
+        assetFile.read(reinterpret_cast<char*>(&index2), sizeof(uint8_t));
+      }
+
+      {
+        uint16_t index0;
+        uint16_t index1;
+        uint16_t index2;
+        assetFile.read(reinterpret_cast<char*>(&index0), sizeof(uint8_t));
+        assetFile.read(reinterpret_cast<char*>(&index1), sizeof(uint8_t));
+        assetFile.read(reinterpret_cast<char*>(&index2), sizeof(uint8_t));
+      }
+
+      numTriangles += 2;
+    }
 
   }
+
 
   // Allocate space for all vertices in the vertex buffer (only positions and normals).
 
