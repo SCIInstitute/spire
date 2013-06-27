@@ -45,6 +45,37 @@ using namespace Spire;
 namespace {
 
 //------------------------------------------------------------------------------
+TEST(StuInterfaceTests, TestSR5AssetLoader)
+{
+  //std::ifstream assetFile(filename.c_str(), std::ios::binary);
+  std::ostringstream sRaw(std::stringstream::in |
+                          std::stringstream::binary);
+
+  // Write out the header.
+  std::string header = "SCR5";
+  sRaw.write(header.c_str(), 4);
+
+  // Write out the positions / normals.
+  size_t vec3Size = sizeof(float) * 3;
+  sRaw.write(reinterpret_cast<const char*>(glm::value_ptr(V3(1.0, 0.0, 0.0))), vec3Size);
+  sRaw.write(reinterpret_cast<const char*>(glm::value_ptr(V3(0.0, 1.0, 0.0))), vec3Size);
+  sRaw.write(reinterpret_cast<const char*>(glm::value_ptr(V3(0.0, 0.0, 0.0))), vec3Size);
+
+  sRaw.write(reinterpret_cast<const char*>(glm::value_ptr(V3(0.0, 0.0, 1.0))), vec3Size);
+  sRaw.write(reinterpret_cast<const char*>(glm::value_ptr(V3(0.0, 0.0, 1.0))), vec3Size);
+  sRaw.write(reinterpret_cast<const char*>(glm::value_ptr(V3(0.0, 0.0, 1.0))), vec3Size);
+
+  // Write out the indices.
+  size_t indicesSize = sizeof(uint16_t) * 3;
+  uint16_t indices[3] = {0, 1, 2};
+  sRaw.write(reinterpret_cast<const char*>(indices), indicesSize);
+
+  // Now read the stringstream in and grab the resultant vectors.
+  std::istringstream ss(sRaw.str());
+
+}
+
+//------------------------------------------------------------------------------
 TEST_F(StuPipeTestFixture, TestPublicInterface)
 {
   // This test is contrived and won't yield that much knowledge if you are 

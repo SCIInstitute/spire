@@ -175,17 +175,17 @@ void StuInterface::removeIBO(const std::string& iboName)
 
 
 //------------------------------------------------------------------------------
-void StuInterface::loadProprietarySR5AssetFile(const std::string& filename,
+void StuInterface::loadProprietarySR5AssetFile(std::istream& stream,
                                                std::vector<uint8_t>& vbo,
                                                std::vector<uint8_t>& ibo)
 {
-  std::ifstream assetFile(filename.c_str(), std::ios::binary);
+  //std::ifstream assetFile(filename.c_str(), std::ios::binary);
 
   // Read default SCIRun asset header.
   std::string header = "SCR5";
 
   char headerStrIn_Raw[5];
-  assetFile.read(headerStrIn_Raw, 4);
+  stream.read(headerStrIn_Raw, 4);
   headerStrIn_Raw[4] = '\0';
   std::string headerStrIn = headerStrIn_Raw;
 
@@ -198,7 +198,7 @@ void StuInterface::loadProprietarySR5AssetFile(const std::string& filename,
   // Read in the number of meshes (this is ignored for now and the first mesh is
   // used).
   uint32_t numMeshes = 0;
-  assetFile.read(reinterpret_cast<char*>(&numMeshes), sizeof(uint32_t));
+  stream.read(reinterpret_cast<char*>(&numMeshes), sizeof(uint32_t));
   if (numMeshes == 0)
   {
     throw std::invalid_argument("Need at least one mesh in asset file.");
@@ -206,7 +206,7 @@ void StuInterface::loadProprietarySR5AssetFile(const std::string& filename,
 
   // Read in the first mesh (this is the only mesh we will read in)
   uint32_t numVertices = 0;
-  assetFile.read(reinterpret_cast<char*>(&numVertices), sizeof(uint32_t));
+  stream.read(reinterpret_cast<char*>(&numVertices), sizeof(uint32_t));
 
   V3 position;
   V3 normal;
@@ -219,18 +219,18 @@ void StuInterface::loadProprietarySR5AssetFile(const std::string& filename,
   for (size_t i = 0; i < numVertices; i++)
   {
     // Read position data
-    assetFile.read(reinterpret_cast<char*>(&position.x), sizeof(float));
-    assetFile.read(reinterpret_cast<char*>(&position.y), sizeof(float));
-    assetFile.read(reinterpret_cast<char*>(&position.z), sizeof(float));
+    stream.read(reinterpret_cast<char*>(&position.x), sizeof(float));
+    stream.read(reinterpret_cast<char*>(&position.y), sizeof(float));
+    stream.read(reinterpret_cast<char*>(&position.z), sizeof(float));
     vboPtr[0] = position.x;
     vboPtr[1] = position.y;
     vboPtr[2] = position.z;
     vboPtr += 3;
 
     // Read normal data
-    assetFile.read(reinterpret_cast<char*>(&normal.x), sizeof(float));
-    assetFile.read(reinterpret_cast<char*>(&normal.y), sizeof(float));
-    assetFile.read(reinterpret_cast<char*>(&normal.z), sizeof(float));
+    stream.read(reinterpret_cast<char*>(&normal.x), sizeof(float));
+    stream.read(reinterpret_cast<char*>(&normal.y), sizeof(float));
+    stream.read(reinterpret_cast<char*>(&normal.z), sizeof(float));
     vboPtr[0] = normal.x;
     vboPtr[1] = normal.y;
     vboPtr[2] = normal.z;
@@ -240,7 +240,7 @@ void StuInterface::loadProprietarySR5AssetFile(const std::string& filename,
   // Read in the IBO data.
   uint32_t numTriangles = 0;  // Will be counted when loading.
   uint32_t numFaces = 0;
-  assetFile.read(reinterpret_cast<char*>(&numFaces), sizeof(uint32_t));
+  stream.read(reinterpret_cast<char*>(&numFaces), sizeof(uint32_t));
 
   // Worst case number of triangles: 2 * numFaces (all quads).
   // The following has pretty harsh algorithmic time -- 3*N. Can easily be sped
@@ -254,15 +254,15 @@ void StuInterface::loadProprietarySR5AssetFile(const std::string& filename,
   for (size_t i = 0; i < numFaces; i++)
   {
     uint8_t numIndices;
-    assetFile.read(reinterpret_cast<char*>(&numIndices), sizeof(uint8_t));
+    stream.read(reinterpret_cast<char*>(&numIndices), sizeof(uint8_t));
     if (numIndices == 3)
     {
       uint16_t index0;
       uint16_t index1;
       uint16_t index2;
-      assetFile.read(reinterpret_cast<char*>(&index0), sizeof(uint16_t));
-      assetFile.read(reinterpret_cast<char*>(&index1), sizeof(uint16_t));
-      assetFile.read(reinterpret_cast<char*>(&index2), sizeof(uint16_t));
+      stream.read(reinterpret_cast<char*>(&index0), sizeof(uint16_t));
+      stream.read(reinterpret_cast<char*>(&index1), sizeof(uint16_t));
+      stream.read(reinterpret_cast<char*>(&index2), sizeof(uint16_t));
       iboPtr[0] = index0;
       iboPtr[1] = index1;
       iboPtr[2] = index2;
@@ -277,9 +277,9 @@ void StuInterface::loadProprietarySR5AssetFile(const std::string& filename,
         uint16_t index0;
         uint16_t index1;
         uint16_t index2;
-        assetFile.read(reinterpret_cast<char*>(&index0), sizeof(uint16_t));
-        assetFile.read(reinterpret_cast<char*>(&index1), sizeof(uint16_t));
-        assetFile.read(reinterpret_cast<char*>(&index2), sizeof(uint16_t));
+        stream.read(reinterpret_cast<char*>(&index0), sizeof(uint16_t));
+        stream.read(reinterpret_cast<char*>(&index1), sizeof(uint16_t));
+        stream.read(reinterpret_cast<char*>(&index2), sizeof(uint16_t));
 
         iboPtr[0] = index0;
         iboPtr[1] = index1;
@@ -292,9 +292,9 @@ void StuInterface::loadProprietarySR5AssetFile(const std::string& filename,
         uint16_t index0;
         uint16_t index1;
         uint16_t index2;
-        assetFile.read(reinterpret_cast<char*>(&index0), sizeof(uint16_t));
-        assetFile.read(reinterpret_cast<char*>(&index1), sizeof(uint16_t));
-        assetFile.read(reinterpret_cast<char*>(&index2), sizeof(uint16_t));
+        stream.read(reinterpret_cast<char*>(&index0), sizeof(uint16_t));
+        stream.read(reinterpret_cast<char*>(&index1), sizeof(uint16_t));
+        stream.read(reinterpret_cast<char*>(&index2), sizeof(uint16_t));
 
         iboPtr[0] = index0;
         iboPtr[1] = index1;
