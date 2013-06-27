@@ -106,7 +106,9 @@ TEST(StuInterfaceTests, TestSR5AssetLoader)
   std::istringstream ss(sRaw.str());
   std::vector<uint8_t> vbo;
   std::vector<uint8_t> ibo;
-  StuInterface::loadProprietarySR5AssetFile(ss, vbo, ibo);
+  size_t numTriangles = StuInterface::loadProprietarySR5AssetFile(ss, vbo, ibo);
+
+  ASSERT_EQ(1, numTriangles);
 
   //std::istreambuf_iterator<uint8_t>(&vbo[0]);
   // Construct strings from vbo and ibo (perfectly valid, the strings, when
