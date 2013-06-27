@@ -84,7 +84,11 @@ void GLWidget::buildScene()
   std::shared_ptr<std::vector<uint8_t>> vbo(new std::vector<uint8_t>());
   std::shared_ptr<std::vector<uint8_t>> ibo(new std::vector<uint8_t>());
 
-  std::ifstream fstream("Assets/CappedCylinder.sp", std::ifstream::binary);
+  std::string fileToOpen = "Assets/CappedCylinder.sp";
+  std::ifstream fstream(fileToOpen, std::ifstream::binary);
+  if (fstream.fail())
+    throw std::runtime_error("Unable to open resource file: " + fileToOpen);
+
   size_t numTriangles = Spire::StuInterface::loadProprietarySR5AssetFile(fstream, *vbo, *ibo);
   fstream.close();
 
