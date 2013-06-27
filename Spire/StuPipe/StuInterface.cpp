@@ -98,7 +98,7 @@ void StuInterface::ntsDoPass()
 
   std::shared_ptr<const AbstractUniformStateItem> toCamToProjectionUniform =
       mHub.getShaderUniformStateMan().getGlobalUninform(
-          std::get<0>(CommonUniforms::getCameraToWorld()));
+          std::get<0>(CommonUniforms::getToCameraToProjection()));
 
   if (toCamToProjectionUniform->getGLType() != UNIFORM_FLOAT_MAT4)
   {

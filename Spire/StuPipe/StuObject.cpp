@@ -166,14 +166,6 @@ void StuPass::renderPass(const M44& objectToWorld, const M44& inverseView,
     mHub.getShaderUniformStateMan().applyUniform(it->uniformName, it->shaderLocation);
   }
 
-#ifdef SPIRE_DEBUG
-  if (allUniforms.size() != 0)
-  {
-    assert(0);
-    throw std::runtime_error("Spire should have consumed all uniforms!");
-  }
-#endif
-
   // Update any uniforms that require the object transformation.
   for (auto it = mObjectTransformUniforms.begin(); it != mObjectTransformUniforms.end(); ++it)
   {
@@ -186,6 +178,9 @@ void StuPass::renderPass(const M44& objectToWorld, const M44& inverseView,
         codeName = std::get<0>(CommonUniforms::getObject());
         glUniformMatrix4fv(static_cast<GLint>(it->varLocation), 1, false,
                            static_cast<const GLfloat*>(glm::value_ptr(objectToWorld)));
+#ifdef SPIRE_DEBUG
+        allUniforms.remove(codeName);
+#endif
         break;
 
       case ObjectTransformUniform::TRANSFORM_OBJECT_TO_CAMERA:
@@ -193,6 +188,9 @@ void StuPass::renderPass(const M44& objectToWorld, const M44& inverseView,
         transform = inverseView * objectToWorld;
         glUniformMatrix4fv(static_cast<GLint>(it->varLocation), 1, false,
                            static_cast<const GLfloat*>(glm::value_ptr(transform)));
+#ifdef SPIRE_DEBUG
+        allUniforms.remove(codeName);
+#endif
         break;
 
       case ObjectTransformUniform::TRANSFORM_OBJECT_TO_CAMERA_TO_PROJECTION:
@@ -200,9 +198,20 @@ void StuPass::renderPass(const M44& objectToWorld, const M44& inverseView,
         transform = inverseViewProjection * objectToWorld;
         glUniformMatrix4fv(static_cast<GLint>(it->varLocation), 1, false,
                            static_cast<const GLfloat*>(glm::value_ptr(transform)));
+#ifdef SPIRE_DEBUG
+        allUniforms.remove(codeName);
+#endif
         break;
     }
   }
+
+#ifdef SPIRE_DEBUG
+  if (allUniforms.size() != 0)
+  {
+    assert(0);
+    throw std::runtime_error("Spire should have consumed all uniforms!");
+  }
+#endif
 
   //Log::debug() << "Rendering with prim type " << mPrimitiveType << " num elements "
   //             << mIBO->getNumElements() << " ibo type " << mIBO->getType() << std::endl;
