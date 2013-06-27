@@ -27,19 +27,19 @@
 */
 
 // Uniforms
-uniform mat4    uProjIVWorld;       // Projection * Inverse View * World XForm
-uniform vec2    uMinMax;            // Minimum / Maximum value range.
+uniform mat4    uProjIVObject;        // Projection * Inverse View * World XForm
+uniform vec2    uMinMax;              // Minimum / Maximum value range.
 
 // Attributes
 attribute vec3  aPos;
-attribute float aFieldData;         // Value associated with this vertex (field data).
+attribute float aFieldData;           // Value associated with this vertex (field data).
 
 // Normalized value at this position.
 varying float   fProcessedValue;
 
 void main( void )
 {
-  gl_Position = uProjIVWorld * vec4(aPos, 1.0);
+  gl_Position = uProjIVObject * vec4(aPos, 1.0);
   float normalizedValue = (aFieldData - uMinMax.x) / (uMinMax.y - uMinMax.x);
   fProcessedValue = normalizedValue;
 }

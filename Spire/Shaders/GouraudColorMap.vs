@@ -27,7 +27,7 @@
 */
 
 // Uniforms
-uniform mat4    uProjIVWorld;       // Projection * Inverse View * World XForm
+uniform mat4    uProjIVObject;      // Projection * Inverse View * World XForm
 uniform vec4    uColor;             // Uniform color
 uniform vec2    uMinMax;            // Minimum / Maximum value range.
 uniform float   uNumColorMapVals;   // Number of color map values.
@@ -41,7 +41,7 @@ varying float   fProcessedValue;
 
 void main( void )
 {
-  gl_Position = uProjIVWorld * vec4(aPos, 1.0);
+  gl_Position = uProjIVObject * vec4(aPos, 1.0);
   float normalizedValue = (aValue - uMinMax.x) / uMinMax.y;
   fProcessedValue = uNumColorMapVals;
 }
