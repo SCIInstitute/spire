@@ -100,7 +100,7 @@ void SRCamera::setViewTransform(const Spire::M44& trafo)
 
   // Update appropriate uniforms.
   mInterface.getStuPipe()->addGlobalUniform(
-      std::get<0>(CommonUniforms::getToCameraToProjection()), mIV);
+      std::get<0>(CommonUniforms::getToCameraToProjection()), mPIV);
 
   mInterface.getStuPipe()->addGlobalUniform(
       std::get<0>(CommonUniforms::getToProjection()), mP);
