@@ -95,6 +95,11 @@ public:
   /// because we don't want to expose the GLenum type to an interface.
   static GLenum uniformTypeToGL(UNIFORM_TYPE type);
 
+  /// Retrieves the abstract item representing a global uniform.
+  /// An exception is thrown if the global uniform of specified name does not
+  /// exist.
+  std::shared_ptr<const AbstractUniformStateItem> getGlobalUninform(const std::string& name);
+
 private:
 
   /// Contains all current global uniform state. I would use an ordered map,

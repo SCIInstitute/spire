@@ -267,6 +267,14 @@ public:
                                new UniformStateItem<T>(uniformData)));
   }
 
+  /// Associates an object -> world transform with the given object / pass
+  /// combination. Default is the identity transformation.
+  /// This is the only 'special' case variable associated with passes / objects
+  /// other than uniforms. We generally want to concatenate the object -> world
+  /// transform with the inverse view transform and projection transform.
+  void addObjectTransform(const std::string& object,
+                          const M44& transform);
+
   /// Concrete implementation of the above templated function.
   void addPassUniformConcrete(const std::string& object,
                               const std::string& pass,
@@ -437,6 +445,10 @@ private:
                                   std::string iboID,
                                   PRIMITIVE_TYPES type,
                                   int32_t passOrder);
+
+  static void addObjectTransformImpl(Hub& hub, StuInterface* iface,
+                                     std::string objectName,
+                                     M44 transform);
 
   static void addPassUniformInternalImpl(Hub& hub, StuInterface* iface,
                                          std::string object,

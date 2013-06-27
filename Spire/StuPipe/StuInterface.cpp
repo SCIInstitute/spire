@@ -37,6 +37,7 @@
 #include "StuObject.h"
 #include "Core/ShaderProgramMan.h"
 #include "Core/Hub.h"
+#include "Core/CommonUniforms.h"
 #include "../Exceptions.h"
 
 using namespace std::placeholders;
@@ -81,9 +82,34 @@ void StuInterface::ntsDoPass()
   GPUState defaultGPUState;
   mHub.getGPUStateManager().apply(defaultGPUState, true); // true = force application of state.
 
+  // Pull the view and the inverse view projection transforms out of the
+  // uniforms. StuInterface expects those to be set.
+  std::shared_ptr<const AbstractUniformStateItem> camToWorldUniform = 
+      mHub.getShaderUniformStateMan().getGlobalUninform(
+          std::get<0>(CommonUniforms::getCameraToWorld()));
+
+  if (camToWorldUniform->getGLType() != UNIFORM_FLOAT_MAT4)
+  {
+    throw std::runtime_error("-> Camera -> Projection transform is not a 4x4 matrix!");
+  }
+  const float* rawM44 = camToWorldUniform->getRawData();
+  M44 camToWorld = glm::make_mat4x4(rawM44);
+  M44 inverseCamToWorld = glm::affineInverse(camToWorld);
+
+  std::shared_ptr<const AbstractUniformStateItem> toCamToProjectionUniform =
+      mHub.getShaderUniformStateMan().getGlobalUninform(
+          std::get<0>(CommonUniforms::getCameraToWorld()));
+
+  if (toCamToProjectionUniform->getGLType() != UNIFORM_FLOAT_MAT4)
+  {
+    throw std::runtime_error("-> Camera -> Projection transform is not a 4x4 matrix!");
+  }
+  rawM44 = toCamToProjectionUniform->getRawData();
+  M44 toCamToProjection = glm::make_mat4x4(rawM44);
+
   for (auto it = mRenderOrderToObjects.begin(); it != mRenderOrderToObjects.end(); ++it)
   {
-    it->second->renderAllPasses();
+    it->second->renderAllPasses(inverseCamToWorld, toCamToProjection);
   }
 }
 
@@ -530,6 +556,24 @@ void StuInterface::addPassUniformConcrete(const std::string& object,
   mHub.addFunctionToThreadQueue(fun);
 }
 
+//------------------------------------------------------------------------------
+void StuInterface::addObjectTransform(const std::string& object,
+                                      const M44& transform)
+{
+  Hub::RemoteFunction fun =
+      std::bind(addObjectTransformImpl, _1, this, object, transform);
+  mHub.addFunctionToThreadQueue(fun);
+}
+
+
+//------------------------------------------------------------------------------
+void StuInterface::addObjectTransformImpl(Hub& hub, StuInterface* iface,
+                                          std::string objectName,
+                                          M44 transform)
+{
+  std::shared_ptr<StuObject> obj = iface->mNameToObject.at(objectName);
+  obj->addObjectTransform(transform);
+}
 
 //------------------------------------------------------------------------------
 void StuInterface::addPassGPUStateImpl(Hub& hub, StuInterface* iface,

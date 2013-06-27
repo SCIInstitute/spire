@@ -34,59 +34,50 @@
 
 #include <tuple>
 
-#include "../../Core/ShaderUniformStateManTemplates.h"
+#include "Core/ShaderUniformStateManTemplates.h"
 
 namespace Spire
 {
 
-/// Common uniforms used by SCIRun.
-class SRCommonUniforms
+/// Common uniforms used by Spire.
+/// \todo Look into the ability to rename these uniforms in the future. This is
+/// so that Spire can adapt to other code bases.
+class CommonUniforms
 {
 public:
-  SRCommonUniforms()          {}
-  virtual ~SRCommonUniforms() {}
+  CommonUniforms()          {}
+  virtual ~CommonUniforms() {}
   
   //----------------------------------------------------------------------------
-  // Camera Uniforms
+  // Camera Uniforms (View)
   //----------------------------------------------------------------------------
 
-  /// Inverse world view - projection matrix.
-  /// Used by vertex shaders to transform from object coordinates into 
-  /// projected coordinates.
-  static std::tuple<const char*, UNIFORM_TYPE> getCameraWorldToProjection()   
-  {return std::make_pair("uProjIVWorld", UNIFORM_FLOAT_MAT4);}
-
   /// Inverse view to world matrix.
-  static std::tuple<const char*, UNIFORM_TYPE> getCameraWorldToView()
+  static std::tuple<const char*, UNIFORM_TYPE> getToCameraToProjection()
   {return std::make_pair("uProjIV", UNIFORM_FLOAT_MAT4);}
 
   /// Projection matrix.
-  static std::tuple<const char*, UNIFORM_TYPE> getCameraProjection()
+  static std::tuple<const char*, UNIFORM_TYPE> getToProjection()
   {return std::make_pair("uProj", UNIFORM_FLOAT_MAT4);}
 
   /// View to world.
-  static std::tuple<const char*, UNIFORM_TYPE> getCameraWorld()
+  static std::tuple<const char*, UNIFORM_TYPE> getCameraToWorld()
   {return std::make_pair("uView", UNIFORM_FLOAT_MAT4);}
 
-  /// World to view transformation.
-  static std::tuple<const char*, UNIFORM_TYPE> getWorldToViewTransformation()
-  {return std::make_pair("uModelView", UNIFORM_FLOAT_MAT4);}
-
   //----------------------------------------------------------------------------
-  // Lighting uniforms
+  // Object and Combined Object/Camera Uniforms
   //----------------------------------------------------------------------------
+  /// Object -> World -> Camera -> Projection
+  static std::tuple<const char*, UNIFORM_TYPE> getObjectToCameraToProjection()   
+  {return std::make_pair("uProjIVObject", UNIFORM_FLOAT_MAT4);}
 
-  /// Directional light vector
-  static std::tuple<const char*, UNIFORM_TYPE> getLightDir()
-  {return std::make_pair("uDirLight", UNIFORM_FLOAT_VEC4);}
+  /// Object -> World to view transformation.
+  static std::tuple<const char*, UNIFORM_TYPE> getObjectToView()
+  {return std::make_pair("uViewObject", UNIFORM_FLOAT_MAT4);}
 
-  //----------------------------------------------------------------------------
-  // Misc. uniforms
-  //----------------------------------------------------------------------------
-
-  /// Floating point color vector
-  static std::tuple<const char*, UNIFORM_TYPE> getColorFloat()
-  {return std::make_pair("uColor", UNIFORM_FLOAT_VEC4);}
+  /// Object -> World transformformation.
+  static std::tuple<const char*, UNIFORM_TYPE> getObject()
+  {return std::make_pair("uObject", UNIFORM_FLOAT_MAT4);}
 
 };
 

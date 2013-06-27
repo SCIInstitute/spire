@@ -30,7 +30,7 @@
 /// \date   March 2013
 
 #include "SRCamera.h"
-#include "SRCommonUniforms.h"
+#include "../../Core/CommonUniforms.h"
 
 namespace Spire {
 namespace SCIRun {
@@ -100,16 +100,19 @@ void SRCamera::setViewTransform(const Spire::M44& trafo)
 
   // Update appropriate uniforms.
   mInterface.getStuPipe()->addGlobalUniform(
-      std::get<0>(SRCommonUniforms::getCameraWorldToProjection()), mPIV);
+      std::get<0>(CommonUniforms::getToCameraToProjection()), mIV);
 
   mInterface.getStuPipe()->addGlobalUniform(
-      std::get<0>(SRCommonUniforms::getCameraWorldToView()), mIV);
+      std::get<0>(CommonUniforms::getToProjection()), mP);
 
   mInterface.getStuPipe()->addGlobalUniform(
-      std::get<0>(SRCommonUniforms::getCameraProjection()), mP);
+      std::get<0>(CommonUniforms::getCameraToWorld()), mV);
 
-  mInterface.getStuPipe()->addGlobalUniform(
-      std::get<0>(SRCommonUniforms::getCameraWorld()), mV);
+  // The following variables need an object -> world transform in order to be
+  // set appropriately. They will need to be set individually when rendering.
+  //mInterface.getStuPipe()->addGlobalUniform(
+  //    std::get<0>(SRCommonUniforms::getObjectToCameraToProjection()), mPIV);
+
 }
 
 } // namespace SCIRun

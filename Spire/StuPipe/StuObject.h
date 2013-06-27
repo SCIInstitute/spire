@@ -59,7 +59,8 @@ public:
       std::shared_ptr<VBOObject> vbo, std::shared_ptr<IBOObject> ibo, GLenum primitiveType);
   virtual ~StuPass();
   
-  void renderPass();
+  void renderPass(const M44& objectToWorld, const M44& inverseView, 
+                  const M44& inverseViewProjection);
 
   const std::string& getName() const    {return mName;}
   int32_t getPassOrder() const          {return mPassOrder;}
@@ -90,6 +91,24 @@ protected:
     GLint                                     shaderLocation;
   };
 
+  struct ObjectTransformUniform
+  {
+    enum ObjectTransformType
+    {
+      TRANSFORM_OBJECT,
+      TRANSFORM_OBJECT_TO_CAMERA,
+      TRANSFORM_OBJECT_TO_CAMERA_TO_PROJECTION,
+    };
+
+    ObjectTransformUniform(ObjectTransformType type) :
+        transformType(type),
+        varLocation(0)  
+    {}
+
+    ObjectTransformType transformType;
+    GLint               varLocation;
+  };
+
   struct UnsastisfiedUniformItem
   {
     UnsastisfiedUniformItem(const std::string& name,
@@ -113,9 +132,8 @@ protected:
   /// runtime exception will be thrown.
   /// This list is updated everytime we add or remove elements from mUniforms.
   std::vector<UnsastisfiedUniformItem>  mUnsatisfiedUniforms;
-
-  /// Local uniforms.
-  std::vector<UniformItem>              mUniforms;
+  std::vector<UniformItem>              mUniforms;  ///< Local uniforms
+  std::vector<ObjectTransformUniform>   mObjectTransformUniforms;
 
   std::shared_ptr<VBOObject>            mVBO;     ///< ID of VBO to use during pass.
   std::shared_ptr<IBOObject>            mIBO;     ///< ID of IBO to use during pass.
@@ -165,6 +183,10 @@ public:
                       const std::string uniformName,
                       std::shared_ptr<AbstractUniformStateItem> item);
 
+  /// Adds an object -> world transformation to this object.
+  /// This transform is passed to the pass before rendering occurs.
+  void addObjectTransform(const M44& transform);
+
   /// Add GPU state to the pass.
   void addPassGPUState(const std::string& pass,
                        const GPUState& state);
@@ -172,7 +194,9 @@ public:
   bool hasPassRenderingOrder(const std::vector<std::string>& passes) const;
 
   /// Renders all passes associated with this object.
-  void renderAllPasses();
+  void renderAllPasses(const M44& inverseView, const M44& inverseViewProjection);
+
+  /// \todo Ability to render a single named pass. See github issue #15.
 
 protected:
 
@@ -193,6 +217,9 @@ protected:
 
   std::string                                   mName;
   int32_t                                       mRenderOrder;
+
+  /// Object -> world transform.
+  M44                                           mObjectTransform;
 
   Hub&                                          mHub;
 };

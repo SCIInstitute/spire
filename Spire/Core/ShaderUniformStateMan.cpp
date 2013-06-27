@@ -79,6 +79,12 @@ void ShaderUniformStateMan::updateGlobalUniform(const std::string& name,
 }
 
 //------------------------------------------------------------------------------
+std::shared_ptr<const AbstractUniformStateItem> ShaderUniformStateMan::getGlobalUninform(const std::string& name)
+{
+  return mGlobalState.at(name);
+}
+
+//------------------------------------------------------------------------------
 std::string ShaderUniformStateMan::uniformAsString(const std::string& name) const
 {
   const std::shared_ptr<const AbstractUniformStateItem>& ptr = mGlobalState.at(name);

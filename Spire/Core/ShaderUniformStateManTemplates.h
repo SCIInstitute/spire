@@ -167,6 +167,10 @@ public:
   /// Retrieve textual representation of uniform.
   virtual std::string asString() const = 0;
 
+  /// Retrieve raw pointer data.
+  /// The most common format is float*, so we pass that back by default.
+  virtual const float* getRawData() const = 0;
+
 protected:
 
   /// Series of static utility functions to avoid exposing OpenGL functions
@@ -228,6 +232,11 @@ public:
     return stream.str();
   }
 
+  const float* getRawData() const override
+  {
+    return glm::value_ptr(mData);
+  }
+
 private:
   Type mData;
 };
@@ -266,6 +275,13 @@ public:
     return stream.str();
   }
 
+  const float* getRawData() const override
+  {
+    // There is no safe way of returning this data.
+    return nullptr;
+  }
+  
+
 private:
   std::vector<V3>   mData;
 };
@@ -294,6 +310,11 @@ public:
     stream << "Vec4 - (" << mData.x << ", " << mData.y << ", " << mData.z 
            << ", " << mData.w << ")";
     return stream.str();
+  }
+
+  const float* getRawData() const override
+  {
+    return glm::value_ptr(mData);
   }
 
 private:
@@ -325,6 +346,12 @@ public:
     return stream.str();
   }
 
+  const float* getRawData() const override
+  {
+    return glm::value_ptr(mData);
+  }
+
+
 private:
   Type mData;
 };
@@ -353,6 +380,12 @@ public:
     stream << "Float - (" << mData << ")";
     return stream.str();
   }
+
+  const float* getRawData() const override
+  {
+    return &mData;
+  }
+
 
 private:
   Type mData;
@@ -394,6 +427,11 @@ public:
            << "        " << glMatrix[2] << " " << glMatrix[6] << " " << glMatrix[10] << " " << glMatrix[14] << std::endl
            << "        " << glMatrix[3] << " " << glMatrix[7] << " " << glMatrix[11] << " " << glMatrix[15];
     return stream.str();
+  }
+
+  const float* getRawData() const override
+  {
+    return glMatrix;
   }
 
 private:
