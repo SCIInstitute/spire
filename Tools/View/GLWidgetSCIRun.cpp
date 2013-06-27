@@ -80,45 +80,63 @@ void GLWidget::buildScene()
 {
   std::shared_ptr<Spire::StuInterface> stuPipe = mSpire->getStuPipe();
 
-  // Load asset data from 'exported assets'.
-  std::shared_ptr<std::vector<uint8_t>> vbo(new std::vector<uint8_t>());
-  std::shared_ptr<std::vector<uint8_t>> ibo(new std::vector<uint8_t>());
-
-  std::string fileToOpen = "Assets/CappedCylinder.sp";
-  std::ifstream fstream(fileToOpen, std::ifstream::binary);
-  if (fstream.fail())
-    throw std::runtime_error("Unable to open resource file: " + fileToOpen);
-
-  size_t numTriangles = Spire::StuInterface::loadProprietarySR5AssetFile(fstream, *vbo, *ibo);
-  fstream.close();
-
-  // loadProprietarySR5ASsetFile always produces positions and normals in the
-  // vbo and 16bit index buffers.
-  std::vector<std::string> attribNames = {"aPos", "aNormal"};
-  Spire::StuInterface::IBO_TYPE iboType = Spire::StuInterface::IBO_16BIT;
-  
-  // Add necessary VBO's and IBO's
-  std::string vbo1 = "vbo1";
-  std::string ibo1 = "ibo1";
-  stuPipe->addVBO(vbo1, vbo, attribNames);
-  stuPipe->addIBO(ibo1, ibo, iboType);
-
-  // Add object
-  std::string obj1 = "obj1";
-  stuPipe->addObject(obj1);
-
   // Ensure shader is resident.
-  std::string shader1 = "UniformColor";
+  std::string uniformColorShader = "UniformColor";
   stuPipe->addPersistentShader(
-      shader1, 
+      uniformColorShader, 
       { {"UniformColor.vs", Spire::StuInterface::VERTEX_SHADER}, 
         {"UniformColor.fs", Spire::StuInterface::FRAGMENT_SHADER},
       });
 
-  // Build the pass
-  std::string pass1 = "pass1";
-  stuPipe->addPassToObject(obj1, pass1, shader1, vbo1, ibo1, Spire::StuInterface::TRIANGLES);
-  stuPipe->addPassUniform(obj1, pass1, "uColor", V4(1.0f, 0.0f, 0.0f, 1.0f));
+  auto loadAsset = [stuPipe](const std::string& assetFileName, 
+                             const std::string& shader,
+                             const std::string& objectName,
+                             const std::string& passName)
+  {
+    // Load asset data from 'exported assets'.
+    std::shared_ptr<std::vector<uint8_t>> vbo(new std::vector<uint8_t>());
+    std::shared_ptr<std::vector<uint8_t>> ibo(new std::vector<uint8_t>());
+
+    std::ifstream fstream(assetFileName, std::ifstream::binary);
+    if (fstream.fail())
+      throw std::runtime_error("Unable to open resource file: " + assetFileName);
+    size_t numTriangles = Spire::StuInterface::loadProprietarySR5AssetFile(fstream, *vbo, *ibo);
+    fstream.close();
+
+    // loadProprietarySR5ASsetFile always produces positions and normals in the
+    // vbo and 16bit index buffers.
+    std::vector<std::string> attribNames = {"aPos", "aNormal"};
+    Spire::StuInterface::IBO_TYPE iboType = Spire::StuInterface::IBO_16BIT;
+
+    // Add necessary VBO's and IBO's
+    std::string vbo1 = "vbo1";
+    std::string ibo1 = "ibo1";
+    stuPipe->addVBO(vbo1, vbo, attribNames);
+    stuPipe->addIBO(ibo1, ibo, iboType);
+
+    // Add object
+    stuPipe->addObject(objectName);
+
+    // Build the pass
+    stuPipe->addPassToObject(objectName, passName, shader, vbo1, ibo1, Spire::StuInterface::TRIANGLES);
+  };
+
+  /// \todo Method of setting world transform of object.
+  // We need a method of setting the world transform of the object and having
+  // it concatenated with uProjIVWorld before sending it to the GPU. Maybe a
+  // specialized uniform? Since this is such a specialized case, maybe we can
+  // just set the Object -> to world transform and have it be an attribute of
+  // the pass?
+
+  // Cylinder
+  {
+    std::string objName = "cylinder";
+    std::string passName = "cylinderPass";
+
+    loadAsset("Assets/CappedCylinder.sp", uniformColorShader, objName, passName);
+
+    stuPipe->addPassUniform(objName, passName, "uColor", V4(1.0f, 0.0f, 0.0f, 1.0f));
+  }
 
   // In SCIRun specific renderer, uProjIVworld is already set
   //stuPipe->addGlobalUniform("uProjIVWorld", M44());
