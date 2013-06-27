@@ -32,7 +32,6 @@
 #include "Interface.h"
 #include "SRInterface.h"
 #include "SciBall.h"
-#include "SRCommonUniforms.h"
 #include "SRCamera.h"
 
 #include "Core/Hub.h"
