@@ -189,7 +189,7 @@ void StuInterface::loadProprietarySR5AssetFile(std::istream& stream,
   headerStrIn_Raw[4] = '\0';
   std::string headerStrIn = headerStrIn_Raw;
 
-  if (headerStrIn == header)
+  if (headerStrIn != header)
   {
     /// \todo Use more appropriate I/O exception.
     throw std::invalid_argument("Header does not match asset file.");

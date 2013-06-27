@@ -47,32 +47,107 @@ namespace {
 //------------------------------------------------------------------------------
 TEST(StuInterfaceTests, TestSR5AssetLoader)
 {
-  //std::ifstream assetFile(filename.c_str(), std::ios::binary);
-  std::ostringstream sRaw(std::stringstream::in |
-                          std::stringstream::binary);
+  std::ostringstream sRaw;
 
   // Write out the header.
   std::string header = "SCR5";
   sRaw.write(header.c_str(), 4);
 
+  std::vector<V3> positions = 
+  { V3(1.0f, 0.0f, 0.0f),
+    V3(0.0f, 1.0f, 0.0f),
+    V3(0.0f, 0.0f, 0.0f) };
+
+  std::vector<V3> normals = 
+  { V3(0.0f, 0.0f, 1.0f),
+    V3(0.0f, 0.0f, 1.0f),
+    V3(0.0f, 0.0f, 1.0f) };
+
+  std::vector<uint16_t> indices = { 0,1,2 };
+
+  // Helper functions for writing integers.
+  auto writeUInt32 = [](std::ostream& ss, uint32_t i)
+  { ss.write(reinterpret_cast<const char*>(&i), sizeof(uint32_t)); };
+
+  auto writeUInt8 = [](std::ostream& ss, uint8_t i)
+  { ss.write(reinterpret_cast<const char*>(&i), sizeof(uint8_t)); };
+
+  // Number of meshes
+  writeUInt32(sRaw, 1);
+
+  // Number of vertices
+  ASSERT_EQ(positions.size(), normals.size());
+  writeUInt32(sRaw, positions.size());
+
   // Write out the positions / normals.
   size_t vec3Size = sizeof(float) * 3;
-  sRaw.write(reinterpret_cast<const char*>(glm::value_ptr(V3(1.0, 0.0, 0.0))), vec3Size);
-  sRaw.write(reinterpret_cast<const char*>(glm::value_ptr(V3(0.0, 1.0, 0.0))), vec3Size);
-  sRaw.write(reinterpret_cast<const char*>(glm::value_ptr(V3(0.0, 0.0, 0.0))), vec3Size);
+  for (int i = 0; i < positions.size(); i++)
+  {
+    V3 pos = positions[i];
+    V3 norm = normals[i];
+    sRaw.write(reinterpret_cast<const char*>(glm::value_ptr(pos)), vec3Size);
+    sRaw.write(reinterpret_cast<const char*>(glm::value_ptr(norm)), vec3Size);
+  }
 
-  sRaw.write(reinterpret_cast<const char*>(glm::value_ptr(V3(0.0, 0.0, 1.0))), vec3Size);
-  sRaw.write(reinterpret_cast<const char*>(glm::value_ptr(V3(0.0, 0.0, 1.0))), vec3Size);
-  sRaw.write(reinterpret_cast<const char*>(glm::value_ptr(V3(0.0, 0.0, 1.0))), vec3Size);
+  // Ensure we have triangles.
+  ASSERT_EQ(0, indices.size() % 3);
 
-  // Write out the indices.
-  size_t indicesSize = sizeof(uint16_t) * 3;
-  uint16_t indices[3] = {0, 1, 2};
-  sRaw.write(reinterpret_cast<const char*>(indices), indicesSize);
+  // Number of faces
+  writeUInt32(sRaw, indices.size() / 3);
+  for (int i = 0; i < indices.size(); i+=3)
+  {
+    writeUInt8(sRaw, 3);
+    sRaw.write(reinterpret_cast<const char*>(&indices[i+0]), sizeof(uint16_t));
+    sRaw.write(reinterpret_cast<const char*>(&indices[i+1]), sizeof(uint16_t));
+    sRaw.write(reinterpret_cast<const char*>(&indices[i+2]), sizeof(uint16_t));
+  }
 
   // Now read the stringstream in and grab the resultant vectors.
   std::istringstream ss(sRaw.str());
+  std::vector<uint8_t> vbo;
+  std::vector<uint8_t> ibo;
+  StuInterface::loadProprietarySR5AssetFile(ss, vbo, ibo);
 
+  //std::istreambuf_iterator<uint8_t>(&vbo[0]);
+  // Construct strings from vbo and ibo (perfectly valid, the strings, when
+  // given a size, can contain the null character).
+  std::string vboStr(reinterpret_cast<char*>(&vbo[0]), vbo.size());
+  std::string iboStr(reinterpret_cast<char*>(&ibo[0]), ibo.size());
+  std::istringstream vboStream(vboStr);
+  std::istringstream iboStream(iboStr);
+
+  // Darn it! I want polymorphic lambdas!
+  // The following 2 anonymous functions can be collapsed down to one with
+  // polymorphic lambdas.
+  auto verifySSFloat = [](float expectedVal, std::istream& ss)
+  {
+    float fromStream;
+    ss.read(reinterpret_cast<char*>(&fromStream), sizeof(float));
+    ASSERT_FLOAT_EQ(expectedVal, fromStream);
+  };
+
+  auto verifySSUInt16 = [](uint16_t expectedVal, std::istream& ss)
+  {
+    uint16_t fromStream;
+    ss.read(reinterpret_cast<char*>(&fromStream), sizeof(uint16_t));
+    ASSERT_EQ(expectedVal, fromStream);
+  };
+
+  auto checkVector = [&verifySSFloat](const V3& vec, std::istream& ss)
+  {
+    verifySSFloat(vec.x, ss);
+    verifySSFloat(vec.y, ss);
+    verifySSFloat(vec.z, ss);
+  };
+
+  for (int i = 0; i < positions.size(); i++)
+  {
+    checkVector(positions[i], vboStream);
+    checkVector(normals[i], vboStream);
+  }
+
+  for (uint16_t i : indices)
+    verifySSUInt16(i, iboStream);
 }
 
 //------------------------------------------------------------------------------
