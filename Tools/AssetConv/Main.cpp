@@ -280,7 +280,7 @@ int processFile(const std::string& inFile, const std::string& outputDirectory)
     output.write(reinterpret_cast<const char*>(&mesh->mNumFaces), sizeof(uint32_t));
     for (size_t j = 0; j < mesh->mNumFaces; j++)
     {
-      uint8_t numIndices = &mesh->mFaces[j].mNumIndices;
+      uint8_t numIndices = static_cast<uint8_t>(mesh->mFaces[j].mNumIndices);
       output.write(reinterpret_cast<const char*>(&numIndices), sizeof(uint8_t));
       if (numIndices == 3)
       {
