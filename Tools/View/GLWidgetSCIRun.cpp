@@ -32,6 +32,7 @@
 ///         auxiliary file to the ViewScene render module.
 
 #include <iostream>
+#include <fstream>
 #include <cstdlib>
 #include <QMouseEvent>
 #include <QWheelEvent>
@@ -79,61 +80,24 @@ void GLWidget::buildScene()
 {
   std::shared_ptr<Spire::StuInterface> stuPipe = mSpire->getStuPipe();
 
-  // Two faces of a cube (the only thing that changes for a cube are the
-  // indices). Note: we may be adding normals to the vbo in the future...
-  // Actually, since we just want face normals, we'll compute it using
-  // the cross product in the vertex shader...
-  size_t    vboSize = sizeof(float) * 3 * 8;
-  size_t    iboSize = sizeof(uint32_t) * 12;
-  float*    vbo = static_cast<float*>(std::malloc(vboSize));
-  uint32_t* ibo = static_cast<uint32_t*>(std::malloc(iboSize));
+  // Load asset data from 'exported assets'.
+  std::shared_ptr<std::vector<uint8_t>> vbo(new std::vector<uint8_t>());
+  std::shared_ptr<std::vector<uint8_t>> ibo(new std::vector<uint8_t>());
 
-  std::vector<float> vboData =
-  {
-    -1.0f,  1.0f, -1.0f,
-     1.0f,  1.0f, -1.0f,
-    -1.0f, -1.0f, -1.0f,
-     1.0f, -1.0f, -1.0f,
+  std::ifstream fstream("Assets/CappedCylinder.sp", std::ifstream::binary);
+  size_t numTriangles = Spire::StuInterface::loadProprietarySR5AssetFile(fstream, *vbo, *ibo);
+  fstream.close();
 
-    -1.0f,  1.0f,  1.0f,
-     1.0f,  1.0f,  1.0f,
-    -1.0f, -1.0f,  1.0f,
-     1.0f, -1.0f,  1.0f,
-  };
-  std::vector<std::string> attribNames = {"aPos"};
-
-  std::vector<uint16_t> iboData =
-  {
-    0, 1, 2, 
-    1, 2, 3,
-
-    4, 5, 6,
-    5, 6, 7
-  };
+  // loadProprietarySR5ASsetFile always produces positions and normals in the
+  // vbo and 16bit index buffers.
+  std::vector<std::string> attribNames = {"aPos", "aNormal"};
   Spire::StuInterface::IBO_TYPE iboType = Spire::StuInterface::IBO_16BIT;
   
-  uint8_t*  rawBegin;
-  size_t    rawSize;
-
-  // Copy vboData into vector of uint8_t. Using std::copy.
-  std::shared_ptr<std::vector<uint8_t>> rawVBO(new std::vector<uint8_t>());
-  rawSize = vboData.size() * (sizeof(float) / sizeof(uint8_t));
-  rawVBO->reserve(rawSize);
-  rawBegin = reinterpret_cast<uint8_t*>(&vboData[0]); // Remember, standard guarantees that vectors are contiguous in memory.
-  rawVBO->assign(rawBegin, rawBegin + rawSize);
-
-  // Copy iboData into vector of uint8_t. Using std::vector::assign.
-  std::shared_ptr<std::vector<uint8_t>> rawIBO(new std::vector<uint8_t>());
-  rawSize = iboData.size() * (sizeof(uint16_t) / sizeof(uint8_t));
-  rawIBO->reserve(rawSize);
-  rawBegin = reinterpret_cast<uint8_t*>(&iboData[0]); // Remember, standard guarantees that vectors are contiguous in memory.
-  rawIBO->assign(rawBegin, rawBegin + rawSize);
-
   // Add necessary VBO's and IBO's
   std::string vbo1 = "vbo1";
   std::string ibo1 = "ibo1";
-  stuPipe->addVBO(vbo1, rawVBO, attribNames);
-  stuPipe->addIBO(ibo1, rawIBO, iboType);
+  stuPipe->addVBO(vbo1, vbo, attribNames);
+  stuPipe->addIBO(ibo1, ibo, iboType);
 
   // Add object
   std::string obj1 = "obj1";

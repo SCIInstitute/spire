@@ -97,17 +97,16 @@ QT4_WRAP_CPP(MocSource ${MocHeaders})
 QT4_WRAP_UI(UISource ${Forms})
 
 ########################################################################
-# Copy shaders to the target directory
-install(DIRECTORY ${BASE_SPIRE_DIR}/Spire/Shaders
-        DESTINATION ${CMAKE_INSTALL_DIR}/
-        FILE_PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ WORLD_READ
-        DIRECTORY_PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE
-                              GROUP_READ
-                              WORLD_READ WORLD_EXECUTE)
-
-# Copy shaders.
+# Copy shaders to the binary directory
 file(COPY ${BASE_SPIRE_DIR}/Spire/Shaders/
-     DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/
+     DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/Shaders
+     FILE_PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ WORLD_READ
+     DIRECTORY_PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE
+                           GROUP_READ
+                           WORLD_READ WORLD_EXECUTE)
+
+file(COPY ${BASE_SPIRE_DIR}/Spire/ExportedMeshes/
+     DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/Assets
      FILE_PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ WORLD_READ
      DIRECTORY_PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE
                            GROUP_READ

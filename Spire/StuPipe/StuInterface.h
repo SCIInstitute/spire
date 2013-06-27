@@ -208,6 +208,8 @@ public:
 
   /// Loads an asset file and populates the given vectors with vbo and ibo
   /// data. In the future, we should expand this to include other asset types.
+  /// Always uses 16bit IBOs and 32bit per component position / normal in the
+  /// vbo.
   /// \return Returns the number of triangles read into ibo.
   static size_t loadProprietarySR5AssetFile(std::istream& stream,
                                             std::vector<uint8_t>& vbo,
