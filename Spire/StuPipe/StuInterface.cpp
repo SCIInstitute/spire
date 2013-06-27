@@ -175,12 +175,10 @@ void StuInterface::removeIBO(const std::string& iboName)
 
 
 //------------------------------------------------------------------------------
-void StuInterface::loadProprietarySR5AssetFile(std::istream& stream,
+size_t StuInterface::loadProprietarySR5AssetFile(std::istream& stream,
                                                std::vector<uint8_t>& vbo,
                                                std::vector<uint8_t>& ibo)
 {
-  //std::ifstream assetFile(filename.c_str(), std::ios::binary);
-
   // Read default SCIRun asset header.
   std::string header = "SCR5";
 
@@ -312,6 +310,8 @@ void StuInterface::loadProprietarySR5AssetFile(std::istream& stream,
   // if we know how many triangles there will be beforehand).
   size_t realIBOSize = numTriangles * sizeof(uint16_t) * 3;
   ibo.resize(realIBOSize); // linear in complexity
+
+  return numTriangles;
 }
 
 
