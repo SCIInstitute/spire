@@ -109,8 +109,8 @@ void GLWidget::buildScene()
     Spire::StuInterface::IBO_TYPE iboType = Spire::StuInterface::IBO_16BIT;
 
     // Add necessary VBO's and IBO's
-    std::string vbo1 = "vbo1";
-    std::string ibo1 = "ibo1";
+    std::string vbo1 = objectName + "vbo1";
+    std::string ibo1 = objectName + "ibo1";
     stuPipe->addVBO(vbo1, vbo, attribNames);
     stuPipe->addIBO(ibo1, ibo, iboType);
 
@@ -135,11 +135,40 @@ void GLWidget::buildScene()
 
     loadAsset("Assets/CappedCylinder.sp", uniformColorShader, objName, passName);
 
-    stuPipe->addPassUniform(objName, passName, "uColor", V4(1.0f, 0.0f, 0.0f, 1.0f));
+    stuPipe->addPassUniform(objName, passName, "uColor", V4(0.74f, 0.0f, 0.0f, 1.0f));
+
+    M44 xform;
+    xform[3] = V4(1.0f, 0.0f, 0.0f, 1.0f);
+    stuPipe->addObjectTransform(objName, xform);
   }
 
-  // In SCIRun specific renderer, uProjIVworld is already set
-  //stuPipe->addGlobalUniform("uProjIVWorld", M44());
+  // Sphere
+  {
+    std::string objName = "sphere";
+    std::string passName = "spherePass";
+
+    loadAsset("Assets/Sphere.sp", uniformColorShader, objName, passName);
+
+    stuPipe->addPassUniform(objName, passName, "uColor", V4(1.0f, 1.0f, 0.0f, 1.0f));
+
+    M44 xform;
+    xform[3] = V4(0.0f, 0.0f, 0.0f, 1.0f);
+    stuPipe->addObjectTransform(objName, xform);
+  }
+
+  // UnCapped cylinder
+  {
+    std::string objName = "uncylinder";
+    std::string passName = "uncylinderPass";
+
+    loadAsset("Assets/UncappedCylinder.sp", uniformColorShader, objName, passName);
+
+    stuPipe->addPassUniform(objName, passName, "uColor", V4(0.0f, 0.0f, 0.74f, 1.0f));
+
+    M44 xform;
+    xform[3] = V4(-1.0f, 0.0f, 0.0f, 1.0f);
+    stuPipe->addObjectTransform(objName, xform);
+  }
 }
 
 //------------------------------------------------------------------------------
