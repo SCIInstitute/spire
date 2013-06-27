@@ -100,9 +100,9 @@ protected:
       TRANSFORM_OBJECT_TO_CAMERA_TO_PROJECTION,
     };
 
-    ObjectTransformUniform(ObjectTransformType type) :
+    ObjectTransformUniform(ObjectTransformType type, GLint shaderVarLocation) :
         transformType(type),
-        varLocation(0)  
+        varLocation(shaderVarLocation)  
     {}
 
     ObjectTransformType transformType;

@@ -85,17 +85,17 @@ StuPass::StuPass(
     if (std::get<0>(CommonUniforms::getObject()) == uniformCodeName)
     {
       mObjectTransformUniforms.push_back(
-          ObjectTransformUniform(ObjectTransformUniform::TRANSFORM_OBJECT));
+          ObjectTransformUniform(ObjectTransformUniform::TRANSFORM_OBJECT, uniformData.glUniformLoc));
     }
     else if (std::get<0>(CommonUniforms::getObjectToView()) == uniformCodeName)
     {
       mObjectTransformUniforms.push_back(
-          ObjectTransformUniform(ObjectTransformUniform::TRANSFORM_OBJECT_TO_CAMERA));
+          ObjectTransformUniform(ObjectTransformUniform::TRANSFORM_OBJECT_TO_CAMERA, uniformData.glUniformLoc));
     }
     else if (std::get<0>(CommonUniforms::getObjectToCameraToProjection()) == uniformCodeName)
     {
       mObjectTransformUniforms.push_back(
-          ObjectTransformUniform(ObjectTransformUniform::TRANSFORM_OBJECT_TO_CAMERA_TO_PROJECTION));
+          ObjectTransformUniform(ObjectTransformUniform::TRANSFORM_OBJECT_TO_CAMERA_TO_PROJECTION, uniformData.glUniformLoc));
     }
     else
     {
