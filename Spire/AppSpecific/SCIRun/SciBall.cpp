@@ -47,6 +47,8 @@ SciBall::SciBall(const V3& center, float radius, const M44& screenToTCS) :
   mVNow     = vZero;
   mQDown    = qOne;
   mQNow     = qOne;
+
+  mMatNow  = glm::rotate(M44(), PI, V3(0.0, 1.0, 0.0));
 }
 
 //------------------------------------------------------------------------------
@@ -108,13 +110,7 @@ void SciBall::drag(const V2& msc)
   mQDrag = quatFromUnitSphere(mVSphereFrom, mVSphereTo); 
   mQNow = mQDrag * mQDown;
 
-  // Perform complex conjugate (ends up being a matrix transpose)
-  Quat q = mQNow;
-  q.x = -q.x;
-  q.y = -q.y;
-  q.z = -q.z;
-  q.w =  q.w;
-  mMatNow = glm::mat4_cast(q);
+  mMatNow = glm::mat4_cast(mQNow);
 }
 
 //------------------------------------------------------------------------------
