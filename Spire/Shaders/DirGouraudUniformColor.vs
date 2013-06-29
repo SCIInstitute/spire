@@ -27,9 +27,12 @@
 */
 
 // Uniforms
-uniform mat4    uProjIVObject;      // Projection * Inverse View * World XForm
-uniform vec4    uColor;             // Uniform color
-uniform vec3    uLightDir;          // Directional light.
+uniform mat4    uProjIV;            // Projection transform * Inverse View
+uniform mat4    uObject;            // Object -> World XForm
+uniform vec4    uAmbientColor;      // Ambient color
+uniform vec4    uDiffuseColor;      // Diffuse color
+uniform vec4    uSpecularColor;     // Specular color     
+uniform vec3    uLightDir;          // Directional light (world space).
 
 // Attributes
 attribute vec3  aPos;
@@ -40,6 +43,12 @@ varying vec4    fColor;
 
 void main( void )
 {
+  vec3 camSpacePos  = vec3(uViewObject * vec4(aPos, 1.0));
+  vec3 camSpaceNorm = vec3(uViewObject * vec4(aNormal, 0.0));
+
+  // Perform basic lighting calculation.
+  float 
+
   gl_Position = uProjIVObject * vec4(aPos, 1.0);
   fColor      = uColor;
 }
