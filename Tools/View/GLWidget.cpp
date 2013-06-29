@@ -121,8 +121,8 @@ void GLWidget::buildScene()
   std::string shader1 = "UniformColor";
   mStuInterface->addPersistentShader(
       shader1, 
-      { {"UniformColor.vs", Spire::StuInterface::VERTEX_SHADER}, 
-        {"UniformColor.fs", Spire::StuInterface::FRAGMENT_SHADER},
+      { {"UniformColor.vsh", Spire::StuInterface::VERTEX_SHADER}, 
+        {"UniformColor.fsh", Spire::StuInterface::FRAGMENT_SHADER},
       });
 
   // Build the pass

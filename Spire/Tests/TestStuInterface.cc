@@ -302,35 +302,35 @@ TEST_F(StuPipeTestFixture, TestTriangle)
   // is already in the persistent shader list.
   mStuInterface->addPersistentShader(
       shader1, 
-      { {"UniformColor.vs", StuInterface::VERTEX_SHADER}, 
-        {"UniformColor.fs", StuInterface::FRAGMENT_SHADER},
+      { {"UniformColor.vsh", StuInterface::VERTEX_SHADER}, 
+        {"UniformColor.fsh", StuInterface::FRAGMENT_SHADER},
       });
 
   // Test various cases of shader failure after adding a prior shader.
   EXPECT_THROW(mStuInterface->addPersistentShader(
       shader1, 
-      { {"UniformColor.vs", StuInterface::FRAGMENT_SHADER}, 
-        {"UniformColor.fs", StuInterface::VERTEX_SHADER},
+      { {"UniformColor.vsh", StuInterface::FRAGMENT_SHADER}, 
+        {"UniformColor.fsh", StuInterface::VERTEX_SHADER},
       }), std::invalid_argument);
 
   EXPECT_THROW(mStuInterface->addPersistentShader(
       shader1, 
-      { {"UniformColor2.vs", StuInterface::VERTEX_SHADER}, 
-        {"UniformColor.fs", StuInterface::FRAGMENT_SHADER},
+      { {"UniformColor2.vsh", StuInterface::VERTEX_SHADER}, 
+        {"UniformColor.fsh", StuInterface::FRAGMENT_SHADER},
       }), std::invalid_argument);
 
   EXPECT_THROW(mStuInterface->addPersistentShader(
       shader1, 
-      { {"UniformColor.vs", StuInterface::VERTEX_SHADER}, 
-        {"UniformColor2.fs", StuInterface::FRAGMENT_SHADER},
+      { {"UniformColor.vsh", StuInterface::VERTEX_SHADER}, 
+        {"UniformColor2.fsh", StuInterface::FRAGMENT_SHADER},
       }), std::invalid_argument);
 
   // This final exception is throw directly from the addPersistentShader
   // function. The 3 prior exception were all thrown from the ShaderProgramMan.
   EXPECT_THROW(mStuInterface->addPersistentShader(
       shader1, 
-      { {"UniformColor.vs", StuInterface::VERTEX_SHADER}, 
-        {"UniformColor.fs", StuInterface::FRAGMENT_SHADER},
+      { {"UniformColor.vsh", StuInterface::VERTEX_SHADER}, 
+        {"UniformColor.fsh", StuInterface::FRAGMENT_SHADER},
       }), Duplicate);
 
   // Now construct passes (taking into account VBO attributes).

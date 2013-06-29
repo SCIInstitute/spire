@@ -84,8 +84,8 @@ void GLWidget::buildScene()
   std::string uniformColorShader = "UniformColor";
   stuPipe->addPersistentShader(
       uniformColorShader, 
-      { {"UniformColor.vs", Spire::StuInterface::VERTEX_SHADER}, 
-        {"UniformColor.fs", Spire::StuInterface::FRAGMENT_SHADER},
+      { {"UniformColor.vsh", Spire::StuInterface::VERTEX_SHADER}, 
+        {"UniformColor.fsh", Spire::StuInterface::FRAGMENT_SHADER},
       });
 
   auto loadAsset = [stuPipe](const std::string& assetFileName, 
