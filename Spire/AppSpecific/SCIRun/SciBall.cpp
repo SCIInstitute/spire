@@ -110,7 +110,13 @@ void SciBall::drag(const V2& msc)
   mQDrag = quatFromUnitSphere(mVSphereFrom, mVSphereTo); 
   mQNow = mQDrag * mQDown;
 
-  mMatNow = glm::mat4_cast(mQNow);
+  // Perform complex conjugate
+  Quat q = mQNow;
+  q.x = -q.x;
+  q.y = -q.y;
+  q.z = -q.z;
+  q.w =  q.w;
+  mMatNow = glm::mat4_cast(q);
 }
 
 //------------------------------------------------------------------------------

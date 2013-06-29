@@ -64,6 +64,15 @@ public:
   static std::tuple<const char*, UNIFORM_TYPE> getCameraToWorld()
   {return std::make_pair("uView", UNIFORM_FLOAT_MAT4);}
 
+  /// Viewing vector for the camera (used in lighting calculations).
+  /// Depends on the projection matrix -- in world space.
+  static std::tuple<const char*, UNIFORM_TYPE> getCameraViewVec()
+  {return std::make_pair("uCamViewVec", UNIFORM_FLOAT_VEC3);}
+
+  /// 'Up' vector for the camera -- in world space.
+  static std::tuple<const char*, UNIFORM_TYPE> getCameraUpVec()
+  {return std::make_pair("uCamUp", UNIFORM_FLOAT_VEC3);}
+
   //----------------------------------------------------------------------------
   // Object and Combined Object/Camera Uniforms
   //----------------------------------------------------------------------------

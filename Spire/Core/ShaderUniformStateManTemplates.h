@@ -34,6 +34,7 @@
 
 #include <cstddef>
 #include <sstream>
+#include <vector>
 #include "../InterfaceCommon.h"
 #include "../Core/Math.h"
 #include "../Core/GLMathUtil.h"

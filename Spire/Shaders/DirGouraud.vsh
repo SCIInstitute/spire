@@ -27,11 +27,13 @@
 */
 
 // Uniforms
-uniform mat4    uProjIV;            // Projection transform * Inverse View
-uniform mat4    uObject;            // Object -> World XForm
+uniform mat4    uProjIVObject;      // Projection transform * Inverse View
+uniform mat4    uObject;            // Object -> World
+uniform vec3    uCamViewVec;        // Camera 'at' vector in world space
 uniform vec4    uAmbientColor;      // Ambient color
 uniform vec4    uDiffuseColor;      // Diffuse color
 uniform vec4    uSpecularColor;     // Specular color     
+uniform float   uSpecularPower;     // Specular power
 uniform vec3    uLightDir;          // Directional light (world space).
 
 // Attributes
@@ -43,12 +45,14 @@ varying vec4    fColor;
 
 void main( void )
 {
-  vec3 camSpacePos  = vec3(uViewObject * vec4(aPos, 1.0));
-  vec3 camSpaceNorm = vec3(uViewObject * vec4(aNormal, 0.0));
+  // We assume that the camera's viewing axis is down *POSITIVE* Z.
+  vec3  worldSpaceNorm  = vec3(uObject * vec4(aNormal, 0.0));
+  float diffuse         = max(0.0, dot(worldSpaceNorm, uLightDir));
+  vec3  reflection      = reflect(uLightDir, worldSpaceNorm);
+  float spec            = max(0.0, dot(reflection, uCamViewVec));
 
-  // Perform basic lighting calculation.
-  float 
+  spec        = pow(spec, uSpecularPower);
+  fColor      = spec * uSpecularColor + diffuse * uDiffuseColor + uAmbientColor;
 
   gl_Position = uProjIVObject * vec4(aPos, 1.0);
-  fColor      = uColor;
 }

@@ -80,12 +80,20 @@ void GLWidget::buildScene()
 {
   std::shared_ptr<Spire::StuInterface> stuPipe = mSpire->getStuPipe();
 
-  // Ensure shader is resident.
+  // Uniform color shader (nothing that interesting).
   std::string uniformColorShader = "UniformColor";
   stuPipe->addPersistentShader(
       uniformColorShader, 
       { {"UniformColor.vsh", Spire::StuInterface::VERTEX_SHADER}, 
         {"UniformColor.fsh", Spire::StuInterface::FRAGMENT_SHADER},
+      });
+
+  // Directional gouraud shading.
+  std::string dirGouraudShader = "DirGouraud";
+  stuPipe->addPersistentShader(
+      dirGouraudShader, 
+      { {"DirGouraud.vsh", Spire::StuInterface::VERTEX_SHADER}, 
+        {"DirGouraud.fsh", Spire::StuInterface::FRAGMENT_SHADER},
       });
 
   auto loadAsset = [stuPipe](const std::string& assetFileName, 
@@ -121,6 +129,9 @@ void GLWidget::buildScene()
     stuPipe->addPassToObject(objectName, passName, shader, vbo1, ibo1, Spire::StuInterface::TRIANGLES);
   };
 
+  // Directional light in world space.
+  stuPipe->addGlobalUniform("uLightDir", V3(1.0f, 0.0f, 0.0f));
+
   /// \todo Method of setting world transform of object.
   // We need a method of setting the world transform of the object and having
   // it concatenated with uProjIVWorld before sending it to the GPU. Maybe a
@@ -147,9 +158,12 @@ void GLWidget::buildScene()
     std::string objName = "sphere";
     std::string passName = "spherePass";
 
-    loadAsset("Assets/Sphere.sp", uniformColorShader, objName, passName);
+    loadAsset("Assets/Sphere.sp", dirGouraudShader, objName, passName);
 
-    stuPipe->addPassUniform(objName, passName, "uColor", V4(1.0f, 1.0f, 0.0f, 1.0f));
+    stuPipe->addPassUniform(objName, passName, "uAmbientColor", V4(0.1f, 0.1f, 0.1f, 1.0f));
+    stuPipe->addPassUniform(objName, passName, "uDiffuseColor", V4(0.8f, 0.8f, 0.0f, 1.0f));
+    stuPipe->addPassUniform(objName, passName, "uSpecularColor", V4(0.5f, 0.5f, 0.5f, 1.0f));
+    stuPipe->addPassUniform(objName, passName, "uSpecularPower", 32.0f);
 
     M44 xform;
     xform[3] = V4(0.0f, 0.0f, 0.0f, 1.0f);

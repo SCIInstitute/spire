@@ -108,11 +108,13 @@ void SRCamera::setViewTransform(const Spire::M44& trafo)
   mInterface.getStuPipe()->addGlobalUniform(
       std::get<0>(CommonUniforms::getCameraToWorld()), mV);
 
-  // The following variables need an object -> world transform in order to be
-  // set appropriately. They will need to be set individually when rendering.
-  //mInterface.getStuPipe()->addGlobalUniform(
-  //    std::get<0>(SRCommonUniforms::getObjectToCameraToProjection()), mPIV);
+  // We've modified our projection transform so that the positive Z axis is the
+  // axis which our camera will be looking down.
+  mInterface.getStuPipe()->addGlobalUniform(
+      std::get<0>(CommonUniforms::getCameraViewVec()), V3(mV[2].xyz()));
 
+  mInterface.getStuPipe()->addGlobalUniform(
+      std::get<0>(CommonUniforms::getCameraUpVec()), V3(mV[1].xyz()));
 }
 
 } // namespace SCIRun

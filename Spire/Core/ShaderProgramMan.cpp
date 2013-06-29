@@ -56,9 +56,8 @@ ShaderProgramMan::loadProgram(
   }
   else
   {
-    // Check to ensure that 'shaderAsset' all requested shaders -- and that
-    // all of the shader names are the same. There should be no directory
-    // paths in the shader names, so they should compare exactly.
+    // Check to ensure that all of the shader names are the same. There is no
+    // directory paths in the shader names so they will compare exactly.
     std::shared_ptr<ShaderProgramAsset> shaderAsset = 
         std::dynamic_pointer_cast<ShaderProgramAsset>(asset);
     if (shaderAsset->areProgramSignaturesIdentical(shaders) == false)
