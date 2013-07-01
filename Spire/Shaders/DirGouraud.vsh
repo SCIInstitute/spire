@@ -45,14 +45,16 @@ varying vec4    fColor;
 
 void main( void )
 {
-  // We assume that the camera's viewing axis is down *POSITIVE* Z.
   vec3  worldSpaceNorm  = vec3(uObject * vec4(aNormal, 0.0));
   float diffuse         = max(0.0, dot(worldSpaceNorm, uLightDir));
   vec3  reflection      = reflect(uLightDir, worldSpaceNorm);
   float spec            = max(0.0, dot(reflection, uCamViewVec));
 
   spec        = pow(spec, uSpecularPower);
-  fColor      = spec * uSpecularColor + diffuse * uDiffuseColor + uAmbientColor;
+  //fColor      = spec * uSpecularColor + diffuse * uDiffuseColor + uAmbientColor;
+
+  // Convert color into gamma space before rasterization.
+  fColor      = pow(spec * uSpecularColor + diffuse * uDiffuseColor + uAmbientColor, 1/2.2);
 
   gl_Position = uProjIVObject * vec4(aPos, 1.0);
 }

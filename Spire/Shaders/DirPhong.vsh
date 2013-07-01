@@ -27,27 +27,33 @@
 */
 
 // Uniforms
-uniform mat4    uProjIVObject;      // Projection * Inverse View * World XForm
-uniform vec4    uColor;             // Uniform color
-uniform vec3    uLightDir;          // Directional light, in object space.
-
-uniform mat4 mvpMatrix;     // mvp = ModelViewProjection
-uniform mat4 mvMatrix;      // mv = ModelView
-uniform mat3 normalMatrix;
-uniform vec3 vLightPosition;
-smooth out vec3 vVaryingNormal;
-smooth out vec3 vVaryingLightDir;
+uniform mat4    uProjIVObject;      // Projection transform * Inverse View
+uniform mat4    uObject;            // Object -> World
+uniform vec3    uCamViewVec;        // Camera 'at' vector in world space
+uniform vec4    uAmbientColor;      // Ambient color
+uniform vec4    uDiffuseColor;      // Diffuse color
+uniform vec4    uSpecularColor;     // Specular color     
+uniform float   uSpecularPower;     // Specular power
+uniform vec3    uLightDir;          // Directional light (world space).
 
 // Attributes
 attribute vec3  aPos;
 attribute vec3  aNormal;
 
 // Outputs to the fragment shader.
-varying vec3    vVaryingNormal;
-varying vec3    vVaryingLightDir;
+varying vec4    fColor;
 
 void main( void )
 {
+  // Todo: Add gamma correction factor of 2.2. For textures, we assume that it
+  // was generated in gamma space, and we need to convert it to linear space.
+  vec3  worldSpaceNorm  = vec3(uObject * vec4(aNormal, 0.0));
+  float diffuse         = max(0.0, dot(worldSpaceNorm, uLightDir));
+  vec3  reflection      = reflect(uLightDir, worldSpaceNorm);
+  float spec            = max(0.0, dot(reflection, uCamViewVec));
+
+  spec        = pow(spec, uSpecularPower);
+  fColor      = powe(spec * uSpecularColor + diffuse * uDiffuseColor + uAmbientColor, 1/2.2);
+
   gl_Position = uProjIVObject * vec4(aPos, 1.0);
-  fColor      = uColor;
 }
