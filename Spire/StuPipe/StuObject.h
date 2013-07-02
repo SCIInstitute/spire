@@ -178,10 +178,21 @@ public:
   /// Removes a geometry pass from the object.
   void removePass(const std::string& pass);
 
+  // The precedence for uniforms goes: pass -> uniform -> global.
+  // So pass is checked first, then the uniform level of uniforms, then the
+  // global level of uniforms.
+  // Currently the only 'pass' and 'global' are implemented.
+
   /// Adds a uniform to the pass.
   void addPassUniform(const std::string& pass,
                       const std::string uniformName,
                       std::shared_ptr<AbstractUniformStateItem> item);
+
+  /// Adds an object attribute to the system. Object attributes do not change
+  /// per-pass. Add another function 'addSpireObjectPassAttribute' if that is
+  /// really needed.
+  void addObjectSpireAttribute(const std::string& attributeName,
+                               std::shared_ptr<AbstractUniformStateItem> item);
 
   /// Adds an object -> world transformation to this object.
   /// This transform is passed to the pass before rendering occurs.
@@ -200,6 +211,18 @@ public:
 
 protected:
 
+  struct SpireAttributeItem
+  {
+    SpireAttributeItem(const std::string& name,
+                       std::shared_ptr<AbstractUniformStateItem> uniformItem) :
+        attributeName(name),
+        item(uniformItem)
+    {}
+
+    std::string                               attributeName;
+    std::shared_ptr<AbstractUniformStateItem> item;
+  };
+
   void removePassFromOrderList(const std::string& pass, int32_t passOrder);
 
   /// Retrieves the pass by name.
@@ -208,6 +231,8 @@ protected:
   /// All registered passes.
   std::unordered_map<std::string, std::shared_ptr<StuPass>>   mPasses;
   std::map<int32_t, std::shared_ptr<StuPass>>                 mPassRenderOrder;
+  std::vector<SpireAttributeItem>                             mSpireAttributes;
+
 
   // These maps may actually be more efficient implemented as an array. The map 
   // sizes are small and cache coherency will be more important. Ignoring for 

@@ -299,7 +299,8 @@ StuObject::StuObject(Hub& hub, const std::string& name, int32_t renderOrder) :
     mRenderOrder(renderOrder),
     mHub(hub)
 {
-
+  // Reserve at least 1 slot for the object transformation.
+  mSpireAttributes.reserve(1);
 }
 
 
@@ -350,6 +351,13 @@ void StuObject::removePassFromOrderList(const std::string& passName,
     }
   }
   throw std::range_error("Unable to find object to remove in render order map.");
+}
+
+//------------------------------------------------------------------------------
+void StuObject::addObjectSpireAttribute(const std::string& attributeName,
+                                        std::shared_ptr<AbstractUniformStateItem> item)
+{
+  mSpireAttributes.emplace_back(SpireAttributeItem(attributeName, item));
 }
 
 //------------------------------------------------------------------------------

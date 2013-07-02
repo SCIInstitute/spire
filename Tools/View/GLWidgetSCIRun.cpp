@@ -165,6 +165,9 @@ void GLWidget::buildScene()
     stuPipe->addPassUniform(objName, passName, "uSpecularColor", V4(0.5f, 0.5f, 0.5f, 1.0f));
     stuPipe->addPassUniform(objName, passName, "uSpecularPower", 32.0f);
 
+    // Test code. We want to specify mutator functions for this particular
+    // shader.
+
     M44 xform;
     xform[3] = V4(0.0f, 0.0f, 0.0f, 1.0f);
     stuPipe->addObjectTransform(objName, xform);
