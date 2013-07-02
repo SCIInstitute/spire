@@ -115,6 +115,10 @@ void SRCamera::setViewTransform(const Spire::M44& trafo)
 
   mInterface.getStuPipe()->addGlobalUniform(
       std::get<0>(CommonUniforms::getCameraUpVec()), V3(mV[1].xyz()));
+
+  // We need to think of some good way of combining uniforms with common
+  // transformations such as the camera. Would probably be fine hardcoding this
+  // on the 'client' side of the application.
 }
 
 } // namespace SCIRun

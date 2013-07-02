@@ -130,7 +130,7 @@ void GLWidget::buildScene()
   };
 
   // Directional light in world space.
-  stuPipe->addGlobalUniform("uLightDir", V3(1.0f, 0.0f, 0.0f));
+  stuPipe->addGlobalUniform("uLightDirWorld", V3(1.0f, 0.0f, 0.0f));
 
   /// \todo Method of setting world transform of object.
   // We need a method of setting the world transform of the object and having

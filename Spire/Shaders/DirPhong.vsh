@@ -34,7 +34,7 @@ uniform vec4    uAmbientColor;      // Ambient color
 uniform vec4    uDiffuseColor;      // Diffuse color
 uniform vec4    uSpecularColor;     // Specular color     
 uniform float   uSpecularPower;     // Specular power
-uniform vec3    uLightDir;          // Directional light (world space).
+uniform vec3    uLightDirWorld;     // Directional light (world space).
 
 // Attributes
 attribute vec3  aPos;
@@ -53,7 +53,7 @@ void main( void )
   float spec            = max(0.0, dot(reflection, uCamViewVec));
 
   spec        = pow(spec, uSpecularPower);
-  fColor      = powe(spec * uSpecularColor + diffuse * uDiffuseColor + uAmbientColor, 1/2.2);
+  fColor      = pow(spec * uSpecularColor + diffuse * uDiffuseColor + uAmbientColor, 1/2.2);
 
   gl_Position = uProjIVObject * vec4(aPos, 1.0);
 }
