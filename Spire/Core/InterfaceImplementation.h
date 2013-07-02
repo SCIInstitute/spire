@@ -34,13 +34,15 @@
 
 #include <memory>
 
-#include "Interface.h"
-#include "Core/ThreadMessage.h"
-#include "Core/Hub.h"
+#include "../Common.h"
+#include "../Interface.h"
+
+#include "ThreadMessage.h"
+#include "Hub.h"
 #include "PipeInterface.h"
 
 #ifdef SPIRE_USE_STD_THREADS
-#include "Core/CircFIFOSeqCons.hpp"
+#include "CircFIFOSeqCons.hpp"
 #endif
 
 namespace Spire

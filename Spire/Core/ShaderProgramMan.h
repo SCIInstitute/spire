@@ -33,8 +33,8 @@
 #define SPIRE_HIGH_SHADERPROGRAMMAN_H
 
 #include "BaseAssetMan.h"
-#include "Core/ShaderAttributeMan.h"
-#include "Core/ShaderUniformMan.h"
+#include "ShaderAttributeMan.h"
+#include "ShaderUniformMan.h"
 
 namespace Spire {
 

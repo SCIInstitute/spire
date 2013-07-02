@@ -162,10 +162,6 @@ public:
   /// Set new rendering order.
   void setRenderOrder(int32_t renderOrder) {mRenderOrder = renderOrder;}
 
-  /// \note If we add ability to remove IBOs and VBOs, the IBOs and VBOs will
-  ///       not be removed until their corresponding passes are removed
-  ///       as well due to the shared_ptr.
-
   /// Adds a geometry pass with the specified index / vertex buffer objects.
   void addPass(const std::string& pass,
                const std::string& program,
@@ -174,6 +170,9 @@ public:
                GLenum primType,
                int32_t passOrder);
 
+  /// \note If we add ability to remove IBOs and VBOs, the IBOs and VBOs will
+  ///       not be removed until their corresponding passes are removed
+  ///       as well due to the shared_ptr.
 
   /// Removes a geometry pass from the object.
   void removePass(const std::string& pass);
@@ -193,6 +192,11 @@ public:
   /// really needed.
   void addObjectSpireAttribute(const std::string& attributeName,
                                std::shared_ptr<AbstractUniformStateItem> item);
+
+  /// Retrieves a spire attribute. Can be used in the Lambda callbacks for
+  /// rendering.
+  std::shared_ptr<AbstractUniformStateItem> getObjectSpireAttribute(
+      const std::string& attribName);
 
   /// Adds an object -> world transformation to this object.
   /// This transform is passed to the pass before rendering occurs.
@@ -231,8 +235,7 @@ protected:
   /// All registered passes.
   std::unordered_map<std::string, std::shared_ptr<StuPass>>   mPasses;
   std::map<int32_t, std::shared_ptr<StuPass>>                 mPassRenderOrder;
-  std::vector<SpireAttributeItem>                             mSpireAttributes;
-
+  std::unordered_map<std::string, std::shared_ptr<AbstractUniformStateItem>>         mSpireAttributes;
 
   // These maps may actually be more efficient implemented as an array. The map 
   // sizes are small and cache coherency will be more important. Ignoring for 

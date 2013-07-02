@@ -29,34 +29,37 @@
 /// \author James Hughes
 /// \date   July 2013
 
-#ifndef INTERFACELAMBDA_H
-#define INTERFACELAMBDA_H
+#ifndef STUINTERFACELAMBDA_H
+#define STUINTERFACELAMBDA_H
 
-#include <string>
-#include "../Core/ShaderUniformStateManTemplates.h"
+#include "../Core/InterfaceLambda.h"
+#include "StuObject.h"
 
-namespace Spire
+namespace Spire 
 {
 
-class Hub;
-
-/// Class that encapsulates all functionality that an anonymous function passed
-/// into an interface would need access to in order to do meaningful work.
-class InterfaceLambda
+/// StuPipe interface lambda.
+class StuInterfaceLambda : public InterfaceLambda
 {
 public:
-  InterfaceLambda(Hub& hub) :
-      mHub(hub)
-  { }
-  virtual ~InterfaceLambda() {}
+  StuInterfaceLambda(Hub& hub, StuObject& object) :
+      InterfaceLambda(hub),
+      mObject(object)
+  {}
+  virtual ~StuInterfaceLambda() {}
+
+  /// Retrieves object spire attribute.
+  template <class T>
+  T getObjectSpireAttribute(const std::string& attribName)
+  {
+    return mObject.getObjectSpireAttribute(attribName)->getData<T>();
+  }
+
+  /// \todo Add pass uniform lookup *if needed*.
+  /// getObjectPassUniform
   
-  /// Will retrieve a uniform at the 'global' level.
-  std::shared_ptr<const AbstractUniformStateItem> getGlobalUniform(const std::string& uniformName);
-
 private:
-
-  Hub&    mHub;
-
+  StuObject   mObject;
 };
 
 } // namespace 

@@ -35,8 +35,7 @@
 #include <map>
 #include <unordered_map>
 
-#include "Common.h"
-#include "Core/ShaderUniformStateManTemplates.h"
+#include "ShaderUniformStateManTemplates.h"
 
 namespace Spire {
 
@@ -89,11 +88,6 @@ public:
 
   /// Retrieves the texture representation of the uniform with 'name'.
   std::string uniformAsString(const std::string& name) const;
-
-  /// Static function to convert Spire::UNIFORM_TYPE to GLenum.
-  /// This function does not exist in the UniformStateManTemplates header file
-  /// because we don't want to expose the GLenum type to an interface.
-  static GLenum uniformTypeToGL(UNIFORM_TYPE type);
 
   /// Retrieves the abstract item representing a global uniform.
   /// An exception is thrown if the global uniform of specified name does not

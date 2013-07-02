@@ -230,7 +230,7 @@ void StuPass::addPassUniform(const std::string uniformName,
       mShader->getUniforms().getUniformData(uniformName);
 
   // Check uniform type (see UniformStateMan).
-  if (uniformData.glType != ShaderUniformStateMan::uniformTypeToGL(item->getGLType()))
+  if (uniformData.glType != ShaderUniformMan::uniformTypeToGL(item->getGLType()))
     throw ShaderUniformTypeError("Uniform must be the same type as that found in the shader.");
 
   // Find the uniform in our vector. If it is not already present, then that
@@ -299,8 +299,9 @@ StuObject::StuObject(Hub& hub, const std::string& name, int32_t renderOrder) :
     mRenderOrder(renderOrder),
     mHub(hub)
 {
-  // Reserve at least 1 slot for the object transformation.
-  mSpireAttributes.reserve(1);
+  // Reserve at least one slot for the object transformation, and one more for
+  // good measure.
+  mSpireAttributes.reserve(2);
 }
 
 
@@ -357,7 +358,13 @@ void StuObject::removePassFromOrderList(const std::string& passName,
 void StuObject::addObjectSpireAttribute(const std::string& attributeName,
                                         std::shared_ptr<AbstractUniformStateItem> item)
 {
-  mSpireAttributes.emplace_back(SpireAttributeItem(attributeName, item));
+  mSpireAttributes[attributeName] = item;
+}
+
+//------------------------------------------------------------------------------
+std::shared_ptr<AbstractUniformStateItem> StuObject::getObjectSpireAttribute(const std::string& attribName)
+{
+  return mSpireAttributes.at(attribName);
 }
 
 //------------------------------------------------------------------------------

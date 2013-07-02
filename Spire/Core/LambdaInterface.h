@@ -29,18 +29,38 @@
 /// \author James Hughes
 /// \date   July 2013
 
-#include "../Common.h"
-#include "InterfaceLambda.h"
+#ifndef SPIRE_LAMBDA_INTERFACE_H
+#define SPIRE_LAMBDA_INTERFACE_H
 
-#include "Core/CommonUniforms.h"
-#include "Core/Hub.h"
+#include <string>
+#include "../Core/ShaderUniformStateManTemplates.h"
+#include "../Core/Hub.h"
 
-namespace Spire {
-
-std::shared_ptr<const AbstractUniformStateItem> InterfaceLambda::getGlobalUniform(const std::string& uniformName)
+namespace Spire
 {
-  return mHub.getShaderUniformStateMan().getGlobalUninform(uniformName);
-}
 
-}
+/// Class that encapsulates all functionality that an anonymous function passed
+/// into an interface would need access to in order to do meaningful work.
+class LambdaInterface
+{
+public:
+  LambdaInterface(Hub& hub) :
+      mHub(hub)
+  { }
+  virtual ~LambdaInterface() {}
+  
+  /// Retrieves a global uniform.
+  template <class T>
+  T getGlobalUniform(const std::string& uniformName)
+  {
+    return mHub.getShaderUniformStateMan().getGlobalUninform(uniformName)->getData<T>();
+  }
 
+private:
+
+  Hub&    mHub;
+};
+
+} // namespace 
+
+#endif 

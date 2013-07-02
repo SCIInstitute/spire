@@ -31,15 +31,19 @@
 
 #include <sstream>
 
-#include "Common.h"
-#include "Exceptions.h"
+#include "../Common.h"
+#include "../Exceptions.h"
 
-#include "Core/Hub.h"
-#include "Core/Log.h"
-#include "Core/FileUtil.h"
-#include "Core/InterfaceImplementation.h"
+#include "Hub.h"
+#include "Log.h"
+#include "FileUtil.h"
+#include "InterfaceImplementation.h"
+#include "ShaderMan.h"
+#include "ShaderAttributeMan.h"
+#include "ShaderProgramMan.h"
+#include "ShaderUniformStateMan.h"
 
-#include "StuPipe/Driver.h"
+#include "../StuPipe/Driver.h"
 
 #ifdef SPIRE_USING_WIN
   // Disable warning: 'this' used in a base member initializer list warning.
@@ -54,8 +58,10 @@ Hub::Hub(std::shared_ptr<Context> context,
          Interface::LogFunction logFn, bool useThread) :
     mLogFun(logFn),
     mContext(context),
-    mShaderMan(*this),
-    mShaderProgramMan(*this),
+    mShaderMan(new ShaderMan(*this)),
+    mShaderAttributes(new ShaderAttributeMan()),
+    mShaderProgramMan(new ShaderProgramMan(*this)),
+    mShaderUniforms(new ShaderUniformMan()),
     mShaderDirs(shaderDirs),
     mInterfaceImpl(new InterfaceImplementation(*this)),
 #ifdef SPIRE_USE_STD_THREADS
@@ -64,7 +70,7 @@ Hub::Hub(std::shared_ptr<Context> context,
 #endif
     mPixScreenWidth(640),
     mPixScreenHeight(480),
-    mShaderUniformStateMan(*this)
+    mShaderUniformStateMan(new ShaderUniformStateMan(*this))
 {
   // Add default relative shader directory.
   std::string workingDay = getCurrentWorkingDir();
@@ -266,8 +272,8 @@ void Hub::rendererThread()
   /// \todo Pass a hub reference into BaseAssetMan and construct an ongoing
   ///       list of base asset managers. That way we can simply loop through
   ///       any assets holding graphics resources.
-  mShaderMan.clearHeldAssets();
-  mShaderProgramMan.clearHeldAssets();
+  mShaderMan->clearHeldAssets();
+  mShaderProgramMan->clearHeldAssets();
 
   // The following needs to be done whether or not the hub is destroyed in this
   // function.

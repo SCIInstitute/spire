@@ -32,7 +32,7 @@
 #ifndef SPIRE_HIGH_SHADERMAN_H
 #define SPIRE_HIGH_SHADERMAN_H
 
-#include "Common.h"
+#include "../Common.h"
 #include "BaseAssetMan.h"
 
 namespace Spire {

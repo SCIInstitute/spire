@@ -37,6 +37,8 @@
 #include <string>
 #include <unordered_map>
 
+#include "ShaderUniformStateManTemplates.h"
+
 namespace Spire {
 
 class ShaderUniformMan;
@@ -134,6 +136,11 @@ public:
 
   /// Returns number of uniforms currently registered.
   size_t getNumUniforms()   {return mUniforms.size();}
+
+  // Local function to convert Spire::UNIFORM_TYPE to GLenum.
+  // This function does not exist in the header file because we don't want to
+  // expose the GLenum type to an interface.
+  static GLenum uniformTypeToGL(UNIFORM_TYPE type);
 
 private:
 

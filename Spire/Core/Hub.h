@@ -35,24 +35,26 @@
 #include <iostream>
 #include <fstream>
 #include <functional>
+#include <list>
 #ifdef SPIRE_USE_STD_THREADS
 #include <thread>
 #include <atomic>
 #endif
 
-#include "Interface.h"
-#include "Core/PipeInterface.h"
-#include "Core/GPUStateManager.h"
-#include "Core/ShaderMan.h"
-#include "Core/ShaderProgramMan.h"
-#include "Core/ShaderAttributeMan.h"
-#include "Core/ShaderUniformStateMan.h"
+#include "../Interface.h"
+#include "PipeInterface.h"
+#include "GPUStateManager.h"
+#include "ShaderUniformStateMan.h"  // We want the interface to see this (to retrieve global uniforms).
 
 namespace Spire {
 
 class Log;
 class PipeDriver;
 class InterfaceImplementation;
+class ShaderMan;
+class ShaderAttributeMan;
+class ShaderUniformMan;
+class ShaderProgramMan;
 
 /// Using thread local storage ONLY for logging purposes, nothing else.
 
@@ -89,19 +91,19 @@ public:
   GPUStateManager& getGPUStateManager()           {return mGPUStateManager;}
 
   /// Retrieves shader manager.
-  ShaderMan& getShaderManager()                   {return mShaderMan;}
+  ShaderMan& getShaderManager()                   {return *mShaderMan;}
 
   /// Retrieves shader attribute manager.
-  ShaderAttributeMan& getShaderAttributeManager() {return mShaderAttributes;}
+  ShaderAttributeMan& getShaderAttributeManager() {return *mShaderAttributes;}
 
   /// Retrieves shader uniform manager.
-  ShaderUniformMan& getShaderUniformManager()     {return mShaderUniforms;}
+  ShaderUniformMan& getShaderUniformManager()     {return *mShaderUniforms;}
 
   /// Retrieves shader uniform *state* manager.
-  ShaderUniformStateMan& getShaderUniformStateMan() {return mShaderUniformStateMan;}
+  ShaderUniformStateMan& getShaderUniformStateMan() {return *mShaderUniformStateMan;}
 
   /// Retrieves the shader program manager.
-  ShaderProgramMan& getShaderProgramManager()     {return mShaderProgramMan;}
+  ShaderProgramMan& getShaderProgramManager()     {return *mShaderProgramMan;}
 
   /// Retrieves the actual screen width in pixels.
   size_t getActualScreenWidth() const             {return mPixScreenWidth;}
@@ -130,16 +132,16 @@ public:
 
 private:
 
-  Interface::LogFunction      mLogFun;          ///< Log function.
-  std::unique_ptr<Log>        mLog;             ///< Spire logging class.
-  std::shared_ptr<Context>    mContext;         ///< Rendering context.
-  GPUStateManager             mGPUStateManager; ///< GPU state manager.
-  ShaderMan                   mShaderMan;       ///< Shader manager.
-  ShaderProgramMan            mShaderProgramMan;///< Shader program manager.
-  ShaderAttributeMan          mShaderAttributes;///< Shader attribute manager.
-  ShaderUniformMan            mShaderUniforms;  ///< Shader attribute manager.
-  ShaderUniformStateMan       mShaderUniformStateMan; ///< Uniform state manager.
-  std::vector<std::string>    mShaderDirs;      ///< Shader directories to search.
+  Interface::LogFunction              mLogFun;          ///< Log function.
+  std::unique_ptr<Log>                mLog;             ///< Spire logging class.
+  std::shared_ptr<Context>            mContext;         ///< Rendering context.
+  std::unique_ptr<ShaderMan>          mShaderMan;       ///< Shader manager.
+  std::unique_ptr<ShaderAttributeMan> mShaderAttributes;///< Shader attribute manager.
+  std::unique_ptr<ShaderProgramMan>   mShaderProgramMan;///< Shader program manager.
+  std::unique_ptr<ShaderUniformMan>   mShaderUniforms;  ///< Shader attribute manager.
+  std::unique_ptr<ShaderUniformStateMan> mShaderUniformStateMan; ///< Uniform state manager.
+  GPUStateManager                     mGPUStateManager; ///< GPU state manager.
+  std::vector<std::string>            mShaderDirs;      ///< Shader directories to search.
 
   std::list<std::shared_ptr<PipeInterface>> mPipes;         ///< Rendering pipes in-order.
   std::shared_ptr<InterfaceImplementation>  mInterfaceImpl; ///< Interface implementation.
