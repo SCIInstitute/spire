@@ -46,6 +46,8 @@
 #include "../Core/GPUStateManager.h"
 #include "../Core/LambdaInterface.h"
 
+#include "StuObjectLambda.h"
+
 namespace Spire {
 
 class Hub;
@@ -249,6 +251,19 @@ public:
   void removeGeomPassFromObject(const std::string& object,
                                 const std::string& pass);
 
+
+  /// Associates an object -> world transform with the given object / pass
+  /// combination. Default is the identity transformation.
+  /// This is the only 'special' case variable associated with passes / objects
+  /// other than uniforms. We generally want to concatenate the object -> world
+  /// transform with the inverse view transform and projection transform.
+  void addObjectTransform(const std::string& object,
+                          const M44& transform);
+
+  //----------
+  // Uniforms
+  //----------
+  
   /// Associates a uniform value to the specified object's pass. If the uniform
   /// already exists, then its value will be updated if it passes a type check.
   /// During rendering the uniform value will be returned to its default value 
@@ -267,14 +282,6 @@ public:
                            std::shared_ptr<AbstractUniformStateItem>(
                                new UniformStateItem<T>(uniformData)));
   }
-
-  /// Associates an object -> world transform with the given object / pass
-  /// combination. Default is the identity transformation.
-  /// This is the only 'special' case variable associated with passes / objects
-  /// other than uniforms. We generally want to concatenate the object -> world
-  /// transform with the inverse view transform and projection transform.
-  void addObjectTransform(const std::string& object,
-                          const M44& transform);
 
   /// Concrete implementation of the above templated function.
   void addPassUniformConcrete(const std::string& object,
@@ -309,10 +316,6 @@ public:
   /// \todo Create method to add uniforms to the UniformManager (NOT the state
   ///       manager -- uniform manager is the type checker).
 
-  //----------
-  // Uniforms
-  //----------
-  
   
   //-----------------
   // Shader Programs
@@ -348,6 +351,20 @@ public:
   ///                 second is the type of shader.
   void addPersistentShader(const std::string& programName,
                            const std::vector<std::tuple<std::string, SHADER_TYPES>>& shaders);
+
+  //---------
+  // Lambdas
+  //---------
+
+  // Two types of lambdas to use. One with objects, and one with passes.
+  // The name StuObjectLambdaFunction is a little deceptive.
+  // StuObjectLambdaFunctions will be called per-pass.
+  typedef std::function<void (LambdaInterface&)> StuPassLambdaFunction;
+  typedef std::function<void (StuObjectLambda&)> StuObjectLambdaFunction;
+
+  //void addPrePassLambda(const std::string& pass,);
+
+
 
   //============================================================================
   // NOT THREAD SAFE

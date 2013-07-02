@@ -362,7 +362,7 @@ void StuObject::addObjectSpireAttribute(const std::string& attributeName,
 }
 
 //------------------------------------------------------------------------------
-std::shared_ptr<AbstractUniformStateItem> StuObject::getObjectSpireAttribute(const std::string& attribName)
+std::shared_ptr<AbstractUniformStateItem> StuObject::getObjectSpireAttribute(const std::string& attribName) const
 {
   return mSpireAttributes.at(attribName);
 }

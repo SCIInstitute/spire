@@ -36,7 +36,7 @@
 #include <memory>
 
 #include "Common.h"
-#include "StuPipe/StuInterface.h"
+#include "StuInterface.h"
 
 namespace Spire
 {

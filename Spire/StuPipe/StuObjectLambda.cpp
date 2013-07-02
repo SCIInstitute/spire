@@ -29,39 +29,15 @@
 /// \author James Hughes
 /// \date   July 2013
 
-#ifndef STUINTERFACELAMBDA_H
-#define STUINTERFACELAMBDA_H
-
-#include "../Core/InterfaceLambda.h"
+#include "StuObjectLambda.h"
 #include "StuObject.h"
 
-namespace Spire 
+namespace Spire {
+
+std::shared_ptr<const AbstractUniformStateItem>
+StuObjectLambda::getObjectSpireAttribute(const std::string& attribName)
 {
+  return mObject.getObjectSpireAttribute(attribName);
+}
 
-/// StuPipe interface lambda.
-class StuInterfaceLambda : public InterfaceLambda
-{
-public:
-  StuInterfaceLambda(Hub& hub, StuObject& object) :
-      InterfaceLambda(hub),
-      mObject(object)
-  {}
-  virtual ~StuInterfaceLambda() {}
-
-  /// Retrieves object spire attribute.
-  template <class T>
-  T getObjectSpireAttribute(const std::string& attribName)
-  {
-    return mObject.getObjectSpireAttribute(attribName)->getData<T>();
-  }
-
-  /// \todo Add pass uniform lookup *if needed*.
-  /// getObjectPassUniform
-  
-private:
-  StuObject   mObject;
-};
-
-} // namespace 
-
-#endif 
+}

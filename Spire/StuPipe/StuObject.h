@@ -196,7 +196,7 @@ public:
   /// Retrieves a spire attribute. Can be used in the Lambda callbacks for
   /// rendering.
   std::shared_ptr<AbstractUniformStateItem> getObjectSpireAttribute(
-      const std::string& attribName);
+      const std::string& attribName) const;
 
   /// Adds an object -> world transformation to this object.
   /// This transform is passed to the pass before rendering occurs.
