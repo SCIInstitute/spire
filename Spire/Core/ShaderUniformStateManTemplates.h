@@ -168,9 +168,21 @@ public:
   /// Retrieve textual representation of uniform.
   virtual std::string asString() const = 0;
 
-  /// Retrieve raw pointer data.
-  /// The most common format is float*, so we pass that back by default.
+  /// Retrieve raw pointer data. Not safe. Use one of the templated versions of
+  /// the code below.
   virtual const float* getRawData() const = 0;
+
+  /// Retrieve M44
+  template <class T>
+  typename std::enable_if<std::is_same<T, M44>::value, T>::type getData()
+  {
+    if (getGLType() != UNIFORM_FLOAT_MAT4)
+      throw std::runtime_error("Mismatched types! Expected uniform to be of type M44.");
+
+    // Handling M44
+    const float* rawData = getRawData();
+    return glm::make_mat4x4(rawData);
+  }
 
 protected:
 
