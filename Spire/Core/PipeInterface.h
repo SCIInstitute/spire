@@ -75,6 +75,9 @@ public:
   /// Called first thing when the renderer receives the pipe.
   virtual void ntsInitOnRenderThread() = 0;
 
+  /// Executes all passes, in order.
+  virtual void ntsDoAllPasses() = 0;
+
   /// \todo Figure out time allocations for renderers. We need a way of 
   ///       compositing frames together if it's clear that a pass is taking
   ///       too long. This may necessitate the pipes working together.
@@ -83,7 +86,7 @@ public:
   ///       another pipe. Ideally, Tuvok would work together to get transparency
   ///       working correctly, but that is not going to happen in the short run.
   /// Perform a rendering pass.
-  virtual void ntsDoPass() = 0;
+  virtual void ntsDoPass(const std::string& pass) = 0;
 
   /// Cleans up all GL resources.
   virtual void clearGLResources() = 0;

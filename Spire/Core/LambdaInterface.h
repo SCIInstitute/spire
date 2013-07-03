@@ -55,7 +55,13 @@ public:
   template <class T>
   T getGlobalUniform(const std::string& uniformName)
   {
-    return mHub.getShaderUniformStateMan().getGlobalUninform(uniformName)->getData<T>();
+    // Check the pass uniforms first
+    std::shared_ptr<const AbstractUniformStateItem> uniform =
+        mHub.getPassUniformStateMan().getPassUninform(mPass, uniformName);
+    if (uniform == nullptr)
+      return mHub.getGlobalUniformStateMan().getGlobalUninform(uniformName)->getData<T>();
+    else
+      return uniform->getData<T>();
   }
 
 private:

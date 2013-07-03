@@ -62,15 +62,16 @@ Hub::Hub(std::shared_ptr<Context> context,
     mShaderAttributes(new ShaderAttributeMan()),
     mShaderProgramMan(new ShaderProgramMan(*this)),
     mShaderUniforms(new ShaderUniformMan()),
-    mShaderDirs(shaderDirs),
+    mShaderUniformStateMan(new ShaderUniformStateMan(*this)),
+    mPassUniformStateMan(new PassUniformStateMan(*this)),
     mInterfaceImpl(new InterfaceImplementation(*this)),
+    mShaderDirs(shaderDirs),
 #ifdef SPIRE_USE_STD_THREADS
     mThreadKill(false),
     mThreadRunning(false),
 #endif
     mPixScreenWidth(640),
-    mPixScreenHeight(480),
-    mShaderUniformStateMan(new ShaderUniformStateMan(*this))
+    mPixScreenHeight(480)
 {
   // Add default relative shader directory.
   std::string workingDay = getCurrentWorkingDir();
@@ -199,7 +200,7 @@ void Hub::doFrame()
   // Iterate over pipes and render.
   for (auto it = mPipes.begin(); it != mPipes.end(); ++it)
   {
-    (*it)->ntsDoPass();
+    (*it)->ntsDoAllPasses();
   }
 }
 

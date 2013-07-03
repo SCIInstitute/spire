@@ -273,28 +273,30 @@ public:
   /// Throws ShaderUniformTypeError if the types do not match what is stored
   /// in the shader.
   template <typename T>
-  void addPassUniform(const std::string& object,
-                      const std::string& pass,
-                      const std::string& uniformName,
-                      T uniformData)
+  void addObjectPassUniform(const std::string& object,
+                            const std::string& pass,
+                            const std::string& uniformName,
+                            T uniformData)
   {
-    addPassUniformConcrete(object, pass, uniformName, 
-                           std::shared_ptr<AbstractUniformStateItem>(
-                               new UniformStateItem<T>(uniformData)));
+    addObjectPassUniformConcrete(object, pass, uniformName, 
+                                 std::shared_ptr<AbstractUniformStateItem>(
+                                     new UniformStateItem<T>(uniformData)));
   }
 
   /// Concrete implementation of the above templated function.
-  void addPassUniformConcrete(const std::string& object,
-                              const std::string& pass,
-                              const std::string& uniformName,
-                              std::shared_ptr<AbstractUniformStateItem> item);
+  void addObjectPassUniformConcrete(const std::string& object,
+                                    const std::string& pass,
+                                    const std::string& uniformName,
+                                    std::shared_ptr<AbstractUniformStateItem> item);
 
   /// GPU state that will be applied directly before the object is rendered.
   /// Note: The default GPU state is consists of the default GPUState 
   ///       constructor.
-  void addPassGPUState(const std::string& object,
-                       const std::string& pass,
-                       const GPUState& state);
+  void addObjectPassGPUState(const std::string& object,
+                             const std::string& pass,
+                             const GPUState& state);
+
+  /// \todo addPassUniform
 
   /// Will add *or* update the global uniform if it already exsits.
   /// A shader of a given name is only allowed to be one type. If you attempt
@@ -372,9 +374,12 @@ public:
   // Be sure that you are calling these functions from the thread upon which
   // spire is executing. All non-thread-safe functions are prefixed with 'nts'.
 
+  /// Renders all passes, in order.
+  void ntsDoAllPasses() override;
+
   /// Perform the entire pass.
   /// \todo Add timing and other semantics here.
-  void ntsDoPass() override;
+  void ntsDoPass(const std::string& pass) override;
 
   /// Obtain the current number of objects.
   size_t ntsGetNumObjects() const         {return mNameToObject.size();}
@@ -468,16 +473,16 @@ private:
                                      std::string objectName,
                                      M44 transform);
 
-  static void addPassUniformInternalImpl(Hub& hub, StuInterface* iface,
-                                         std::string object,
-                                         std::string pass,
-                                         std::string uniformName,
-                                         std::shared_ptr<AbstractUniformStateItem> item);
+  static void addObjectPassUniformInternalImpl(Hub& hub, StuInterface* iface,
+                                               std::string object,
+                                               std::string pass,
+                                               std::string uniformName,
+                                               std::shared_ptr<AbstractUniformStateItem> item);
 
-  static void addPassGPUStateImpl(Hub& hub, StuInterface* iface,
-                                  std::string object,
-                                  std::string pass,
-                                  GPUState state);
+  static void addObjectPassGPUStateImpl(Hub& hub, StuInterface* iface,
+                                        std::string object,
+                                        std::string pass,
+                                        GPUState state);
 
   static void addGlobalUniformInternalImpl(Hub& hub, StuInterface* iface,
                                            std::string uniformName,

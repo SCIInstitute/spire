@@ -59,8 +59,7 @@ public:
       std::shared_ptr<VBOObject> vbo, std::shared_ptr<IBOObject> ibo, GLenum primitiveType);
   virtual ~StuPass();
   
-  void renderPass(const M44& objectToWorld, const M44& inverseView, 
-                  const M44& inverseViewProjection);
+  void renderPass();
 
   const std::string& getName() const    {return mName;}
   int32_t getPassOrder() const          {return mPassOrder;}
@@ -91,23 +90,23 @@ protected:
     GLint                                     shaderLocation;
   };
 
-  struct ObjectTransformUniform
-  {
-    enum ObjectTransformType
-    {
-      TRANSFORM_OBJECT,
-      TRANSFORM_OBJECT_TO_CAMERA,
-      TRANSFORM_OBJECT_TO_CAMERA_TO_PROJECTION,
-    };
-
-    ObjectTransformUniform(ObjectTransformType type, GLint shaderVarLocation) :
-        transformType(type),
-        varLocation(shaderVarLocation)  
-    {}
-
-    ObjectTransformType transformType;
-    GLint               varLocation;
-  };
+//  struct ObjectTransformUniform
+//  {
+//    enum ObjectTransformType
+//    {
+//      TRANSFORM_OBJECT,
+//      TRANSFORM_OBJECT_TO_CAMERA,
+//      TRANSFORM_OBJECT_TO_CAMERA_TO_PROJECTION,
+//    };
+//
+//    ObjectTransformUniform(ObjectTransformType type, GLint shaderVarLocation) :
+//        transformType(type),
+//        varLocation(shaderVarLocation)  
+//    {}
+//
+//    ObjectTransformType transformType;
+//    GLint               varLocation;
+//  };
 
   struct UnsastisfiedUniformItem
   {
@@ -133,7 +132,7 @@ protected:
   /// This list is updated everytime we add or remove elements from mUniforms.
   std::vector<UnsastisfiedUniformItem>  mUnsatisfiedUniforms;
   std::vector<UniformItem>              mUniforms;  ///< Local uniforms
-  std::vector<ObjectTransformUniform>   mObjectTransformUniforms;
+  //std::vector<ObjectTransformUniform>   mObjectTransformUniforms;
 
   std::shared_ptr<VBOObject>            mVBO;     ///< ID of VBO to use during pass.
   std::shared_ptr<IBOObject>            mIBO;     ///< ID of IBO to use during pass.
@@ -209,9 +208,10 @@ public:
   bool hasPassRenderingOrder(const std::vector<std::string>& passes) const;
 
   /// Renders all passes associated with this object.
-  void renderAllPasses(const M44& inverseView, const M44& inverseViewProjection);
+  void renderAllPasses();
 
   /// \todo Ability to render a single named pass. See github issue #15.
+  void renderPass(const std::string& pass);
 
 protected:
 

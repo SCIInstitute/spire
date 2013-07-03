@@ -381,9 +381,9 @@ TEST_F(StuPipeTestFixture, TestTriangle)
   EXPECT_THROW(mStuInterface->addGlobalUniform("uProjIVWorld", V3(0.0f, 0.0f, 0.0f)), ShaderUniformTypeError);
 
   // Add color to the pass (which will lookup the type via the shader).
-  EXPECT_THROW(mStuInterface->addPassUniform(obj1, pass1, "uColor", V3(0.0f, 0.0f, 0.0f)), ShaderUniformTypeError);
-  EXPECT_THROW(mStuInterface->addPassUniform(obj1, pass1, "uColor", M44()), ShaderUniformTypeError);
-  mStuInterface->addPassUniform(obj1, pass1, "uColor", V4(1.0f, 0.0f, 0.0f, 1.0f));
+  EXPECT_THROW(mStuInterface->addObjectPassUniform(obj1, pass1, "uColor", V3(0.0f, 0.0f, 0.0f)), ShaderUniformTypeError);
+  EXPECT_THROW(mStuInterface->addObjectPassUniform(obj1, pass1, "uColor", M44()), ShaderUniformTypeError);
+  mStuInterface->addObjectPassUniform(obj1, pass1, "uColor", V4(1.0f, 0.0f, 0.0f, 1.0f));
 
   mSpire->doFrame();
 

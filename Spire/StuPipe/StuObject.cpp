@@ -79,30 +79,28 @@ StuPass::StuPass(
     // them, we won't add them to the unsastisfied uniforms -- instead, they
     // will go into a special hard-coded list that we will update when we are
     // rendered.
-    //mInterface.getStuPipe()->addGlobalUniform(
-    //    std::get<0>(SRCommonUniforms::getToCameraToProjection()), mIV);
-    std::string uniformCodeName = uniformData.uniform->codeName;
-    if (std::get<0>(CommonUniforms::getObject()) == uniformCodeName)
-    {
-      mObjectTransformUniforms.push_back(
-          ObjectTransformUniform(ObjectTransformUniform::TRANSFORM_OBJECT, uniformData.glUniformLoc));
-    }
-    else if (std::get<0>(CommonUniforms::getObjectToView()) == uniformCodeName)
-    {
-      mObjectTransformUniforms.push_back(
-          ObjectTransformUniform(ObjectTransformUniform::TRANSFORM_OBJECT_TO_CAMERA, uniformData.glUniformLoc));
-    }
-    else if (std::get<0>(CommonUniforms::getObjectToCameraToProjection()) == uniformCodeName)
-    {
-      mObjectTransformUniforms.push_back(
-          ObjectTransformUniform(ObjectTransformUniform::TRANSFORM_OBJECT_TO_CAMERA_TO_PROJECTION, uniformData.glUniformLoc));
-    }
-    else
-    {
+    //std::string uniformCodeName = uniformData.uniform->codeName;
+    //if (std::get<0>(CommonUniforms::getObject()) == uniformCodeName)
+    //{
+    //  mObjectTransformUniforms.push_back(
+    //      ObjectTransformUniform(ObjectTransformUniform::TRANSFORM_OBJECT, uniformData.glUniformLoc));
+    //}
+    //else if (std::get<0>(CommonUniforms::getObjectToView()) == uniformCodeName)
+    //{
+    //  mObjectTransformUniforms.push_back(
+    //      ObjectTransformUniform(ObjectTransformUniform::TRANSFORM_OBJECT_TO_CAMERA, uniformData.glUniformLoc));
+    //}
+    //else if (std::get<0>(CommonUniforms::getObjectToCameraToProjection()) == uniformCodeName)
+    //{
+    //  mObjectTransformUniforms.push_back(
+    //      ObjectTransformUniform(ObjectTransformUniform::TRANSFORM_OBJECT_TO_CAMERA_TO_PROJECTION, uniformData.glUniformLoc));
+    //}
+    //else
+    //{
       mUnsatisfiedUniforms.push_back(
           UnsastisfiedUniformItem(uniformData.uniform->codeName, 
                                   uniformData.glUniformLoc));
-    }
+    //}
 
   }
 }
@@ -113,8 +111,7 @@ StuPass::~StuPass()
 }
 
 //------------------------------------------------------------------------------
-void StuPass::renderPass(const M44& objectToWorld, const M44& inverseView, 
-                         const M44& inverseViewProjection)
+void StuPass::renderPass()
 {
   /// \todo Should route through the shader man so we don't re-apply programs
   ///       that are already active.
@@ -163,47 +160,49 @@ void StuPass::renderPass(const M44& objectToWorld, const M44& inverseView,
     //Log::debug() << "Uniform " << it->uniformName << ": " << std::endl
     //    << mHub.getShaderUniformStateMan().uniformAsString(it->uniformName) << std::endl;
 #endif
-    mHub.getShaderUniformStateMan().applyUniform(it->uniformName, it->shaderLocation);
+    bool applied = mHub.getPassUniformStateMan().tryApplyUniform(mName, it->uniformName, it->shaderLocation);
+    if (applied == false)
+      mHub.getGlobalUniformStateMan().applyUniform(it->uniformName, it->shaderLocation);
   }
 
-  // Update any uniforms that require the object transformation.
-  for (auto it = mObjectTransformUniforms.begin(); it != mObjectTransformUniforms.end(); ++it)
-  {
-    std::string codeName;
-    M44 transform;
-    /// \todo Add GL( ) preprocessor definition around the GL calls below.
-    switch (it->transformType)
-    {
-      case ObjectTransformUniform::TRANSFORM_OBJECT:
-        codeName = std::get<0>(CommonUniforms::getObject());
-        glUniformMatrix4fv(static_cast<GLint>(it->varLocation), 1, false,
-                           static_cast<const GLfloat*>(glm::value_ptr(objectToWorld)));
-#ifdef SPIRE_DEBUG
-        allUniforms.remove(codeName);
-#endif
-        break;
-
-      case ObjectTransformUniform::TRANSFORM_OBJECT_TO_CAMERA:
-        codeName = std::get<0>(CommonUniforms::getObjectToView());
-        transform = inverseView * objectToWorld;
-        glUniformMatrix4fv(static_cast<GLint>(it->varLocation), 1, false,
-                           static_cast<const GLfloat*>(glm::value_ptr(transform)));
-#ifdef SPIRE_DEBUG
-        allUniforms.remove(codeName);
-#endif
-        break;
-
-      case ObjectTransformUniform::TRANSFORM_OBJECT_TO_CAMERA_TO_PROJECTION:
-        codeName = std::get<0>(CommonUniforms::getObjectToCameraToProjection());
-        transform = inverseViewProjection * objectToWorld;
-        glUniformMatrix4fv(static_cast<GLint>(it->varLocation), 1, false,
-                           static_cast<const GLfloat*>(glm::value_ptr(transform)));
-#ifdef SPIRE_DEBUG
-        allUniforms.remove(codeName);
-#endif
-        break;
-    }
-  }
+//  // Update any uniforms that require the object transformation.
+//  for (auto it = mObjectTransformUniforms.begin(); it != mObjectTransformUniforms.end(); ++it)
+//  {
+//    std::string codeName;
+//    M44 transform;
+//    /// \todo Add GL( ) preprocessor definition around the GL calls below.
+//    switch (it->transformType)
+//    {
+//      case ObjectTransformUniform::TRANSFORM_OBJECT:
+//        codeName = std::get<0>(CommonUniforms::getObject());
+//        glUniformMatrix4fv(static_cast<GLint>(it->varLocation), 1, false,
+//                           static_cast<const GLfloat*>(glm::value_ptr(objectToWorld)));
+//#ifdef SPIRE_DEBUG
+//        allUniforms.remove(codeName);
+//#endif
+//        break;
+//
+//      case ObjectTransformUniform::TRANSFORM_OBJECT_TO_CAMERA:
+//        codeName = std::get<0>(CommonUniforms::getObjectToView());
+//        transform = inverseView * objectToWorld;
+//        glUniformMatrix4fv(static_cast<GLint>(it->varLocation), 1, false,
+//                           static_cast<const GLfloat*>(glm::value_ptr(transform)));
+//#ifdef SPIRE_DEBUG
+//        allUniforms.remove(codeName);
+//#endif
+//        break;
+//
+//      case ObjectTransformUniform::TRANSFORM_OBJECT_TO_CAMERA_TO_PROJECTION:
+//        codeName = std::get<0>(CommonUniforms::getObjectToCameraToProjection());
+//        transform = inverseViewProjection * objectToWorld;
+//        glUniformMatrix4fv(static_cast<GLint>(it->varLocation), 1, false,
+//                           static_cast<const GLfloat*>(glm::value_ptr(transform)));
+//#ifdef SPIRE_DEBUG
+//        allUniforms.remove(codeName);
+//#endif
+//        break;
+//    }
+//  }
 
 #ifdef SPIRE_DEBUG
   if (allUniforms.size() != 0)
@@ -400,12 +399,11 @@ std::shared_ptr<StuPass> StuObject::getPassByName(const std::string& name)
 }
 
 //------------------------------------------------------------------------------
-void StuObject::renderAllPasses(const M44& inverseView,
-                                const M44& inverseViewProjection)
+void StuObject::renderAllPasses()
 {
   for (auto it = mPassRenderOrder.begin(); it != mPassRenderOrder.end(); ++it)
   {
-    it->second->renderPass(mObjectTransform, inverseView, inverseViewProjection);
+    it->second->renderPass();
   }
 }
 

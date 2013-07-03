@@ -45,6 +45,7 @@
 #include "PipeInterface.h"
 #include "GPUStateManager.h"
 #include "ShaderUniformStateMan.h"  // We want the interface to see this (to retrieve global uniforms).
+#include "PassUniformStateMan.h"
 
 namespace Spire {
 
@@ -99,8 +100,11 @@ public:
   /// Retrieves shader uniform manager.
   ShaderUniformMan& getShaderUniformManager()     {return *mShaderUniforms;}
 
-  /// Retrieves shader uniform *state* manager.
-  ShaderUniformStateMan& getShaderUniformStateMan() {return *mShaderUniformStateMan;}
+  /// Retrieves global shader uniform *state* manager.
+  ShaderUniformStateMan& getGlobalUniformStateMan() {return *mShaderUniformStateMan;}
+
+  /// Retrieves pass shader uniform *state* manager.
+  PassUniformStateMan& getPassUniformStateMan()   {return *mPassUniformStateMan;}
 
   /// Retrieves the shader program manager.
   ShaderProgramMan& getShaderProgramManager()     {return *mShaderProgramMan;}
@@ -140,6 +144,7 @@ private:
   std::unique_ptr<ShaderProgramMan>   mShaderProgramMan;///< Shader program manager.
   std::unique_ptr<ShaderUniformMan>   mShaderUniforms;  ///< Shader attribute manager.
   std::unique_ptr<ShaderUniformStateMan> mShaderUniformStateMan; ///< Uniform state manager.
+  std::unique_ptr<PassUniformStateMan>mPassUniformStateMan;///< Shader manager for pass'.
   GPUStateManager                     mGPUStateManager; ///< GPU state manager.
   std::vector<std::string>            mShaderDirs;      ///< Shader directories to search.
 

@@ -160,10 +160,10 @@ void GLWidget::buildScene()
 
     loadAsset("Assets/Sphere.sp", dirGouraudShader, objName, passName);
 
-    stuPipe->addPassUniform(objName, passName, "uAmbientColor", V4(0.1f, 0.1f, 0.1f, 1.0f));
-    stuPipe->addPassUniform(objName, passName, "uDiffuseColor", V4(0.8f, 0.8f, 0.0f, 1.0f));
-    stuPipe->addPassUniform(objName, passName, "uSpecularColor", V4(0.5f, 0.5f, 0.5f, 1.0f));
-    stuPipe->addPassUniform(objName, passName, "uSpecularPower", 32.0f);
+    stuPipe->addObjectPassUniform(objName, passName, "uAmbientColor", V4(0.1f, 0.1f, 0.1f, 1.0f));
+    stuPipe->addObjectPassUniform(objName, passName, "uDiffuseColor", V4(0.8f, 0.8f, 0.0f, 1.0f));
+    stuPipe->addObjectPassUniform(objName, passName, "uSpecularColor", V4(0.5f, 0.5f, 0.5f, 1.0f));
+    stuPipe->addObjectPassUniform(objName, passName, "uSpecularPower", 32.0f);
 
     // Test code. We want to specify mutator functions for this particular
     // shader.

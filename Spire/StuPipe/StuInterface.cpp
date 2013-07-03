@@ -69,7 +69,19 @@ void StuInterface::ntsInitOnRenderThread()
 }
 
 //------------------------------------------------------------------------------
-void StuInterface::ntsDoPass()
+void StuInterface::ntsDoAllPasses()
+{
+  /// \todo Call all passes begin lambdas. Used primarily to setup global
+  /// uniforms.
+
+  // Loop through all of the passes.
+
+  /// \todo Call all passes end lambdas. Used primarily to setup global
+  /// uniforms.
+}
+
+//------------------------------------------------------------------------------
+void StuInterface::ntsDoPass(const std::string& passName)
 {
   /// \todo Move this outside of the interface!
   GL(glClearColor(0.0f, 0.0f, 0.0f, 1.0f));
@@ -82,35 +94,40 @@ void StuInterface::ntsDoPass()
   GPUState defaultGPUState;
   mHub.getGPUStateManager().apply(defaultGPUState, true); // true = force application of state.
 
-  // Pull the view and the inverse view projection transforms out of the
-  // uniforms. StuInterface expects those to be set.
-  std::shared_ptr<const AbstractUniformStateItem> camToWorldUniform = 
-      mHub.getShaderUniformStateMan().getGlobalUninform(
-          std::get<0>(CommonUniforms::getCameraToWorld()));
+  ///\todo Call pass begin lambdas. Setup global pass specific uniforms.
 
-  if (camToWorldUniform->getGLType() != UNIFORM_FLOAT_MAT4)
-  {
-    throw std::runtime_error("-> Camera -> Projection transform is not a 4x4 matrix!");
-  }
-  const float* rawM44 = camToWorldUniform->getRawData();
-  M44 camToWorld = glm::make_mat4x4(rawM44);
-  M44 inverseCamToWorld = glm::affineInverse(camToWorld);
+  //// Pull the view and the inverse view projection transforms out of the
+  //// uniforms. StuInterface expects those to be set.
+  //std::shared_ptr<const AbstractUniformStateItem> camToWorldUniform = 
+  //    mHub.getShaderUniformStateMan().getGlobalUninform(
+  //        std::get<0>(CommonUniforms::getCameraToWorld()));
 
-  std::shared_ptr<const AbstractUniformStateItem> toCamToProjectionUniform =
-      mHub.getShaderUniformStateMan().getGlobalUninform(
-          std::get<0>(CommonUniforms::getToCameraToProjection()));
+  //if (camToWorldUniform->getGLType() != UNIFORM_FLOAT_MAT4)
+  //{
+  //  throw std::runtime_error("-> Camera -> Projection transform is not a 4x4 matrix!");
+  //}
+  //const float* rawM44 = camToWorldUniform->getRawData();
+  //M44 camToWorld = glm::make_mat4x4(rawM44);
+  //M44 inverseCamToWorld = glm::affineInverse(camToWorld);
 
-  if (toCamToProjectionUniform->getGLType() != UNIFORM_FLOAT_MAT4)
-  {
-    throw std::runtime_error("-> Camera -> Projection transform is not a 4x4 matrix!");
-  }
-  rawM44 = toCamToProjectionUniform->getRawData();
-  M44 toCamToProjection = glm::make_mat4x4(rawM44);
+  //std::shared_ptr<const AbstractUniformStateItem> toCamToProjectionUniform =
+  //    mHub.getShaderUniformStateMan().getGlobalUninform(
+  //        std::get<0>(CommonUniforms::getToCameraToProjection()));
+
+  //if (toCamToProjectionUniform->getGLType() != UNIFORM_FLOAT_MAT4)
+  //{
+  //  throw std::runtime_error("-> Camera -> Projection transform is not a 4x4 matrix!");
+  //}
+  //rawM44 = toCamToProjectionUniform->getRawData();
+  //M44 toCamToProjection = glm::make_mat4x4(rawM44);
 
   for (auto it = mRenderOrderToObjects.begin(); it != mRenderOrderToObjects.end(); ++it)
   {
-    it->second->renderAllPasses(inverseCamToWorld, toCamToProjection);
+    //it->second->renderAllPasses();
+    it->second->renderPass(passName);
   }
+
+  ///\todo Call pass end lambda.
 }
 
 //------------------------------------------------------------------------------
@@ -535,24 +552,24 @@ void StuInterface::assignRenderOrder(const std::string& object, int32_t renderOr
 
 
 //------------------------------------------------------------------------------
-void StuInterface::addPassUniformInternalImpl(Hub& hub, StuInterface* iface,
-                                              std::string object,
-                                              std::string pass,
-                                              std::string uniformName,
-                                              std::shared_ptr<AbstractUniformStateItem> item)
+void StuInterface::addObjectPassUniformInternalImpl(Hub& hub, StuInterface* iface,
+                                                    std::string object,
+                                                    std::string pass,
+                                                    std::string uniformName,
+                                                    std::shared_ptr<AbstractUniformStateItem> item)
 {
   std::shared_ptr<StuObject> obj = iface->mNameToObject.at(object);
   obj->addPassUniform(pass, uniformName, item);
 }
 
 //------------------------------------------------------------------------------
-void StuInterface::addPassUniformConcrete(const std::string& object,
-                                          const std::string& pass,
-                                          const std::string& uniformName,
-                                          std::shared_ptr<AbstractUniformStateItem> item)
+void StuInterface::addObjectPassUniformConcrete(const std::string& object,
+                                                const std::string& pass,
+                                                const std::string& uniformName,
+                                                std::shared_ptr<AbstractUniformStateItem> item)
 {
   Hub::RemoteFunction fun =
-      std::bind(addPassUniformInternalImpl, _1, this, object, pass, uniformName, item);
+      std::bind(addObjectPassUniformInternalImpl, _1, this, object, pass, uniformName, item);
   mHub.addFunctionToThreadQueue(fun);
 }
 
@@ -576,22 +593,22 @@ void StuInterface::addObjectTransformImpl(Hub& hub, StuInterface* iface,
 }
 
 //------------------------------------------------------------------------------
-void StuInterface::addPassGPUStateImpl(Hub& hub, StuInterface* iface,
-                                       std::string object,
-                                       std::string pass,
-                                       GPUState state)
+void StuInterface::addObjectPassGPUStateImpl(Hub& hub, StuInterface* iface,
+                                             std::string object,
+                                             std::string pass,
+                                             GPUState state)
 {
   std::shared_ptr<StuObject> obj = iface->mNameToObject.at(object);
   obj->addPassGPUState(pass, state);
 }
 
 //------------------------------------------------------------------------------
-void StuInterface::addPassGPUState(const std::string& object,
-                                   const std::string& pass,
-                                   const GPUState& state)
+void StuInterface::addObjectPassGPUState(const std::string& object,
+                                         const std::string& pass,
+                                         const GPUState& state)
 {
   Hub::RemoteFunction fun =
-      std::bind(addPassGPUStateImpl, _1, this, object, pass, state);
+      std::bind(addObjectPassGPUStateImpl, _1, this, object, pass, state);
   mHub.addFunctionToThreadQueue(fun);
 }
 
@@ -602,7 +619,7 @@ void StuInterface::addGlobalUniformInternalImpl(Hub& hub, StuInterface* iface,
                                               std::shared_ptr<AbstractUniformStateItem> item)
 {
   // Access uniform state manager and apply/update uniform value.
-  hub.getShaderUniformStateMan().updateGlobalUniform(uniformName, item);
+  hub.getGlobalUniformStateMan().updateGlobalUniform(uniformName, item);
 }
 
 //------------------------------------------------------------------------------
