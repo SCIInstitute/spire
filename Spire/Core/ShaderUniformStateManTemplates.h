@@ -178,10 +178,52 @@ public:
   {
     if (getGLType() != UNIFORM_FLOAT_MAT4)
       throw std::runtime_error("Mismatched types! Expected uniform to be of type M44.");
+    return glm::make_mat4x4(getRawData());
+  }
 
-    // Handling M44
-    const float* rawData = getRawData();
-    return glm::make_mat4x4(rawData);
+  /// Retrieve M33
+  template <class T>
+  typename std::enable_if<std::is_same<T, M33>::value, T>::type getData()
+  {
+    if (getGLType() != UNIFORM_FLOAT_MAT3)
+      throw std::runtime_error("Mismatched types! Expected uniform to be of type M33.");
+    return glm::make_mat3(getRawData());
+  }
+
+  /// Retrieve V4
+  template <class T>
+  typename std::enable_if<std::is_same<T, V4>::value, T>::type getData()
+  {
+    if (getGLType() != UNIFORM_FLOAT_VEC4)
+      throw std::runtime_error("Mismatched types! Expected uniform to be of type V4.");
+    return glm::make_vec4(getRawData());
+  }
+
+  /// Retrieve V3
+  template <class T>
+  typename std::enable_if<std::is_same<T, V3>::value, T>::type getData()
+  {
+    if (getGLType() != UNIFORM_FLOAT_VEC3)
+      throw std::runtime_error("Mismatched types! Expected uniform to be of type V3.");
+    return glm::make_vec3(getRawData());
+  }
+
+  /// Retrieve V3
+  template <class T>
+  typename std::enable_if<std::is_same<T, V2>::value, T>::type getData()
+  {
+    if (getGLType() != UNIFORM_FLOAT_VEC2)
+      throw std::runtime_error("Mismatched types! Expected uniform to be of type V2.");
+    return glm::make_vec2(getRawData());
+  }
+
+  /// Retrieve float
+  template <class T>
+  typename std::enable_if<std::is_same<T, float>::value, T>::type getData()
+  {
+    if (getGLType() != UNIFORM_FLOAT)
+      throw std::runtime_error("Mismatched types! Expected uniform to be of type float.");
+    return *getRawData();
   }
 
 protected:
