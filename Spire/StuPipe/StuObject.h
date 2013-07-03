@@ -68,8 +68,9 @@ public:
   /// Adds a local uniform to the pass.
   /// throws std::out_of_range if 'uniformName' is not found in the shader's
   /// uniform list.
-  void addPassUniform(const std::string uniformName,
-                      std::shared_ptr<AbstractUniformStateItem> item);
+  bool addPassUniform(const std::string uniformName,
+                      std::shared_ptr<AbstractUniformStateItem> item,
+                      bool isObjectGlobalUniform);
 
   void addGPUState(const GPUState& state);
 
@@ -79,15 +80,17 @@ protected:
   {
     UniformItem(const std::string& name,
                 std::shared_ptr<AbstractUniformStateItem> uniformItem,
-                GLint location) :
+                GLint location, bool passSpecific) :
         uniformName(name),
         item(uniformItem),
-        shaderLocation(location)
+        shaderLocation(location),
+        passSpecific(passSpecific)
     {}
 
     std::string                               uniformName;
     std::shared_ptr<AbstractUniformStateItem> item;
     GLint                                     shaderLocation;
+    bool                                      passSpecific;   ///< If true, global uniforms do not overwrite.
   };
 
 //  struct ObjectTransformUniform
@@ -186,6 +189,10 @@ public:
                       const std::string uniformName,
                       std::shared_ptr<AbstractUniformStateItem> item);
 
+  /// Adds a uniform to the pass.
+  void addGlobalUniform(const std::string& uniformName,
+                        std::shared_ptr<AbstractUniformStateItem> item);
+
   /// Adds an object attribute to the system. Object attributes do not change
   /// per-pass. Add another function 'addSpireObjectPassAttribute' if that is
   /// really needed.
@@ -215,15 +222,15 @@ public:
 
 protected:
 
-  struct SpireAttributeItem
+  struct ObjectGlobalUniformItem
   {
-    SpireAttributeItem(const std::string& name,
-                       std::shared_ptr<AbstractUniformStateItem> uniformItem) :
-        attributeName(name),
+    ObjectGlobalUniformItem(const std::string& name,
+                            std::shared_ptr<AbstractUniformStateItem> uniformItem) :
+        uniformName(name),
         item(uniformItem)
     {}
 
-    std::string                               attributeName;
+    std::string                               uniformName;
     std::shared_ptr<AbstractUniformStateItem> item;
   };
 
@@ -235,7 +242,8 @@ protected:
   /// All registered passes.
   std::unordered_map<std::string, std::shared_ptr<StuPass>>   mPasses;
   std::map<int32_t, std::shared_ptr<StuPass>>                 mPassRenderOrder;
-  std::unordered_map<std::string, std::shared_ptr<AbstractUniformStateItem>>         mSpireAttributes;
+  std::vector<ObjectGlobalUniformItem>                        mObjectGlobalUniforms;
+  std::unordered_map<std::string, std::shared_ptr<AbstractUniformStateItem>> mSpireAttributes;
 
   // These maps may actually be more efficient implemented as an array. The map 
   // sizes are small and cache coherency will be more important. Ignoring for 

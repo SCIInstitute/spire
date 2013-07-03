@@ -142,7 +142,7 @@ void StuPass::renderPass()
   }
 #endif
 
-  // Assign local uniforms.
+  // Assign pass local uniforms.
   for (auto it = mUniforms.begin(); it != mUniforms.end(); ++it)
   {
 #ifdef SPIRE_DEBUG
@@ -152,7 +152,8 @@ void StuPass::renderPass()
     it->item->applyUniform(it->shaderLocation);
   }
 
-  // Assign global uniforms.
+  // Assign global uniforms, searches through 3 levels in an attempt to find the
+  // uniform: object global -> pass global -> and global.
   for (auto it = mUnsatisfiedUniforms.begin(); it != mUnsatisfiedUniforms.end(); ++it)
   {
 #ifdef SPIRE_DEBUG
@@ -221,8 +222,9 @@ void StuPass::renderPass()
 }
 
 //------------------------------------------------------------------------------
-void StuPass::addPassUniform(const std::string uniformName,
-                             std::shared_ptr<AbstractUniformStateItem> item)
+bool StuPass::addPassUniform(const std::string uniformName,
+                             std::shared_ptr<AbstractUniformStateItem> item,
+                             bool isObjectGlobalUniform)
 {
   // This will throw std::out_of_range.
   const ShaderUniformCollection::UniformSpecificData& uniformData = 
@@ -240,8 +242,22 @@ void StuPass::addPassUniform(const std::string uniformName,
     if (it->uniformName == uniformName)
     {
       foundUniform = true;
-      // Replace the uniform's contents.
-      it->item = item;
+      // If 
+      if (!(isObjectGlobalUniform == true && it->passSpecific == true))
+      {
+        // Replace the uniform's contents.
+        it->item = item;
+
+        // Ensure we set the pass specific flag if we are setting a specific
+        // uniform.
+        /// \todo Add a warning to inform the user that shadowing is occuring?
+        if (isObjectGlobalUniform == false)
+          it->passSpecific = true;
+      }
+      else
+      {
+        /// \todo Add a warning to inform the user that shadowing is occuring?
+      }
       break;
     }
   }
@@ -268,13 +284,15 @@ void StuPass::addPassUniform(const std::string uniformName,
 
     if (foundUnsatisfiedUniform == false)
     {
-      std::stringstream stream;
-      stream << "This uniform (" << uniformName << "is not recognized by the shader.";
-      throw std::invalid_argument(stream.str());
+      return false;
     }
 
-    mUniforms.emplace_back(UniformItem(uniformName, item, uniformData.glUniformLoc));
+    mUniforms.emplace_back(UniformItem(uniformName, item,
+                                       uniformData.glUniformLoc,
+                                       !isObjectGlobalUniform));
   }
+
+  return true;
 }
 
 //------------------------------------------------------------------------------
@@ -323,6 +341,12 @@ void StuObject::addPass(
   
   mPasses.insert(std::make_pair(passName, pass));
   mPassRenderOrder.insert(std::make_pair(passOrder, pass));
+
+  // Copy any global uniforms that may be relevant to the pass' shader.
+  for (auto it = mObjectGlobalUniforms.begin(); it != mObjectGlobalUniforms.end(); ++it)
+  {
+    pass->addPassUniform(it->uniformName, it->item, true);
+  }
 }
 
 //------------------------------------------------------------------------------
@@ -374,15 +398,52 @@ void StuObject::addObjectTransform(const M44& transform)
 
 //------------------------------------------------------------------------------
 void StuObject::addPassUniform(const std::string& passName,
-                      const std::string uniformName,
-                      std::shared_ptr<AbstractUniformStateItem> item)
+                               const std::string uniformName,
+                               std::shared_ptr<AbstractUniformStateItem> item)
 {
   // We are going to have a facility similar to UniformStateMan, but we are
   // going to use a more cache-coherent vector. It's unlikely that we ever need
   // to grow the vector beyond the number of uniforms already present in the
   // shader.
   std::shared_ptr<StuPass> pass = getPassByName(passName);
-  pass->addPassUniform(uniformName, item);
+  if (pass->addPassUniform(uniformName, item, false))
+  {
+    std::stringstream stream;
+    stream << "This uniform (" << uniformName << ") is not recognized by the shader.";
+    throw std::invalid_argument(stream.str());
+  }
+}
+
+//------------------------------------------------------------------------------
+void StuObject::addGlobalUniform(const std::string& uniformName,
+                                 std::shared_ptr<AbstractUniformStateItem> item)
+{
+  // Search for an already pre-existing uniform.
+  bool foundUniform = false;
+  for (auto it = mObjectGlobalUniforms.begin(); it != mObjectGlobalUniforms.end(); ++it)
+  {
+    if (it->uniformName == uniformName)
+    {
+      foundUniform = true;
+
+      // Replace the uniform's contents.
+      it->item = item;
+      break;
+    }
+  }
+
+  if (foundUniform == false)
+  {
+    // Add a new entry and update
+    ObjectGlobalUniformItem uniformItem(uniformName, item);
+    mObjectGlobalUniforms.push_back(uniformItem);
+  }
+
+  // Attempt to update any children pass' that contain this uniform.
+  for (auto it = mPasses.begin(); it != mPasses.end(); ++it)
+  {
+    it->second->addPassUniform(uniformName, item, true);
+  }
 }
 
 //------------------------------------------------------------------------------

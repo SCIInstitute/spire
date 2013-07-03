@@ -574,6 +574,26 @@ void StuInterface::addObjectPassUniformConcrete(const std::string& object,
 }
 
 //------------------------------------------------------------------------------
+void StuInterface::addObjectGlobalUniformInternalImpl(Hub& hub, StuInterface* iface,
+                                                      std::string objectName,
+                                                      std::string uniformName,
+                                                      std::shared_ptr<AbstractUniformStateItem> item)
+{
+  std::shared_ptr<StuObject> obj = iface->mNameToObject.at(objectName);
+  obj->addGlobalUniform(uniformName, item);
+}
+
+//------------------------------------------------------------------------------
+void StuInterface::addObjectGlobalUniformConcrete(const std::string& object,
+                                                  const std::string& uniformName,
+                                                  std::shared_ptr<AbstractUniformStateItem> item)
+{
+  Hub::RemoteFunction fun =
+      std::bind(addObjectGlobalUniformInternalImpl, _1, this, object, uniformName, item);
+  mHub.addFunctionToThreadQueue(fun);
+}
+
+//------------------------------------------------------------------------------
 void StuInterface::addObjectTransform(const std::string& object,
                                       const M44& transform)
 {

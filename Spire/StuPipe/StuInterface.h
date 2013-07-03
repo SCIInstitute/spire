@@ -289,6 +289,23 @@ public:
                                     const std::string& uniformName,
                                     std::shared_ptr<AbstractUniformStateItem> item);
 
+  /// Adds a uniform that will be consumed regardless of the pass. Pass uniforms
+  /// take precedence over pass global uniforms.
+  template <typename T>
+  void addObjectGlobalUniform(const std::string& object,
+                              const std::string& uniformName,
+                              T uniformData)
+  {
+    addObjectGlobalUniformConcrete(object, uniformName, 
+                                   std::shared_ptr<AbstractUniformStateItem>(
+                                       new UniformStateItem<T>(uniformData)));
+  }
+
+  /// Concrete implementation of the above templated function.
+  void addObjectGlobalUniformConcrete(const std::string& object,
+                                      const std::string& uniformName,
+                                      std::shared_ptr<AbstractUniformStateItem> item);
+
   /// GPU state that will be applied directly before the object is rendered.
   /// Note: The default GPU state is consists of the default GPUState 
   ///       constructor.
@@ -478,6 +495,12 @@ private:
                                                std::string pass,
                                                std::string uniformName,
                                                std::shared_ptr<AbstractUniformStateItem> item);
+
+  static void addObjectGlobalUniformInternalImpl(Hub& hub, StuInterface* iface,
+                                                 std::string objectName,
+                                                 std::string uniformName,
+                                                 std::shared_ptr<AbstractUniformStateItem> item);
+
 
   static void addObjectPassGPUStateImpl(Hub& hub, StuInterface* iface,
                                         std::string object,
