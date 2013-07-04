@@ -228,6 +228,9 @@ public:
   /// \todo Ability to render a single named pass. See github issue #15.
   void renderPass(const std::string& pass);
 
+  /// Returns the associated pass. Otherwise an empty shared_ptr is returned.
+  std::shared_ptr<const StuPass> getObjectPassParams(const std::string& passName) const;
+
 protected:
 
   struct ObjectGlobalUniformItem
@@ -245,7 +248,7 @@ protected:
   void removePassFromOrderList(const std::string& pass, int32_t passOrder);
 
   /// Retrieves the pass by name.
-  std::shared_ptr<StuPass> getPassByName(const std::string& name);
+  std::shared_ptr<StuPass> getPassByName(const std::string& name) const;
 
   /// All registered passes.
   std::unordered_map<std::string, std::shared_ptr<StuPass>>   mPasses;

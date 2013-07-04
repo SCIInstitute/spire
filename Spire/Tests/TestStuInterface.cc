@@ -555,6 +555,7 @@ TEST_F(StuPipeTestFixture, TestStuObjects)
   // Test StuObject structures
   //----------------------------------------------------------------------------
   std::shared_ptr<const StuObject> object = mStuInterface->ntsGetObjectWithName(obj1);
+  std::shared_ptr<const StuPass> object1Pass = object->getObjectPassParams(pass1);
 
   // Perform the frame. If there are any missing shaders we'll know about it
   // here.

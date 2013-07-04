@@ -361,6 +361,12 @@ void StuObject::addPass(
 }
 
 //------------------------------------------------------------------------------
+std::shared_ptr<const StuPass> StuObject::getObjectPassParams(const std::string& passName) const
+{
+  return getPassByName(passName);
+}
+
+//------------------------------------------------------------------------------
 void StuObject::removePass(const std::string& passName)
 {
   // This call will throw std::out_of_range error if passName doesn't exist in
@@ -465,7 +471,7 @@ void StuObject::addPassGPUState(const std::string& passName, const GPUState& sta
 }
 
 //------------------------------------------------------------------------------
-std::shared_ptr<StuPass> StuObject::getPassByName(const std::string& name)
+std::shared_ptr<StuPass> StuObject::getPassByName(const std::string& name) const
 {
   return mPasses.at(name);
 }
