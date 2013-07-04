@@ -577,61 +577,8 @@ TEST_F(StuPipeTestFixture, TestStuObjects)
   // Perform the frame. If there are any missing shaders we'll know about it
   // here.
   mSpire->doFrame();
-
-  // Write the resultant png to a temporary directory and compare against
-  // the golden image results.
-  /// \todo Look into using boost filesystem (but it isn't header-only). 
-
-#ifdef TEST_OUTPUT_IMAGES
-  std::string imageName = "StuTriangle.png";
-
-  std::string targetImage = TEST_IMAGE_OUTPUT_DIR;
-  targetImage += "/" + imageName;
-  Spire::GlobalTestEnvironment::instance()->writeFBO(targetImage);
-
-  EXPECT_TRUE(Spire::fileExists(targetImage)) << "Failed to write output image! " << targetImage;
-
-#ifdef TEST_PERCEPTUAL_COMPARE
-  // Perform the perceptual comparison using the given regression directory.
-  std::string compImage = TEST_IMAGE_COMPARE_DIR;
-  compImage += "/" + imageName;
-
-  ASSERT_TRUE(Spire::fileExists(compImage)) << "Failed to find comparison image! " << compImage;
-  // Test using perceptula comparison program that the user has provided
-  // (hopefully).
-  std::string command = TEST_PERCEPTUAL_COMPARE_BINARY;
-  command += " -threshold 50 ";
-  command += targetImage + " " + compImage;
-
-  // Usually the return code of std::system is implementation specific. But the
-  // majority of systems end up returning the exit code of the program.
-  if (std::system(command.c_str()) != 0)
-  {
-    // The images are NOT the same. Alert the user.
-    FAIL() << "Perceptual compare of " << imageName << " failed.";
-  }
-#endif
-
-#endif
-
-  // Attempt to set global uniform value that is at odds with information found
-  // in the uniform manager (should induce a type error).
-
-  /// \todo Test adding a uniform to the global state which does not have a
-  ///       corresponding entry in the UniformManager.
-
-  /// \todo Test uniforms.
-  ///       1 - No uniforms set: should attempt to access global uniform state
-  ///           manager and extract the uniform resulting in a std::out_of_range.
-  ///       2 - Partial uniforms. Result same as #1.
-  ///       3 - Uniform type checking. Ensure the types pulled from OpenGL
-  ///           compiler matches our expected types.
-
-
-  // Create an image of appropriate dimensions.
-
-  /// \todo Test pass order using hasPassRenderingOrder on the object.
 }
+
 //------------------------------------------------------------------------------
 TEST_F(StuPipeTestFixture, TestCube)
 {
