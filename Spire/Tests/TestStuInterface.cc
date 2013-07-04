@@ -443,6 +443,146 @@ TEST_F(StuPipeTestFixture, TestTriangle)
 }
 
 //------------------------------------------------------------------------------
+TEST_F(StuPipeTestFixture, TestStuObjects)
+{
+  // Test various functions in StuObject and StuPass.
+  std::vector<float> vboData = 
+  {
+    -1.0f,  1.0f,  0.0f,
+     1.0f,  1.0f,  0.0f,
+    -1.0f, -1.0f,  0.0f,
+     1.0f, -1.0f,  0.0f
+  };
+  std::vector<std::string> attribNames = {"aPos"};
+
+  std::vector<uint16_t> iboData =
+  {
+    0, 1, 2, 3
+  };
+  StuInterface::IBO_TYPE iboType = StuInterface::IBO_16BIT;
+
+  // This is pretty contorted interface due to the marshalling between
+  // std::vector<float> and std::vector<uint8_t>. In practice, you would want
+  // to calculate the size of your VBO and using one std::vector<uint8_t> and
+  // reserve the necessary space in it. Then cast it's contents to floats or
+  // uint16_t as necessary (attributes can have a wide array of types, including
+  // half floats).
+  uint8_t*  rawBegin;
+  size_t    rawSize;
+
+  // Copy vboData into vector of uint8_t. Using std::copy.
+  std::shared_ptr<std::vector<uint8_t>> rawVBO(new std::vector<uint8_t>());
+  rawSize = vboData.size() * (sizeof(float) / sizeof(uint8_t));
+  rawVBO->reserve(rawSize);
+  rawBegin = reinterpret_cast<uint8_t*>(&vboData[0]);
+  rawVBO->assign(rawBegin, rawBegin + rawSize);
+
+  // Copy iboData into vector of uint8_t. Using std::vector::assign.
+  std::shared_ptr<std::vector<uint8_t>> rawIBO(new std::vector<uint8_t>());
+  rawSize = iboData.size() * (sizeof(uint16_t) / sizeof(uint8_t));
+  rawIBO->reserve(rawSize);
+  rawBegin = reinterpret_cast<uint8_t*>(&iboData[0]);
+  rawIBO->assign(rawBegin, rawBegin + rawSize);
+
+  // Add necessary VBO's and IBO's
+  std::string vbo1 = "vbo1";
+  std::string ibo1 = "ibo1";
+  mStuInterface->addVBO(vbo1, rawVBO, attribNames);
+  mStuInterface->addIBO(ibo1, rawIBO, iboType);
+
+  // Attempt to add duplicate VBOs and IBOs
+  EXPECT_THROW(mStuInterface->addVBO(vbo1, rawVBO, attribNames), Duplicate);
+  EXPECT_THROW(mStuInterface->addIBO(ibo1, rawIBO, iboType), Duplicate);
+
+  std::string obj1 = "obj1";
+  mStuInterface->addObject(obj1);
+  
+  std::string shader1 = "UniformColor";
+  // Add and compile persistent shaders (if not already present).
+  // You will only run into the 'Duplicate' exception if the persistent shader
+  // is already in the persistent shader list.
+  mStuInterface->addPersistentShader(
+      shader1, 
+      { {"UniformColor.vsh", StuInterface::VERTEX_SHADER}, 
+        {"UniformColor.fsh", StuInterface::FRAGMENT_SHADER},
+      });
+
+  // Build the default pass.
+  mStuInterface->addPassToObject(obj1, shader1, vbo1, ibo1, StuInterface::TRIANGLE_STRIP);
+
+  // Construct another good pass.
+  std::string pass1 = "pass1";
+  mStuInterface->addPassToObject(obj1, shader1, vbo1, ibo1, StuInterface::TRIANGLE_STRIP, pass1);
+
+  // No longer need VBO and IBO (will stay resident in the passes -- when the
+  // passes are destroyed, the VBO / IBOs will be destroyed).
+  mStuInterface->removeIBO(ibo1);
+  mStuInterface->removeVBO(vbo1);
+
+  // Test object global uniform settings.
+  mStuInterface->addObjectGlobalUniform(obj1, "uProjIVWorld", mCamera->getWorldToProjection());
+
+  // Add pass uniforms for each pass.
+  mStuInterface->addObjectPassUniform(obj1, "uColor", V4(1.0f, 0.0f, 0.0f, 1.0f)); // default pass
+  mStuInterface->addObjectGlobalUniform(obj1, "uColor", V4(1.0f, 0.0f, 1.0f, 1.0f)); // pass1
+
+  mSpire->doFrame();
+
+  // Write the resultant png to a temporary directory and compare against
+  // the golden image results.
+  /// \todo Look into using boost filesystem (but it isn't header-only). 
+
+#ifdef TEST_OUTPUT_IMAGES
+  std::string imageName = "StuTriangle.png";
+
+  std::string targetImage = TEST_IMAGE_OUTPUT_DIR;
+  targetImage += "/" + imageName;
+  Spire::GlobalTestEnvironment::instance()->writeFBO(targetImage);
+
+  EXPECT_TRUE(Spire::fileExists(targetImage)) << "Failed to write output image! " << targetImage;
+
+#ifdef TEST_PERCEPTUAL_COMPARE
+  // Perform the perceptual comparison using the given regression directory.
+  std::string compImage = TEST_IMAGE_COMPARE_DIR;
+  compImage += "/" + imageName;
+
+  ASSERT_TRUE(Spire::fileExists(compImage)) << "Failed to find comparison image! " << compImage;
+  // Test using perceptula comparison program that the user has provided
+  // (hopefully).
+  std::string command = TEST_PERCEPTUAL_COMPARE_BINARY;
+  command += " -threshold 50 ";
+  command += targetImage + " " + compImage;
+
+  // Usually the return code of std::system is implementation specific. But the
+  // majority of systems end up returning the exit code of the program.
+  if (std::system(command.c_str()) != 0)
+  {
+    // The images are NOT the same. Alert the user.
+    FAIL() << "Perceptual compare of " << imageName << " failed.";
+  }
+#endif
+
+#endif
+
+  // Attempt to set global uniform value that is at odds with information found
+  // in the uniform manager (should induce a type error).
+
+  /// \todo Test adding a uniform to the global state which does not have a
+  ///       corresponding entry in the UniformManager.
+
+  /// \todo Test uniforms.
+  ///       1 - No uniforms set: should attempt to access global uniform state
+  ///           manager and extract the uniform resulting in a std::out_of_range.
+  ///       2 - Partial uniforms. Result same as #1.
+  ///       3 - Uniform type checking. Ensure the types pulled from OpenGL
+  ///           compiler matches our expected types.
+
+
+  // Create an image of appropriate dimensions.
+
+  /// \todo Test pass order using hasPassRenderingOrder on the object.
+}
+//------------------------------------------------------------------------------
 TEST_F(StuPipeTestFixture, TestCube)
 {
   // Test the rendering of a cube with the StuPipe

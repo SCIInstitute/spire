@@ -56,6 +56,7 @@ StuInterface::StuInterface(Interface& iface) :
     mCurrentRenderOrder(0),
     mCurrentPassOrder(0)
 {
+  addPassToBack(SPIRE_DEFAULT_PASS);
 }
 
 //------------------------------------------------------------------------------
@@ -128,6 +129,22 @@ void StuInterface::ntsDoPass(const std::string& passName)
   }
 
   ///\todo Call pass end lambda.
+}
+
+//------------------------------------------------------------------------------
+void StuInterface::addPassToFront(const std::string& passName)
+{
+  std::shared_ptr<Pass> pass(new Pass(passName));
+  mPasses.push_back(pass);
+  mNameToPass[passName] = pass;
+}
+
+//------------------------------------------------------------------------------
+void StuInterface::addPassToBack(const std::string& passName)
+{
+  std::shared_ptr<Pass> pass(new Pass(passName));
+  mPasses.push_front(pass);
+  mNameToPass[passName] = pass;
 }
 
 //------------------------------------------------------------------------------
@@ -371,6 +388,17 @@ void StuInterface::addPassToObjectImpl(Hub& hub, StuInterface* iface,
   std::shared_ptr<StuObject> obj = iface->mNameToObject.at(object);
   std::shared_ptr<VBOObject> vbo = iface->mVBOMap.at(vboName);
   std::shared_ptr<IBOObject> ibo = iface->mIBOMap.at(iboName);
+
+  // Check to see if the pass exists.
+  auto passIt = iface->mNameToPass.find(pass);
+  if (passIt == iface->mNameToPass.end())
+    throw std::runtime_error("Pass (" + pass + ") does not exist.");
+
+  // Add object to pass if it isn't already part of the pass.
+  auto objectInPass = passIt->second->mNameToObject.find(object);
+  if (objectInPass == iface->mNameToObject.end())
+    passIt->second->mNameToObject[object] = obj;
+
   obj->addPass(pass, program, vbo, ibo, getGLPrimitive(type), passOrder);
 }
 

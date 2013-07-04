@@ -132,6 +132,20 @@ public:
   // THREAD SAFE - Remember, the same thread should always be calling spire.
   //============================================================================
 
+  //--------
+  // Passes
+  //--------
+
+  // The default pass is always present.
+
+  /// Adds a pass to the front of the pass list. Passes at the front of the list
+  /// are rendered first.
+  void addPassToFront(const std::string& passName);
+
+  /// Adds a pass to the back of the pass list. Passes at the back of the list
+  /// are rendered last.
+  void addPassToBack(const std::string& passName);
+
   //---------
   // Objects
   //---------
@@ -426,6 +440,17 @@ public:
 
 private:
 
+  struct Pass
+  {
+    Pass(const std::string& name) :
+        mName(name)
+    {}
+
+    std::string                                                   mName;
+    std::unordered_map<std::string, std::shared_ptr<StuObject>>   mNameToObject;
+
+    /// \todo Rendering order for the objects?
+  };
 
   /// Remove the specified object from the order list.
   void removeObjectFromOrderList(const std::string& objectName, int32_t objectOrder);
@@ -435,18 +460,21 @@ private:
 
   /// Rendering order of objects. This map is not a well-defined function: one
   /// value in the domain possibly maps to multiple values in the range.
-  std::multimap<int32_t, std::shared_ptr<StuObject>>  mRenderOrderToObjects;
+  std::multimap<int32_t, std::shared_ptr<StuObject>>            mRenderOrderToObjects;
 
   /// List of shaders that are stored persistently by this pipe (will never
   /// be GC'ed unless this pipe is destroyed).
-  std::list<std::shared_ptr<ShaderProgramAsset>>  mPersistentShaders;
+  std::list<std::shared_ptr<ShaderProgramAsset>>                mPersistentShaders;
 
   /// VBO names to our representation of a vertex buffer object.
-  std::unordered_map<std::string, std::shared_ptr<VBOObject>>  mVBOMap;
+  std::unordered_map<std::string, std::shared_ptr<VBOObject>>   mVBOMap;
 
   /// IBO names to our representation of an index buffer object.
-  std::unordered_map<std::string, std::shared_ptr<IBOObject>>  mIBOMap;
+  std::unordered_map<std::string, std::shared_ptr<IBOObject>>   mIBOMap;
 
+  /// List of passes in the order they are meant to be rendered.
+  std::list<std::shared_ptr<Pass>>                              mPasses;
+  std::unordered_map<std::string, std::shared_ptr<Pass>>        mNameToPass;
 
   // NOTE:  The following variable should only be accessed on the client side.
   //        Never by the renderer. This var just makes it easier when adding
