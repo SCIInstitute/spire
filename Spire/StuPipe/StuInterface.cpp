@@ -75,15 +75,6 @@ void StuInterface::ntsDoAllPasses()
   /// \todo Call all passes begin lambdas. Used primarily to setup global
   /// uniforms.
 
-  // Loop through all of the passes.
-
-  /// \todo Call all passes end lambdas. Used primarily to setup global
-  /// uniforms.
-}
-
-//------------------------------------------------------------------------------
-void StuInterface::ntsDoPass(const std::string& passName)
-{
   /// \todo Move this outside of the interface!
   GL(glClearColor(0.0f, 0.0f, 0.0f, 1.0f));
   GL(glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT));
@@ -94,6 +85,31 @@ void StuInterface::ntsDoPass(const std::string& passName)
 
   GPUState defaultGPUState;
   mHub.getGPUStateManager().apply(defaultGPUState, true); // true = force application of state.
+
+
+  // Loop through all of the passes.
+  for (auto it = mPasses.begin(); it != mPasses.end(); ++it)
+  {
+    ntsDoPass((*it)->mName);
+  }
+
+  /// \todo Call all passes end lambdas. Used primarily to setup global
+  /// uniforms.
+}
+
+//------------------------------------------------------------------------------
+void StuInterface::ntsDoPass(const std::string& passName)
+{
+  std::shared_ptr<Pass> pass = mNameToPass.at(passName);
+
+  // Loop over all objects in the pass and render them.
+  /// \todo Need to add some way of ordering the rendered objects, whether it be
+  /// by another structure built into Spire (not for this at all), or some lambda
+  /// callback.
+  for (auto it = pass->mNameToObject.begin(); it != pass->mNameToObject.end(); ++it)
+  {
+    it->second->renderPass(passName);
+  }
 
   ///\todo Call pass begin lambdas. Setup global pass specific uniforms.
 
@@ -122,11 +138,11 @@ void StuInterface::ntsDoPass(const std::string& passName)
   //rawM44 = toCamToProjectionUniform->getRawData();
   //M44 toCamToProjection = glm::make_mat4x4(rawM44);
 
-  for (auto it = mRenderOrderToObjects.begin(); it != mRenderOrderToObjects.end(); ++it)
-  {
-    //it->second->renderAllPasses();
-    it->second->renderPass(passName);
-  }
+  //for (auto it = mRenderOrderToObjects.begin(); it != mRenderOrderToObjects.end(); ++it)
+  //{
+  //  //it->second->renderAllPasses();
+  //  it->second->renderPass(passName);
+  //}
 
   ///\todo Call pass end lambda.
 }

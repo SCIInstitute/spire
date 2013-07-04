@@ -388,8 +388,8 @@ TEST_F(StuPipeTestFixture, TestTriangle)
   // Test global uniforms -- test run-time type validation.
   // Setup camera so that it can be passed to the Uniform Color shader.
   // Camera has been setup in the test fixture.
-  mStuInterface->addGlobalUniform("uProjIVWorld", mCamera->getWorldToProjection());
-  EXPECT_THROW(mStuInterface->addGlobalUniform("uProjIVWorld", V3(0.0f, 0.0f, 0.0f)), ShaderUniformTypeError);
+  mStuInterface->addGlobalUniform("uProjIVObject", mCamera->getWorldToProjection());
+  EXPECT_THROW(mStuInterface->addGlobalUniform("uProjIVObject", V3(0.0f, 0.0f, 0.0f)), ShaderUniformTypeError);
 
   // Add color to the pass (which will lookup the type via the shader).
   EXPECT_THROW(mStuInterface->addObjectPassUniform(obj1, "uColor", V3(0.0f, 0.0f, 0.0f), pass1), ShaderUniformTypeError);
