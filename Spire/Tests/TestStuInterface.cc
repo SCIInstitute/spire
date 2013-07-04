@@ -531,6 +531,19 @@ TEST_F(StuPipeTestFixture, TestStuObjects)
   mStuInterface->removeIBO(ibo1);
   mStuInterface->removeVBO(vbo1);
 
+  //----------------------------------------------------------------------------
+  // Test StuInterface structures
+  //----------------------------------------------------------------------------
+  EXPECT_EQ(true, mStuInterface->ntsHasPass(pass1));
+  EXPECT_EQ(true, mStuInterface->ntsHasPass(SPIRE_DEFAULT_PASS));
+  EXPECT_EQ(false, mStuInterface->ntsHasPass("noexistant"));
+
+  EXPECT_EQ(true, mStuInterface->ntsIsObjectInPass(obj1, pass1));
+  EXPECT_EQ(true, mStuInterface->ntsIsObjectInPass(obj1, SPIRE_DEFAULT_PASS));
+  EXPECT_EQ(false, mStuInterface->ntsIsObjectInPass(obj1, "nonexistant"));
+  EXPECT_EQ(false, mStuInterface->ntsIsObjectInPass("nonexistant", pass1));
+  EXPECT_EQ(false, mStuInterface->ntsIsObjectInPass("nonexistant", SPIRE_DEFAULT_PASS));
+
   // Test object global uniform settings.
   mStuInterface->addObjectGlobalUniform(obj1, "uProjIVWorld", mCamera->getWorldToProjection());
 
@@ -538,6 +551,13 @@ TEST_F(StuPipeTestFixture, TestStuObjects)
   mStuInterface->addObjectPassUniform(obj1, "uColor", V4(1.0f, 0.0f, 0.0f, 1.0f)); // default pass
   mStuInterface->addObjectGlobalUniform(obj1, "uColor", V4(1.0f, 0.0f, 1.0f, 1.0f)); // pass1
 
+  //----------------------------------------------------------------------------
+  // Test StuObject structures
+  //----------------------------------------------------------------------------
+  std::shared_ptr<const StuObject> object = mStuInterface->ntsGetObjectWithName(obj1);
+
+  // Perform the frame. If there are any missing shaders we'll know about it
+  // here.
   mSpire->doFrame();
 
   // Write the resultant png to a temporary directory and compare against

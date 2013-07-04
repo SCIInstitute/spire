@@ -74,6 +74,14 @@ public:
 
   void addGPUState(const GPUState& state);
 
+  /// This function will *not* return true if the uniform was added via the
+  /// global object uniforms.
+  bool hasPassSpecificUniform(const std::string& uniformName);
+
+  /// Unlike the function above, this will return true whether or not object
+  /// global uniforms were used to populate the uniform.
+  bool hasUniform(const std::string& uniformName);
+
 protected:
 
   struct UniformItem

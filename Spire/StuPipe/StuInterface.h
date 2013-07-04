@@ -439,10 +439,10 @@ public:
   virtual void clearGLResources();
 
   /// Returns true if the specified object is in the pass.
-  bool ntsInObjectInPass(const std::string& pass, const std::string& object) const;
+  bool ntsIsObjectInPass(const std::string& object, const std::string& pass) const;
 
   /// Returns true if the pass already exists.
-  bool ntsHasPass(const std::string& pass);
+  bool ntsHasPass(const std::string& pass) const;
 
 private:
 

@@ -171,16 +171,23 @@ void StuInterface::addPassToFrontImpl(Hub& hub, StuInterface* iface, std::string
 }
 
 //------------------------------------------------------------------------------
-bool StuInterface::ntsHasPass(const std::string& pass)
+bool StuInterface::ntsHasPass(const std::string& pass) const
 {
-  for (auto it = mPasses.begin(); it != mPasses.end(); ++it)
+  return (mNameToPass.find(pass) != mNameToPass.end());
+}
+
+//------------------------------------------------------------------------------
+bool StuInterface::ntsIsObjectInPass(const std::string& object, const std::string& pass) const
+{
+  if (ntsHasPass(pass))
   {
-    if ((*it)->mName == pass)
-    {
-      return true;
-    }
+    std::shared_ptr<Pass> passPtr = mNameToPass.at(pass);
+    return (passPtr->mNameToObject.find(object) != passPtr->mNameToObject.end());
   }
-  return false;
+  else
+  {
+    return false;
+  }
 }
 
 //------------------------------------------------------------------------------
