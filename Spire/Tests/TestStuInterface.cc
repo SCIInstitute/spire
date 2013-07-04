@@ -521,6 +521,10 @@ TEST_F(StuPipeTestFixture, TestStuObjects)
   // Build the default pass.
   mStuInterface->addPassToObject(obj1, shader1, vbo1, ibo1, StuInterface::TRIANGLE_STRIP);
 
+  // Add a uniform *before* we add the next pass to ensure it gets properly
+  // propogated to the new pass.
+  mStuInterface->addObjectGlobalUniform(obj1, "uProjIVObject", mCamera->getWorldToProjection());
+
   // Construct another good pass.
   std::string pass1 = "pass1";
   mStuInterface->addPassToFront(pass1);
@@ -536,7 +540,7 @@ TEST_F(StuPipeTestFixture, TestStuObjects)
   //----------------------------------------------------------------------------
   EXPECT_EQ(true, mStuInterface->ntsHasPass(pass1));
   EXPECT_EQ(true, mStuInterface->ntsHasPass(SPIRE_DEFAULT_PASS));
-  EXPECT_EQ(false, mStuInterface->ntsHasPass("noexistant"));
+  EXPECT_EQ(false, mStuInterface->ntsHasPass("nonexistant"));
 
   EXPECT_EQ(true, mStuInterface->ntsIsObjectInPass(obj1, pass1));
   EXPECT_EQ(true, mStuInterface->ntsIsObjectInPass(obj1, SPIRE_DEFAULT_PASS));
@@ -544,18 +548,31 @@ TEST_F(StuPipeTestFixture, TestStuObjects)
   EXPECT_EQ(false, mStuInterface->ntsIsObjectInPass("nonexistant", pass1));
   EXPECT_EQ(false, mStuInterface->ntsIsObjectInPass("nonexistant", SPIRE_DEFAULT_PASS));
 
-  // Test object global uniform settings.
-  mStuInterface->addObjectGlobalUniform(obj1, "uProjIVWorld", mCamera->getWorldToProjection());
-
   // Add pass uniforms for each pass.
-  mStuInterface->addObjectPassUniform(obj1, "uColor", V4(1.0f, 0.0f, 0.0f, 1.0f)); // default pass
-  mStuInterface->addObjectGlobalUniform(obj1, "uColor", V4(1.0f, 0.0f, 1.0f, 1.0f)); // pass1
+  mStuInterface->addObjectPassUniform(obj1, "uColor", V4(1.0f, 0.0f, 0.0f, 1.0f));    // default pass
+  mStuInterface->addObjectGlobalUniform(obj1, "uColor", V4(1.0f, 0.0f, 1.0f, 1.0f));  // pass1
 
   //----------------------------------------------------------------------------
   // Test StuObject structures
   //----------------------------------------------------------------------------
-  std::shared_ptr<const StuObject> object = mStuInterface->ntsGetObjectWithName(obj1);
-  std::shared_ptr<const StuPass> object1Pass = object->getObjectPassParams(pass1);
+  std::shared_ptr<const StuObject> object1 = mStuInterface->ntsGetObjectWithName(obj1);
+  std::shared_ptr<const StuPass> object1Pass1 = object1->getObjectPassParams(pass1);
+  std::shared_ptr<const StuPass> object1PassDefault = object1->getObjectPassParams(SPIRE_DEFAULT_PASS);
+
+  EXPECT_EQ(2, object1->getNumPasses());
+  EXPECT_EQ(true,  object1->hasGlobalUniform("uColor"));
+  EXPECT_EQ(true,  object1->hasGlobalUniform("uProjIVObject"));
+  EXPECT_EQ(false, object1->hasGlobalUniform("nonexistant"));
+
+  EXPECT_EQ(false, object1Pass1->hasPassSpecificUniform("uColor"));
+  EXPECT_EQ(true,  object1Pass1->hasUniform("uColor"));
+  EXPECT_EQ(false, object1Pass1->hasPassSpecificUniform("uProjIVObject"));
+  EXPECT_EQ(true,  object1Pass1->hasUniform("uProjIVObject"));
+
+  EXPECT_EQ(true,  object1PassDefault->hasPassSpecificUniform("uColor"));
+  EXPECT_EQ(true,  object1PassDefault->hasUniform("uColor"));
+  EXPECT_EQ(false, object1PassDefault->hasPassSpecificUniform("uProjIVObject"));
+  EXPECT_EQ(true,  object1PassDefault->hasUniform("uProjIVObject"));
 
   // Perform the frame. If there are any missing shaders we'll know about it
   // here.

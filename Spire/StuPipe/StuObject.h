@@ -76,11 +76,13 @@ public:
 
   /// This function will *not* return true if the uniform was added via the
   /// global object uniforms.
-  bool hasPassSpecificUniform(const std::string& uniformName);
+  bool hasPassSpecificUniform(const std::string& uniformName) const;
 
   /// Unlike the function above, this will return true whether or not object
   /// global uniforms were used to populate the uniform.
-  bool hasUniform(const std::string& uniformName);
+  bool hasUniform(const std::string& uniformName) const;
+
+  /// Returns true if this object hsa 
 
 protected:
 
@@ -230,6 +232,13 @@ public:
 
   /// Returns the associated pass. Otherwise an empty shared_ptr is returned.
   std::shared_ptr<const StuPass> getObjectPassParams(const std::string& passName) const;
+
+  /// Returns the number of registered passes.
+  size_t getNumPasses() const {return mPasses.size();}
+
+  /// Returns true if there exists a object global uniform with the name
+  /// 'uniformName'.
+  bool hasGlobalUniform(const std::string& uniformName) const;
 
 protected:
 

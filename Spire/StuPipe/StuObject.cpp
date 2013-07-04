@@ -254,7 +254,6 @@ bool StuPass::addPassUniform(const std::string uniformName,
     if (it->uniformName == uniformName)
     {
       foundUniform = true;
-      // If 
       if (!(isObjectGlobalUniform == true && it->passSpecific == true))
       {
         // Replace the uniform's contents.
@@ -311,6 +310,34 @@ void StuPass::addGPUState(const GPUState& state)
 {
   // This will destroy any prior gpu state.
   mGPUState = std::unique_ptr<GPUState>(new GPUState(state));
+}
+
+//------------------------------------------------------------------------------
+bool StuPass::hasPassSpecificUniform(const std::string& uniformName) const
+{
+  for (auto it = mUniforms.begin(); it != mUniforms.end(); ++it)
+  {
+    if (it->uniformName == uniformName)
+    {
+      if (it->passSpecific)
+        return true;
+      else
+        return false;
+    }
+  }
+
+  return false;
+}
+
+//------------------------------------------------------------------------------
+bool StuPass::hasUniform(const std::string& uniformName) const
+{
+  for (auto it = mUniforms.begin(); it != mUniforms.end(); ++it)
+  {
+    if (it->uniformName == uniformName)
+      return true;
+  }
+  return false;
 }
 
 
@@ -483,6 +510,17 @@ void StuObject::renderAllPasses()
   {
     it->second->renderPass();
   }
+}
+
+//------------------------------------------------------------------------------
+bool StuObject::hasGlobalUniform(const std::string& uniformName) const
+{
+  for (auto it = mObjectGlobalUniforms.begin(); it != mObjectGlobalUniforms.end(); ++it)
+  {
+    if (it->uniformName == uniformName)
+      return true;
+  }
+  return false;
 }
 
 //------------------------------------------------------------------------------
