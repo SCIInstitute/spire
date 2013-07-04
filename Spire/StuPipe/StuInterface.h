@@ -353,6 +353,40 @@ public:
   /// \todo Create method to add uniforms to the UniformManager (NOT the state
   ///       manager -- uniform manager is the type checker).
 
+  //------------------
+  // Spire Attributes
+  //------------------
+  template <typename T>
+  void addObjectGlobalSpireAttribute(const std::string& object,
+                                     const std::string& attributeName,
+                                     T uniformData)
+  {
+    addObjectGlobalSpireAttributeConcrete(object, attributeName, 
+                                          std::shared_ptr<AbstractUniformStateItem>(
+                                              new UniformStateItem<T>(uniformData)));
+  }
+
+  // Concrete implementation of the above templated function.
+  void addObjectGlobalSpireAttributeConcrete(const std::string& object,
+                                             const std::string& attributeName,
+                                             std::shared_ptr<AbstractUniformStateItem> item);
+
+  template <typename T>
+  void addObjectPassSpireAttribute(const std::string& object,
+                                   const std::string& attributeName,
+                                   T uniformData,
+                                   const std::string& passName = SPIRE_DEFAULT_PASS)
+  {
+    addObjectPassSpireAttributeConcrete(object, attributeName, 
+                                        std::shared_ptr<AbstractUniformStateItem>(
+                                            new UniformStateItem<T>(uniformData)), passName);
+  }
+
+  // Concrete implementation of the above templated function.
+  void addObjectPassSpireAttributeConcrete(const std::string& object,
+                                           const std::string& attributeName,
+                                           std::shared_ptr<AbstractUniformStateItem> item,
+                                           const std::string& passName = SPIRE_DEFAULT_PASS);
   
   //-----------------
   // Shader Programs
@@ -541,6 +575,17 @@ private:
                                                  std::string objectName,
                                                  std::string uniformName,
                                                  std::shared_ptr<AbstractUniformStateItem> item);
+
+  static void addObjectGlobalSpireAttributeImpl(Hub& hub, StuInterface* iface,
+                                                std::string objectName,
+                                                std::string attributeName,
+                                                std::shared_ptr<AbstractUniformStateItem> item);
+
+  static void addObjectPassSpireAttributeImpl(Hub& hub, StuInterface* iface,
+                                              std::string objectName,
+                                              std::string attributeName,
+                                              std::shared_ptr<AbstractUniformStateItem> item,
+                                              std::string passName);
 
 
   static void addObjectPassGPUStateImpl(Hub& hub, StuInterface* iface,

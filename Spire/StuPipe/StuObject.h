@@ -82,7 +82,14 @@ public:
   /// global uniforms were used to populate the uniform.
   bool hasUniform(const std::string& uniformName) const;
 
-  /// Returns true if this object hsa 
+  /// Adds a pass spire attribute.
+  void addSpireAttribute(const std::string& attributeName,
+                         std::shared_ptr<AbstractUniformStateItem> item);
+
+  /// Retrieves a pass spire attribute.
+  /// Returns an empty shared_ptr if no such attribute is found.
+  std::shared_ptr<AbstractUniformStateItem> getSpireAttribute(
+      const std::string& attribName) const;
 
 protected:
 
@@ -156,7 +163,9 @@ protected:
   ///       better representation in C++.
   std::unique_ptr<GPUState>             mGPUState; ///< GPU state to set (if any, default is none).
 
-  Hub&                                  mHub;
+  std::unordered_map<std::string, std::shared_ptr<AbstractUniformStateItem>> mSpireAttributes;
+
+  Hub&                                  mHub;     
 };
 
 //------------------------------------------------------------------------------
@@ -206,12 +215,21 @@ public:
   /// Adds an object attribute to the system. Object attributes do not change
   /// per-pass. Add another function 'addSpireObjectPassAttribute' if that is
   /// really needed.
-  void addObjectSpireAttribute(const std::string& attributeName,
-                               std::shared_ptr<AbstractUniformStateItem> item);
+  void addObjectGlobalSpireAttribute(const std::string& attributeName,
+                                     std::shared_ptr<AbstractUniformStateItem> item);
 
   /// Retrieves a spire attribute. Can be used in the Lambda callbacks for
   /// rendering.
-  std::shared_ptr<AbstractUniformStateItem> getObjectSpireAttribute(
+  /// Returns an empty shared_ptr if no such attribute is found.
+  std::shared_ptr<AbstractUniformStateItem> getObjectGlobalSpireAttribute(
+      const std::string& attribName) const;
+
+  void addObjectPassSpireAttribute(const std::string& passName,
+                                   const std::string& attributeName,
+                                   std::shared_ptr<AbstractUniformStateItem> item);
+
+  std::shared_ptr<AbstractUniformStateItem> getObjectPassSpireAttribute(
+      const std::string& passName,
       const std::string& attribName) const;
 
   /// Adds an object -> world transformation to this object.

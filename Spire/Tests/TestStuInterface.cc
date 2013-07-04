@@ -226,14 +226,6 @@ TEST_F(StuPipeTestFixture, TestPublicInterface)
 }
 
 //------------------------------------------------------------------------------
-TEST_F(StuPipeTestFixture, TestShaders)
-{
-  // Test that shader uniforms are correctly handled. Will need a couple of test
-  // shaders that expose bad uniforms. This is so testing can be done to verify
-  // that type checking and name checking is being done correctly.
-}
-
-//------------------------------------------------------------------------------
 TEST_F(StuPipeTestFixture, TestTriangle)
 {
   // Test the rendering of a triangle with StuPipe.
@@ -454,7 +446,7 @@ TEST_F(StuPipeTestFixture, TestTriangle)
 }
 
 //------------------------------------------------------------------------------
-TEST_F(StuPipeTestFixture, TestStuObjects)
+TEST_F(StuPipeTestFixture, TestStuObjectsStructure)
 {
   // Test various functions in StuObject and StuPass.
   std::vector<float> vboData = 

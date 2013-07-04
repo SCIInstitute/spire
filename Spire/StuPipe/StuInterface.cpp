@@ -739,7 +739,46 @@ void StuInterface::addGlobalUniformConcrete(const std::string& uniformName,
   mHub.addFunctionToThreadQueue(fun);
 }
 
+//------------------------------------------------------------------------------
+void StuInterface::addObjectGlobalSpireAttributeConcrete(const std::string& object,
+                                                         const std::string& attributeName,
+                                                         std::shared_ptr<AbstractUniformStateItem> item)
+{
+  Hub::RemoteFunction fun =
+      std::bind(addObjectGlobalSpireAttributeImpl, _1, this, object, attributeName, item);
+  mHub.addFunctionToThreadQueue(fun);
+}
 
+//------------------------------------------------------------------------------
+void StuInterface::addObjectGlobalSpireAttributeImpl(Hub& hub, StuInterface* iface,
+                                                     std::string objectName,
+                                                     std::string attributeName,
+                                                     std::shared_ptr<AbstractUniformStateItem> item)
+{
+  std::shared_ptr<StuObject> obj = iface->mNameToObject.at(objectName);
+  obj->addObjectGlobalSpireAttribute(attributeName, item);
+}
+
+//------------------------------------------------------------------------------
+void StuInterface::addObjectPassSpireAttributeConcrete(const std::string& object,
+                                                       const std::string& attributeName,
+                                                       std::shared_ptr<AbstractUniformStateItem> item,
+                                                       const std::string& passName)
+{
+  Hub::RemoteFunction fun =
+      std::bind(addObjectPassSpireAttributeImpl, _1, this, object, attributeName, item, passName);
+  mHub.addFunctionToThreadQueue(fun);
+}
+
+//------------------------------------------------------------------------------
+void StuInterface::addObjectPassSpireAttributeImpl(Hub& hub, StuInterface* iface,
+                                                   std::string objectName,
+                                                   std::string attributeName,
+                                                   std::shared_ptr<AbstractUniformStateItem> item,
+                                                   std::string passName)
+{
+
+}
 
 //------------------------------------------------------------------------------
 void StuInterface::addPersistentShaderImpl(

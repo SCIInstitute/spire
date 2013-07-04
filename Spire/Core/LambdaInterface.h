@@ -64,7 +64,7 @@ public:
       return uniform->getData<T>();
   }
 
-private:
+protected:
 
   Hub&          mHub;
   std::string   mPass;

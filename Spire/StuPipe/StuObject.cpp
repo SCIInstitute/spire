@@ -340,6 +340,27 @@ bool StuPass::hasUniform(const std::string& uniformName) const
   return false;
 }
 
+//------------------------------------------------------------------------------
+void StuPass::addSpireAttribute(const std::string& attributeName,
+                                std::shared_ptr<AbstractUniformStateItem> item)
+{
+  mSpireAttributes[attributeName] = item;
+}
+
+//------------------------------------------------------------------------------
+std::shared_ptr<AbstractUniformStateItem> StuPass::getSpireAttribute(
+    const std::string& attribName) const
+{
+  auto it = mSpireAttributes.find(attribName);
+  if (it != mSpireAttributes.end())
+  {
+    return it->second;
+  }
+  else
+  {
+    return std::shared_ptr<AbstractUniformStateItem>(); 
+  }
+}
 
 /// \note If we ever implement a remove pass uniform function, be *sure* to
 ///       update the unsatisfied uniforms vector!
@@ -422,16 +443,44 @@ void StuObject::removePassFromOrderList(const std::string& passName,
 }
 
 //------------------------------------------------------------------------------
-void StuObject::addObjectSpireAttribute(const std::string& attributeName,
-                                        std::shared_ptr<AbstractUniformStateItem> item)
+void StuObject::addObjectGlobalSpireAttribute(const std::string& attributeName,
+                                              std::shared_ptr<AbstractUniformStateItem> item)
 {
   mSpireAttributes[attributeName] = item;
 }
 
 //------------------------------------------------------------------------------
-std::shared_ptr<AbstractUniformStateItem> StuObject::getObjectSpireAttribute(const std::string& attribName) const
+std::shared_ptr<AbstractUniformStateItem> StuObject::getObjectGlobalSpireAttribute(
+    const std::string& attribName) const
 {
-  return mSpireAttributes.at(attribName);
+  auto it = mSpireAttributes.find(attribName);
+  if (it != mSpireAttributes.end())
+  {
+    return it->second;
+  }
+  else
+  {
+    // This is the highest we can go looking for attributes. The buck stops here.
+    throw std::runtime_error("Unable to find object global attribute.");
+  }
+}
+
+//------------------------------------------------------------------------------
+void StuObject::addObjectPassSpireAttribute(const std::string& passName,
+                                            const std::string& attributeName,
+                                            std::shared_ptr<AbstractUniformStateItem> item)
+{
+  std::shared_ptr<StuPass> pass = getPassByName(passName);
+  pass->addSpireAttribute(attributeName, item);
+}
+
+//------------------------------------------------------------------------------
+std::shared_ptr<AbstractUniformStateItem> StuObject::getObjectPassSpireAttribute(
+    const std::string& passName,
+    const std::string& attribName) const
+{
+  std::shared_ptr<StuPass> pass = getPassByName(passName);
+  return pass->getSpireAttribute(attribName);
 }
 
 //------------------------------------------------------------------------------
