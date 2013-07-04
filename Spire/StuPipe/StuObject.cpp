@@ -348,7 +348,7 @@ void StuPass::addSpireAttribute(const std::string& attributeName,
 }
 
 //------------------------------------------------------------------------------
-std::shared_ptr<AbstractUniformStateItem> StuPass::getSpireAttribute(
+std::shared_ptr<const AbstractUniformStateItem> StuPass::getSpireAttribute(
     const std::string& attribName) const
 {
   auto it = mSpireAttributes.find(attribName);
@@ -450,7 +450,7 @@ void StuObject::addObjectGlobalSpireAttribute(const std::string& attributeName,
 }
 
 //------------------------------------------------------------------------------
-std::shared_ptr<AbstractUniformStateItem> StuObject::getObjectGlobalSpireAttribute(
+std::shared_ptr<const AbstractUniformStateItem> StuObject::getObjectGlobalSpireAttribute(
     const std::string& attribName) const
 {
   auto it = mSpireAttributes.find(attribName);
@@ -475,7 +475,7 @@ void StuObject::addObjectPassSpireAttribute(const std::string& passName,
 }
 
 //------------------------------------------------------------------------------
-std::shared_ptr<AbstractUniformStateItem> StuObject::getObjectPassSpireAttribute(
+std::shared_ptr<const AbstractUniformStateItem> StuObject::getObjectPassSpireAttribute(
     const std::string& passName,
     const std::string& attribName) const
 {

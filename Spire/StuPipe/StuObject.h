@@ -88,7 +88,7 @@ public:
 
   /// Retrieves a pass spire attribute.
   /// Returns an empty shared_ptr if no such attribute is found.
-  std::shared_ptr<AbstractUniformStateItem> getSpireAttribute(
+  std::shared_ptr<const AbstractUniformStateItem> getSpireAttribute(
       const std::string& attribName) const;
 
 protected:
@@ -221,14 +221,14 @@ public:
   /// Retrieves a spire attribute. Can be used in the Lambda callbacks for
   /// rendering.
   /// Returns an empty shared_ptr if no such attribute is found.
-  std::shared_ptr<AbstractUniformStateItem> getObjectGlobalSpireAttribute(
+  std::shared_ptr<const AbstractUniformStateItem> getObjectGlobalSpireAttribute(
       const std::string& attribName) const;
 
   void addObjectPassSpireAttribute(const std::string& passName,
                                    const std::string& attributeName,
                                    std::shared_ptr<AbstractUniformStateItem> item);
 
-  std::shared_ptr<AbstractUniformStateItem> getObjectPassSpireAttribute(
+  std::shared_ptr<const AbstractUniformStateItem> getObjectPassSpireAttribute(
       const std::string& passName,
       const std::string& attribName) const;
 

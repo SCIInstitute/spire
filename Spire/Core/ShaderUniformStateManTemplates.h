@@ -174,7 +174,7 @@ public:
 
   /// Retrieve M44
   template <class T>
-  typename std::enable_if<std::is_same<T, M44>::value, T>::type getData()
+  typename std::enable_if<std::is_same<T, M44>::value, T>::type getData() const
   {
     if (getGLType() != UNIFORM_FLOAT_MAT4)
       throw std::runtime_error("Mismatched types! Expected uniform to be of type M44.");
@@ -183,7 +183,7 @@ public:
 
   /// Retrieve M33
   template <class T>
-  typename std::enable_if<std::is_same<T, M33>::value, T>::type getData()
+  typename std::enable_if<std::is_same<T, M33>::value, T>::type getData() const
   {
     if (getGLType() != UNIFORM_FLOAT_MAT3)
       throw std::runtime_error("Mismatched types! Expected uniform to be of type M33.");
@@ -192,7 +192,7 @@ public:
 
   /// Retrieve V4
   template <class T>
-  typename std::enable_if<std::is_same<T, V4>::value, T>::type getData()
+  typename std::enable_if<std::is_same<T, V4>::value, T>::type getData() const
   {
     if (getGLType() != UNIFORM_FLOAT_VEC4)
       throw std::runtime_error("Mismatched types! Expected uniform to be of type V4.");
@@ -201,7 +201,7 @@ public:
 
   /// Retrieve V3
   template <class T>
-  typename std::enable_if<std::is_same<T, V3>::value, T>::type getData()
+  typename std::enable_if<std::is_same<T, V3>::value, T>::type getData() const
   {
     if (getGLType() != UNIFORM_FLOAT_VEC3)
       throw std::runtime_error("Mismatched types! Expected uniform to be of type V3.");
@@ -210,7 +210,7 @@ public:
 
   /// Retrieve V3
   template <class T>
-  typename std::enable_if<std::is_same<T, V2>::value, T>::type getData()
+  typename std::enable_if<std::is_same<T, V2>::value, T>::type getData() const
   {
     if (getGLType() != UNIFORM_FLOAT_VEC2)
       throw std::runtime_error("Mismatched types! Expected uniform to be of type V2.");
@@ -219,7 +219,7 @@ public:
 
   /// Retrieve float
   template <class T>
-  typename std::enable_if<std::is_same<T, float>::value, T>::type getData()
+  typename std::enable_if<std::is_same<T, float>::value, T>::type getData() const
   {
     if (getGLType() != UNIFORM_FLOAT)
       throw std::runtime_error("Mismatched types! Expected uniform to be of type float.");

@@ -777,7 +777,8 @@ void StuInterface::addObjectPassSpireAttributeImpl(Hub& hub, StuInterface* iface
                                                    std::shared_ptr<AbstractUniformStateItem> item,
                                                    std::string passName)
 {
-
+  std::shared_ptr<StuObject> obj = iface->mNameToObject.at(objectName);
+  obj->addObjectPassSpireAttribute(passName, attributeName, item);
 }
 
 //------------------------------------------------------------------------------

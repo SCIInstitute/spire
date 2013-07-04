@@ -566,6 +566,40 @@ TEST_F(StuPipeTestFixture, TestStuObjectsStructure)
   EXPECT_EQ(false, object1PassDefault->hasPassSpecificUniform("uProjIVObject"));
   EXPECT_EQ(true,  object1PassDefault->hasUniform("uProjIVObject"));
 
+  // Test attributes
+  M44 testUniform;
+  testUniform[3] = V4(1.0f, 1.0f, 1.0f, 1.0f);
+  mStuInterface->addObjectGlobalSpireAttribute<M44>(obj1, "objectTransform", testUniform);
+  mStuInterface->addObjectPassSpireAttribute<M44>(obj1, "passTransform", testUniform, pass1);
+
+  auto testMatrixEquality = [](const M44& a, const M44& b) {
+    for (int c = 0; c < 4; c++)
+    {
+      for (int r = 0; r < 4; r++)
+      {
+        EXPECT_FLOAT_EQ(a[c][r], b[c][r]);
+      }
+    }
+  };
+
+  M44 retUnif;
+  std::shared_ptr<const AbstractUniformStateItem> uniformItem;
+
+  retUnif = object1->getObjectGlobalSpireAttribute("objectTransform")->getData<M44>();
+  testMatrixEquality(retUnif, testUniform);
+
+  EXPECT_THROW(object1->getObjectGlobalSpireAttribute("nonexistant"), std::runtime_error);
+
+  uniformItem = object1->getObjectPassSpireAttribute(pass1, "passTransform");
+  retUnif = uniformItem->getData<M44>();
+  testMatrixEquality(retUnif, testUniform);
+
+  uniformItem = object1->getObjectPassSpireAttribute(pass1, "nonexistant");
+  EXPECT_EQ(nullptr, uniformItem);
+
+  uniformItem = object1->getObjectPassSpireAttribute(SPIRE_DEFAULT_PASS, "objectTransform");
+  EXPECT_EQ(nullptr, uniformItem);
+
   // Perform the frame. If there are any missing shaders we'll know about it
   // here.
   mSpire->doFrame();
