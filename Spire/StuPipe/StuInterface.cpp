@@ -377,11 +377,11 @@ void StuInterface::addPassToObjectImpl(Hub& hub, StuInterface* iface,
 
 //------------------------------------------------------------------------------
 void StuInterface::addPassToObject(const std::string& object,
-                                   const std::string& pass,
                                    const std::string& program,
                                    const std::string& vboName,
                                    const std::string& iboName,
-                                   PRIMITIVE_TYPES type)
+                                   PRIMITIVE_TYPES type,
+                                   const std::string& pass)
 {
   Hub::RemoteFunction fun =
       std::bind(addPassToObjectImpl, _1, this, object, pass, program, 
@@ -392,12 +392,13 @@ void StuInterface::addPassToObject(const std::string& object,
 
 //------------------------------------------------------------------------------
 void StuInterface::addPassToObject(const std::string& object,
-                                   const std::string& pass,
+                                   
                                    const std::string& program,
                                    const std::string& vboName,
                                    const std::string& iboName,
                                    PRIMITIVE_TYPES type,
-                                   int32_t passOrder)
+                                   int32_t passOrder,
+                                   const std::string& pass)
 {
   Hub::RemoteFunction fun =
       std::bind(addPassToObjectImpl, _1, this, object, pass, program, 
@@ -421,8 +422,8 @@ void StuInterface::removeGeomPassFromObjectImpl(Hub& hub, StuInterface* iface,
 
 
 //------------------------------------------------------------------------------
-void StuInterface::removeGeomPassFromObject(const std::string& object,
-                                            const std::string& pass)
+void StuInterface::removePassFromObject(const std::string& object,
+                                        const std::string& pass)
 {
   Hub::RemoteFunction fun =
       std::bind(removeGeomPassFromObjectImpl, _1, this, object, pass);
@@ -564,9 +565,9 @@ void StuInterface::addObjectPassUniformInternalImpl(Hub& hub, StuInterface* ifac
 
 //------------------------------------------------------------------------------
 void StuInterface::addObjectPassUniformConcrete(const std::string& object,
-                                                const std::string& pass,
                                                 const std::string& uniformName,
-                                                std::shared_ptr<AbstractUniformStateItem> item)
+                                                std::shared_ptr<AbstractUniformStateItem> item,
+                                                const std::string& pass)
 {
   Hub::RemoteFunction fun =
       std::bind(addObjectPassUniformInternalImpl, _1, this, object, pass, uniformName, item);
@@ -624,8 +625,8 @@ void StuInterface::addObjectPassGPUStateImpl(Hub& hub, StuInterface* iface,
 
 //------------------------------------------------------------------------------
 void StuInterface::addObjectPassGPUState(const std::string& object,
-                                         const std::string& pass,
-                                         const GPUState& state)
+                                         const GPUState& state,
+                                         const std::string& pass)
 {
   Hub::RemoteFunction fun =
       std::bind(addObjectPassGPUStateImpl, _1, this, object, pass, state);

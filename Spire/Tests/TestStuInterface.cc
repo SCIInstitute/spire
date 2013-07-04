@@ -337,34 +337,34 @@ TEST_F(StuPipeTestFixture, TestTriangle)
 
   // There exists no 'test obj'.
   EXPECT_THROW(mStuInterface->addPassToObject(
-          "test obj", "dummy pass", "UniformColor", "vbo", "ibo",
+          "test obj", "UniformColor", "vbo", "ibo",
           StuInterface::TRIANGLES),
       std::out_of_range);
 
   // Not a valid shader.
   EXPECT_THROW(mStuInterface->addPassToObject(
-          obj1, "dummy pass", "Bad Shader", "vbo", "ibo",
+          obj1, "Bad Shader", "vbo", "ibo",
           StuInterface::TRIANGLES),
       std::out_of_range);
 
   // Non-existant vbo.
   EXPECT_THROW(mStuInterface->addPassToObject(
-          obj1, "dummy pass", "UniformColor", "Bad vbo", "ibo",
+          obj1, "UniformColor", "Bad vbo", "ibo",
           StuInterface::TRIANGLES),
       std::out_of_range);
 
   // Non-existant ibo.
   EXPECT_THROW(mStuInterface->addPassToObject(
-          obj1, "dummy pass", "UniformColor", vbo1, "bad ibo",
+          obj1, "UniformColor", vbo1, "bad ibo",
           StuInterface::TRIANGLES),
       std::out_of_range);
 
   // Build a good pass.
   std::string pass1 = "pass1";
-  mStuInterface->addPassToObject(obj1, pass1, shader1, vbo1, ibo1, StuInterface::TRIANGLE_STRIP);
+  mStuInterface->addPassToObject(obj1, shader1, vbo1, ibo1, StuInterface::TRIANGLE_STRIP, pass1);
 
   // Attempt to re-add the good pass.
-  EXPECT_THROW(mStuInterface->addPassToObject(obj1, pass1, shader1, vbo1, ibo1, StuInterface::TRIANGLE_STRIP),
+  EXPECT_THROW(mStuInterface->addPassToObject(obj1, shader1, vbo1, ibo1, StuInterface::TRIANGLE_STRIP, pass1),
                Duplicate);
 
   // No longer need VBO and IBO (will stay resident in the passes -- when the
@@ -381,9 +381,9 @@ TEST_F(StuPipeTestFixture, TestTriangle)
   EXPECT_THROW(mStuInterface->addGlobalUniform("uProjIVWorld", V3(0.0f, 0.0f, 0.0f)), ShaderUniformTypeError);
 
   // Add color to the pass (which will lookup the type via the shader).
-  EXPECT_THROW(mStuInterface->addObjectPassUniform(obj1, pass1, "uColor", V3(0.0f, 0.0f, 0.0f)), ShaderUniformTypeError);
-  EXPECT_THROW(mStuInterface->addObjectPassUniform(obj1, pass1, "uColor", M44()), ShaderUniformTypeError);
-  mStuInterface->addObjectPassUniform(obj1, pass1, "uColor", V4(1.0f, 0.0f, 0.0f, 1.0f));
+  EXPECT_THROW(mStuInterface->addObjectPassUniform(obj1, "uColor", V3(0.0f, 0.0f, 0.0f), pass1), ShaderUniformTypeError);
+  EXPECT_THROW(mStuInterface->addObjectPassUniform(obj1, "uColor", M44(), pass1), ShaderUniformTypeError);
+  mStuInterface->addObjectPassUniform(obj1, "uColor", V4(1.0f, 0.0f, 0.0f, 1.0f), pass1);
 
   mSpire->doFrame();
 

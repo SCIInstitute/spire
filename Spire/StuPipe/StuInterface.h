@@ -56,6 +56,10 @@ class ShaderProgramAsset;
 class VBOObject;
 class IBOObject;
 
+/// \todo The following *really* wants to be a constexpr inside of StuInterface,
+/// when we upgrade to VS 2012, we should also upgrade this.
+#define SPIRE_DEFAULT_PASS "spire_default"
+
 /// \todo For other pipes. If we have access to OpenGL4.2 features, use image
 ///       load store to implement Order Independent Transparency using
 ///       per-pixel linked lists. Requires atomic operations in the GPU.
@@ -230,26 +234,26 @@ public:
   /// \param  iboID         IBO to use.
   /// \return Pass ID. Use this ID to assign uniforms to the pass.
   void addPassToObject(const std::string& object,
-                       const std::string& pass,
-                       const std::string& program,
-                       const std::string& vboName,
-                       const std::string& iboName,
-                       PRIMITIVE_TYPES type);
-  void addPassToObject(const std::string& object,
-                       const std::string& pass,
                        const std::string& program,
                        const std::string& vboName,
                        const std::string& iboName,
                        PRIMITIVE_TYPES type,
-                       int32_t passOrder);
+                       const std::string& pass = SPIRE_DEFAULT_PASS);
+  void addPassToObject(const std::string& object,
+                       const std::string& program,
+                       const std::string& vboName,
+                       const std::string& iboName,
+                       PRIMITIVE_TYPES type,
+                       int32_t passOrder,
+                       const std::string& pass = SPIRE_DEFAULT_PASS);
 
-  /// Removes a geometry pass from the object.
+  /// Removes a pass from the object.
   /// Throws an std::out_of_range exception if the object or pass is not found 
   /// in the system. 
   /// \param  object        Unique object name.
   /// \param  pass          Pass name.
-  void removeGeomPassFromObject(const std::string& object,
-                                const std::string& pass);
+  void removePassFromObject(const std::string& object,
+                            const std::string& pass);
 
 
   /// Associates an object -> world transform with the given object / pass
@@ -274,20 +278,20 @@ public:
   /// in the shader.
   template <typename T>
   void addObjectPassUniform(const std::string& object,
-                            const std::string& pass,
                             const std::string& uniformName,
-                            T uniformData)
+                            T uniformData,
+                            const std::string& pass = SPIRE_DEFAULT_PASS)
   {
-    addObjectPassUniformConcrete(object, pass, uniformName, 
+    addObjectPassUniformConcrete(object, uniformName, 
                                  std::shared_ptr<AbstractUniformStateItem>(
-                                     new UniformStateItem<T>(uniformData)));
+                                     new UniformStateItem<T>(uniformData)), pass);
   }
 
   /// Concrete implementation of the above templated function.
   void addObjectPassUniformConcrete(const std::string& object,
-                                    const std::string& pass,
                                     const std::string& uniformName,
-                                    std::shared_ptr<AbstractUniformStateItem> item);
+                                    std::shared_ptr<AbstractUniformStateItem> item,
+                                    const std::string& pass = SPIRE_DEFAULT_PASS);
 
   /// Adds a uniform that will be consumed regardless of the pass. Pass uniforms
   /// take precedence over pass global uniforms.
@@ -296,7 +300,7 @@ public:
                               const std::string& uniformName,
                               T uniformData)
   {
-    addObjectGlobalUniformConcrete(object, uniformName, 
+    addObjectGlobalUniformConcrete(object, uniformName,
                                    std::shared_ptr<AbstractUniformStateItem>(
                                        new UniformStateItem<T>(uniformData)));
   }
@@ -310,8 +314,8 @@ public:
   /// Note: The default GPU state is consists of the default GPUState 
   ///       constructor.
   void addObjectPassGPUState(const std::string& object,
-                             const std::string& pass,
-                             const GPUState& state);
+                             const GPUState& state,
+                             const std::string& pass = SPIRE_DEFAULT_PASS);
 
   /// \todo addPassUniform
 
