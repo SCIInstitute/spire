@@ -438,6 +438,12 @@ public:
   /// and persistent shader objects.
   virtual void clearGLResources();
 
+  /// Returns true if the specified object is in the pass.
+  bool ntsInObjectInPass(const std::string& pass, const std::string& object) const;
+
+  /// Returns true if the pass already exists.
+  bool ntsHasPass(const std::string& pass);
+
 private:
 
   struct Pass
@@ -489,6 +495,9 @@ private:
   /// will still be valid when execution reaches the renderer thread.
   /// (no stack variables allowed).
   /// @{
+  static void addPassToBackImpl(Hub& hub, StuInterface* iface, std::string pass);
+  static void addPassToFrontImpl(Hub& hub, StuInterface* iface, std::string pass);
+
   static void addObjectImpl(Hub& hub, StuInterface* iface, std::string object,
                             int32_t renderOrder);
 
@@ -496,18 +505,18 @@ private:
                                     std::string object, int32_t renderOrder);
 
   static void addIBOImpl(Hub& hub, StuInterface* iface,
-                                 std::string iboName,
-                                 std::shared_ptr<std::vector<uint8_t>> iboData,
-                                 StuInterface::IBO_TYPE type);
+                         std::string iboName,
+                         std::shared_ptr<std::vector<uint8_t>> iboData,
+                         StuInterface::IBO_TYPE type);
   static void removeIBOImpl(Hub& hub, StuInterface* iface,
-                                      std::string iboName);
+                            std::string iboName);
 
   static void addVBOImpl(Hub& hub, StuInterface* iface,
-                                 std::string vboName,
-                                 std::shared_ptr<std::vector<uint8_t>> vboData,
-                                 std::vector<std::string> attribNames);
+                         std::string vboName,
+                         std::shared_ptr<std::vector<uint8_t>> vboData,
+                         std::vector<std::string> attribNames);
   static void removeVBOImpl(Hub& hub, StuInterface* iface,
-                                      std::string vboName);
+                            std::string vboName);
 
   static void addPassToObjectImpl(Hub& hub, StuInterface* iface,
                                   std::string objectName,

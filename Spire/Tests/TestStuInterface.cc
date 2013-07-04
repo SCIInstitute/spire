@@ -361,6 +361,17 @@ TEST_F(StuPipeTestFixture, TestTriangle)
 
   // Build a good pass.
   std::string pass1 = "pass1";
+
+  // Attempt to add a pass to the object without the pass being present in the
+  // system.
+  EXPECT_THROW(mStuInterface->addPassToObject(obj1, shader1, vbo1, ibo1, StuInterface::TRIANGLE_STRIP, pass1),
+               std::runtime_error);
+
+  // Add the pass to the system.
+  mStuInterface->addPassToBack(pass1);
+
+  // Now add the object pass. This automatically adds the object to the pass for
+  // us. But the ordering within the pass is still arbitrary.
   mStuInterface->addPassToObject(obj1, shader1, vbo1, ibo1, StuInterface::TRIANGLE_STRIP, pass1);
 
   // Attempt to re-add the good pass.
@@ -512,6 +523,7 @@ TEST_F(StuPipeTestFixture, TestStuObjects)
 
   // Construct another good pass.
   std::string pass1 = "pass1";
+  mStuInterface->addPassToFront(pass1);
   mStuInterface->addPassToObject(obj1, shader1, vbo1, ibo1, StuInterface::TRIANGLE_STRIP, pass1);
 
   // No longer need VBO and IBO (will stay resident in the passes -- when the

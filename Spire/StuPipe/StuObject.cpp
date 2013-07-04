@@ -226,12 +226,24 @@ bool StuPass::addPassUniform(const std::string uniformName,
                              std::shared_ptr<AbstractUniformStateItem> item,
                              bool isObjectGlobalUniform)
 {
-  // This will throw std::out_of_range.
-  const ShaderUniformCollection::UniformSpecificData& uniformData = 
-      mShader->getUniforms().getUniformData(uniformName);
+  GLenum uniformGlType;
+  GLint uniformLoc;
+
+  try
+  {
+    // Attempt to find uniform in bound shader.
+    const ShaderUniformCollection::UniformSpecificData& uniformData = 
+        mShader->getUniforms().getUniformData(uniformName);
+    uniformGlType = uniformData.glType;
+    uniformLoc = uniformData.glUniformLoc;
+  }
+  catch (std::out_of_range& e)
+  {
+    return false;  
+  }
 
   // Check uniform type (see UniformStateMan).
-  if (uniformData.glType != ShaderUniformMan::uniformTypeToGL(item->getGLType()))
+  if (uniformGlType != ShaderUniformMan::uniformTypeToGL(item->getGLType()))
     throw ShaderUniformTypeError("Uniform must be the same type as that found in the shader.");
 
   // Find the uniform in our vector. If it is not already present, then that
@@ -287,8 +299,7 @@ bool StuPass::addPassUniform(const std::string uniformName,
       return false;
     }
 
-    mUniforms.emplace_back(UniformItem(uniformName, item,
-                                       uniformData.glUniformLoc,
+    mUniforms.emplace_back(UniformItem(uniformName, item, uniformLoc,
                                        !isObjectGlobalUniform));
   }
 

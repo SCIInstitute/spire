@@ -134,17 +134,53 @@ void StuInterface::ntsDoPass(const std::string& passName)
 //------------------------------------------------------------------------------
 void StuInterface::addPassToFront(const std::string& passName)
 {
-  std::shared_ptr<Pass> pass(new Pass(passName));
-  mPasses.push_back(pass);
-  mNameToPass[passName] = pass;
+  Hub::RemoteFunction fun =
+      std::bind(addPassToBackImpl, _1, this, passName);
+  mHub.addFunctionToThreadQueue(fun);
 }
 
 //------------------------------------------------------------------------------
 void StuInterface::addPassToBack(const std::string& passName)
 {
+  Hub::RemoteFunction fun =
+      std::bind(addPassToBackImpl, _1, this, passName);
+  mHub.addFunctionToThreadQueue(fun);
+}
+
+//------------------------------------------------------------------------------
+void StuInterface::addPassToBackImpl(Hub& hub, StuInterface* iface, std::string passName)
+{
+  if (iface->ntsHasPass(passName) == true)
+    throw std::runtime_error("Pass (" + passName + ") already exists!");
+
   std::shared_ptr<Pass> pass(new Pass(passName));
-  mPasses.push_front(pass);
-  mNameToPass[passName] = pass;
+  iface->mPasses.push_front(pass);
+  iface->mNameToPass[passName] = pass;
+}
+
+//------------------------------------------------------------------------------
+void StuInterface::addPassToFrontImpl(Hub& hub, StuInterface* iface, std::string passName)
+{
+  // Verify that there is no pass by that name already.
+  if (iface->ntsHasPass(passName) == true)
+    throw std::runtime_error("Pass (" + passName + ") already exists!");
+
+  std::shared_ptr<Pass> pass(new Pass(passName));
+  iface->mPasses.push_back(pass);
+  iface->mNameToPass[passName] = pass;
+}
+
+//------------------------------------------------------------------------------
+bool StuInterface::ntsHasPass(const std::string& pass)
+{
+  for (auto it = mPasses.begin(); it != mPasses.end(); ++it)
+  {
+    if ((*it)->mName == pass)
+    {
+      return true;
+    }
+  }
+  return false;
 }
 
 //------------------------------------------------------------------------------
