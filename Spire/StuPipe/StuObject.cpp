@@ -406,7 +406,7 @@ void StuObject::addPassUniform(const std::string& passName,
   // to grow the vector beyond the number of uniforms already present in the
   // shader.
   std::shared_ptr<StuPass> pass = getPassByName(passName);
-  if (pass->addPassUniform(uniformName, item, false))
+  if (pass->addPassUniform(uniformName, item, false) == false)
   {
     std::stringstream stream;
     stream << "This uniform (" << uniformName << ") is not recognized by the shader.";
@@ -466,6 +466,13 @@ void StuObject::renderAllPasses()
   {
     it->second->renderPass();
   }
+}
+
+//------------------------------------------------------------------------------
+void StuObject::renderPass(const std::string& passName)
+{
+  std::shared_ptr<StuPass> pass = mPasses[passName];
+  pass->renderPass();
 }
 
 //------------------------------------------------------------------------------
