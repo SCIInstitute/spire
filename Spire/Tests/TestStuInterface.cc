@@ -606,9 +606,115 @@ TEST_F(StuPipeTestFixture, TestStuObjectsStructure)
 }
 
 //------------------------------------------------------------------------------
-TEST_F(StuPipeTestFixture, TestCube)
+TEST_F(StuPipeTestFixture, TestRenderingWithAttributes)
 {
-  // Test the rendering of a cube with the StuPipe
+  // First things first: just get the rendered image onto the filesystem...
+  std::shared_ptr<std::vector<uint8_t>> rawVBO;
+  std::shared_ptr<std::vector<uint8_t>> rawIBO;
+  std::fstream sphereFile("Assets/Sphere.sp");
+  StuInterface::loadProprietarySR5AssetFile(sphereFile, *rawVBO, *rawIBO);
+
+  std::vector<std::string> attribNames = {"aPos"};
+  StuInterface::IBO_TYPE iboType = StuInterface::IBO_16BIT;
+
+  // Add necessary VBO's and IBO's
+  std::string vboName = "vbo1";
+  std::string iboName = "ibo1";
+  mStuInterface->addVBO(vboName, rawVBO, attribNames);
+  mStuInterface->addIBO(iboName, rawIBO, iboType);
+
+  std::string objectName = "obj1";
+  mStuInterface->addObject(objectName);
+  
+  std::string shaderName = "UniformColor";
+  // Add and compile persistent shaders (if not already present).
+  // You will only run into the 'Duplicate' exception if the persistent shader
+  // is already in the persistent shader list.
+  mStuInterface->addPersistentShader(
+      shaderName, 
+      { {"UniformColor.vsh", StuInterface::VERTEX_SHADER}, 
+        {"UniformColor.fsh", StuInterface::FRAGMENT_SHADER},
+      });
+
+  // Build a good pass.
+  std::string passName = "pass1";
+  mStuInterface->addPassToBack(passName);
+
+  // Now add the object pass. This automatically adds the object to the pass for
+  // us. But the ordering within the pass is still arbitrary.
+  mStuInterface->addPassToObject(objectName, shaderName, vboName, iboName, 
+                                 StuInterface::TRIANGLE_STRIP, passName);
+
+  // No longer need VBO and IBO (will stay resident in the passes -- when the
+  // passes are destroyed, the VBO / IBOs will be destroyed).
+  mStuInterface->removeIBO(iboName);
+  mStuInterface->removeVBO(vboName);
+
+  // Directional light in world space.
+  //stuPipe->addGlobalUniform("uLightDirWorld", V3(1.0f, 0.0f, 0.0f));
+
+  // Test global uniforms -- test run-time type validation.
+  // Setup camera so that it can be passed to the Uniform Color shader.
+  // Camera has been setup in the test fixture.
+  mStuInterface->addGlobalUniform("uProjIVObject", mCamera->getWorldToProjection());
+  mStuInterface->addObjectPassUniform(objectName, "uColor", V4(1.0f, 0.0f, 0.0f, 1.0f), passName);
+
+  mSpire->doFrame();
+
+  // Write the resultant png to a temporary directory and compare against
+  // the golden image results.
+  /// \todo Look into using boost filesystem (but it isn't header-only). 
+
+#ifdef TEST_OUTPUT_IMAGES
+  std::string imageName = "attributeTest.png";
+
+  std::string targetImage = TEST_IMAGE_OUTPUT_DIR;
+  targetImage += "/" + imageName;
+  Spire::GlobalTestEnvironment::instance()->writeFBO(targetImage);
+
+  EXPECT_TRUE(Spire::fileExists(targetImage)) << "Failed to write output image! " << targetImage;
+
+#ifdef TEST_PERCEPTUAL_COMPARE
+  // Perform the perceptual comparison using the given regression directory.
+  std::string compImage = TEST_IMAGE_COMPARE_DIR;
+  compImage += "/" + imageName;
+
+  ASSERT_TRUE(Spire::fileExists(compImage)) << "Failed to find comparison image! " << compImage;
+  // Test using perceptula comparison program that the user has provided
+  // (hopefully).
+  std::string command = TEST_PERCEPTUAL_COMPARE_BINARY;
+  command += " -threshold 50 ";
+  command += targetImage + " " + compImage;
+
+  // Usually the return code of std::system is implementation specific. But the
+  // majority of systems end up returning the exit code of the program.
+  if (std::system(command.c_str()) != 0)
+  {
+    // The images are NOT the same. Alert the user.
+    FAIL() << "Perceptual compare of " << imageName << " failed.";
+  }
+#endif
+
+#endif
+
+  // Attempt to set global uniform value that is at odds with information found
+  // in the uniform manager (should induce a type error).
+
+  /// \todo Test adding a uniform to the global state which does not have a
+  ///       corresponding entry in the UniformManager.
+
+  /// \todo Test uniforms.
+  ///       1 - No uniforms set: should attempt to access global uniform state
+  ///           manager and extract the uniform resulting in a std::out_of_range.
+  ///       2 - Partial uniforms. Result same as #1.
+  ///       3 - Uniform type checking. Ensure the types pulled from OpenGL
+  ///           compiler matches our expected types.
+
+
+  // Create an image of appropriate dimensions.
+
+  /// \todo Test pass order using hasPassRenderingOrder on the object.
+
 }
 
 }

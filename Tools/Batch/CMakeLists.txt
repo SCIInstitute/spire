@@ -160,6 +160,14 @@ file(COPY ${BASE_SPIRE_DIR}/Spire/Shaders/
                            GROUP_READ
                            WORLD_READ WORLD_EXECUTE)
 
+# Exported meshes. These are used to test rendering.
+file(COPY ${BASE_SPIRE_DIR}/Spire/ExportedMeshes/
+     DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/Assets
+     FILE_PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ WORLD_READ
+     DIRECTORY_PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE
+                           GROUP_READ
+                           WORLD_READ WORLD_EXECUTE)
+
 ########################################################################
 # Setup executable
 
