@@ -84,7 +84,7 @@ public:
 
   /// Applies the specified uniform to the current shader state.
   /// Throws std::out_of_range if the key was not found in the map.
-  void applyUniform(const std::string& name, int location);
+  bool applyUniform(const std::string& name, int location);
 
   /// Retrieves the texture representation of the uniform with 'name'.
   std::string uniformAsString(const std::string& name) const;

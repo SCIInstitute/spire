@@ -845,6 +845,36 @@ void StuInterface::addPersistentShader(const std::string& programName,
 }
 
 //------------------------------------------------------------------------------
+void StuInterface::addLambdaBeginAllPasses(StuPassLambdaFunction& fp)
+{
+
+}
+
+//------------------------------------------------------------------------------
+void StuInterface::addLambdaEndAllPasses(StuPassLambdaFunction& fp)
+{
+
+}
+
+//------------------------------------------------------------------------------
+void StuInterface::addLambdaPrePass(StuPassLambdaFunction& fp, const std::string& pass)
+{
+
+}
+
+//------------------------------------------------------------------------------
+void StuInterface::addLambdaPostPass(StuPassLambdaFunction& fp, const std::string& pass)
+{
+
+}
+
+//------------------------------------------------------------------------------
+void StuInterface::addLambdaObjectPreRender(StuPassLambdaFunction& fp, const std::string& pass)
+{
+
+}
+
+//------------------------------------------------------------------------------
 std::shared_ptr<const StuObject> StuInterface::ntsGetObjectWithName(const std::string& name) const
 {
   return mNameToObject.at(name);

@@ -91,6 +91,18 @@ public:
   std::shared_ptr<const AbstractUniformStateItem> getSpireAttribute(
       const std::string& attribName) const;
 
+  struct UnsastisfiedUniformItem
+  {
+    UnsastisfiedUniformItem(const std::string& name,
+                            GLint location) :
+        uniformName(name),
+        shaderLocation(location)
+    {}
+
+    std::string                         uniformName;
+    GLint                               shaderLocation;
+  };
+
 protected:
 
   struct UniformItem
@@ -128,17 +140,6 @@ protected:
 //    GLint               varLocation;
 //  };
 
-  struct UnsastisfiedUniformItem
-  {
-    UnsastisfiedUniformItem(const std::string& name,
-                            GLint location) :
-        uniformName(name),
-        shaderLocation(location)
-    {}
-
-    std::string                         uniformName;
-    GLint                               shaderLocation;
-  };
 
   std::string                           mName;      ///< Simple pass name.
   int32_t                               mPassOrder; ///< Pass order.

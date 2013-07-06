@@ -651,7 +651,7 @@ TEST_F(StuPipeTestFixture, TestRenderingWithAttributes)
   mStuInterface->removeVBO(vboName);
 
   // Directional light in world space.
-  //stuPipe->addGlobalUniform("uLightDirWorld", V3(1.0f, 0.0f, 0.0f));
+  mStuInterface->addGlobalUniform("uLightDirWorld", V3(1.0f, 0.0f, 0.0f));
 
   // Test global uniforms -- test run-time type validation.
   // Setup camera so that it can be passed to the Uniform Color shader.

@@ -132,39 +132,27 @@ void StuPass::renderPass()
   if (mGPUState != nullptr)
     mHub.getGPUStateManager().apply(*mGPUState);
 
-#ifdef SPIRE_DEBUG
-  // Gather all uniforms from shader and build a list. Ensure that all uniforms
-  // processed by spire match up.
-  std::list<std::string> allUniforms;
-  for (int i = 0; i < mShader->getUniforms().getNumUniforms(); i++)
-  {
-    allUniforms.push_back(mShader->getUniforms().getUniformAtIndex(i).uniform->codeName);
-  }
-#endif
-
   // Assign pass local uniforms.
   for (auto it = mUniforms.begin(); it != mUniforms.end(); ++it)
   {
-#ifdef SPIRE_DEBUG
-    allUniforms.remove(it->uniformName);
-    //Log::debug() << "Uniform " << it->uniformName << ": " << it->item->asString() << std::endl;
-#endif
     it->item->applyUniform(it->shaderLocation);
   }
 
   // Assign global uniforms, searches through 3 levels in an attempt to find the
   // uniform: object global -> pass global -> and global.
+  std::vector<UnsastisfiedUniformItem> unsatisfiedGlobalUniforms;
+  unsatisfiedGlobalUniforms.reserve(mUnsatisfiedUniforms.size());
   for (auto it = mUnsatisfiedUniforms.begin(); it != mUnsatisfiedUniforms.end(); ++it)
   {
-#ifdef SPIRE_DEBUG
-    allUniforms.remove(it->uniformName);
-    //Log::debug() << "Uniform " << it->uniformName << ": " << std::endl
-    //    << mHub.getShaderUniformStateMan().uniformAsString(it->uniformName) << std::endl;
-#endif
     bool applied = mHub.getPassUniformStateMan().tryApplyUniform(mName, it->uniformName, it->shaderLocation);
     if (applied == false)
-      mHub.getGlobalUniformStateMan().applyUniform(it->uniformName, it->shaderLocation);
+    {
+      if (mHub.getGlobalUniformStateMan().applyUniform(it->uniformName, it->shaderLocation) == false)
+        unsatisfiedGlobalUniforms.push_back(*it);
+    }
   }
+
+  // If we have an unsatisfied uniforms callback, ensure that it is called..
 
 //  // Update any uniforms that require the object transformation.
 //  for (auto it = mObjectTransformUniforms.begin(); it != mObjectTransformUniforms.end(); ++it)
@@ -204,14 +192,6 @@ void StuPass::renderPass()
 //        break;
 //    }
 //  }
-
-#ifdef SPIRE_DEBUG
-  if (allUniforms.size() != 0)
-  {
-    assert(0);
-    throw std::runtime_error("Spire should have consumed all uniforms!");
-  }
-#endif
 
   //Log::debug() << "Rendering with prim type " << mPrimitiveType << " num elements "
   //             << mIBO->getNumElements() << " ibo type " << mIBO->getType() << std::endl;

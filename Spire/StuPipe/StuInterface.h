@@ -427,15 +427,29 @@ public:
   // Lambdas
   //---------
 
+  struct UnsatisfiedUniform
+  {
+    UnsatisfiedUniform(const std::string& name, int location) :
+        uniformName(name),
+        shaderLocation(location)
+    {}
+
+    std::string                         uniformName;
+    int                                 shaderLocation;
+  };
+
   // Two types of lambdas to use. One with objects, and one with passes.
   // The name StuObjectLambdaFunction is a little deceptive.
   // StuObjectLambdaFunctions will be called per-pass.
   typedef std::function<void (LambdaInterface&)> StuPassLambdaFunction;
   typedef std::function<void (StuObjectLambda&)> StuObjectLambdaFunction;
+  typedef std::function<void (StuObjectLambda&, std::vector<UnsatisfiedUniform>&)> StuObjectUniformsLambdaFunction;
 
-  //void addPrePassLambda(const std::string& pass,);
-
-
+  void addLambdaBeginAllPasses(StuPassLambdaFunction& fp);
+  void addLambdaEndAllPasses(StuPassLambdaFunction& fp);
+  void addLambdaPrePass(StuPassLambdaFunction& fp, const std::string& pass = SPIRE_DEFAULT_PASS);
+  void addLambdaPostPass(StuPassLambdaFunction& fp, const std::string& pass = SPIRE_DEFAULT_PASS);
+  void addLambdaObjUniformsPrerender(StuObjectUniformsLambdaFunction& fp, const std::string& pass = SPIRE_DEFAULT_PASS);
 
   //============================================================================
   // NOT THREAD SAFE
