@@ -61,6 +61,9 @@ public:
 
   /// \todo Add pass uniform lookup *if needed*.
   /// getObjectPassUniform
+
+  /// Retrieves the StuObject.
+  const StuObject& getObject() {return mObject;}
   
 private:
 

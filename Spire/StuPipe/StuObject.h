@@ -91,18 +91,6 @@ public:
   std::shared_ptr<const AbstractUniformStateItem> getSpireAttribute(
       const std::string& attribName) const;
 
-  struct UnsastisfiedUniformItem
-  {
-    UnsastisfiedUniformItem(const std::string& name,
-                            GLint location) :
-        uniformName(name),
-        shaderLocation(location)
-    {}
-
-    std::string                         uniformName;
-    GLint                               shaderLocation;
-  };
-
 protected:
 
   struct UniformItem
@@ -120,6 +108,18 @@ protected:
     std::shared_ptr<AbstractUniformStateItem> item;
     GLint                                     shaderLocation;
     bool                                      passSpecific;   ///< If true, global uniforms do not overwrite.
+  };
+
+  struct UnsastisfiedUniformItem
+  {
+    UnsastisfiedUniformItem(const std::string& name,
+                            GLint location) :
+        uniformName(name),
+        shaderLocation(location)
+    {}
+
+    std::string                         uniformName;
+    GLint                               shaderLocation;
   };
 
 //  struct ObjectTransformUniform
@@ -166,7 +166,12 @@ protected:
 
   std::unordered_map<std::string, std::shared_ptr<AbstractUniformStateItem>> mSpireAttributes;
 
-  Hub&                                  mHub;     
+  Hub&                                  mHub;     ///< Hub.
+
+  /// Lambda callbacks.
+  std::vector<StuInterface::StuObjectLambdaFunction> mUniformLambdas;
+  
+  /// One rendering callback.
 };
 
 //------------------------------------------------------------------------------

@@ -442,14 +442,23 @@ public:
   // The name StuObjectLambdaFunction is a little deceptive.
   // StuObjectLambdaFunctions will be called per-pass.
   typedef std::function<void (LambdaInterface&)> StuPassLambdaFunction;
-  typedef std::function<void (StuObjectLambda&)> StuObjectLambdaFunction;
-  typedef std::function<void (StuObjectLambda&, std::vector<UnsatisfiedUniform>&)> StuObjectUniformsLambdaFunction;
 
+  // If the following function returns false, nothing is rendered. You can use
+  // this to construct your own set of rendering calls. All uniforms that could
+  // not be automatically satisfied by the system are passed into this function.
+  // It is up to the function to satisfy the uniforms and return true if
+  // rendering should proceed.
+  typedef std::function<void (StuObjectLambda&,
+                              std::vector<UnsatisfiedUniform>&)> StuObjectLambdaFunction;
+
+  /// The following functions add hooks into the rendering infrastructure.
+  /// Use the corresponding set of 'clear' functions to clear the corresponding
+  /// lambdas.
   void addLambdaBeginAllPasses(StuPassLambdaFunction& fp);
   void addLambdaEndAllPasses(StuPassLambdaFunction& fp);
   void addLambdaPrePass(StuPassLambdaFunction& fp, const std::string& pass = SPIRE_DEFAULT_PASS);
   void addLambdaPostPass(StuPassLambdaFunction& fp, const std::string& pass = SPIRE_DEFAULT_PASS);
-  void addLambdaObjUniformsPrerender(StuObjectUniformsLambdaFunction& fp, const std::string& pass = SPIRE_DEFAULT_PASS);
+  void addLambdaObject(StuObjectLambdaFunction& fp, const std::string& pass = SPIRE_DEFAULT_PASS);
 
   //============================================================================
   // NOT THREAD SAFE

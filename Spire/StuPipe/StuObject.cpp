@@ -140,19 +140,20 @@ void StuPass::renderPass()
 
   // Assign global uniforms, searches through 3 levels in an attempt to find the
   // uniform: object global -> pass global -> and global.
-  std::vector<UnsastisfiedUniformItem> unsatisfiedGlobalUniforms;
-  unsatisfiedGlobalUniforms.reserve(mUnsatisfiedUniforms.size());
+  std::list<StuInterface::UnsatisfiedUniform> unsatisfiedGlobalUniforms;
   for (auto it = mUnsatisfiedUniforms.begin(); it != mUnsatisfiedUniforms.end(); ++it)
   {
     bool applied = mHub.getPassUniformStateMan().tryApplyUniform(mName, it->uniformName, it->shaderLocation);
     if (applied == false)
     {
       if (mHub.getGlobalUniformStateMan().applyUniform(it->uniformName, it->shaderLocation) == false)
-        unsatisfiedGlobalUniforms.push_back(*it);
+        unsatisfiedGlobalUniforms.push_back(
+            StuInterface::UnsatisfiedUniform(it->uniformName, it->shaderLocation));
     }
   }
 
   // If we have an unsatisfied uniforms callback, ensure that it is called..
+  
 
 //  // Update any uniforms that require the object transformation.
 //  for (auto it = mObjectTransformUniforms.begin(); it != mObjectTransformUniforms.end(); ++it)
