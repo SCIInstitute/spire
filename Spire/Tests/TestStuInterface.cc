@@ -55,20 +55,30 @@ static void lambdaUniformObjTrafs(StuObjectLambdaInterface& iface,
   M44 objToWorld = iface.getObjectSpireAttribute<M44>(
       std::get<0>(SRCommonAttributes::getObjectToWorldTrafo()));
 
+  std::string objectTrafoName = std::get<0>(SRCommonUniforms::getObject());
+  std::string objectToViewName = std::get<0>(SRCommonUniforms::getObjectToView());
+  std::string objectToCamProjName = std::get<0>(SRCommonUniforms::getObjectToCameraToProjection());
+
   // Loop through the unsatisfied uniforms and see if we can provide any.
   for (auto it = unsatisfiedUniforms.begin(); it != unsatisfiedUniforms.end(); ++it)
   {
-    if (it->uniformName == std::get<0>(SRCommonUniforms::getObject()))
+    if (it->uniformName == objectTrafoName)
     {
-      
+      LambdaInterface::setUniform<M44>(it->uniformName, it->uniformType, 
+                                       it->shaderLocation, objToWorld);
     }
-    else if (it->uniformName == std::get<0>(SRCommonUniforms::getObjectToView()))
+    else if (it->uniformName == objectToViewName)
     {
-      
+      // Grab the inverse view transform.
+      M44 inverseView = iface.getGlobalUniform<M44>(objectToViewName);
+      LambdaInterface::setUniform<M44>(it->uniformName, it->uniformType, 
+                                       it->shaderLocation, inverseView * objToWorld);
     }
-    else if (it->uniformName == std::get<0>(SRCommonUniforms::getObjectToCameraToProjection()))
+    else if (it->uniformName == objectToCamProjName)
     {
-
+      M44 inverseViewProjection = iface.getGlobalUniform<M44>(objectToCamProjName);
+      LambdaInterface::setUniform<M44>(it->uniformName, it->uniformType, 
+                                       it->shaderLocation, inverseViewProjection * objToWorld);
     }
   }
 }

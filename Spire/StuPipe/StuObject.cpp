@@ -98,7 +98,8 @@ StuPass::StuPass(
     //{
       mUnsatisfiedUniforms.push_back(
           UnsastisfiedUniformItem(uniformData.uniform->codeName, 
-                                  uniformData.glUniformLoc));
+                                  uniformData.glUniformLoc,
+                                  uniformData.glType));
     //}
 
   }
@@ -147,7 +148,7 @@ void StuPass::renderPass(StuObjectLambdaInterface& lambdaInterface)
     {
       if (mHub.getGlobalUniformStateMan().applyUniform(it->uniformName, it->shaderLocation) == false)
         unsatisfiedGlobalUniforms.push_back(
-            StuInterface::UnsatisfiedUniform(it->uniformName, it->shaderLocation));
+            StuInterface::UnsatisfiedUniform(it->uniformName, it->uniformType, it->shaderLocation));
     }
   }
 

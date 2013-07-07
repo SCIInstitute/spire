@@ -226,8 +226,6 @@ public:
     return *getRawData();
   }
 
-protected:
-
   /// Series of static utility functions to avoid exposing OpenGL functions
   /// to classes outside of spire.
   ///@{

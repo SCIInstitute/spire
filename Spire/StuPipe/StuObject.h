@@ -119,12 +119,15 @@ protected:
   struct UnsastisfiedUniformItem
   {
     UnsastisfiedUniformItem(const std::string& name,
-                            GLint location) :
+                            GLint location,
+                            GLenum type) :
         uniformName(name),
+        uniformType(type),
         shaderLocation(location)
     {}
 
     std::string                         uniformName;
+    GLenum                              uniformType;
     GLint                               shaderLocation;
   };
 

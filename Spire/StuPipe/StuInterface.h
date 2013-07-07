@@ -433,12 +433,14 @@ public:
 
   struct UnsatisfiedUniform
   {
-    UnsatisfiedUniform(const std::string& name, int location) :
+    UnsatisfiedUniform(const std::string& name, int location, int type) :
         uniformName(name),
+        uniformType(type),
         shaderLocation(location)
     {}
 
     std::string                         uniformName;
+    int                                 uniformType; // GLenum
     int                                 shaderLocation;
   };
 
