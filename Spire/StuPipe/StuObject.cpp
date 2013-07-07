@@ -111,7 +111,7 @@ StuPass::~StuPass()
 }
 
 //------------------------------------------------------------------------------
-void StuPass::renderPass()
+void StuPass::renderPass(StuObjectLambdaInterface& lambdaInterface)
 {
   /// \todo Should route through the shader man so we don't re-apply programs
   ///       that are already active.
@@ -153,7 +153,32 @@ void StuPass::renderPass()
   }
 
   // If we have an unsatisfied uniforms callback, ensure that it is called..
+  if (unsatisfiedGlobalUniforms.size() > 0)
+  {
+    for (auto it = mUniformLambdas.begin(); it != mUniformLambdas.end(); ++it)
+    {
+      (*it)(lambdaInterface, unsatisfiedGlobalUniforms);
+    }
+
+    if (unsatisfiedGlobalUniforms.size() > 0)
+      throw ShaderUniformNotFound("Could not initialize uniform: " + unsatisfiedGlobalUniforms.front().uniformName);
+  }
   
+
+  if (mRenderLambdas.size() > 0)
+  {
+    // Execute custom rendering callbacks.
+    for (auto it = mRenderLambdas.begin(); it != mRenderLambdas.end(); ++it)
+    {
+      (*it)(lambdaInterface);
+    }
+  }
+  else
+  {
+    //Log::debug() << "Rendering with prim type " << mPrimitiveType << " num elements "
+    //             << mIBO->getNumElements() << " ibo type " << mIBO->getType() << std::endl;
+    GL(glDrawElements(mPrimitiveType, mIBO->getNumElements(), mIBO->getType(), 0));
+  }
 
 //  // Update any uniforms that require the object transformation.
 //  for (auto it = mObjectTransformUniforms.begin(); it != mObjectTransformUniforms.end(); ++it)
@@ -341,6 +366,18 @@ std::shared_ptr<const AbstractUniformStateItem> StuPass::getSpireAttribute(
   {
     return std::shared_ptr<AbstractUniformStateItem>(); 
   }
+}
+
+//------------------------------------------------------------------------------
+void StuPass::addRenderLambda(const StuInterface::StuObjectLambdaFunction& fp)
+{
+  mRenderLambdas.push_back(fp);
+}
+
+//------------------------------------------------------------------------------
+void StuPass::addUniformLambda(const StuInterface::StuObjectUniformLambdaFunction& fp)
+{
+  mUniformLambdas.push_back(fp);
 }
 
 /// \note If we ever implement a remove pass uniform function, be *sure* to
@@ -538,7 +575,8 @@ void StuObject::renderAllPasses()
 {
   for (auto it = mPassRenderOrder.begin(); it != mPassRenderOrder.end(); ++it)
   {
-    it->second->renderPass();
+    StuObjectLambdaInterface lambdaInterface(mHub, it->second->getName(), *this);
+    it->second->renderPass(lambdaInterface);
   }
 }
 
@@ -556,8 +594,21 @@ bool StuObject::hasGlobalUniform(const std::string& uniformName) const
 //------------------------------------------------------------------------------
 void StuObject::renderPass(const std::string& passName)
 {
+  StuObjectLambdaInterface lambdaInterface(mHub, passName, *this);
   std::shared_ptr<StuPass> pass = mPasses[passName];
-  pass->renderPass();
+  pass->renderPass(lambdaInterface);
+}
+
+//------------------------------------------------------------------------------
+void StuObject::addPassRenderLambda(const std::string& pass, const StuInterface::StuObjectLambdaFunction& fp)
+{
+  getPassByName(pass)->addRenderLambda(fp);
+}
+
+//------------------------------------------------------------------------------
+void StuObject::addPassUniformLambda(const std::string& pass, const StuInterface::StuObjectUniformLambdaFunction& fp)
+{
+  getPassByName(pass)->addUniformLambda(fp);
 }
 
 //------------------------------------------------------------------------------

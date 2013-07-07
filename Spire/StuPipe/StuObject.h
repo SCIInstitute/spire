@@ -59,7 +59,7 @@ public:
       std::shared_ptr<VBOObject> vbo, std::shared_ptr<IBOObject> ibo, GLenum primitiveType);
   virtual ~StuPass();
   
-  void renderPass();
+  void renderPass(StuObjectLambdaInterface& lambdaInterface);
 
   const std::string& getName() const    {return mName;}
   int32_t getPassOrder() const          {return mPassOrder;}
@@ -90,6 +90,12 @@ public:
   /// Returns an empty shared_ptr if no such attribute is found.
   std::shared_ptr<const AbstractUniformStateItem> getSpireAttribute(
       const std::string& attribName) const;
+
+  /// Add render lambda.
+  void addRenderLambda(const StuInterface::StuObjectLambdaFunction& fp);
+
+  /// Add uniform lambda.
+  void addUniformLambda(const StuInterface::StuObjectUniformLambdaFunction& fp);
 
 protected:
 
@@ -169,9 +175,8 @@ protected:
   Hub&                                  mHub;     ///< Hub.
 
   /// Lambda callbacks.
-  std::vector<StuInterface::StuObjectLambdaFunction> mUniformLambdas;
-  
-  /// One rendering callback.
+  std::vector<StuInterface::StuObjectUniformLambdaFunction> mUniformLambdas;
+  std::vector<StuInterface::StuObjectLambdaFunction>        mRenderLambdas;
 };
 
 //------------------------------------------------------------------------------
@@ -263,6 +268,12 @@ public:
   /// Returns true if there exists a object global uniform with the name
   /// 'uniformName'.
   bool hasGlobalUniform(const std::string& uniformName) const;
+
+  /// Adds a render lambda to the given pass.
+  void addPassRenderLambda(const std::string& pass, const StuInterface::StuObjectLambdaFunction& fp);
+
+  /// Adds a uniform lambda to the given pass.
+  void addPassUniformLambda(const std::string& pass, const StuInterface::StuObjectUniformLambdaFunction& fp);
 
 protected:
 

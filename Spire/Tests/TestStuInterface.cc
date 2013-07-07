@@ -609,8 +609,8 @@ TEST_F(StuPipeTestFixture, TestStuObjectsStructure)
 TEST_F(StuPipeTestFixture, TestRenderingWithAttributes)
 {
   // First things first: just get the rendered image onto the filesystem...
-  std::shared_ptr<std::vector<uint8_t>> rawVBO;
-  std::shared_ptr<std::vector<uint8_t>> rawIBO;
+  std::shared_ptr<std::vector<uint8_t>> rawVBO(new std::vector<uint8_t>());
+  std::shared_ptr<std::vector<uint8_t>> rawIBO(new std::vector<uint8_t>());
   std::fstream sphereFile("Assets/Sphere.sp");
   StuInterface::loadProprietarySR5AssetFile(sphereFile, *rawVBO, *rawIBO);
 

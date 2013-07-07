@@ -295,8 +295,8 @@ void StuInterface::removeIBO(const std::string& iboName)
 
 //------------------------------------------------------------------------------
 size_t StuInterface::loadProprietarySR5AssetFile(std::istream& stream,
-                                               std::vector<uint8_t>& vbo,
-                                               std::vector<uint8_t>& ibo)
+                                                 std::vector<uint8_t>& vbo,
+                                                 std::vector<uint8_t>& ibo)
 {
   // Read default SCIRun asset header.
   std::string header = "SCR5";
@@ -845,33 +845,105 @@ void StuInterface::addPersistentShader(const std::string& programName,
 }
 
 //------------------------------------------------------------------------------
-void StuInterface::addLambdaBeginAllPasses(StuPassLambdaFunction& fp)
+void StuInterface::addLambdaBeginAllPasses(const StuPassLambdaFunction& fp)
 {
-
+  Hub::RemoteFunction fun =
+      std::bind(addLambdaBeginAllPassesImpl, _1, this, fp);
+  mHub.addFunctionToThreadQueue(fun);
 }
 
 //------------------------------------------------------------------------------
-void StuInterface::addLambdaEndAllPasses(StuPassLambdaFunction& fp)
+void StuInterface::addLambdaBeginAllPassesImpl(Hub& hub, StuInterface* iface,
+                                               StuPassLambdaFunction fp)
 {
+  iface->mGlobalBeginLambdas.push_back(fp);
+}
 
+
+//------------------------------------------------------------------------------
+void StuInterface::addLambdaEndAllPasses(const StuPassLambdaFunction& fp)
+{
+  Hub::RemoteFunction fun =
+      std::bind(addLambdaBeginAllPassesImpl, _1, this, fp);
+  mHub.addFunctionToThreadQueue(fun);
 }
 
 //------------------------------------------------------------------------------
-void StuInterface::addLambdaPrePass(StuPassLambdaFunction& fp, const std::string& pass)
+void StuInterface::addLambdaEndAllPassesImpl(Hub& hub, StuInterface* iface,
+                                             StuPassLambdaFunction fp)
 {
+  iface->mGlobalEndLambdas.push_back(fp);
+}
 
+
+//------------------------------------------------------------------------------
+void StuInterface::addLambdaPrePass(const StuPassLambdaFunction& fp, const std::string& pass)
+{
+  Hub::RemoteFunction fun =
+      std::bind(addLambdaPrePassImpl, _1, this, fp, pass);
+  mHub.addFunctionToThreadQueue(fun);
 }
 
 //------------------------------------------------------------------------------
-void StuInterface::addLambdaPostPass(StuPassLambdaFunction& fp, const std::string& pass)
+void StuInterface::addLambdaPrePassImpl(Hub& hub, StuInterface* iface,
+                                        StuPassLambdaFunction fp, std::string pass)
 {
+  auto passIt = iface->mNameToPass.find(pass);
+  if (passIt == iface->mNameToPass.end())
+    throw std::runtime_error("Pass (" + pass + ") does not exist.");
 
+  passIt->second->mPassBeginLambdas.push_back(fp);
 }
 
 //------------------------------------------------------------------------------
-void StuInterface::addLambdaObjectPreRender(StuPassLambdaFunction& fp, const std::string& pass)
+void StuInterface::addLambdaPostPass(const StuPassLambdaFunction& fp, const std::string& pass)
 {
+  Hub::RemoteFunction fun =
+      std::bind(addLambdaPostPassImpl, _1, this, fp, pass);
+  mHub.addFunctionToThreadQueue(fun);
+}
 
+//------------------------------------------------------------------------------
+void StuInterface::addLambdaPostPassImpl(Hub& hub, StuInterface* iface,
+                                         StuPassLambdaFunction fp, std::string pass)
+{
+  auto passIt = iface->mNameToPass.find(pass);
+  if (passIt == iface->mNameToPass.end())
+    throw std::runtime_error("Pass (" + pass + ") does not exist.");
+
+  passIt->second->mPassEndLambdas.push_back(fp);
+}
+
+//------------------------------------------------------------------------------
+void StuInterface::addLambdaObjectUniforms(const StuObjectUniformLambdaFunction& fp, const std::string& object, const std::string& pass)
+{
+  Hub::RemoteFunction fun =
+      std::bind(addLambdaObjectUniformsImpl, _1, this, fp, object, pass);
+  mHub.addFunctionToThreadQueue(fun);
+}
+
+//------------------------------------------------------------------------------
+void StuInterface::addLambdaObjectUniformsImpl(Hub& hub, StuInterface* iface,
+                                               StuObjectUniformLambdaFunction fp, std::string object, std::string pass)
+{
+  std::shared_ptr<StuObject> obj = iface->mNameToObject.at(object);
+  obj->addPassUniformLambda(pass, fp);
+}
+
+//------------------------------------------------------------------------------
+void StuInterface::addLambdaObjectRender(const StuObjectLambdaFunction& fp, const std::string& object, const std::string& pass)
+{
+  Hub::RemoteFunction fun =
+      std::bind(addLambdaObjectRenderImpl, _1, this, fp, object, pass);
+  mHub.addFunctionToThreadQueue(fun);
+}
+
+//------------------------------------------------------------------------------
+void StuInterface::addLambdaObjectRenderImpl(Hub& hub, StuInterface* iface,
+                                             StuObjectLambdaFunction fp, std::string object, std::string pass)
+{
+  std::shared_ptr<StuObject> obj = iface->mNameToObject.at(object);
+  obj->addPassRenderLambda(pass, fp);
 }
 
 //------------------------------------------------------------------------------

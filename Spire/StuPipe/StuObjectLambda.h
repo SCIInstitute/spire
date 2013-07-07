@@ -40,14 +40,14 @@ namespace Spire
 class StuObject;
 
 /// StuPipe interface lambda.
-class StuObjectLambda : public LambdaInterface
+class StuObjectLambdaInterface : public LambdaInterface
 {
 public:
-  StuObjectLambda(Hub& hub, const std::string& pass, const StuObject& object) :
+  StuObjectLambdaInterface(Hub& hub, const std::string& pass, const StuObject& object) :
       LambdaInterface(hub, pass),
       mObject(object)
   {}
-  virtual ~StuObjectLambda() {}
+  virtual ~StuObjectLambdaInterface() {}
 
   /// Retrieves object spire attribute (as opposed to shader attributes).
   /// Does not depend on the currently active pass.

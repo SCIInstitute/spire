@@ -427,6 +427,10 @@ public:
   // Lambdas
   //---------
 
+  /// \note All lambdas use the push_back semantic. So if you are adding
+  /// rendering lambdas, the first lambda you register will be the first one
+  /// called when rendering.
+
   struct UnsatisfiedUniform
   {
     UnsatisfiedUniform(const std::string& name, int location) :
@@ -443,22 +447,36 @@ public:
   // StuObjectLambdaFunctions will be called per-pass.
   typedef std::function<void (LambdaInterface&)> StuPassLambdaFunction;
 
-  // If the following function returns false, nothing is rendered. You can use
-  // this to construct your own set of rendering calls. All uniforms that could
-  // not be automatically satisfied by the system are passed into this function.
-  // It is up to the function to satisfy the uniforms and return true if
-  // rendering should proceed.
-  typedef std::function<void (StuObjectLambda&,
-                              std::vector<UnsatisfiedUniform>&)> StuObjectLambdaFunction;
+  // Lambda function that includes an object as context.
+  typedef std::function<void (StuObjectLambdaInterface&)> StuObjectLambdaFunction;
+
+  /// These functions help satisfy uniforms that need extra attribute data in
+  /// order to process. These can be used to remove load from the GPU by
+  /// precomputing any number of things.
+  typedef std::function<void (StuObjectLambdaInterface&, std::list<UnsatisfiedUniform>&)> 
+      StuObjectUniformLambdaFunction;
 
   /// The following functions add hooks into the rendering infrastructure.
-  /// Use the corresponding set of 'clear' functions to clear the corresponding
-  /// lambdas.
-  void addLambdaBeginAllPasses(StuPassLambdaFunction& fp);
-  void addLambdaEndAllPasses(StuPassLambdaFunction& fp);
-  void addLambdaPrePass(StuPassLambdaFunction& fp, const std::string& pass = SPIRE_DEFAULT_PASS);
-  void addLambdaPostPass(StuPassLambdaFunction& fp, const std::string& pass = SPIRE_DEFAULT_PASS);
-  void addLambdaObject(StuObjectLambdaFunction& fp, const std::string& pass = SPIRE_DEFAULT_PASS);
+  /// @{
+  void addLambdaBeginAllPasses(const StuPassLambdaFunction& fp);
+  void addLambdaEndAllPasses(const StuPassLambdaFunction& fp);
+  void addLambdaPrePass(const StuPassLambdaFunction& fp, const std::string& pass = SPIRE_DEFAULT_PASS);
+  void addLambdaPostPass(const StuPassLambdaFunction& fp, const std::string& pass = SPIRE_DEFAULT_PASS);
+  /// @}
+  
+  /// Adds per-object hooks for calculating uniforms and performing rendering.
+  /// Both are optional, and you can add as many lambdas as you need.
+  /// @{
+
+  /// If an object rendering lambda is found, then normal rendering does not
+  /// proceed.
+  void addLambdaObjectRender(const StuObjectLambdaFunction& fp, const std::string& object, const std::string& pass = SPIRE_DEFAULT_PASS);
+
+  /// Lambda object uniforms are optional and they will not be called if there
+  /// are no unsatisfied uniforms found.
+  void addLambdaObjectUniforms(const StuObjectUniformLambdaFunction& fp, const std::string& object, const std::string& pass = SPIRE_DEFAULT_PASS);
+
+  /// @}
 
   //============================================================================
   // NOT THREAD SAFE
@@ -512,6 +530,9 @@ private:
     std::string                                                   mName;
     std::unordered_map<std::string, std::shared_ptr<StuObject>>   mNameToObject;
 
+    std::vector<StuPassLambdaFunction>                            mPassBeginLambdas;
+    std::vector<StuPassLambdaFunction>                            mPassEndLambdas;
+
     /// \todo Rendering order for the objects?
   };
 
@@ -538,6 +559,13 @@ private:
   /// List of passes in the order they are meant to be rendered.
   std::list<std::shared_ptr<Pass>>                              mPasses;
   std::unordered_map<std::string, std::shared_ptr<Pass>>        mNameToPass;
+
+  /// Global begin/end lambdas.
+  /// @{
+  std::vector<StuPassLambdaFunction>                            mGlobalBeginLambdas;
+  std::vector<StuPassLambdaFunction>                            mGlobalEndLambdas;
+  /// @}
+
 
   // NOTE:  The following variable should only be accessed on the client side.
   //        Never by the renderer. This var just makes it easier when adding
@@ -631,6 +659,16 @@ private:
   static void addPersistentShaderImpl(Hub& hub, StuInterface* iface,
                                       std::string programName,
                                       std::vector<std::tuple<std::string, SHADER_TYPES>> shaders);
+
+
+  static void addLambdaBeginAllPassesImpl(Hub& hub, StuInterface* iface, StuPassLambdaFunction fp);
+  static void addLambdaEndAllPassesImpl(Hub& hub, StuInterface* iface, StuPassLambdaFunction fp);
+  static void addLambdaPrePassImpl(Hub& hub, StuInterface* iface, StuPassLambdaFunction fp, std::string pass);
+  static void addLambdaPostPassImpl(Hub& hub, StuInterface* iface, StuPassLambdaFunction fp, std::string pass);
+  static void addLambdaObjectUniformsImpl(Hub& hub, StuInterface* iface,
+                                          StuObjectUniformLambdaFunction fp, std::string object, std::string pass);
+  static void addLambdaObjectRenderImpl(Hub& hub, StuInterface* iface,
+                                        StuObjectLambdaFunction fp, std::string object, std::string pass);
   /// @}
 };
 
