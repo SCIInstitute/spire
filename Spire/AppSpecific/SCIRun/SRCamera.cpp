@@ -30,7 +30,7 @@
 /// \date   March 2013
 
 #include "SRCamera.h"
-#include "../../Core/CommonUniforms.h"
+#include "SRCommonUniforms.h"
 
 namespace Spire {
 namespace SCIRun {
@@ -99,26 +99,14 @@ void SRCamera::setViewTransform(const Spire::M44& trafo)
   mPIV  = mP * mIV;
 
   // Update appropriate uniforms.
-  mInterface.getStuPipe()->addGlobalUniform(
-      std::get<0>(CommonUniforms::getToCameraToProjection()), mPIV);
-
-  mInterface.getStuPipe()->addGlobalUniform(
-      std::get<0>(CommonUniforms::getToProjection()), mP);
-
-  mInterface.getStuPipe()->addGlobalUniform(
-      std::get<0>(CommonUniforms::getCameraToWorld()), mV);
+  mInterface.getStuPipe()->addGlobalUniform(std::get<0>(SRCommonUniforms::getToCameraToProjection()), mPIV);
+  mInterface.getStuPipe()->addGlobalUniform(std::get<0>(SRCommonUniforms::getToProjection()), mP);
+  mInterface.getStuPipe()->addGlobalUniform(std::get<0>(SRCommonUniforms::getCameraToWorld()), mV);
 
   // We've modified our projection transform so that the positive Z axis is the
   // axis which our camera will be looking down.
-  mInterface.getStuPipe()->addGlobalUniform(
-      std::get<0>(CommonUniforms::getCameraViewVec()), V3(mV[2].xyz()));
-
-  mInterface.getStuPipe()->addGlobalUniform(
-      std::get<0>(CommonUniforms::getCameraUpVec()), V3(mV[1].xyz()));
-
-  // We need to think of some good way of combining uniforms with common
-  // transformations such as the camera. Would probably be fine hardcoding this
-  // on the 'client' side of the application.
+  mInterface.getStuPipe()->addGlobalUniform(std::get<0>(SRCommonUniforms::getCameraViewVec()), V3(mV[2].xyz()));
+  mInterface.getStuPipe()->addGlobalUniform(std::get<0>(SRCommonUniforms::getCameraUpVec()), V3(mV[1].xyz()));
 }
 
 } // namespace SCIRun

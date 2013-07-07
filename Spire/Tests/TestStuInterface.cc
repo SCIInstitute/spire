@@ -36,6 +36,8 @@
 #include "StuPipe/StuInterface.h"
 #include "StuPipe/StuObject.h"
 #include "Core/FileUtil.h"
+#include "AppSpecific/SCIRun/SRCommonUniforms.h"
+#include "AppSpecific/SCIRun/SRCommonAttributes.h"
 
 #include "GlobalTestEnvironment.h"
 #include "CommonTestFixtures.h"
@@ -43,6 +45,33 @@
 using namespace Spire;
 
 namespace {
+
+// Simple function to handle object transformations so that the GPU does not
+// need to do the same calculation for each vertex.
+static void lambdaUniformObjTrafs(StuObjectLambdaInterface& iface, 
+                                  std::list<StuInterface::UnsatisfiedUniform>& unsatisfiedUniforms)
+{
+  // Cache object to world transform.
+  M44 objToWorld = iface.getObjectSpireAttribute<M44>(
+      std::get<0>(SRCommonAttributes::getObjectToWorldTrafo()));
+
+  // Loop through the unsatisfied uniforms and see if we can provide any.
+  for (auto it = unsatisfiedUniforms.begin(); it != unsatisfiedUniforms.end(); ++it)
+  {
+    if (it->uniformName == std::get<0>(SRCommonUniforms::getObject()))
+    {
+      
+    }
+    else if (it->uniformName == std::get<0>(SRCommonUniforms::getObjectToView()))
+    {
+      
+    }
+    else if (it->uniformName == std::get<0>(SRCommonUniforms::getObjectToCameraToProjection()))
+    {
+
+    }
+  }
+}
 
 //------------------------------------------------------------------------------
 TEST(StuInterfaceTests, TestSR5AssetLoader)
@@ -640,16 +669,28 @@ TEST_F(StuPipeTestFixture, TestRenderingWithAttributes)
   mStuInterface->addObject(objectName);
   mStuInterface->addPassToObject(objectName, shaderName, vboName, iboName, 
                                  StuInterface::TRIANGLE_STRIP);
+  
+  // Object pass uniforms (can be set at a global level)
+  mStuInterface->addObjectPassUniform(objectName, "uAmbientColor", V4(0.1f, 0.1f, 0.1f, 1.0f));
+  mStuInterface->addObjectPassUniform(objectName, "uDiffuseColor", V4(0.8f, 0.8f, 0.0f, 1.0f));
+  mStuInterface->addObjectPassUniform(objectName, "uSpecularColor", V4(0.5f, 0.5f, 0.5f, 1.0f));
+  mStuInterface->addObjectPassUniform(objectName, "uSpecularPower", 32.0f);
+
+  // Object spire attributes (used for computing appropriate uniforms).
+  M44 xform;
+  xform[3] = V4(1.0f, 0.0f, 0.0f, 1.0f);
+  mStuInterface->addObjectPassSpireAttribute(objectName, "worldTrafo", xform);
 
   // No longer need VBO and IBO (will stay resident in the passes -- when the
   // passes are destroyed, the VBO / IBOs will be destroyed).
   mStuInterface->removeIBO(iboName);
   mStuInterface->removeVBO(vboName);
 
-  // Directional light in world space.
+  // Global uniforms
   mStuInterface->addGlobalUniform("uLightDirWorld", V3(1.0f, 0.0f, 0.0f));
-  mStuInterface->addGlobalUniform("uProjIVObject", mCamera->getWorldToProjection());
-  mStuInterface->addObjectPassUniform(objectName, "uColor", V4(1.0f, 0.0f, 0.0f, 1.0f));
+
+  // Setup camera uniforms.
+  mCamera->setSRCommonUniforms(mStuInterface);
 
   mSpire->doFrame();
 
@@ -665,6 +706,7 @@ TEST_F(StuPipeTestFixture, TestRenderingWithAttributes)
   Spire::GlobalTestEnvironment::instance()->writeFBO(targetImage);
 
   EXPECT_TRUE(Spire::fileExists(targetImage)) << "Failed to write output image! " << targetImage;
+  std::cout << "Wrote output image to: " << imageName << std::endl;
 
 #ifdef TEST_PERCEPTUAL_COMPARE
   // Perform the perceptual comparison using the given regression directory.

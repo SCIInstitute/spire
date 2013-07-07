@@ -35,6 +35,10 @@
 // Include spire interface so that we have access to the mathematical types.
 #include "Spire/Common.h"
 
+namespace Spire {
+class StuInterface;
+}
+
 class TestCamera
 {
 public:
@@ -64,6 +68,8 @@ public:
   static float getDefaultZNear()  {return 0.1f;}
   static float getDefaultZFar()   {return 1350.0f;}
   /// @}
+
+  void setSRCommonUniforms(std::shared_ptr<Spire::StuInterface&> iface);
 
 private:
 

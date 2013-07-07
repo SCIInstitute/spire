@@ -34,7 +34,6 @@
 #include "../Common.h"
 #include "StuObject.h"
 #include "Exceptions.h"
-#include "Core/CommonUniforms.h"
 #include "Core/Hub.h"
 #include "Core/ShaderUniformStateMan.h"
 

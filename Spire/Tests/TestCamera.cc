@@ -31,6 +31,8 @@
 
 #include "TestCamera.h"
 #include "GlobalTestEnvironment.h"
+#include "StuPipe/StuInterface.h"
+#include "AppSpecific/SCIRun/SRCommonUniforms.h"
 
 //------------------------------------------------------------------------------
 TestCamera::TestCamera() :
@@ -93,8 +95,18 @@ void TestCamera::setViewTransform(const Spire::M44& trafo)
   mV    = trafo;
   mIV   = glm::affineInverse(trafo);
   mPIV  = mP * mIV;
-  //Log::message() << "mV" << std::endl << mV << std::endl;
-  //Log::message() << "mIV" << std::endl << mIV << std::endl;
-  //Log::message() << "mPIV" << std::endl << mPIV << std::endl;
 }
 
+//------------------------------------------------------------------------------
+void TestCamera::setSRCommonUniforms(Spire::StuInterface& interface)
+{
+  // Update appropriate uniforms.
+  interface.addGlobalUniform(std::get<0>(Spire::SRCommonUniforms::getToCameraToProjection()), mPIV);
+  interface.addGlobalUniform(std::get<0>(Spire::SRCommonUniforms::getToProjection()), mP);
+  interface.addGlobalUniform(std::get<0>(Spire::SRCommonUniforms::getCameraToWorld()), mV);
+
+  // We've modified our projection transform so that the positive Z axis is the
+  // axis which our camera will be looking down.
+  interface.addGlobalUniform(std::get<0>(Spire::SRCommonUniforms::getCameraViewVec()), Spire::V3(mV[2].xyz()));
+  interface.addGlobalUniform(std::get<0>(Spire::SRCommonUniforms::getCameraUpVec()), Spire::V3(mV[1].xyz()));
+}

@@ -42,11 +42,11 @@ namespace Spire
 /// Common uniforms used by Spire.
 /// \todo Look into the ability to rename these uniforms in the future. This is
 /// so that Spire can adapt to other code bases.
-class CommonUniforms
+class SRCommonUniforms
 {
 public:
-  CommonUniforms()          {}
-  virtual ~CommonUniforms() {}
+  SRCommonUniforms()          {}
+  virtual ~SRCommonUniforms() {}
   
   //----------------------------------------------------------------------------
   // Camera Uniforms (View)
