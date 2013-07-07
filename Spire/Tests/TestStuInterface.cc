@@ -608,6 +608,10 @@ TEST_F(StuPipeTestFixture, TestStuObjectsStructure)
 //------------------------------------------------------------------------------
 TEST_F(StuPipeTestFixture, TestRenderingWithAttributes)
 {
+  // This test demonstrates a quick and dirty rendering pipeline using
+  // attributes and lambdas. Spire knows nothing about the objects, but allows
+  // sufficient flexibility that it is possible to do many things.
+
   // First things first: just get the rendered image onto the filesystem...
   std::shared_ptr<std::vector<uint8_t>> rawVBO(new std::vector<uint8_t>());
   std::shared_ptr<std::vector<uint8_t>> rawIBO(new std::vector<uint8_t>());
@@ -623,27 +627,19 @@ TEST_F(StuPipeTestFixture, TestRenderingWithAttributes)
   mStuInterface->addVBO(vboName, rawVBO, attribNames);
   mStuInterface->addIBO(iboName, rawIBO, iboType);
 
-  std::string objectName = "obj1";
-  mStuInterface->addObject(objectName);
-  
-  std::string shaderName = "UniformColor";
-  // Add and compile persistent shaders (if not already present).
-  // You will only run into the 'Duplicate' exception if the persistent shader
-  // is already in the persistent shader list.
+  // Build shaders
+  std::string shaderName = "DirGouraud";
   mStuInterface->addPersistentShader(
       shaderName, 
-      { {"UniformColor.vsh", StuInterface::VERTEX_SHADER}, 
-        {"UniformColor.fsh", StuInterface::FRAGMENT_SHADER},
+      { {"DirGouraud.vsh", StuInterface::VERTEX_SHADER}, 
+        {"DirGouraud.fsh", StuInterface::FRAGMENT_SHADER},
       });
 
-  // Build a good pass.
-  std::string passName = "pass1";
-  mStuInterface->addPassToBack(passName);
-
-  // Now add the object pass. This automatically adds the object to the pass for
-  // us. But the ordering within the pass is still arbitrary.
+  // Add object
+  std::string objectName = "obj1";
+  mStuInterface->addObject(objectName);
   mStuInterface->addPassToObject(objectName, shaderName, vboName, iboName, 
-                                 StuInterface::TRIANGLE_STRIP, passName);
+                                 StuInterface::TRIANGLE_STRIP);
 
   // No longer need VBO and IBO (will stay resident in the passes -- when the
   // passes are destroyed, the VBO / IBOs will be destroyed).
@@ -652,12 +648,8 @@ TEST_F(StuPipeTestFixture, TestRenderingWithAttributes)
 
   // Directional light in world space.
   mStuInterface->addGlobalUniform("uLightDirWorld", V3(1.0f, 0.0f, 0.0f));
-
-  // Test global uniforms -- test run-time type validation.
-  // Setup camera so that it can be passed to the Uniform Color shader.
-  // Camera has been setup in the test fixture.
   mStuInterface->addGlobalUniform("uProjIVObject", mCamera->getWorldToProjection());
-  mStuInterface->addObjectPassUniform(objectName, "uColor", V4(1.0f, 0.0f, 0.0f, 1.0f), passName);
+  mStuInterface->addObjectPassUniform(objectName, "uColor", V4(1.0f, 0.0f, 0.0f, 1.0f));
 
   mSpire->doFrame();
 

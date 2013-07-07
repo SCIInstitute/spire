@@ -35,8 +35,6 @@
 // Include spire interface so that we have access to the mathematical types.
 #include "Spire/Common.h"
 
-/// Basic camera. Pretty much torn straight from Spire when it had a camera
-/// class.
 class TestCamera
 {
 public:
