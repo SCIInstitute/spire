@@ -716,7 +716,6 @@ TEST_F(StuPipeTestFixture, TestRenderingWithSR5Object)
   Spire::GlobalTestEnvironment::instance()->writeFBO(targetImage);
 
   EXPECT_TRUE(Spire::fileExists(targetImage)) << "Failed to write output image! " << targetImage;
-  std::cout << "Wrote output image to: " << targetImage << std::endl;
 
 #ifdef TEST_PERCEPTUAL_COMPARE
   // Perform the perceptual comparison using the given regression directory.
