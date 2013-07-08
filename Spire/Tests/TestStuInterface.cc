@@ -446,7 +446,7 @@ TEST_F(StuPipeTestFixture, TestTriangle)
   /// \todo Look into using boost filesystem (but it isn't header-only). 
 
 #ifdef TEST_OUTPUT_IMAGES
-  std::string imageName = "StuTriangle.png";
+  std::string imageName = "stuTriangle.png";
 
   std::string targetImage = TEST_IMAGE_OUTPUT_DIR;
   targetImage += "/" + imageName;
