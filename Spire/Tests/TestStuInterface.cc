@@ -691,7 +691,7 @@ TEST_F(StuPipeTestFixture, TestRenderingWithSR5Object)
   mStuInterface->addObject(objectName);
   mStuInterface->addPassToObject(objectName, shaderName, vboName, iboName, 
                                  StuInterface::TRIANGLE_STRIP);
-  mStuInterface->addLambdaObjectUniforms(lambdaUniformObjTrafs, objectName);
+  mStuInterface->addLambdaObjectUniforms(objectName, lambdaUniformObjTrafs);
   
   // Object pass uniforms (can be set at a global level)
   mStuInterface->addObjectPassUniform(objectName, "uColor", V4(1.0f, 0.0f, 0.0f, 1.0f));    // default pass
