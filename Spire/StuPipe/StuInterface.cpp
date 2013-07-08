@@ -101,6 +101,8 @@ void StuInterface::ntsDoPass(const std::string& passName)
 {
   std::shared_ptr<Pass> pass = mNameToPass.at(passName);
 
+  ///\todo Call pass begin lambdas. Setup global pass specific uniforms.
+
   // Loop over all objects in the pass and render them.
   /// \todo Need to add some way of ordering the rendered objects, whether it be
   /// by another structure built into Spire (not for this at all), or some lambda
@@ -109,39 +111,6 @@ void StuInterface::ntsDoPass(const std::string& passName)
   {
     it->second->renderPass(passName);
   }
-
-  ///\todo Call pass begin lambdas. Setup global pass specific uniforms.
-
-  //// Pull the view and the inverse view projection transforms out of the
-  //// uniforms. StuInterface expects those to be set.
-  //std::shared_ptr<const AbstractUniformStateItem> camToWorldUniform = 
-  //    mHub.getShaderUniformStateMan().getGlobalUninform(
-  //        std::get<0>(CommonUniforms::getCameraToWorld()));
-
-  //if (camToWorldUniform->getGLType() != UNIFORM_FLOAT_MAT4)
-  //{
-  //  throw std::runtime_error("-> Camera -> Projection transform is not a 4x4 matrix!");
-  //}
-  //const float* rawM44 = camToWorldUniform->getRawData();
-  //M44 camToWorld = glm::make_mat4x4(rawM44);
-  //M44 inverseCamToWorld = glm::affineInverse(camToWorld);
-
-  //std::shared_ptr<const AbstractUniformStateItem> toCamToProjectionUniform =
-  //    mHub.getShaderUniformStateMan().getGlobalUninform(
-  //        std::get<0>(CommonUniforms::getToCameraToProjection()));
-
-  //if (toCamToProjectionUniform->getGLType() != UNIFORM_FLOAT_MAT4)
-  //{
-  //  throw std::runtime_error("-> Camera -> Projection transform is not a 4x4 matrix!");
-  //}
-  //rawM44 = toCamToProjectionUniform->getRawData();
-  //M44 toCamToProjection = glm::make_mat4x4(rawM44);
-
-  //for (auto it = mRenderOrderToObjects.begin(); it != mRenderOrderToObjects.end(); ++it)
-  //{
-  //  //it->second->renderAllPasses();
-  //  it->second->renderPass(passName);
-  //}
 
   ///\todo Call pass end lambda.
 }

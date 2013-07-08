@@ -74,34 +74,10 @@ StuPass::StuPass(
     const ShaderUniformCollection::UniformSpecificData& uniformData = 
         mShader->getUniforms().getUniformAtIndex(i);
 
-    // Check for transformations related to the object transform. If we find
-    // them, we won't add them to the unsastisfied uniforms -- instead, they
-    // will go into a special hard-coded list that we will update when we are
-    // rendered.
-    //std::string uniformCodeName = uniformData.uniform->codeName;
-    //if (std::get<0>(CommonUniforms::getObject()) == uniformCodeName)
-    //{
-    //  mObjectTransformUniforms.push_back(
-    //      ObjectTransformUniform(ObjectTransformUniform::TRANSFORM_OBJECT, uniformData.glUniformLoc));
-    //}
-    //else if (std::get<0>(CommonUniforms::getObjectToView()) == uniformCodeName)
-    //{
-    //  mObjectTransformUniforms.push_back(
-    //      ObjectTransformUniform(ObjectTransformUniform::TRANSFORM_OBJECT_TO_CAMERA, uniformData.glUniformLoc));
-    //}
-    //else if (std::get<0>(CommonUniforms::getObjectToCameraToProjection()) == uniformCodeName)
-    //{
-    //  mObjectTransformUniforms.push_back(
-    //      ObjectTransformUniform(ObjectTransformUniform::TRANSFORM_OBJECT_TO_CAMERA_TO_PROJECTION, uniformData.glUniformLoc));
-    //}
-    //else
-    //{
-      mUnsatisfiedUniforms.push_back(
-          UnsastisfiedUniformItem(uniformData.uniform->codeName, 
-                                  uniformData.glUniformLoc,
-                                  uniformData.glType));
-    //}
-
+    mUnsatisfiedUniforms.push_back(
+        UnsastisfiedUniformItem(uniformData.uniform->codeName, 
+                                uniformData.glUniformLoc,
+                                uniformData.glType));
   }
 }
 
@@ -113,14 +89,11 @@ StuPass::~StuPass()
 //------------------------------------------------------------------------------
 void StuPass::renderPass(StuObjectLambdaInterface& lambdaInterface)
 {
-  /// \todo Should route through the shader man so we don't re-apply programs
-  ///       that are already active.
   GL(glUseProgram(mShader->getProgramID()));
 
   GL(glBindBuffer(GL_ARRAY_BUFFER, mVBO->getGLIndex()));
   GL(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mIBO->getGLIndex()));
 
-  /// \todo Ensure attributes are always sorted in ascending order...
   // We have already verified that the attributes contained in the shader
   // are consistent with the attributes we have in the VBO. Therefore, it's
   // okay to calculate the attribute stride based on the shader's stride, and
@@ -175,49 +148,8 @@ void StuPass::renderPass(StuObjectLambdaInterface& lambdaInterface)
   }
   else
   {
-    //Log::debug() << "Rendering with prim type " << mPrimitiveType << " num elements "
-    //             << mIBO->getNumElements() << " ibo type " << mIBO->getType() << std::endl;
     GL(glDrawElements(mPrimitiveType, mIBO->getNumElements(), mIBO->getType(), 0));
   }
-
-//  // Update any uniforms that require the object transformation.
-//  for (auto it = mObjectTransformUniforms.begin(); it != mObjectTransformUniforms.end(); ++it)
-//  {
-//    std::string codeName;
-//    M44 transform;
-//    /// \todo Add GL( ) preprocessor definition around the GL calls below.
-//    switch (it->transformType)
-//    {
-//      case ObjectTransformUniform::TRANSFORM_OBJECT:
-//        codeName = std::get<0>(CommonUniforms::getObject());
-//        glUniformMatrix4fv(static_cast<GLint>(it->varLocation), 1, false,
-//                           static_cast<const GLfloat*>(glm::value_ptr(objectToWorld)));
-//#ifdef SPIRE_DEBUG
-//        allUniforms.remove(codeName);
-//#endif
-//        break;
-//
-//      case ObjectTransformUniform::TRANSFORM_OBJECT_TO_CAMERA:
-//        codeName = std::get<0>(CommonUniforms::getObjectToView());
-//        transform = inverseView * objectToWorld;
-//        glUniformMatrix4fv(static_cast<GLint>(it->varLocation), 1, false,
-//                           static_cast<const GLfloat*>(glm::value_ptr(transform)));
-//#ifdef SPIRE_DEBUG
-//        allUniforms.remove(codeName);
-//#endif
-//        break;
-//
-//      case ObjectTransformUniform::TRANSFORM_OBJECT_TO_CAMERA_TO_PROJECTION:
-//        codeName = std::get<0>(CommonUniforms::getObjectToCameraToProjection());
-//        transform = inverseViewProjection * objectToWorld;
-//        glUniformMatrix4fv(static_cast<GLint>(it->varLocation), 1, false,
-//                           static_cast<const GLfloat*>(glm::value_ptr(transform)));
-//#ifdef SPIRE_DEBUG
-//        allUniforms.remove(codeName);
-//#endif
-//        break;
-//    }
-//  }
 
   if (mGPUState != nullptr)
     mHub.getGPUStateManager().apply(priorGPUState);

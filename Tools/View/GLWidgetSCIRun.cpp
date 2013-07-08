@@ -183,13 +183,6 @@ void GLWidget::buildScene()
   // Directional light in world space.
   stuPipe->addGlobalUniform("uLightDirWorld", V3(1.0f, 0.0f, 0.0f));
 
-  /// \todo Method of setting world transform of object.
-  // We need a method of setting the world transform of the object and having
-  // it concatenated with uProjIVWorld before sending it to the GPU. Maybe a
-  // specialized uniform? Since this is such a specialized case, maybe we can
-  // just set the Object -> to world transform and have it be an attribute of
-  // the pass?
-
   // Cylinder
   {
     std::string objName = "cylinder";
@@ -218,9 +211,6 @@ void GLWidget::buildScene()
     stuPipe->addObjectPassUniform(objName, "uSpecularPower", 32.0f);
 
     stuPipe->addLambdaObjectUniforms(objName, lambdaUniformObjTrafs);
-
-    // Test code. We want to specify mutator functions for this particular
-    // shader.
 
     M44 xform;
     xform[3] = V4(0.0f, 0.0f, 0.0f, 1.0f);
