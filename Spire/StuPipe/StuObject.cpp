@@ -175,8 +175,8 @@ void StuPass::renderPass(StuObjectLambdaInterface& lambdaInterface)
   }
   else
   {
-    Log::debug() << "Rendering with prim type " << mPrimitiveType << " num elements "
-                 << mIBO->getNumElements() << " ibo type " << mIBO->getType() << std::endl;
+    //Log::debug() << "Rendering with prim type " << mPrimitiveType << " num elements "
+    //             << mIBO->getNumElements() << " ibo type " << mIBO->getType() << std::endl;
     GL(glDrawElements(mPrimitiveType, mIBO->getNumElements(), mIBO->getType(), 0));
   }
 
@@ -218,10 +218,6 @@ void StuPass::renderPass(StuObjectLambdaInterface& lambdaInterface)
 //        break;
 //    }
 //  }
-
-  //Log::debug() << "Rendering with prim type " << mPrimitiveType << " num elements "
-  //             << mIBO->getNumElements() << " ibo type " << mIBO->getType() << std::endl;
-  GL(glDrawElements(mPrimitiveType, mIBO->getNumElements(), mIBO->getType(), 0));
 
   if (mGPUState != nullptr)
     mHub.getGPUStateManager().apply(priorGPUState);
