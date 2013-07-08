@@ -32,22 +32,22 @@
 #ifndef SPIRE_STUINTERFACE_LAMBDA_H
 #define SPIRE_STUINTERFACE_LAMBDA_H
 
-#include "../Core/LambdaInterface.h"
+#include "LambdaInterface.h"
 
 namespace Spire 
 {
 
-class StuObject;
+class SpireObject;
 
 /// StuPipe interface lambda.
-class StuObjectLambdaInterface : public LambdaInterface
+class ObjectLambdaInterface : public LambdaInterface
 {
 public:
-  StuObjectLambdaInterface(Hub& hub, const std::string& pass, const StuObject& object) :
+  ObjectLambdaInterface(Hub& hub, const std::string& pass, const SpireObject& object) :
       LambdaInterface(hub, pass),
       mObject(object)
   {}
-  virtual ~StuObjectLambdaInterface() {}
+  virtual ~ObjectLambdaInterface() {}
 
   /// Retrieves object spire attribute (as opposed to shader attributes).
   /// Does not depend on the currently active pass.
@@ -62,15 +62,15 @@ public:
   /// \todo Add pass uniform lookup *if needed*.
   /// getObjectPassUniform
 
-  /// Retrieves the StuObject.
-  const StuObject& getObject() {return mObject;}
+  /// Retrieves the SpireObject.
+  const SpireObject& getObject() {return mObject;}
   
 private:
 
   std::shared_ptr<const AbstractUniformStateItem> getObjectSpireAttribute(
       const std::string& attribName);
 
-  const StuObject&   mObject;
+  const SpireObject&   mObject;
 };
 
 } // namespace 

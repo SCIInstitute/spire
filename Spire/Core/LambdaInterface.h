@@ -33,8 +33,8 @@
 #define SPIRE_LAMBDA_INTERFACE_H
 
 #include <string>
-#include "../Core/ShaderUniformStateManTemplates.h"
-#include "../Core/Hub.h"
+#include "ShaderUniformStateManTemplates.h"
+#include "Hub.h"
 
 namespace Spire
 {

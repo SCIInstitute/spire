@@ -33,8 +33,7 @@
 
 #include "Common.h"
 #include "Exceptions.h"
-#include "StuPipe/StuInterface.h"
-#include "StuPipe/StuObject.h"
+#include "Core/SpireObject.h"
 #include "Core/FileUtil.h"
 #include "AppSpecific/SCIRun/SRCommonUniforms.h"
 #include "AppSpecific/SCIRun/SRCommonAttributes.h"
@@ -48,7 +47,7 @@ namespace {
 
 // Simple function to handle object transformations so that the GPU does not
 // need to do the same calculation for each vertex.
-static void lambdaUniformObjTrafs(StuObjectLambdaInterface& iface, 
+static void lambdaUniformObjTrafs(ObjectLambdaInterface& iface, 
                                   std::list<StuInterface::UnsatisfiedUniform>& unsatisfiedUniforms)
 {
   // Cache object to world transform.
@@ -497,9 +496,9 @@ TEST_F(StuPipeTestFixture, TestTriangle)
 }
 
 //------------------------------------------------------------------------------
-TEST_F(StuPipeTestFixture, TestStuObjectsStructure)
+TEST_F(StuPipeTestFixture, TestObjectsStructure)
 {
-  // Test various functions in StuObject and StuPass.
+  // Test various functions in Object and StuPass.
   std::vector<float> vboData = 
   {
     -1.0f,  1.0f,  0.0f,
@@ -596,9 +595,9 @@ TEST_F(StuPipeTestFixture, TestStuObjectsStructure)
   mStuInterface->addObjectGlobalUniform(obj1, "uColor", V4(1.0f, 0.0f, 1.0f, 1.0f));  // pass1
 
   //----------------------------------------------------------------------------
-  // Test StuObject structures
+  // Test SpireObject structures
   //----------------------------------------------------------------------------
-  std::shared_ptr<const StuObject> object1 = mStuInterface->ntsGetObjectWithName(obj1);
+  std::shared_ptr<const SpireObject> object1 = mStuInterface->ntsGetObjectWithName(obj1);
   std::shared_ptr<const StuPass> object1Pass1 = object1->getObjectPassParams(pass1);
   std::shared_ptr<const StuPass> object1PassDefault = object1->getObjectPassParams(SPIRE_DEFAULT_PASS);
 

@@ -76,25 +76,26 @@ void InterfaceImplementation::executeQueue()
 #endif
 }
 
-//------------------------------------------------------------------------------
-void InterfaceImplementation::pipePushBack(Hub& hub,
-                                           std::shared_ptr<PipeInterface> pipe)
-{
-  hub.addPipe(pipe);
-}
-  
-//------------------------------------------------------------------------------
-void InterfaceImplementation::pipeRemove(Hub& hub,
-                                         std::shared_ptr<PipeInterface> pipe)
-{
-  hub.removePipe(pipe);
-}
-
 
 //------------------------------------------------------------------------------
 void InterfaceImplementation::resize(Hub& hub, size_t width, size_t height)
 {
   GL(glViewport(0, 0, width, height));
+}
+
+//------------------------------------------------------------------------------
+void InterfaceImplementation::clearGLResources()
+{
+  mNameToObject.clear();
+  mRenderOrderToObjects.clear();
+  mPersistentShaders.clear();
+  mVBOMap.clear();
+  mIBOMap.clear();
+
+  // Do we want to clear passes? They don't have any associated GL data.
+  //mPasses.clear();
+  //mNameToPass.clear();
+  //mGlobalBeginLambdas.clear();
 }
 
 } // end of namespace Spire

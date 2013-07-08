@@ -29,13 +29,13 @@
 /// \author James Hughes
 /// \date   July 2013
 
-#include "StuObjectLambda.h"
-#include "StuObject.h"
+#include "ObjectLambda.h"
+#include "SpireObject.h"
 
 namespace Spire {
 
 std::shared_ptr<const AbstractUniformStateItem>
-StuObjectLambdaInterface::getObjectSpireAttribute(const std::string& attribName)
+ObjectLambdaInterface::getObjectSpireAttribute(const std::string& attribName)
 {
   // Check to see if there exists a pass level attribute, if not, grab the
   // object global level attribute.

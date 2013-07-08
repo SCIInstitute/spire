@@ -100,22 +100,6 @@ public:
   // THREAD SAFE - Remember, only one consistent thread should call these
   //============================================================================
 
-  //-------
-  // Pipes
-  //-------
-  // Pipes are a generalized mechanism through which renderer objects are
-  // managed. There can be multiple pipes placed in a stack which, together,
-  // represents all rendering passes.
-
-  /// Places the given pipe at the back of stack. 
-  /// All pipes in front of this pipe on the stack will be rendered first.
-  void pipePushBack(std::shared_ptr<PipeInterface> pipe);
-
-  /// Removes a pipe from the stack.
-  /// The equality operator, as defined for shared_ptr, is used when traversing
-  /// the stack.
-  void pipeRemove(std::shared_ptr<PipeInterface> pipe);
-
   //============================================================================
   // NOT THREAD SAFE
   //============================================================================

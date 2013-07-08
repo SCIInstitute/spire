@@ -48,7 +48,7 @@ using Spire::M44;
 
 // Simple function to handle object transformations so that the GPU does not
 // need to do the same calculation for each vertex.
-static void lambdaUniformObjTrafs(StuObjectLambdaInterface& iface, 
+static void lambdaUniformObjTrafs(ObjectLambdaInterface& iface, 
                                   std::list<StuInterface::UnsatisfiedUniform>& unsatisfiedUniforms)
 {
   // Cache object to world transform.

@@ -118,12 +118,6 @@ public:
   /// Retrieve list of directories in which to search for shaders.
   const std::vector<std::string>& getShaderDirs() const {return mShaderDirs;}
 
-  /// Adds a pipe to the back of the queue.
-  void addPipe(std::shared_ptr<PipeInterface> pipe);
-
-  /// Remove pipe from queue.
-  void removePipe(std::shared_ptr<PipeInterface> pipe);
-
   /// Terminates the rendering thread. After this call, you will be able to
   /// re-issue context->makeCurrent() and call doFrame manually.
   /// killRendererThread WILL block until the rendering thread has finished.
@@ -148,7 +142,6 @@ private:
   GPUStateManager                     mGPUStateManager; ///< GPU state manager.
   std::vector<std::string>            mShaderDirs;      ///< Shader directories to search.
 
-  std::list<std::shared_ptr<PipeInterface>> mPipes;         ///< Rendering pipes in-order.
   std::shared_ptr<InterfaceImplementation>  mInterfaceImpl; ///< Interface implementation.
 
   // Threading variables / functions

@@ -276,6 +276,8 @@ void Hub::rendererThread()
   mShaderMan->clearHeldAssets();
   mShaderProgramMan->clearHeldAssets();
 
+  mInterfaceImpl->clearGLResources();
+
   // The following needs to be done whether or not the hub is destroyed in this
   // function.
   for (auto it = mPipes.begin(); it != mPipes.end(); ++it)
@@ -292,20 +294,6 @@ void Hub::rendererThread()
 bool Hub::addFunctionToThreadQueue(const RemoteFunction& fun)
 {
   return mInterfaceImpl->addFunctionToQueue(fun);
-}
-
-
-//------------------------------------------------------------------------------
-void Hub::addPipe(std::shared_ptr<PipeInterface> pipe)
-{
-  mPipes.push_back(pipe);
-  pipe->ntsInitOnRenderThread();
-}
-
-//------------------------------------------------------------------------------
-void Hub::removePipe(std::shared_ptr<PipeInterface> pipe)
-{
-  mPipes.remove(pipe);
 }
 
 }

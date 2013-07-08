@@ -37,8 +37,8 @@
 #include <map>
 
 #include "Common.h"
-#include "Core/ShaderProgramMan.h"
-#include "Core/ShaderUniformStateManTemplates.h"
+#include "ShaderProgramMan.h"
+#include "ShaderUniformStateManTemplates.h"
 
 #include "StuVBOObject.h"
 #include "StuIBOObject.h"
@@ -59,7 +59,7 @@ public:
       std::shared_ptr<VBOObject> vbo, std::shared_ptr<IBOObject> ibo, GLenum primitiveType);
   virtual ~StuPass();
   
-  void renderPass(StuObjectLambdaInterface& lambdaInterface);
+  void renderPass(ObjectLambdaInterface& lambdaInterface);
 
   const std::string& getName() const    {return mName;}
   int32_t getPassOrder() const          {return mPassOrder;}
@@ -92,10 +92,10 @@ public:
       const std::string& attribName) const;
 
   /// Add render lambda.
-  void addRenderLambda(const StuInterface::StuObjectLambdaFunction& fp);
+  void addRenderLambda(const StuInterface::ObjectLambdaFunction& fp);
 
   /// Add uniform lambda.
-  void addUniformLambda(const StuInterface::StuObjectUniformLambdaFunction& fp);
+  void addUniformLambda(const StuInterface::ObjectUniformLambdaFunction& fp);
 
 protected:
 
@@ -178,18 +178,18 @@ protected:
   Hub&                                  mHub;     ///< Hub.
 
   /// Lambda callbacks.
-  std::vector<StuInterface::StuObjectUniformLambdaFunction> mUniformLambdas;
-  std::vector<StuInterface::StuObjectLambdaFunction>        mRenderLambdas;
+  std::vector<StuInterface::ObjectUniformLambdaFunction> mUniformLambdas;
+  std::vector<StuInterface::ObjectLambdaFunction>        mRenderLambdas;
 };
 
 //------------------------------------------------------------------------------
-// StuObject
+// SpireObject
 //------------------------------------------------------------------------------
-class StuObject
+class SpireObject
 {
 public:
 
-  StuObject(Hub& hub, const std::string& name, int32_t renderOrder);
+  SpireObject(Hub& hub, const std::string& name, int32_t renderOrder);
 
   std::string getName() const     {return mName;}
   int32_t getRenderOrder() const  {return mRenderOrder;}
@@ -273,10 +273,10 @@ public:
   bool hasGlobalUniform(const std::string& uniformName) const;
 
   /// Adds a render lambda to the given pass.
-  void addPassRenderLambda(const std::string& pass, const StuInterface::StuObjectLambdaFunction& fp);
+  void addPassRenderLambda(const std::string& pass, const StuInterface::ObjectLambdaFunction& fp);
 
   /// Adds a uniform lambda to the given pass.
-  void addPassUniformLambda(const std::string& pass, const StuInterface::StuObjectUniformLambdaFunction& fp);
+  void addPassUniformLambda(const std::string& pass, const StuInterface::ObjectUniformLambdaFunction& fp);
 
 protected:
 

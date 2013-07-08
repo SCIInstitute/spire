@@ -46,12 +46,12 @@
 #include "../Core/GPUStateManager.h"
 #include "../Core/LambdaInterface.h"
 
-#include "StuObjectLambda.h"
+#include "ObjectLambda.h"
 
 namespace Spire {
 
 class Hub;
-class StuObject;
+class SpireObject;
 class ShaderProgramAsset;
 class VBOObject;
 class IBOObject;
@@ -447,18 +447,18 @@ public:
   };
 
   // Two types of lambdas to use. One with objects, and one with passes.
-  // The name StuObjectLambdaFunction is a little deceptive.
-  // StuObjectLambdaFunctions will be called per-pass.
+  // The name ObjectLambdaFunction is a little deceptive.
+  // ObjectLambdaFunctions will be called per-pass.
   typedef std::function<void (LambdaInterface&)> StuPassLambdaFunction;
 
   // Lambda function that includes an object as context.
-  typedef std::function<void (StuObjectLambdaInterface&)> StuObjectLambdaFunction;
+  typedef std::function<void (ObjectLambdaInterface&)> ObjectLambdaFunction;
 
   /// These functions help satisfy uniforms that need extra attribute data in
   /// order to process. These can be used to remove load from the GPU by
   /// precomputing any number of things.
-  typedef std::function<void (StuObjectLambdaInterface&, std::list<UnsatisfiedUniform>&)> 
-      StuObjectUniformLambdaFunction;
+  typedef std::function<void (ObjectLambdaInterface&, std::list<UnsatisfiedUniform>&)> 
+      ObjectUniformLambdaFunction;
 
   /// The following functions add hooks into the rendering infrastructure.
   /// @{
@@ -474,11 +474,11 @@ public:
 
   /// If an object rendering lambda is found, then normal rendering does not
   /// proceed.
-  void addLambdaObjectRender(const std::string& object, const StuObjectLambdaFunction& fp, const std::string& pass = SPIRE_DEFAULT_PASS);
+  void addLambdaObjectRender(const std::string& object, const ObjectLambdaFunction& fp, const std::string& pass = SPIRE_DEFAULT_PASS);
 
   /// Lambda object uniforms are optional and they will not be called if there
   /// are no unsatisfied uniforms found.
-  void addLambdaObjectUniforms(const std::string& object, const StuObjectUniformLambdaFunction& fp, const std::string& pass = SPIRE_DEFAULT_PASS);
+  void addLambdaObjectUniforms(const std::string& object, const ObjectUniformLambdaFunction& fp, const std::string& pass = SPIRE_DEFAULT_PASS);
 
   /// @}
 
@@ -505,7 +505,7 @@ public:
 
   /// Obtain the object associated with 'name'.
   /// throws std::range_error if the object is not found.
-  std::shared_ptr<const StuObject> ntsGetObjectWithName(const std::string& name) const;
+  std::shared_ptr<const SpireObject> ntsGetObjectWithName(const std::string& name) const;
   
   /// Returns true if the system would render the list of object names in the
   /// specified order.
@@ -532,7 +532,7 @@ private:
     {}
 
     std::string                                                   mName;
-    std::unordered_map<std::string, std::shared_ptr<StuObject>>   mNameToObject;
+    std::unordered_map<std::string, std::shared_ptr<SpireObject>>   mNameToObject;
 
     std::vector<StuPassLambdaFunction>                            mPassBeginLambdas;
     std::vector<StuPassLambdaFunction>                            mPassEndLambdas;
@@ -544,11 +544,11 @@ private:
   void removeObjectFromOrderList(const std::string& objectName, int32_t objectOrder);
 
   /// This unordered map is a 1-1 mapping of object names onto objects.
-  std::unordered_map<std::string, std::shared_ptr<StuObject>>   mNameToObject;
+  std::unordered_map<std::string, std::shared_ptr<SpireObject>>   mNameToObject;
 
   /// Rendering order of objects. This map is not a well-defined function: one
   /// value in the domain possibly maps to multiple values in the range.
-  std::multimap<int32_t, std::shared_ptr<StuObject>>            mRenderOrderToObjects;
+  std::multimap<int32_t, std::shared_ptr<SpireObject>>            mRenderOrderToObjects;
 
   /// List of shaders that are stored persistently by this pipe (will never
   /// be GC'ed unless this pipe is destroyed).
@@ -670,9 +670,9 @@ private:
   static void addLambdaPrePassImpl(Hub& hub, StuInterface* iface, StuPassLambdaFunction fp, std::string pass);
   static void addLambdaPostPassImpl(Hub& hub, StuInterface* iface, StuPassLambdaFunction fp, std::string pass);
   static void addLambdaObjectUniformsImpl(Hub& hub, StuInterface* iface,
-                                          StuObjectUniformLambdaFunction fp, std::string object, std::string pass);
+                                          ObjectUniformLambdaFunction fp, std::string object, std::string pass);
   static void addLambdaObjectRenderImpl(Hub& hub, StuInterface* iface,
-                                        StuObjectLambdaFunction fp, std::string object, std::string pass);
+                                        ObjectLambdaFunction fp, std::string object, std::string pass);
   /// @}
 };
 

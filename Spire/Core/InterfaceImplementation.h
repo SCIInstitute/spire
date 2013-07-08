@@ -33,13 +33,23 @@
 #define SPIRE_HIGH_INTERFACEIMPLEMENTATION_H
 
 #include <memory>
-
+#include <utility>
+#include <vector>
+#include <list>
+#include <string>
+#include <unordered_map>
+#include <map>
+#include <tuple>
+#include <cstdint>
+#include "ShaderUniformStateManTemplates.h"
+#include "GPUStateManager.h"
+#include "LambdaInterface.h"
+#include "ThreadMessage.h"
 #include "../Common.h"
 #include "../Interface.h"
+#include "../InterfaceCommon.h"
 
-#include "ThreadMessage.h"
-#include "Hub.h"
-#include "PipeInterface.h"
+#include "ObjectLambda.h"
 
 #ifdef SPIRE_USE_STD_THREADS
 #include "CircFIFOSeqCons.hpp"
@@ -66,7 +76,7 @@ public:
   void executeQueue();
 
   //============================================================================
-  // IMPLEMENTATION
+  // STATIC IMPLEMENTATION -- Called from interface
   //============================================================================
   // All of the functions below constitute the implementation of the interface
   // to spire. 
@@ -75,20 +85,71 @@ public:
   // unavoidable). We don't want to worry about the lifetime of the objects
   // during cross-thread communication.
 
-  //-------
-  // Pipes
-  //-------
-  /// See corresponding Interface definition.
-  static void pipePushBack(Hub& hub, std::shared_ptr<PipeInterface> pipe);
-  
-  /// See corresponding Interface definition.
-  static void pipeRemove(Hub& hub, std::shared_ptr<PipeInterface> pipe);
-
   //----------
   // Graphics
   //----------
   /// Called in the event of a resize. This calls glViewport with 0, 0, width, height.
   static void resize(Hub& hub, size_t width, size_t height);
+
+  //============================================================================
+  // IMPLEMENTATION -- Called from interface
+  //============================================================================
+  /// Cleans up all GL resources.
+  void clearGLResources();
+
+  /// Performs all rendering passes.
+  void doAllPasses();
+
+  /// Performs a rendering pass.
+  void doPass(const std::string& pass);
+
+private:
+
+  struct Pass
+  {
+    Pass(const std::string& name) :
+        mName(name)
+    {}
+
+    std::string                                                   mName;
+    std::unordered_map<std::string, std::shared_ptr<SpireObject>>   mNameToObject;
+
+    std::vector<StuPassLambdaFunction>                            mPassBeginLambdas;
+    std::vector<StuPassLambdaFunction>                            mPassEndLambdas;
+
+    /// \todo Rendering order for the objects?
+  };
+
+  /// Remove the specified object from the order list.
+  void removeObjectFromOrderList(const std::string& objectName, int32_t objectOrder);
+
+  /// This unordered map is a 1-1 mapping of object names onto objects.
+  std::unordered_map<std::string, std::shared_ptr<SpireObject>>   mNameToObject;
+
+  /// Rendering order of objects. This map is not a well-defined function: one
+  /// value in the domain possibly maps to multiple values in the range.
+  std::multimap<int32_t, std::shared_ptr<SpireObject>>            mRenderOrderToObjects;
+
+  /// List of shaders that are stored persistently by this pipe (will never
+  /// be GC'ed unless this pipe is destroyed).
+  std::list<std::shared_ptr<ShaderProgramAsset>>                mPersistentShaders;
+
+  /// VBO names to our representation of a vertex buffer object.
+  std::unordered_map<std::string, std::shared_ptr<VBOObject>>   mVBOMap;
+
+  /// IBO names to our representation of an index buffer object.
+  std::unordered_map<std::string, std::shared_ptr<IBOObject>>   mIBOMap;
+
+  /// List of passes in the order they are meant to be rendered.
+  std::list<std::shared_ptr<Pass>>                              mPasses;
+  std::unordered_map<std::string, std::shared_ptr<Pass>>        mNameToPass;
+
+  /// Global begin/end lambdas.
+  /// @{
+  std::vector<StuPassLambdaFunction>                            mGlobalBeginLambdas;
+  std::vector<StuPassLambdaFunction>                            mGlobalEndLambdas;
+  /// @}
+  
 
 private:
 

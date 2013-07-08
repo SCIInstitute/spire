@@ -34,7 +34,7 @@
 
 #include "Common.h"
 #include "StuInterface.h"
-#include "StuObject.h"
+#include "SpireObject.h"
 #include "Core/ShaderProgramMan.h"
 #include "Core/Hub.h"
 #include "../Exceptions.h"
@@ -412,7 +412,7 @@ void StuInterface::addPassToObjectImpl(Hub& hub, StuInterface* iface,
                                        PRIMITIVE_TYPES type,
                                        int32_t passOrder)
 {
-  std::shared_ptr<StuObject> obj = iface->mNameToObject.at(object);
+  std::shared_ptr<SpireObject> obj = iface->mNameToObject.at(object);
   std::shared_ptr<VBOObject> vbo = iface->mVBOMap.at(vboName);
   std::shared_ptr<IBOObject> ibo = iface->mIBOMap.at(iboName);
 
@@ -471,7 +471,7 @@ void StuInterface::removeGeomPassFromObjectImpl(Hub& hub, StuInterface* iface,
                                                 std::string object,
                                                 std::string pass)
 {
-  std::shared_ptr<StuObject> obj = iface->mNameToObject.at(object);
+  std::shared_ptr<SpireObject> obj = iface->mNameToObject.at(object);
   obj->removePass(pass);
 }
 
@@ -497,8 +497,8 @@ void StuInterface::addObjectImpl(Hub& hub, StuInterface* iface,
   if (iface->mNameToObject.find(objectName) != iface->mNameToObject.end())
     throw Duplicate("There already exists an object by that name!");
 
-  std::shared_ptr<StuObject> obj = std::shared_ptr<StuObject>(
-      new StuObject(iface->mHub, objectName, renderOrder));
+  std::shared_ptr<SpireObject> obj = std::shared_ptr<SpireObject>(
+      new SpireObject(iface->mHub, objectName, renderOrder));
   iface->mNameToObject[objectName] = obj;
 
   // Add object to specified rendering order.
@@ -532,7 +532,7 @@ void StuInterface::removeObjectImpl(Hub& hub, StuInterface* iface,
   if (iface->mNameToObject.find(object) == iface->mNameToObject.end())
     throw std::range_error("Object to remove does not exist!");
 
-  std::shared_ptr<StuObject> obj = iface->mNameToObject.at(object);
+  std::shared_ptr<SpireObject> obj = iface->mNameToObject.at(object);
   iface->removeObjectFromOrderList(obj->getName(), obj->getRenderOrder());
   iface->mNameToObject.erase(object);
 }
@@ -588,7 +588,7 @@ void StuInterface::assignRenderOrderImpl(Hub& hub, StuInterface* iface,
     throw std::range_error("Object to reassign rendering order to does not exist!");
 
 
-  std::shared_ptr<StuObject> obj = iface->mNameToObject.at(objectName);
+  std::shared_ptr<SpireObject> obj = iface->mNameToObject.at(objectName);
   iface->removeObjectFromOrderList(obj->getName(), obj->getRenderOrder());
 
   // Re-assign order to object...
@@ -614,7 +614,7 @@ void StuInterface::addObjectPassUniformInternalImpl(Hub& hub, StuInterface* ifac
                                                     std::string uniformName,
                                                     std::shared_ptr<AbstractUniformStateItem> item)
 {
-  std::shared_ptr<StuObject> obj = iface->mNameToObject.at(object);
+  std::shared_ptr<SpireObject> obj = iface->mNameToObject.at(object);
   obj->addPassUniform(pass, uniformName, item);
 }
 
@@ -635,7 +635,7 @@ void StuInterface::addObjectGlobalUniformInternalImpl(Hub& hub, StuInterface* if
                                                       std::string uniformName,
                                                       std::shared_ptr<AbstractUniformStateItem> item)
 {
-  std::shared_ptr<StuObject> obj = iface->mNameToObject.at(objectName);
+  std::shared_ptr<SpireObject> obj = iface->mNameToObject.at(objectName);
   obj->addGlobalUniform(uniformName, item);
 }
 
@@ -664,7 +664,7 @@ void StuInterface::addObjectTransformImpl(Hub& hub, StuInterface* iface,
                                           std::string objectName,
                                           M44 transform)
 {
-  std::shared_ptr<StuObject> obj = iface->mNameToObject.at(objectName);
+  std::shared_ptr<SpireObject> obj = iface->mNameToObject.at(objectName);
   obj->addObjectTransform(transform);
 }
 
@@ -674,7 +674,7 @@ void StuInterface::addObjectPassGPUStateImpl(Hub& hub, StuInterface* iface,
                                              std::string pass,
                                              GPUState state)
 {
-  std::shared_ptr<StuObject> obj = iface->mNameToObject.at(object);
+  std::shared_ptr<SpireObject> obj = iface->mNameToObject.at(object);
   obj->addPassGPUState(pass, state);
 }
 
@@ -723,7 +723,7 @@ void StuInterface::addObjectGlobalSpireAttributeImpl(Hub& hub, StuInterface* ifa
                                                      std::string attributeName,
                                                      std::shared_ptr<AbstractUniformStateItem> item)
 {
-  std::shared_ptr<StuObject> obj = iface->mNameToObject.at(objectName);
+  std::shared_ptr<SpireObject> obj = iface->mNameToObject.at(objectName);
   obj->addObjectGlobalSpireAttribute(attributeName, item);
 }
 
@@ -745,7 +745,7 @@ void StuInterface::addObjectPassSpireAttributeImpl(Hub& hub, StuInterface* iface
                                                    std::shared_ptr<AbstractUniformStateItem> item,
                                                    std::string passName)
 {
-  std::shared_ptr<StuObject> obj = iface->mNameToObject.at(objectName);
+  std::shared_ptr<SpireObject> obj = iface->mNameToObject.at(objectName);
   obj->addObjectPassSpireAttribute(passName, attributeName, item);
 }
 
@@ -883,7 +883,7 @@ void StuInterface::addLambdaPostPassImpl(Hub& hub, StuInterface* iface,
 }
 
 //------------------------------------------------------------------------------
-void StuInterface::addLambdaObjectUniforms(const std::string& object, const StuObjectUniformLambdaFunction& fp, const std::string& pass)
+void StuInterface::addLambdaObjectUniforms(const std::string& object, const ObjectUniformLambdaFunction& fp, const std::string& pass)
 {
   Hub::RemoteFunction fun =
       std::bind(addLambdaObjectUniformsImpl, _1, this, fp, object, pass);
@@ -892,14 +892,14 @@ void StuInterface::addLambdaObjectUniforms(const std::string& object, const StuO
 
 //------------------------------------------------------------------------------
 void StuInterface::addLambdaObjectUniformsImpl(Hub& hub, StuInterface* iface,
-                                               StuObjectUniformLambdaFunction fp, std::string object, std::string pass)
+                                               ObjectUniformLambdaFunction fp, std::string object, std::string pass)
 {
-  std::shared_ptr<StuObject> obj = iface->mNameToObject.at(object);
+  std::shared_ptr<SpireObject> obj = iface->mNameToObject.at(object);
   obj->addPassUniformLambda(pass, fp);
 }
 
 //------------------------------------------------------------------------------
-void StuInterface::addLambdaObjectRender(const std::string& object, const StuObjectLambdaFunction& fp, const std::string& pass)
+void StuInterface::addLambdaObjectRender(const std::string& object, const ObjectLambdaFunction& fp, const std::string& pass)
 {
   Hub::RemoteFunction fun =
       std::bind(addLambdaObjectRenderImpl, _1, this, fp, object, pass);
@@ -908,14 +908,14 @@ void StuInterface::addLambdaObjectRender(const std::string& object, const StuObj
 
 //------------------------------------------------------------------------------
 void StuInterface::addLambdaObjectRenderImpl(Hub& hub, StuInterface* iface,
-                                             StuObjectLambdaFunction fp, std::string object, std::string pass)
+                                             ObjectLambdaFunction fp, std::string object, std::string pass)
 {
-  std::shared_ptr<StuObject> obj = iface->mNameToObject.at(object);
+  std::shared_ptr<SpireObject> obj = iface->mNameToObject.at(object);
   obj->addPassRenderLambda(pass, fp);
 }
 
 //------------------------------------------------------------------------------
-std::shared_ptr<const StuObject> StuInterface::ntsGetObjectWithName(const std::string& name) const
+std::shared_ptr<const SpireObject> StuInterface::ntsGetObjectWithName(const std::string& name) const
 {
   return mNameToObject.at(name);
 }
