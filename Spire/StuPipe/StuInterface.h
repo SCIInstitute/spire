@@ -474,11 +474,11 @@ public:
 
   /// If an object rendering lambda is found, then normal rendering does not
   /// proceed.
-  void addLambdaObjectRender(const StuObjectLambdaFunction& fp, const std::string& object, const std::string& pass = SPIRE_DEFAULT_PASS);
+  void addLambdaObjectRender(const std::string& object, const StuObjectLambdaFunction& fp, const std::string& pass = SPIRE_DEFAULT_PASS);
 
   /// Lambda object uniforms are optional and they will not be called if there
   /// are no unsatisfied uniforms found.
-  void addLambdaObjectUniforms(const StuObjectUniformLambdaFunction& fp, const std::string& object, const std::string& pass = SPIRE_DEFAULT_PASS);
+  void addLambdaObjectUniforms(const std::string& object, const StuObjectUniformLambdaFunction& fp, const std::string& pass = SPIRE_DEFAULT_PASS);
 
   /// @}
 

@@ -914,7 +914,7 @@ void StuInterface::addLambdaPostPassImpl(Hub& hub, StuInterface* iface,
 }
 
 //------------------------------------------------------------------------------
-void StuInterface::addLambdaObjectUniforms(const StuObjectUniformLambdaFunction& fp, const std::string& object, const std::string& pass)
+void StuInterface::addLambdaObjectUniforms(const std::string& object, const StuObjectUniformLambdaFunction& fp, const std::string& pass)
 {
   Hub::RemoteFunction fun =
       std::bind(addLambdaObjectUniformsImpl, _1, this, fp, object, pass);
@@ -930,7 +930,7 @@ void StuInterface::addLambdaObjectUniformsImpl(Hub& hub, StuInterface* iface,
 }
 
 //------------------------------------------------------------------------------
-void StuInterface::addLambdaObjectRender(const StuObjectLambdaFunction& fp, const std::string& object, const std::string& pass)
+void StuInterface::addLambdaObjectRender(const std::string& object, const StuObjectLambdaFunction& fp, const std::string& pass)
 {
   Hub::RemoteFunction fun =
       std::bind(addLambdaObjectRenderImpl, _1, this, fp, object, pass);
