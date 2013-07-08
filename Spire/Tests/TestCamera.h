@@ -69,7 +69,7 @@ public:
   static float getDefaultZFar()   {return 1350.0f;}
   /// @}
 
-  void setSRCommonUniforms(std::shared_ptr<Spire::StuInterface&> iface);
+  void setSRCommonUniforms(std::shared_ptr<Spire::StuInterface> iface);
 
 private:
 

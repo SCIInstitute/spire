@@ -66,15 +66,18 @@ public:
 
   // Utility functions to set uniform values.
   template <class T>
-  static typename std::enable_if<std::is_same<T, M44>::value, T> setUniform(
-      std::string uniformName, int uniformType, int location, const T& val)
+  static typename std::enable_if<std::is_same<T, M44>::value, void>::type setUniform(
+      unsigned int uniformType, std::string uniformName, int location, const T& val)
   {
-    if (uniformType != UNIFORM_FLOAT_MAT4)
+    int glType = uniformToGLType(UNIFORM_FLOAT_MAT4);
+    if (uniformType != glType)
       throw std::runtime_error("Mismatched uniform types! Did not expect M44.");
     AbstractUniformStateItem::uniformMatrix4fv(location, 1, false, glm::value_ptr(val));
   }
 
 protected:
+
+  static int uniformToGLType(UNIFORM_TYPE type);
 
   Hub&          mHub;
   std::string   mPass;

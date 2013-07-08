@@ -60,25 +60,37 @@ static void lambdaUniformObjTrafs(StuObjectLambdaInterface& iface,
   std::string objectToCamProjName = std::get<0>(SRCommonUniforms::getObjectToCameraToProjection());
 
   // Loop through the unsatisfied uniforms and see if we can provide any.
-  for (auto it = unsatisfiedUniforms.begin(); it != unsatisfiedUniforms.end(); ++it)
+  for (auto it = unsatisfiedUniforms.begin(); it != unsatisfiedUniforms.end(); /*nothing*/ )
   {
     if (it->uniformName == objectTrafoName)
     {
-      LambdaInterface::setUniform<M44>(it->uniformName, it->uniformType, 
+      LambdaInterface::setUniform<M44>(it->uniformType, it->uniformName,
                                        it->shaderLocation, objToWorld);
+
+      it = unsatisfiedUniforms.erase(it);
     }
     else if (it->uniformName == objectToViewName)
     {
       // Grab the inverse view transform.
-      M44 inverseView = iface.getGlobalUniform<M44>(objectToViewName);
-      LambdaInterface::setUniform<M44>(it->uniformName, it->uniformType, 
+      M44 inverseView = glm::affineInverse(
+          iface.getGlobalUniform<M44>(std::get<0>(SRCommonUniforms::getCameraToWorld())));
+      LambdaInterface::setUniform<M44>(it->uniformType, it->uniformName,
                                        it->shaderLocation, inverseView * objToWorld);
+
+      it = unsatisfiedUniforms.erase(it);
     }
     else if (it->uniformName == objectToCamProjName)
     {
-      M44 inverseViewProjection = iface.getGlobalUniform<M44>(objectToCamProjName);
-      LambdaInterface::setUniform<M44>(it->uniformName, it->uniformType, 
+      M44 inverseViewProjection = iface.getGlobalUniform<M44>(
+          std::get<0>(SRCommonUniforms::getToCameraToProjection()));
+      LambdaInterface::setUniform<M44>(it->uniformType, it->uniformName,
                                        it->shaderLocation, inverseViewProjection * objToWorld);
+
+      it = unsatisfiedUniforms.erase(it);
+    }
+    else
+    {
+      ++it;
     }
   }
 }
@@ -645,6 +657,94 @@ TEST_F(StuPipeTestFixture, TestStuObjectsStructure)
 }
 
 //------------------------------------------------------------------------------
+TEST_F(StuPipeTestFixture, TestRenderingWithObject)
+{
+  // This test demonstrates a quick and dirty rendering pipeline using
+  // attributes and lambdas. Spire knows nothing about the objects, but allows
+  // sufficient flexibility that it is possible to do many things.
+
+  // First things first: just get the rendered image onto the filesystem...
+  std::shared_ptr<std::vector<uint8_t>> rawVBO(new std::vector<uint8_t>());
+  std::shared_ptr<std::vector<uint8_t>> rawIBO(new std::vector<uint8_t>());
+  std::fstream sphereFile("Assets/UncappedCylinder.sp");
+  StuInterface::loadProprietarySR5AssetFile(sphereFile, *rawVBO, *rawIBO);
+
+  std::vector<std::string> attribNames = {"aPos", "aNormal"};
+  StuInterface::IBO_TYPE iboType = StuInterface::IBO_16BIT;
+
+  // Add necessary VBO's and IBO's
+  std::string vboName = "vbo1";
+  std::string iboName = "ibo1";
+  mStuInterface->addVBO(vboName, rawVBO, attribNames);
+  mStuInterface->addIBO(iboName, rawIBO, iboType);
+
+  // Build shaders
+  std::string shaderName = "UniformColor";
+  mStuInterface->addPersistentShader(
+      shaderName, 
+      { {"UniformColor.vsh", StuInterface::VERTEX_SHADER}, 
+        {"UniformColor.fsh", StuInterface::FRAGMENT_SHADER},
+      });
+
+  // Add object
+  std::string objectName = "obj1";
+  mStuInterface->addObject(objectName);
+  mStuInterface->addPassToObject(objectName, shaderName, vboName, iboName, 
+                                 StuInterface::TRIANGLE_STRIP);
+  mStuInterface->addLambdaObjectUniforms(lambdaUniformObjTrafs, objectName);
+  
+  // Object pass uniforms (can be set at a global level)
+  mStuInterface->addObjectPassUniform(objectName, "uColor", V4(1.0f, 0.0f, 0.0f, 1.0f));    // default pass
+  mStuInterface->addObjectGlobalUniform(objectName, "uProjIVObject", mCamera->getWorldToProjection());
+
+  // No longer need VBO and IBO (will stay resident in the passes -- when the
+  // passes are destroyed, the VBO / IBOs will be destroyed).
+  mStuInterface->removeIBO(iboName);
+  mStuInterface->removeVBO(vboName);
+
+  mSpire->doFrame();
+
+  // Write the resultant png to a temporary directory and compare against
+  // the golden image results.
+  /// \todo Look into using boost filesystem (but it isn't header-only). 
+
+#ifdef TEST_OUTPUT_IMAGES
+  std::string imageName = "objectTest.png";
+
+  std::string targetImage = TEST_IMAGE_OUTPUT_DIR;
+  targetImage += "/" + imageName;
+  Spire::GlobalTestEnvironment::instance()->writeFBO(targetImage);
+
+  EXPECT_TRUE(Spire::fileExists(targetImage)) << "Failed to write output image! " << targetImage;
+  std::cout << "Wrote output image to: " << targetImage << std::endl;
+
+#ifdef TEST_PERCEPTUAL_COMPARE
+  // Perform the perceptual comparison using the given regression directory.
+  std::string compImage = TEST_IMAGE_COMPARE_DIR;
+  compImage += "/" + imageName;
+
+  ASSERT_TRUE(Spire::fileExists(compImage)) << "Failed to find comparison image! " << compImage;
+  // Test using perceptula comparison program that the user has provided
+  // (hopefully).
+  std::string command = TEST_PERCEPTUAL_COMPARE_BINARY;
+  command += " -threshold 50 ";
+  command += targetImage + " " + compImage;
+
+  // Usually the return code of std::system is implementation specific. But the
+  // majority of systems end up returning the exit code of the program.
+  if (std::system(command.c_str()) != 0)
+  {
+    // The images are NOT the same. Alert the user.
+    FAIL() << "Perceptual compare of " << imageName << " failed.";
+  }
+#endif
+
+#endif
+
+}
+
+
+//------------------------------------------------------------------------------
 TEST_F(StuPipeTestFixture, TestRenderingWithAttributes)
 {
   // This test demonstrates a quick and dirty rendering pipeline using
@@ -657,7 +757,7 @@ TEST_F(StuPipeTestFixture, TestRenderingWithAttributes)
   std::fstream sphereFile("Assets/Sphere.sp");
   StuInterface::loadProprietarySR5AssetFile(sphereFile, *rawVBO, *rawIBO);
 
-  std::vector<std::string> attribNames = {"aPos"};
+  std::vector<std::string> attribNames = {"aPos", "aNormal"};
   StuInterface::IBO_TYPE iboType = StuInterface::IBO_16BIT;
 
   // Add necessary VBO's and IBO's
@@ -679,6 +779,7 @@ TEST_F(StuPipeTestFixture, TestRenderingWithAttributes)
   mStuInterface->addObject(objectName);
   mStuInterface->addPassToObject(objectName, shaderName, vboName, iboName, 
                                  StuInterface::TRIANGLE_STRIP);
+  mStuInterface->addLambdaObjectUniforms(lambdaUniformObjTrafs, objectName);
   
   // Object pass uniforms (can be set at a global level)
   mStuInterface->addObjectPassUniform(objectName, "uAmbientColor", V4(0.1f, 0.1f, 0.1f, 1.0f));
@@ -689,7 +790,8 @@ TEST_F(StuPipeTestFixture, TestRenderingWithAttributes)
   // Object spire attributes (used for computing appropriate uniforms).
   M44 xform;
   xform[3] = V4(1.0f, 0.0f, 0.0f, 1.0f);
-  mStuInterface->addObjectPassSpireAttribute(objectName, "worldTrafo", xform);
+  mStuInterface->addObjectPassSpireAttribute(
+      objectName, std::get<0>(SRCommonAttributes::getObjectToWorldTrafo()), xform);
 
   // No longer need VBO and IBO (will stay resident in the passes -- when the
   // passes are destroyed, the VBO / IBOs will be destroyed).
@@ -740,24 +842,6 @@ TEST_F(StuPipeTestFixture, TestRenderingWithAttributes)
 #endif
 
 #endif
-
-  // Attempt to set global uniform value that is at odds with information found
-  // in the uniform manager (should induce a type error).
-
-  /// \todo Test adding a uniform to the global state which does not have a
-  ///       corresponding entry in the UniformManager.
-
-  /// \todo Test uniforms.
-  ///       1 - No uniforms set: should attempt to access global uniform state
-  ///           manager and extract the uniform resulting in a std::out_of_range.
-  ///       2 - Partial uniforms. Result same as #1.
-  ///       3 - Uniform type checking. Ensure the types pulled from OpenGL
-  ///           compiler matches our expected types.
-
-
-  // Create an image of appropriate dimensions.
-
-  /// \todo Test pass order using hasPassRenderingOrder on the object.
 
 }
 

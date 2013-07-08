@@ -148,7 +148,7 @@ void StuPass::renderPass(StuObjectLambdaInterface& lambdaInterface)
     {
       if (mHub.getGlobalUniformStateMan().applyUniform(it->uniformName, it->shaderLocation) == false)
         unsatisfiedGlobalUniforms.push_back(
-            StuInterface::UnsatisfiedUniform(it->uniformName, it->uniformType, it->shaderLocation));
+            StuInterface::UnsatisfiedUniform(it->uniformName, it->shaderLocation, it->uniformType));
     }
   }
 
@@ -175,8 +175,8 @@ void StuPass::renderPass(StuObjectLambdaInterface& lambdaInterface)
   }
   else
   {
-    //Log::debug() << "Rendering with prim type " << mPrimitiveType << " num elements "
-    //             << mIBO->getNumElements() << " ibo type " << mIBO->getType() << std::endl;
+    Log::debug() << "Rendering with prim type " << mPrimitiveType << " num elements "
+                 << mIBO->getNumElements() << " ibo type " << mIBO->getType() << std::endl;
     GL(glDrawElements(mPrimitiveType, mIBO->getNumElements(), mIBO->getType(), 0));
   }
 

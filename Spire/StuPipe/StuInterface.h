@@ -232,6 +232,8 @@ public:
   /// Always uses 16bit IBOs and 32bit per component position / normal in the
   /// vbo.
   /// \return Returns the number of triangles read into ibo.
+  /// \todo This should be moved into SCI-Run appspecific. It doesn't belong in
+  ///       spire.
   static size_t loadProprietarySR5AssetFile(std::istream& stream,
                                             std::vector<uint8_t>& vbo,
                                             std::vector<uint8_t>& ibo);
@@ -433,15 +435,15 @@ public:
 
   struct UnsatisfiedUniform
   {
-    UnsatisfiedUniform(const std::string& name, int location, int type) :
+    UnsatisfiedUniform(const std::string& name, int location, unsigned int type) :
         uniformName(name),
         uniformType(type),
         shaderLocation(location)
     {}
 
     std::string                         uniformName;
-    int                                 uniformType; // GLenum
-    int                                 shaderLocation;
+    unsigned int                        uniformType;    // Should be: GLenum
+    int                                 shaderLocation; // Should be: GLint
   };
 
   // Two types of lambdas to use. One with objects, and one with passes.

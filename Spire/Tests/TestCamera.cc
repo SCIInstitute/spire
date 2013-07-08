@@ -98,15 +98,16 @@ void TestCamera::setViewTransform(const Spire::M44& trafo)
 }
 
 //------------------------------------------------------------------------------
-void TestCamera::setSRCommonUniforms(Spire::StuInterface& interface)
+void TestCamera::setSRCommonUniforms(std::shared_ptr<Spire::StuInterface> iface)
 {
   // Update appropriate uniforms.
-  interface.addGlobalUniform(std::get<0>(Spire::SRCommonUniforms::getToCameraToProjection()), mPIV);
-  interface.addGlobalUniform(std::get<0>(Spire::SRCommonUniforms::getToProjection()), mP);
-  interface.addGlobalUniform(std::get<0>(Spire::SRCommonUniforms::getCameraToWorld()), mV);
+  iface->addGlobalUniform(std::get<0>(Spire::SRCommonUniforms::getToCameraToProjection()), mPIV);
+  iface->addGlobalUniform(std::get<0>(Spire::SRCommonUniforms::getToProjection()), mP);
+  iface->addGlobalUniform(std::get<0>(Spire::SRCommonUniforms::getCameraToWorld()), mV);
 
   // We've modified our projection transform so that the positive Z axis is the
   // axis which our camera will be looking down.
-  interface.addGlobalUniform(std::get<0>(Spire::SRCommonUniforms::getCameraViewVec()), Spire::V3(mV[2].xyz()));
-  interface.addGlobalUniform(std::get<0>(Spire::SRCommonUniforms::getCameraUpVec()), Spire::V3(mV[1].xyz()));
+  iface->addGlobalUniform(std::get<0>(Spire::SRCommonUniforms::getCameraViewVec()), Spire::V3(mV[2].xyz()));
+  iface->addGlobalUniform(std::get<0>(Spire::SRCommonUniforms::getCameraUpVec()), Spire::V3(mV[1].xyz()));
 }
+
