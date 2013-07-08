@@ -34,7 +34,7 @@
 
 #include <tuple>
 
-#include "Core/ShaderUniformStateManTemplates.h"
+#include "../../Core/ShaderUniformStateManTemplates.h"
 
 namespace Spire
 {

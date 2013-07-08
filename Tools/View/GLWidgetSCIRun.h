@@ -40,6 +40,8 @@
 #include "GLContext.h"
 #include "Spire/Interface.h"
 #include "Spire/AppSpecific/SCIRun/SRInterface.h"
+#include "Spire/AppSpecific/SCIRun/SRCommonAttributes.h"
+#include "Spire/AppSpecific/SCIRun/SRCommonUniforms.h"
 #include "Spire/StuPipe/StuInterface.h"
 
 namespace SCIRun {

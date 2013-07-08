@@ -40,10 +40,60 @@
 #include "GLWidgetSCIRun.h"
 
 using namespace SCIRun::Gui;
+using namespace Spire;
 using Spire::V4;
 using Spire::V3;
 using Spire::V2;
 using Spire::M44;
+
+// Simple function to handle object transformations so that the GPU does not
+// need to do the same calculation for each vertex.
+static void lambdaUniformObjTrafs(StuObjectLambdaInterface& iface, 
+                                  std::list<StuInterface::UnsatisfiedUniform>& unsatisfiedUniforms)
+{
+  // Cache object to world transform.
+  M44 objToWorld = iface.getObjectSpireAttribute<M44>(
+      std::get<0>(SRCommonAttributes::getObjectToWorldTrafo()));
+
+  std::string objectTrafoName = std::get<0>(SRCommonUniforms::getObject());
+  std::string objectToViewName = std::get<0>(SRCommonUniforms::getObjectToView());
+  std::string objectToCamProjName = std::get<0>(SRCommonUniforms::getObjectToCameraToProjection());
+
+  // Loop through the unsatisfied uniforms and see if we can provide any.
+  for (auto it = unsatisfiedUniforms.begin(); it != unsatisfiedUniforms.end(); /*nothing*/ )
+  {
+    if (it->uniformName == objectTrafoName)
+    {
+      LambdaInterface::setUniform<M44>(it->uniformType, it->uniformName,
+                                       it->shaderLocation, objToWorld);
+
+      it = unsatisfiedUniforms.erase(it);
+    }
+    else if (it->uniformName == objectToViewName)
+    {
+      // Grab the inverse view transform.
+      M44 inverseView = glm::affineInverse(
+          iface.getGlobalUniform<M44>(std::get<0>(SRCommonUniforms::getCameraToWorld())));
+      LambdaInterface::setUniform<M44>(it->uniformType, it->uniformName,
+                                       it->shaderLocation, inverseView * objToWorld);
+
+      it = unsatisfiedUniforms.erase(it);
+    }
+    else if (it->uniformName == objectToCamProjName)
+    {
+      M44 inverseViewProjection = iface.getGlobalUniform<M44>(
+          std::get<0>(SRCommonUniforms::getToCameraToProjection()));
+      LambdaInterface::setUniform<M44>(it->uniformType, it->uniformName,
+                                       it->shaderLocation, inverseViewProjection * objToWorld);
+
+      it = unsatisfiedUniforms.erase(it);
+    }
+    else
+    {
+      ++it;
+    }
+  }
+}
 
 //------------------------------------------------------------------------------
 GLWidget::GLWidget(const QGLFormat& format) :
@@ -96,10 +146,11 @@ void GLWidget::buildScene()
         {"DirGouraud.fsh", Spire::StuInterface::FRAGMENT_SHADER},
       });
 
+  // This load asset function operates only on the default pass, since optional
+  // arguments are NOT allowed in lambdas.
   auto loadAsset = [stuPipe](const std::string& assetFileName, 
                              const std::string& shader,
-                             const std::string& objectName,
-                             const std::string& passName)
+                             const std::string& objectName)
   {
     // Load asset data from 'exported assets'.
     std::shared_ptr<std::vector<uint8_t>> vbo(new std::vector<uint8_t>());
@@ -126,7 +177,7 @@ void GLWidget::buildScene()
     stuPipe->addObject(objectName);
 
     // Build the pass
-    stuPipe->addPassToObject(objectName, passName, shader, vbo1, ibo1, Spire::StuInterface::TRIANGLES);
+    stuPipe->addPassToObject(objectName, shader, vbo1, ibo1, Spire::StuInterface::TRIANGLES);
   };
 
   // Directional light in world space.
@@ -142,49 +193,55 @@ void GLWidget::buildScene()
   // Cylinder
   {
     std::string objName = "cylinder";
-    std::string passName = "cylinderPass";
 
-    loadAsset("Assets/CappedCylinder.sp", uniformColorShader, objName, passName);
+    loadAsset("Assets/CappedCylinder.sp", uniformColorShader, objName);
 
-    stuPipe->addPassUniform(objName, passName, "uColor", V4(0.74f, 0.0f, 0.0f, 1.0f));
+    stuPipe->addObjectPassUniform(objName, "uColor", V4(0.74f, 0.0f, 0.0f, 1.0f));
+
+    stuPipe->addLambdaObjectUniforms(objName, lambdaUniformObjTrafs);
 
     M44 xform;
     xform[3] = V4(1.0f, 0.0f, 0.0f, 1.0f);
-    stuPipe->addObjectTransform(objName, xform);
+    stuPipe->addObjectPassSpireAttribute(
+        objName, std::get<0>(SRCommonAttributes::getObjectToWorldTrafo()), xform);
   }
 
   // Sphere
   {
     std::string objName = "sphere";
-    std::string passName = "spherePass";
 
-    loadAsset("Assets/Sphere.sp", dirGouraudShader, objName, passName);
+    loadAsset("Assets/Sphere.sp", dirGouraudShader, objName);
 
-    stuPipe->addObjectPassUniform(objName, "uAmbientColor", V4(0.1f, 0.1f, 0.1f, 1.0f), passName);
-    stuPipe->addObjectPassUniform(objName, "uDiffuseColor", V4(0.8f, 0.8f, 0.0f, 1.0f), passName);
-    stuPipe->addObjectPassUniform(objName, "uSpecularColor", V4(0.5f, 0.5f, 0.5f, 1.0f), passName);
-    stuPipe->addObjectPassUniform(objName, "uSpecularPower", 32.0f, passName);
+    stuPipe->addObjectPassUniform(objName, "uAmbientColor", V4(0.1f, 0.1f, 0.1f, 1.0f));
+    stuPipe->addObjectPassUniform(objName, "uDiffuseColor", V4(0.8f, 0.8f, 0.0f, 1.0f));
+    stuPipe->addObjectPassUniform(objName, "uSpecularColor", V4(0.5f, 0.5f, 0.5f, 1.0f));
+    stuPipe->addObjectPassUniform(objName, "uSpecularPower", 32.0f);
+
+    stuPipe->addLambdaObjectUniforms(objName, lambdaUniformObjTrafs);
 
     // Test code. We want to specify mutator functions for this particular
     // shader.
 
     M44 xform;
     xform[3] = V4(0.0f, 0.0f, 0.0f, 1.0f);
-    stuPipe->addObjectTransform(objName, xform);
+    stuPipe->addObjectPassSpireAttribute(
+        objName, std::get<0>(SRCommonAttributes::getObjectToWorldTrafo()), xform);
   }
 
   // UnCapped cylinder
   {
     std::string objName = "uncylinder";
-    std::string passName = "uncylinderPass";
 
-    loadAsset("Assets/UncappedCylinder.sp", uniformColorShader, objName, passName);
+    loadAsset("Assets/UncappedCylinder.sp", uniformColorShader, objName);
 
-    stuPipe->addPassUniform(objName, passName, "uColor", V4(0.0f, 0.0f, 0.74f, 1.0f));
+    stuPipe->addObjectPassUniform(objName, "uColor", V4(0.0f, 0.0f, 0.74f, 1.0f));
+
+    stuPipe->addLambdaObjectUniforms(objName, lambdaUniformObjTrafs);
 
     M44 xform;
     xform[3] = V4(-1.0f, 0.0f, 0.0f, 1.0f);
-    stuPipe->addObjectTransform(objName, xform);
+    stuPipe->addObjectPassSpireAttribute(
+        objName, std::get<0>(SRCommonAttributes::getObjectToWorldTrafo()), xform);
   }
 }
 
