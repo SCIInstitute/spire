@@ -657,7 +657,7 @@ TEST_F(StuPipeTestFixture, TestStuObjectsStructure)
 }
 
 //------------------------------------------------------------------------------
-TEST_F(StuPipeTestFixture, TestRenderingWithObject)
+TEST_F(StuPipeTestFixture, TestRenderingWithSR5Object)
 {
   // This test demonstrates a quick and dirty rendering pipeline using
   // attributes and lambdas. Spire knows nothing about the objects, but allows

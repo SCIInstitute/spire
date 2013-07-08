@@ -118,39 +118,34 @@ public:
     GL(glPixelStorei(GL_PACK_ALIGNMENT, 1));
     GL(glPixelStorei(GL_UNPACK_ALIGNMENT, 1));
     GL(glReadBuffer(GL_COLOR_ATTACHMENT0));     // Reading straight from the FBO
-    GL(glReadPixels(0,0,viewport[2],viewport[3],GL_RGBA,GL_UNSIGNED_BYTE,&mRawImage[0]));
+    GL(glReadPixels(0,0,mWidth,mHeight,GL_RGBA,GL_UNSIGNED_BYTE,&mRawImage[0]));
 
     // We are using shared memory for the CImg class so it doesn't have to allocate its own.
     // It would be better to std::move vector into CImg though.
     // \todo image flipped?
-    CImg<uint8_t> img(&mRawImage[0], viewport[2], viewport[3], 1, 4, false);
+    CImg<uint8_t> img(&mRawImage[0], mWidth, mHeight, 1, 4, false);
 
     // 'De-interleave' the image data - extremelly inneficient seeing as we are
-    // going to writing the output data in interleaved format anyways...
-    uint8_t* glData = &mRawImage[0];
-    uint8_t* cimgData = img.data();
+    // going to writing the output data in interleaved format anyways.
+    uint8_t* glData     = &mRawImage[0];
+    uint8_t* cimgData   = img.data();
 
-    size_t channelSize = viewport[2] * viewport[3];
-    size_t imgSize = channelSize * 4;
+    size_t channelSize  = mWidth * mHeight;
+    size_t imgSize      = channelSize * 4;
 
-    int ci = 0; // channel index.
-    for (size_t i = 0, ci = 0; i < imgSize; i += 4, ++ci)
+    int pixIndex = 0; // pixel index.
+    for (size_t i = 0, pixIndex = 0; i < imgSize; i += 4, ++pixIndex)
     {
-      //cimgData[ci + channelSize*0] = glData[i + 0];
-      //cimgData[ci + channelSize*1] = glData[i + 1]; 
-      //cimgData[ci + channelSize*2] = glData[i + 2];
-      //cimgData[ci + channelSize*3] = glData[i + 3];
-
       // Origin is at bottom left for OpenGL. So while we are de-interleaving,
       // we may as well flip the image. This is what the subtraction is all
-      // about.
-      int row = (ci / viewport[2] + 1) * viewport[2]; // Expect this to be floored.
-      int offset = ci % viewport[2];  // Offset from the beginning of the row.
-      int rowoff = row + offset;      // Combined row / offset.
-      cimgData[channelSize*1 - rowoff] = glData[i + 0];
-      cimgData[channelSize*2 - rowoff] = glData[i + 1]; 
-      cimgData[channelSize*3 - rowoff] = glData[i + 2];
-      cimgData[channelSize*4 - rowoff] = glData[i + 3];
+      // about, and the multiplication start at 1 instead of 0.
+      int row = (pixIndex / mWidth) * mWidth; // Expect this to be floored.
+      int offset = pixIndex % mWidth;         // Offset from the beginning of the row.
+      int rowoff = row + offset;              // Combined row / offset.
+      cimgData[(channelSize*1-1) - rowoff] = glData[i + 0];
+      cimgData[(channelSize*2-1) - rowoff] = glData[i + 1]; 
+      cimgData[(channelSize*3-1) - rowoff] = glData[i + 2];
+      cimgData[(channelSize*4-1) - rowoff] = glData[i + 3];
     }
     img.save(file.c_str());
   }
