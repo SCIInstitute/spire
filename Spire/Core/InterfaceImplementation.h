@@ -114,8 +114,8 @@ private:
     std::string                                                   mName;
     std::unordered_map<std::string, std::shared_ptr<SpireObject>>   mNameToObject;
 
-    std::vector<StuPassLambdaFunction>                            mPassBeginLambdas;
-    std::vector<StuPassLambdaFunction>                            mPassEndLambdas;
+    std::vector<Interface::StuPassLambdaFunction>                            mPassBeginLambdas;
+    std::vector<Interface::StuPassLambdaFunction>                            mPassEndLambdas;
 
     /// \todo Rendering order for the objects?
   };
