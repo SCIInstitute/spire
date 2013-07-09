@@ -36,7 +36,7 @@
 #include <memory>
 
 #include "Common.h"
-#include "StuInterface.h"
+#include "../Interface.h"
 
 namespace Spire
 {
@@ -47,7 +47,7 @@ class IBOObject
 {
 public:
   IBOObject(std::shared_ptr<std::vector<uint8_t>> iboData,
-            StuInterface::IBO_TYPE type);
+            Interface::IBO_TYPE type);
   ~IBOObject();
 
   GLuint getGLIndex() const               {return mGLIndex;}

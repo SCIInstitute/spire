@@ -41,7 +41,6 @@
 
 // From spire
 #include "Spire/Interface.h"
-#include "Spire/StuPipe/StuInterface.h"
 
 class GLWidget : public QGLWidget
 {

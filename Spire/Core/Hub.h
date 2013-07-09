@@ -42,7 +42,6 @@
 #endif
 
 #include "../Interface.h"
-#include "PipeInterface.h"
 #include "GPUStateManager.h"
 #include "ShaderUniformStateMan.h"  // We want the interface to see this (to retrieve global uniforms).
 #include "PassUniformStateMan.h"

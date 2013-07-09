@@ -34,7 +34,6 @@
 
 #include "../../Interface.h"
 #include "../../InterfaceCommon.h"
-#include "../../StuPipe/StuInterface.h"
 
 namespace Spire {
 namespace SCIRun {

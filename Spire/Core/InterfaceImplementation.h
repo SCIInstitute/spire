@@ -41,10 +41,6 @@
 #include <map>
 #include <tuple>
 #include <cstdint>
-#include "ShaderUniformStateManTemplates.h"
-#include "GPUStateManager.h"
-#include "LambdaInterface.h"
-#include "ThreadMessage.h"
 #include "../Common.h"
 #include "../Interface.h"
 #include "../InterfaceCommon.h"
@@ -57,6 +53,12 @@
 
 namespace Spire
 {
+
+class Hub;
+class SpireObject;
+class ShaderProgramAsset;
+class VBOObject;
+class IBOObject;
 
 /// Implementation of the functions exposed in Interface.h
 class InterfaceImplementation
@@ -114,8 +116,8 @@ private:
     std::string                                                   mName;
     std::unordered_map<std::string, std::shared_ptr<SpireObject>>   mNameToObject;
 
-    std::vector<Interface::StuPassLambdaFunction>                            mPassBeginLambdas;
-    std::vector<Interface::StuPassLambdaFunction>                            mPassEndLambdas;
+    std::vector<Interface::PassLambdaFunction>                            mPassBeginLambdas;
+    std::vector<Interface::PassLambdaFunction>                            mPassEndLambdas;
 
     /// \todo Rendering order for the objects?
   };
@@ -146,8 +148,8 @@ private:
 
   /// Global begin/end lambdas.
   /// @{
-  std::vector<StuPassLambdaFunction>                            mGlobalBeginLambdas;
-  std::vector<StuPassLambdaFunction>                            mGlobalEndLambdas;
+  std::vector<Interface::PassLambdaFunction>                               mGlobalBeginLambdas;
+  std::vector<Interface::PassLambdaFunction>                               mGlobalEndLambdas;
   /// @}
   
 

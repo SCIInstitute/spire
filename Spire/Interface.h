@@ -34,14 +34,16 @@
 
 #include <string>
 #include <vector>
+#include <list>
 #include <functional>
 #include <memory>
 
-#include "Context.h"
 #include "InterfaceCommon.h"
+#include "Context.h"
+
 #include "Core/Math.h"  // Necessary in order to communicate vector types.
-#include "Core/LambdaInterface.h"
-#include "Core/ObjectLambda.h"
+#include "Core/ShaderUniformStateManTemplates.h"
+#include "Core/GPUStateManager.h"
 
 /// \todo The following *really* wants to be a constexpr inside of StuInterface,
 /// when we upgrade to VS 2012, we should also upgrade this.
@@ -51,7 +53,9 @@ namespace Spire {
 
 class Hub;
 class HubThread;
-class PipeInterface;
+class LambdaInterface;
+class ObjectLambdaInterface;
+class SpireObject;
 
 /// Interface to the renderer.
 /// A new interface will need to be created per-context.
@@ -572,5 +576,8 @@ private:
 };
 
 } // namespace spire
+
+#include "Core/LambdaInterface.h"
+#include "Core/ObjectLambda.h"
 
 #endif // SPIRE_INTERFACE_H

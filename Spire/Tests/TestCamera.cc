@@ -31,7 +31,6 @@
 
 #include "TestCamera.h"
 #include "GlobalTestEnvironment.h"
-#include "StuPipe/StuInterface.h"
 #include "AppSpecific/SCIRun/SRCommonUniforms.h"
 
 //------------------------------------------------------------------------------
