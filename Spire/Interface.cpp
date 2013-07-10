@@ -72,5 +72,21 @@ void Interface::ntsDoFrame()
   mHub->doFrame();
 }
 
+//------------------------------------------------------------------------------
+void Interface::addPassToFront(const std::string& passName)
+{
+  Hub::RemoteFunction fun =
+      std::bind(InterfaceImplementation::addPassToFront, _1, passName);
+  mHub->addFunctionToThreadQueue(fun);
+}
+
+//------------------------------------------------------------------------------
+void Interface::addPassToBack(const std::string& passName)
+{
+  Hub::RemoteFunction fun =
+      std::bind(InterfaceImplementation::addPassToBack, _1, passName);
+  mHub->addFunctionToThreadQueue(fun);
+}
+
 } // end of namespace Renderer
 

@@ -64,7 +64,7 @@ void InterfaceImplementation::executeQueue()
   {
     try
     {
-      msg.execute(mHub);
+      msg.execute(this);
     }
     catch (std::exception& e)
     {
@@ -127,6 +127,11 @@ void InterfaceImplementation::doAllPasses()
   /// uniforms.
 }
 
+//------------------------------------------------------------------------------
+bool InterfaceImplementation::hasPass(const std::string& pass) const
+{
+  return (mNameToPass.find(pass) != mNameToPass.end());
+}
 
 //------------------------------------------------------------------------------
 void InterfaceImplementation::doPass(const std::string& passName)
@@ -145,6 +150,18 @@ void InterfaceImplementation::doPass(const std::string& passName)
   }
 
   ///\todo Call pass end lambda.
+}
+
+//------------------------------------------------------------------------------
+void InterfaceImplementation::addPassToFront(InterfaceImplementation* self, std::string pass)
+{
+  // Verify that there is no pass by that name already.
+  if (self->hasPass(passName) == true)
+    throw std::runtime_error("Pass (" + passName + ") already exists!");
+
+  std::shared_ptr<Pass> pass(new Pass(passName));
+  self->mPasses.push_back(pass);
+  self->mNameToPass[passName] = pass;
 }
 
 } // end of namespace Spire

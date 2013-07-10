@@ -71,7 +71,7 @@ public:
   virtual ~Hub();
 
   /// Definition of what a remote function should accept.
-  typedef std::function<void (Hub& hub)> RemoteFunction;
+  typedef std::function<void (InterfaceImplementation* impl)> RemoteFunction;
 
   /// One-time initialization of the renderer.
   /// Called by the rendering thread, or the thread where this Interface class
@@ -116,6 +116,8 @@ public:
 
   /// Retrieve list of directories in which to search for shaders.
   const std::vector<std::string>& getShaderDirs() const {return mShaderDirs;}
+
+  std::shared_ptr<InterfaceImplementation> getInterfaceImpl() {return mInterfaceImpl;}
 
   /// Terminates the rendering thread. After this call, you will be able to
   /// re-issue context->makeCurrent() and call doFrame manually.

@@ -113,6 +113,27 @@ public:
   /// Retrieves current render order.
   int32_t getRenderOrder()    {return mCurrentRenderOrder;}
 
+  /// Returns true if the pass already exists.
+  bool hasPass(const std::string& pass) const;
+
+  /// \note: All of the functions below except all of their parameters by
+  ///        *value* not by reference. The only exception is the Hub variable,
+  ///        which is passed by the current thread so we are guarenteed that it
+  ///        has not gone out of scope. We have no such guarantees about 
+  ///        variables on a separate thread.
+
+  //--------
+  // Passes
+  //--------
+
+  /// Adds a pass to the front of the pass list. Passes at the front of the list
+  /// are rendered first.
+  static void addPassToFront(InterfaceImplementation* self, std::string pass);
+
+  /// Adds a pass to the back of the pass list. Passes at the back of the list
+  /// are rendered last.
+  static void addPassToBack(InterfaceImplementation* self, std::string passName);
+
 private:
 
   struct Pass
