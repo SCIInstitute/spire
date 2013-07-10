@@ -29,8 +29,9 @@
 /// \author James Hughes
 /// \date   February 2013
 
-#include "Core/Hub.h"
+#include "Hub.h"
 #include "InterfaceImplementation.h"
+#include "SpireObject.h"
 
 namespace Spire {
 
@@ -96,6 +97,54 @@ void InterfaceImplementation::clearGLResources()
   //mPasses.clear();
   //mNameToPass.clear();
   //mGlobalBeginLambdas.clear();
+}
+
+//------------------------------------------------------------------------------
+void InterfaceImplementation::doAllPasses()
+{
+  /// \todo Call all passes begin lambdas. Used primarily to setup global
+  /// uniforms.
+
+  /// \todo Move this outside of the interface!
+  GL(glClearColor(0.0f, 0.0f, 0.0f, 1.0f));
+  GL(glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT));
+
+  /// \todo Make line width a part of the GPU state.
+  glLineWidth(2.0f);
+  //glEnable(GL_LINE_SMOOTH);
+
+  GPUState defaultGPUState;
+  mHub.getGPUStateManager().apply(defaultGPUState, true); // true = force application of state.
+
+
+  // Loop through all of the passes.
+  for (auto it = mPasses.begin(); it != mPasses.end(); ++it)
+  {
+    doPass((*it)->mName);
+  }
+
+  /// \todo Call all passes end lambdas. Used primarily to setup global
+  /// uniforms.
+}
+
+
+//------------------------------------------------------------------------------
+void InterfaceImplementation::doPass(const std::string& passName)
+{
+  std::shared_ptr<Pass> pass = mNameToPass.at(passName);
+
+  ///\todo Call pass begin lambdas. Setup global pass specific uniforms.
+
+  // Loop over all objects in the pass and render them.
+  /// \todo Need to add some way of ordering the rendered objects, whether it be
+  /// by another structure built into Spire (not for this at all), or some lambda
+  /// callback.
+  for (auto it = pass->mNameToObject.begin(); it != pass->mNameToObject.end(); ++it)
+  {
+    it->second->renderPass(passName);
+  }
+
+  ///\todo Call pass end lambda.
 }
 
 } // end of namespace Spire

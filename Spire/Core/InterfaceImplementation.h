@@ -121,11 +121,11 @@ private:
         mName(name)
     {}
 
-    std::string                                                   mName;
+    std::string                                                     mName;
     std::unordered_map<std::string, std::shared_ptr<SpireObject>>   mNameToObject;
 
-    std::vector<Interface::PassLambdaFunction>                            mPassBeginLambdas;
-    std::vector<Interface::PassLambdaFunction>                            mPassEndLambdas;
+    std::vector<Interface::PassLambdaFunction>                      mPassBeginLambdas;
+    std::vector<Interface::PassLambdaFunction>                      mPassEndLambdas;
 
     /// \todo Rendering order for the objects?
   };
@@ -142,22 +142,22 @@ private:
 
   /// List of shaders that are stored persistently by this pipe (will never
   /// be GC'ed unless this pipe is destroyed).
-  std::list<std::shared_ptr<ShaderProgramAsset>>                mPersistentShaders;
+  std::list<std::shared_ptr<ShaderProgramAsset>>                  mPersistentShaders;
 
   /// VBO names to our representation of a vertex buffer object.
-  std::unordered_map<std::string, std::shared_ptr<VBOObject>>   mVBOMap;
+  std::unordered_map<std::string, std::shared_ptr<VBOObject>>     mVBOMap;
 
   /// IBO names to our representation of an index buffer object.
-  std::unordered_map<std::string, std::shared_ptr<IBOObject>>   mIBOMap;
+  std::unordered_map<std::string, std::shared_ptr<IBOObject>>     mIBOMap;
 
   /// List of passes in the order they are meant to be rendered.
-  std::list<std::shared_ptr<Pass>>                              mPasses;
-  std::unordered_map<std::string, std::shared_ptr<Pass>>        mNameToPass;
+  std::list<std::shared_ptr<Pass>>                                mPasses;
+  std::unordered_map<std::string, std::shared_ptr<Pass>>          mNameToPass;
 
   /// Global begin/end lambdas.
   /// @{
-  std::vector<Interface::PassLambdaFunction>                               mGlobalBeginLambdas;
-  std::vector<Interface::PassLambdaFunction>                               mGlobalEndLambdas;
+  std::vector<Interface::PassLambdaFunction>                      mGlobalBeginLambdas;
+  std::vector<Interface::PassLambdaFunction>                      mGlobalEndLambdas;
   /// @}
 
   // NOTE:  The following variable should only be accessed on the client side.

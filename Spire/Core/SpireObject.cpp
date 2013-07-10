@@ -41,11 +41,11 @@
 namespace Spire {
 
 //------------------------------------------------------------------------------
-// StuPass
+// ObjectPass
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-StuPass::StuPass(
+ObjectPass::ObjectPass(
     Hub& hub,
     const std::string& passName, const std::string& programName, int32_t passOrder,
     std::shared_ptr<VBOObject> vbo, std::shared_ptr<IBOObject> ibo, GLenum primitiveType) :
@@ -82,12 +82,12 @@ StuPass::StuPass(
 }
 
 //------------------------------------------------------------------------------
-StuPass::~StuPass()
+ObjectPass::~ObjectPass()
 {
 }
 
 //------------------------------------------------------------------------------
-void StuPass::renderPass(ObjectLambdaInterface& lambdaInterface)
+void ObjectPass::renderPass(ObjectLambdaInterface& lambdaInterface)
 {
   GL(glUseProgram(mShader->getProgramID()));
 
@@ -156,7 +156,7 @@ void StuPass::renderPass(ObjectLambdaInterface& lambdaInterface)
 }
 
 //------------------------------------------------------------------------------
-bool StuPass::addPassUniform(const std::string uniformName,
+bool ObjectPass::addPassUniform(const std::string uniformName,
                              std::shared_ptr<AbstractUniformStateItem> item,
                              bool isObjectGlobalUniform)
 {
@@ -240,14 +240,14 @@ bool StuPass::addPassUniform(const std::string uniformName,
 }
 
 //------------------------------------------------------------------------------
-void StuPass::addGPUState(const GPUState& state)
+void ObjectPass::addGPUState(const GPUState& state)
 {
   // This will destroy any prior gpu state.
   mGPUState = std::unique_ptr<GPUState>(new GPUState(state));
 }
 
 //------------------------------------------------------------------------------
-bool StuPass::hasPassSpecificUniform(const std::string& uniformName) const
+bool ObjectPass::hasPassSpecificUniform(const std::string& uniformName) const
 {
   for (auto it = mUniforms.begin(); it != mUniforms.end(); ++it)
   {
@@ -264,7 +264,7 @@ bool StuPass::hasPassSpecificUniform(const std::string& uniformName) const
 }
 
 //------------------------------------------------------------------------------
-bool StuPass::hasUniform(const std::string& uniformName) const
+bool ObjectPass::hasUniform(const std::string& uniformName) const
 {
   for (auto it = mUniforms.begin(); it != mUniforms.end(); ++it)
   {
@@ -275,14 +275,14 @@ bool StuPass::hasUniform(const std::string& uniformName) const
 }
 
 //------------------------------------------------------------------------------
-void StuPass::addSpireAttribute(const std::string& attributeName,
+void ObjectPass::addSpireAttribute(const std::string& attributeName,
                                 std::shared_ptr<AbstractUniformStateItem> item)
 {
   mSpireAttributes[attributeName] = item;
 }
 
 //------------------------------------------------------------------------------
-std::shared_ptr<const AbstractUniformStateItem> StuPass::getSpireAttribute(
+std::shared_ptr<const AbstractUniformStateItem> ObjectPass::getSpireAttribute(
     const std::string& attribName) const
 {
   auto it = mSpireAttributes.find(attribName);
@@ -297,13 +297,13 @@ std::shared_ptr<const AbstractUniformStateItem> StuPass::getSpireAttribute(
 }
 
 //------------------------------------------------------------------------------
-void StuPass::addRenderLambda(const StuInterface::ObjectLambdaFunction& fp)
+void ObjectPass::addRenderLambda(const StuInterface::ObjectLambdaFunction& fp)
 {
   mRenderLambdas.push_back(fp);
 }
 
 //------------------------------------------------------------------------------
-void StuPass::addUniformLambda(const StuInterface::ObjectUniformLambdaFunction& fp)
+void ObjectPass::addUniformLambda(const StuInterface::ObjectUniformLambdaFunction& fp)
 {
   mUniformLambdas.push_back(fp);
 }
@@ -341,7 +341,7 @@ void SpireObject::addPass(
     throw Duplicate("There already exists a pass with the specified pass name.");
 
   // Build the pass.
-  std::shared_ptr<StuPass> pass(new StuPass(mHub, passName, program, passOrder,
+  std::shared_ptr<ObjectPass> pass(new ObjectPass(mHub, passName, program, passOrder,
                                             vbo, ibo, type));
   
   mPasses.insert(std::make_pair(passName, pass));
@@ -355,7 +355,7 @@ void SpireObject::addPass(
 }
 
 //------------------------------------------------------------------------------
-std::shared_ptr<const StuPass> SpireObject::getObjectPassParams(const std::string& passName) const
+std::shared_ptr<const ObjectPass> SpireObject::getObjectPassParams(const std::string& passName) const
 {
   return getPassByName(passName);
 }
@@ -365,7 +365,7 @@ void SpireObject::removePass(const std::string& passName)
 {
   // This call will throw std::out_of_range error if passName doesn't exist in
   // the pass' unordered_map.
-  std::shared_ptr<StuPass> pass = getPassByName(passName);
+  std::shared_ptr<ObjectPass> pass = getPassByName(passName);
 
   mPasses.erase(passName);
   removePassFromOrderList(pass->getName(), pass->getPassOrder());
@@ -416,7 +416,7 @@ void SpireObject::addObjectPassSpireAttribute(const std::string& passName,
                                             const std::string& attributeName,
                                             std::shared_ptr<AbstractUniformStateItem> item)
 {
-  std::shared_ptr<StuPass> pass = getPassByName(passName);
+  std::shared_ptr<ObjectPass> pass = getPassByName(passName);
   pass->addSpireAttribute(attributeName, item);
 }
 
@@ -425,7 +425,7 @@ std::shared_ptr<const AbstractUniformStateItem> SpireObject::getObjectPassSpireA
     const std::string& passName,
     const std::string& attribName) const
 {
-  std::shared_ptr<StuPass> pass = getPassByName(passName);
+  std::shared_ptr<ObjectPass> pass = getPassByName(passName);
   return pass->getSpireAttribute(attribName);
 }
 
@@ -444,7 +444,7 @@ void SpireObject::addPassUniform(const std::string& passName,
   // going to use a more cache-coherent vector. It's unlikely that we ever need
   // to grow the vector beyond the number of uniforms already present in the
   // shader.
-  std::shared_ptr<StuPass> pass = getPassByName(passName);
+  std::shared_ptr<ObjectPass> pass = getPassByName(passName);
   if (pass->addPassUniform(uniformName, item, false) == false)
   {
     std::stringstream stream;
@@ -488,12 +488,12 @@ void SpireObject::addGlobalUniform(const std::string& uniformName,
 //------------------------------------------------------------------------------
 void SpireObject::addPassGPUState(const std::string& passName, const GPUState& state)
 {
-  std::shared_ptr<StuPass> pass = getPassByName(passName);
+  std::shared_ptr<ObjectPass> pass = getPassByName(passName);
   pass->addGPUState(state);
 }
 
 //------------------------------------------------------------------------------
-std::shared_ptr<StuPass> SpireObject::getPassByName(const std::string& name) const
+std::shared_ptr<ObjectPass> SpireObject::getPassByName(const std::string& name) const
 {
   return mPasses.at(name);
 }
@@ -523,7 +523,7 @@ bool SpireObject::hasGlobalUniform(const std::string& uniformName) const
 void SpireObject::renderPass(const std::string& passName)
 {
   ObjectLambdaInterface lambdaInterface(mHub, passName, *this);
-  std::shared_ptr<StuPass> pass = mPasses[passName];
+  std::shared_ptr<ObjectPass> pass = mPasses[passName];
   pass->renderPass(lambdaInterface);
 }
 

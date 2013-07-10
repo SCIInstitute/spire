@@ -40,24 +40,24 @@
 #include "ShaderProgramMan.h"
 #include "ShaderUniformStateManTemplates.h"
 
-#include "StuVBOObject.h"
-#include "StuIBOObject.h"
+#include "VBOObject.h"
+#include "IBOObject.h"
 
 namespace Spire {
 
 //------------------------------------------------------------------------------
-// StuPass object
+// ObjectPassobject
 //------------------------------------------------------------------------------
 /// Holds all information regarding specific uniforms for use in the pass
 /// and also the GL indices of the VBO / IBO to use.
-class StuPass
+class ObjectPass
 {
 public:
-  StuPass(
+  ObjectPass(
       Hub& hub,
       const std::string& passName, const std::string& programName, int32_t passOrder,
       std::shared_ptr<VBOObject> vbo, std::shared_ptr<IBOObject> ibo, GLenum primitiveType);
-  virtual ~StuPass();
+  virtual ~ObjectPass();
   
   void renderPass(ObjectLambdaInterface& lambdaInterface);
 
@@ -263,7 +263,7 @@ public:
   void renderPass(const std::string& pass);
 
   /// Returns the associated pass. Otherwise an empty shared_ptr is returned.
-  std::shared_ptr<const StuPass> getObjectPassParams(const std::string& passName) const;
+  std::shared_ptr<const ObjectPass> getObjectPassParams(const std::string& passName) const;
 
   /// Returns the number of registered passes.
   size_t getNumPasses() const {return mPasses.size();}
@@ -295,12 +295,12 @@ protected:
   void removePassFromOrderList(const std::string& pass, int32_t passOrder);
 
   /// Retrieves the pass by name.
-  std::shared_ptr<StuPass> getPassByName(const std::string& name) const;
+  std::shared_ptr<ObjectPass> getPassByName(const std::string& name) const;
 
   /// All registered passes.
-  std::unordered_map<std::string, std::shared_ptr<StuPass>>   mPasses;
-  std::map<int32_t, std::shared_ptr<StuPass>>                 mPassRenderOrder;
-  std::vector<ObjectGlobalUniformItem>                        mObjectGlobalUniforms;
+  std::unordered_map<std::string, std::shared_ptr<ObjectPass>>  mPasses;
+  std::map<int32_t, std::shared_ptr<ObjectPass>>                mPassRenderOrder;
+  std::vector<ObjectGlobalUniformItem>                          mObjectGlobalUniforms;
   std::unordered_map<std::string, std::shared_ptr<AbstractUniformStateItem>> mSpireAttributes;
 
   // These maps may actually be more efficient implemented as an array. The map 
