@@ -46,6 +46,7 @@
 #include "../InterfaceCommon.h"
 
 #include "ObjectLambda.h"
+#include "ThreadMessage.h"
 
 #ifdef SPIRE_USE_STD_THREADS
 #include "CircFIFOSeqCons.hpp"
@@ -61,6 +62,7 @@ class VBOObject;
 class IBOObject;
 
 /// Implementation of the functions exposed in Interface.h
+/// All functions in this class are not thread safe.
 class InterfaceImplementation
 {
 public:
@@ -104,6 +106,12 @@ public:
 
   /// Performs a rendering pass.
   void doPass(const std::string& pass);
+
+  /// Retrieves number of objects.
+  size_t getNumObjects()      {return mNameToObject.size();}
+
+  /// Retrieves current render order.
+  int32_t getRenderOrder()    {return mCurrentRenderOrder;}
 
 private:
 
@@ -151,7 +159,12 @@ private:
   std::vector<Interface::PassLambdaFunction>                               mGlobalBeginLambdas;
   std::vector<Interface::PassLambdaFunction>                               mGlobalEndLambdas;
   /// @}
-  
+
+  // NOTE:  The following variable should only be accessed on the client side.
+  //        Never by the renderer. This var just makes it easier when adding
+  //        objects and you don't care about their order.
+  int32_t mCurrentRenderOrder;    ///< Current rendering order. Used for automatic order assignment.
+  int32_t mCurrentPassOrder;      ///< Current pass rendering order.
 
 private:
 

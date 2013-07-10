@@ -63,35 +63,13 @@ void Interface::terminate()
 }
 
 //------------------------------------------------------------------------------
-void Interface::doFrame()
+void Interface::ntsDoFrame()
 {
   if (mHub->isRendererThreadRunning())
     throw ThreadException("You cannot call doFrame when the renderer is "
                           "running in a separate thread.");
 
   mHub->doFrame();
-}
-
-//------------------------------------------------------------------------------
-void Interface::pipePushBack(std::shared_ptr<PipeInterface> pipe)
-{
-  pipe->setSubmitted(true);
-  Hub::RemoteFunction fun =
-      std::bind(InterfaceImplementation::pipePushBack,
-                _1, pipe);
-
-  mHub->addFunctionToThreadQueue(fun);
-}
-
-//------------------------------------------------------------------------------
-void Interface::pipeRemove(std::shared_ptr<PipeInterface> pipe)
-{
-  pipe->setSubmitted(false);
-  Hub::RemoteFunction fun =
-      std::bind(InterfaceImplementation::pipeRemove,
-                _1, pipe);
-
-  mHub->addFunctionToThreadQueue(fun);
 }
 
 } // end of namespace Renderer

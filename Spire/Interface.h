@@ -157,7 +157,7 @@ public:
   // Passes
   //--------
 
-  // The default pass is always present.
+  // The default pass (SPIRE_DEFAULT_PASS) is always present.
 
   /// Adds a pass to the front of the pass list. Passes at the front of the list
   /// are rendered first.
@@ -532,13 +532,13 @@ public:
 
   /// Obtain the current number of objects.
   /// \todo This function nedes to go to the implementation.
-  size_t ntsGetNumObjects() const         {return mNameToObject.size();}
+  size_t ntsGetNumObjects() const;           // {return mNameToObject.size();}
 
   /// Obtain the current rendering order.
   /// (technically, this is thread safe as the rendering thread never accesses
   ///  this value and is only used on the client thread).
   /// \todo This function nedes to go to the implementation.
-  int32_t ntsGetRenderOrder() const       {return mCurrentRenderOrder;}
+  int32_t ntsGetRenderOrder() const;       // {return mCurrentRenderOrder;}
 
   /// Obtain the object associated with 'name'.
   /// throws std::range_error if the object is not found.
