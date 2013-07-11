@@ -31,8 +31,8 @@
 
 #include "gtest/gtest.h"
 
-#include "Common.h"
-#include "Exceptions.h"
+#include "Core/Common.h"
+#include "Core/Exceptions.h"
 #include "Core/SpireObject.h"
 #include "Core/FileUtil.h"
 #include "AppSpecific/SCIRun/SRCommonUniforms.h"
@@ -48,7 +48,7 @@ namespace {
 // Simple function to handle object transformations so that the GPU does not
 // need to do the same calculation for each vertex.
 static void lambdaUniformObjTrafs(ObjectLambdaInterface& iface, 
-                                  std::list<StuInterface::UnsatisfiedUniform>& unsatisfiedUniforms)
+                                  std::list<Interface::UnsatisfiedUniform>& unsatisfiedUniforms)
 {
   // Cache object to world transform.
   M44 objToWorld = iface.getObjectSpireAttribute<M44>(
@@ -156,7 +156,7 @@ TEST(StuInterfaceTests, TestSR5AssetLoader)
   std::istringstream ss(sRaw.str());
   std::vector<uint8_t> vbo;
   std::vector<uint8_t> ibo;
-  size_t numTriangles = StuInterface::loadProprietarySR5AssetFile(ss, vbo, ibo);
+  size_t numTriangles = Interface::loadProprietarySR5AssetFile(ss, vbo, ibo);
 
   ASSERT_EQ(1, numTriangles);
 
@@ -216,63 +216,28 @@ TEST_F(StuPipeTestFixture, TestPublicInterface)
   std::string obj3 = "obj3";
 
   // We have a fresh instance of spire with a StuPipe bound.
-  mStuInterface->addObject(obj1);
-  EXPECT_EQ(0, mStuInterface->ntsGetObjectWithName(obj1)->getRenderOrder());
-  EXPECT_THROW(mStuInterface->addObject(obj1), Duplicate);
-  EXPECT_EQ(1, mStuInterface->ntsGetNumObjects());
+  mSpire->addObject(obj1);
+  EXPECT_THROW(mSpire->addObject(obj1), Duplicate);
+  EXPECT_EQ(1, mSpire->ntsGetNumObjects());
 
   // Add a new obj2.
-  mStuInterface->addObject(obj2);
-  EXPECT_EQ(1, mStuInterface->ntsGetObjectWithName(obj2)->getRenderOrder());
-  EXPECT_THROW(mStuInterface->addObject(obj1), Duplicate);
-  EXPECT_THROW(mStuInterface->addObject(obj2), Duplicate);
-  EXPECT_EQ(2, mStuInterface->ntsGetNumObjects());
-
-  EXPECT_TRUE(mStuInterface->ntsHasRenderingOrder({obj1, obj2}));
+  mSpire->addObject(obj2);
+  EXPECT_THROW(mSpire->addObject(obj1), Duplicate);
+  EXPECT_THROW(mSpire->addObject(obj2), Duplicate);
+  EXPECT_EQ(2, mSpire->ntsGetNumObjects());
 
   // Remove and re-add object 1.
-  mStuInterface->removeObject(obj1);
-  EXPECT_EQ(1, mStuInterface->ntsGetNumObjects());
-  mStuInterface->addObject(obj1);
-  EXPECT_EQ(2, mStuInterface->ntsGetObjectWithName(obj1)->getRenderOrder());
-  EXPECT_EQ(2, mStuInterface->ntsGetNumObjects());
-
-  EXPECT_TRUE(mStuInterface->ntsHasRenderingOrder({obj2, obj1}));
+  mSpire->removeObject(obj1);
+  EXPECT_EQ(1, mSpire->ntsGetNumObjects());
+  mSpire->addObject(obj1);
+  EXPECT_EQ(2, mSpire->ntsGetNumObjects());
 
   // Add a new obj3.
-  mStuInterface->addObject(obj3);
-  EXPECT_EQ(3, mStuInterface->ntsGetObjectWithName(obj3)->getRenderOrder());
-  EXPECT_THROW(mStuInterface->addObject(obj1), Duplicate);
-  EXPECT_THROW(mStuInterface->addObject(obj2), Duplicate);
-  EXPECT_THROW(mStuInterface->addObject(obj3), Duplicate);
-  EXPECT_EQ(3, mStuInterface->ntsGetNumObjects());
-
-  EXPECT_TRUE(mStuInterface->ntsHasRenderingOrder({obj2, obj1, obj3}));
-
-  // Test render re-ordering.
-  mStuInterface->assignRenderOrder(obj1, 5);
-  mStuInterface->assignRenderOrder(obj2, 1);
-  mStuInterface->assignRenderOrder(obj3, 2);
-  EXPECT_EQ(5, mStuInterface->ntsGetObjectWithName(obj1)->getRenderOrder());
-  EXPECT_EQ(1, mStuInterface->ntsGetObjectWithName(obj2)->getRenderOrder());
-  EXPECT_EQ(2, mStuInterface->ntsGetObjectWithName(obj3)->getRenderOrder());
-  EXPECT_TRUE(mStuInterface->ntsHasRenderingOrder({obj2, obj3, obj1}));
-
-  mStuInterface->assignRenderOrder(obj3, 5);
-  mStuInterface->assignRenderOrder(obj2, 2);
-  mStuInterface->assignRenderOrder(obj1, 1);
-  EXPECT_EQ(5, mStuInterface->ntsGetObjectWithName(obj3)->getRenderOrder());
-  EXPECT_EQ(2, mStuInterface->ntsGetObjectWithName(obj2)->getRenderOrder());
-  EXPECT_EQ(1, mStuInterface->ntsGetObjectWithName(obj1)->getRenderOrder());
-  EXPECT_TRUE(mStuInterface->ntsHasRenderingOrder({obj1, obj2, obj3}));
-
-  mStuInterface->assignRenderOrder(obj1, 3);
-  mStuInterface->assignRenderOrder(obj2, 5);
-  mStuInterface->assignRenderOrder(obj3, 1);
-  EXPECT_EQ(3, mStuInterface->ntsGetObjectWithName(obj1)->getRenderOrder());
-  EXPECT_EQ(5, mStuInterface->ntsGetObjectWithName(obj2)->getRenderOrder());
-  EXPECT_EQ(1, mStuInterface->ntsGetObjectWithName(obj3)->getRenderOrder());
-  EXPECT_TRUE(mStuInterface->ntsHasRenderingOrder({obj3, obj1, obj2}));
+  mSpire->addObject(obj3);
+  EXPECT_THROW(mSpire->addObject(obj1), Duplicate);
+  EXPECT_THROW(mSpire->addObject(obj2), Duplicate);
+  EXPECT_THROW(mSpire->addObject(obj3), Duplicate);
+  EXPECT_EQ(3, mSpire->ntsGetNumObjects());
 }
 
 //------------------------------------------------------------------------------
@@ -300,7 +265,7 @@ TEST_F(StuPipeTestFixture, TestTriangle)
   {
     0, 1, 2, 3
   };
-  StuInterface::IBO_TYPE iboType = StuInterface::IBO_16BIT;
+  Interface::IBO_TYPE iboType = Interface::IBO_16BIT;
 
   // This is pretty contorted interface due to the marshalling between
   // std::vector<float> and std::vector<uint8_t>. In practice, you would want
@@ -328,77 +293,77 @@ TEST_F(StuPipeTestFixture, TestTriangle)
   // Add necessary VBO's and IBO's
   std::string vbo1 = "vbo1";
   std::string ibo1 = "ibo1";
-  mStuInterface->addVBO(vbo1, rawVBO, attribNames);
-  mStuInterface->addIBO(ibo1, rawIBO, iboType);
+  mSpire->addVBO(vbo1, rawVBO, attribNames);
+  mSpire->addIBO(ibo1, rawIBO, iboType);
 
   // Attempt to add duplicate VBOs and IBOs
-  EXPECT_THROW(mStuInterface->addVBO(vbo1, rawVBO, attribNames), Duplicate);
-  EXPECT_THROW(mStuInterface->addIBO(ibo1, rawIBO, iboType), Duplicate);
+  EXPECT_THROW(mSpire->addVBO(vbo1, rawVBO, attribNames), Duplicate);
+  EXPECT_THROW(mSpire->addIBO(ibo1, rawIBO, iboType), Duplicate);
 
   std::string obj1 = "obj1";
-  mStuInterface->addObject(obj1);
+  mSpire->addObject(obj1);
   
   std::string shader1 = "UniformColor";
   // Add and compile persistent shaders (if not already present).
   // You will only run into the 'Duplicate' exception if the persistent shader
   // is already in the persistent shader list.
-  mStuInterface->addPersistentShader(
+  mSpire->addPersistentShader(
       shader1, 
-      { {"UniformColor.vsh", StuInterface::VERTEX_SHADER}, 
-        {"UniformColor.fsh", StuInterface::FRAGMENT_SHADER},
+      { {"UniformColor.vsh", Interface::VERTEX_SHADER}, 
+        {"UniformColor.fsh", Interface::FRAGMENT_SHADER},
       });
 
   // Test various cases of shader failure after adding a prior shader.
-  EXPECT_THROW(mStuInterface->addPersistentShader(
+  EXPECT_THROW(mSpire->addPersistentShader(
       shader1, 
-      { {"UniformColor.vsh", StuInterface::FRAGMENT_SHADER}, 
-        {"UniformColor.fsh", StuInterface::VERTEX_SHADER},
+      { {"UniformColor.vsh", Interface::FRAGMENT_SHADER}, 
+        {"UniformColor.fsh", Interface::VERTEX_SHADER},
       }), std::invalid_argument);
 
-  EXPECT_THROW(mStuInterface->addPersistentShader(
+  EXPECT_THROW(mSpire->addPersistentShader(
       shader1, 
-      { {"UniformColor2.vsh", StuInterface::VERTEX_SHADER}, 
-        {"UniformColor.fsh", StuInterface::FRAGMENT_SHADER},
+      { {"UniformColor2.vsh", Interface::VERTEX_SHADER}, 
+        {"UniformColor.fsh", Interface::FRAGMENT_SHADER},
       }), std::invalid_argument);
 
-  EXPECT_THROW(mStuInterface->addPersistentShader(
+  EXPECT_THROW(mSpire->addPersistentShader(
       shader1, 
-      { {"UniformColor.vsh", StuInterface::VERTEX_SHADER}, 
-        {"UniformColor2.fsh", StuInterface::FRAGMENT_SHADER},
+      { {"UniformColor.vsh", Interface::VERTEX_SHADER}, 
+        {"UniformColor2.fsh", Interface::FRAGMENT_SHADER},
       }), std::invalid_argument);
 
   // This final exception is throw directly from the addPersistentShader
   // function. The 3 prior exception were all thrown from the ShaderProgramMan.
-  EXPECT_THROW(mStuInterface->addPersistentShader(
+  EXPECT_THROW(mSpire->addPersistentShader(
       shader1, 
-      { {"UniformColor.vsh", StuInterface::VERTEX_SHADER}, 
-        {"UniformColor.fsh", StuInterface::FRAGMENT_SHADER},
+      { {"UniformColor.vsh", Interface::VERTEX_SHADER}, 
+        {"UniformColor.fsh", Interface::FRAGMENT_SHADER},
       }), Duplicate);
 
   // Now construct passes (taking into account VBO attributes).
 
   // There exists no 'test obj'.
-  EXPECT_THROW(mStuInterface->addPassToObject(
+  EXPECT_THROW(mSpire->addPassToObject(
           "test obj", "UniformColor", "vbo", "ibo",
-          StuInterface::TRIANGLES),
+          Interface::TRIANGLES),
       std::out_of_range);
 
   // Not a valid shader.
-  EXPECT_THROW(mStuInterface->addPassToObject(
+  EXPECT_THROW(mSpire->addPassToObject(
           obj1, "Bad Shader", "vbo", "ibo",
-          StuInterface::TRIANGLES),
+          Interface::TRIANGLES),
       std::out_of_range);
 
   // Non-existant vbo.
-  EXPECT_THROW(mStuInterface->addPassToObject(
+  EXPECT_THROW(mSpire->addPassToObject(
           obj1, "UniformColor", "Bad vbo", "ibo",
-          StuInterface::TRIANGLES),
+          Interface::TRIANGLES),
       std::out_of_range);
 
   // Non-existant ibo.
-  EXPECT_THROW(mStuInterface->addPassToObject(
+  EXPECT_THROW(mSpire->addPassToObject(
           obj1, "UniformColor", vbo1, "bad ibo",
-          StuInterface::TRIANGLES),
+          Interface::TRIANGLES),
       std::out_of_range);
 
   // Build a good pass.
@@ -406,39 +371,39 @@ TEST_F(StuPipeTestFixture, TestTriangle)
 
   // Attempt to add a pass to the object without the pass being present in the
   // system.
-  EXPECT_THROW(mStuInterface->addPassToObject(obj1, shader1, vbo1, ibo1, StuInterface::TRIANGLE_STRIP, pass1),
+  EXPECT_THROW(mSpire->addPassToObject(obj1, shader1, vbo1, ibo1, Interface::TRIANGLE_STRIP, pass1),
                std::runtime_error);
 
   // Add the pass to the system.
-  mStuInterface->addPassToBack(pass1);
+  mSpire->addPassToBack(pass1);
 
   // Now add the object pass. This automatically adds the object to the pass for
   // us. But the ordering within the pass is still arbitrary.
-  mStuInterface->addPassToObject(obj1, shader1, vbo1, ibo1, StuInterface::TRIANGLE_STRIP, pass1);
+  mSpire->addPassToObject(obj1, shader1, vbo1, ibo1, Interface::TRIANGLE_STRIP, pass1);
 
   // Attempt to re-add the good pass.
-  EXPECT_THROW(mStuInterface->addPassToObject(obj1, shader1, vbo1, ibo1, StuInterface::TRIANGLE_STRIP, pass1),
+  EXPECT_THROW(mSpire->addPassToObject(obj1, shader1, vbo1, ibo1, Interface::TRIANGLE_STRIP, pass1),
                Duplicate);
 
   // No longer need VBO and IBO (will stay resident in the passes -- when the
   // passes are destroyed, the VBO / IBOs will be destroyed).
-  mStuInterface->removeIBO(ibo1);
-  mStuInterface->removeVBO(vbo1);
-  EXPECT_THROW(mStuInterface->removeIBO(ibo1), std::out_of_range);
-  EXPECT_THROW(mStuInterface->removeVBO(vbo1), std::out_of_range);
+  mSpire->removeIBO(ibo1);
+  mSpire->removeVBO(vbo1);
+  EXPECT_THROW(mSpire->removeIBO(ibo1), std::out_of_range);
+  EXPECT_THROW(mSpire->removeVBO(vbo1), std::out_of_range);
 
   // Test global uniforms -- test run-time type validation.
   // Setup camera so that it can be passed to the Uniform Color shader.
   // Camera has been setup in the test fixture.
-  mStuInterface->addGlobalUniform("uProjIVObject", mCamera->getWorldToProjection());
-  EXPECT_THROW(mStuInterface->addGlobalUniform("uProjIVObject", V3(0.0f, 0.0f, 0.0f)), ShaderUniformTypeError);
+  mSpire->addGlobalUniform("uProjIVObject", mCamera->getWorldToProjection());
+  EXPECT_THROW(mSpire->addGlobalUniform("uProjIVObject", V3(0.0f, 0.0f, 0.0f)), ShaderUniformTypeError);
 
   // Add color to the pass (which will lookup the type via the shader).
-  EXPECT_THROW(mStuInterface->addObjectPassUniform(obj1, "uColor", V3(0.0f, 0.0f, 0.0f), pass1), ShaderUniformTypeError);
-  EXPECT_THROW(mStuInterface->addObjectPassUniform(obj1, "uColor", M44(), pass1), ShaderUniformTypeError);
-  mStuInterface->addObjectPassUniform(obj1, "uColor", V4(1.0f, 0.0f, 0.0f, 1.0f), pass1);
+  EXPECT_THROW(mSpire->addObjectPassUniform(obj1, "uColor", V3(0.0f, 0.0f, 0.0f), pass1), ShaderUniformTypeError);
+  EXPECT_THROW(mSpire->addObjectPassUniform(obj1, "uColor", M44(), pass1), ShaderUniformTypeError);
+  mSpire->addObjectPassUniform(obj1, "uColor", V4(1.0f, 0.0f, 0.0f, 1.0f), pass1);
 
-  mSpire->doFrame();
+  mSpire->ntsDoFrame();
 
   // Write the resultant png to a temporary directory and compare against
   // the golden image results.
@@ -498,7 +463,7 @@ TEST_F(StuPipeTestFixture, TestTriangle)
 //------------------------------------------------------------------------------
 TEST_F(StuPipeTestFixture, TestObjectsStructure)
 {
-  // Test various functions in Object and StuPass.
+  // Test various functions in Object and ObjectPass.
   std::vector<float> vboData = 
   {
     -1.0f,  1.0f,  0.0f,
@@ -512,7 +477,7 @@ TEST_F(StuPipeTestFixture, TestObjectsStructure)
   {
     0, 1, 2, 3
   };
-  StuInterface::IBO_TYPE iboType = StuInterface::IBO_16BIT;
+  Interface::IBO_TYPE iboType = Interface::IBO_16BIT;
 
   // This is pretty contorted interface due to the marshalling between
   // std::vector<float> and std::vector<uint8_t>. In practice, you would want
@@ -540,66 +505,66 @@ TEST_F(StuPipeTestFixture, TestObjectsStructure)
   // Add necessary VBO's and IBO's
   std::string vbo1 = "vbo1";
   std::string ibo1 = "ibo1";
-  mStuInterface->addVBO(vbo1, rawVBO, attribNames);
-  mStuInterface->addIBO(ibo1, rawIBO, iboType);
+  mSpire->addVBO(vbo1, rawVBO, attribNames);
+  mSpire->addIBO(ibo1, rawIBO, iboType);
 
   // Attempt to add duplicate VBOs and IBOs
-  EXPECT_THROW(mStuInterface->addVBO(vbo1, rawVBO, attribNames), Duplicate);
-  EXPECT_THROW(mStuInterface->addIBO(ibo1, rawIBO, iboType), Duplicate);
+  EXPECT_THROW(mSpire->addVBO(vbo1, rawVBO, attribNames), Duplicate);
+  EXPECT_THROW(mSpire->addIBO(ibo1, rawIBO, iboType), Duplicate);
 
   std::string obj1 = "obj1";
-  mStuInterface->addObject(obj1);
+  mSpire->addObject(obj1);
   
   std::string shader1 = "UniformColor";
   // Add and compile persistent shaders (if not already present).
   // You will only run into the 'Duplicate' exception if the persistent shader
   // is already in the persistent shader list.
-  mStuInterface->addPersistentShader(
+  mSpire->addPersistentShader(
       shader1, 
-      { {"UniformColor.vsh", StuInterface::VERTEX_SHADER}, 
-        {"UniformColor.fsh", StuInterface::FRAGMENT_SHADER},
+      { {"UniformColor.vsh", Interface::VERTEX_SHADER}, 
+        {"UniformColor.fsh", Interface::FRAGMENT_SHADER},
       });
 
   // Build the default pass.
-  mStuInterface->addPassToObject(obj1, shader1, vbo1, ibo1, StuInterface::TRIANGLE_STRIP);
+  mSpire->addPassToObject(obj1, shader1, vbo1, ibo1, Interface::TRIANGLE_STRIP);
 
   // Add a uniform *before* we add the next pass to ensure it gets properly
   // propogated to the new pass.
-  mStuInterface->addObjectGlobalUniform(obj1, "uProjIVObject", mCamera->getWorldToProjection());
+  mSpire->addObjectGlobalUniform(obj1, "uProjIVObject", mCamera->getWorldToProjection());
 
   // Construct another good pass.
   std::string pass1 = "pass1";
-  mStuInterface->addPassToFront(pass1);
-  mStuInterface->addPassToObject(obj1, shader1, vbo1, ibo1, StuInterface::TRIANGLE_STRIP, pass1);
+  mSpire->addPassToFront(pass1);
+  mSpire->addPassToObject(obj1, shader1, vbo1, ibo1, Interface::TRIANGLE_STRIP, pass1);
 
   // No longer need VBO and IBO (will stay resident in the passes -- when the
   // passes are destroyed, the VBO / IBOs will be destroyed).
-  mStuInterface->removeIBO(ibo1);
-  mStuInterface->removeVBO(vbo1);
+  mSpire->removeIBO(ibo1);
+  mSpire->removeVBO(vbo1);
 
   //----------------------------------------------------------------------------
-  // Test StuInterface structures
+  // Test Interface structures
   //----------------------------------------------------------------------------
-  EXPECT_EQ(true, mStuInterface->ntsHasPass(pass1));
-  EXPECT_EQ(true, mStuInterface->ntsHasPass(SPIRE_DEFAULT_PASS));
-  EXPECT_EQ(false, mStuInterface->ntsHasPass("nonexistant"));
+  EXPECT_EQ(true, mSpire->ntsHasPass(pass1));
+  EXPECT_EQ(true, mSpire->ntsHasPass(SPIRE_DEFAULT_PASS));
+  EXPECT_EQ(false, mSpire->ntsHasPass("nonexistant"));
 
-  EXPECT_EQ(true, mStuInterface->ntsIsObjectInPass(obj1, pass1));
-  EXPECT_EQ(true, mStuInterface->ntsIsObjectInPass(obj1, SPIRE_DEFAULT_PASS));
-  EXPECT_EQ(false, mStuInterface->ntsIsObjectInPass(obj1, "nonexistant"));
-  EXPECT_EQ(false, mStuInterface->ntsIsObjectInPass("nonexistant", pass1));
-  EXPECT_EQ(false, mStuInterface->ntsIsObjectInPass("nonexistant", SPIRE_DEFAULT_PASS));
+  EXPECT_EQ(true, mSpire->ntsIsObjectInPass(obj1, pass1));
+  EXPECT_EQ(true, mSpire->ntsIsObjectInPass(obj1, SPIRE_DEFAULT_PASS));
+  EXPECT_EQ(false, mSpire->ntsIsObjectInPass(obj1, "nonexistant"));
+  EXPECT_EQ(false, mSpire->ntsIsObjectInPass("nonexistant", pass1));
+  EXPECT_EQ(false, mSpire->ntsIsObjectInPass("nonexistant", SPIRE_DEFAULT_PASS));
 
   // Add pass uniforms for each pass.
-  mStuInterface->addObjectPassUniform(obj1, "uColor", V4(1.0f, 0.0f, 0.0f, 1.0f));    // default pass
-  mStuInterface->addObjectGlobalUniform(obj1, "uColor", V4(1.0f, 0.0f, 1.0f, 1.0f));  // pass1
+  mSpire->addObjectPassUniform(obj1, "uColor", V4(1.0f, 0.0f, 0.0f, 1.0f));    // default pass
+  mSpire->addObjectGlobalUniform(obj1, "uColor", V4(1.0f, 0.0f, 1.0f, 1.0f));  // pass1
 
   //----------------------------------------------------------------------------
   // Test SpireObject structures
   //----------------------------------------------------------------------------
-  std::shared_ptr<const SpireObject> object1 = mStuInterface->ntsGetObjectWithName(obj1);
-  std::shared_ptr<const StuPass> object1Pass1 = object1->getObjectPassParams(pass1);
-  std::shared_ptr<const StuPass> object1PassDefault = object1->getObjectPassParams(SPIRE_DEFAULT_PASS);
+  std::shared_ptr<const SpireObject> object1 = mSpire->ntsGetObjectWithName(obj1);
+  std::shared_ptr<const ObjectPass> object1Pass1 = object1->getObjectPassParams(pass1);
+  std::shared_ptr<const ObjectPass> object1PassDefault = object1->getObjectPassParams(SPIRE_DEFAULT_PASS);
 
   EXPECT_EQ(2, object1->getNumPasses());
   EXPECT_EQ(true,  object1->hasGlobalUniform("uColor"));
@@ -619,8 +584,8 @@ TEST_F(StuPipeTestFixture, TestObjectsStructure)
   // Test attributes
   M44 testUniform;
   testUniform[3] = V4(1.0f, 1.0f, 1.0f, 1.0f);
-  mStuInterface->addObjectGlobalSpireAttribute<M44>(obj1, "objectTransform", testUniform);
-  mStuInterface->addObjectPassSpireAttribute<M44>(obj1, "passTransform", testUniform, pass1);
+  mSpire->addObjectGlobalSpireAttribute<M44>(obj1, "objectTransform", testUniform);
+  mSpire->addObjectPassSpireAttribute<M44>(obj1, "passTransform", testUniform, pass1);
 
   auto testMatrixEquality = [](const M44& a, const M44& b) {
     for (int c = 0; c < 4; c++)
@@ -652,7 +617,7 @@ TEST_F(StuPipeTestFixture, TestObjectsStructure)
 
   // Perform the frame. If there are any missing shaders we'll know about it
   // here.
-  mSpire->doFrame();
+  mSpire->ntsDoFrame();
 }
 
 //------------------------------------------------------------------------------
@@ -666,42 +631,42 @@ TEST_F(StuPipeTestFixture, TestRenderingWithSR5Object)
   std::shared_ptr<std::vector<uint8_t>> rawVBO(new std::vector<uint8_t>());
   std::shared_ptr<std::vector<uint8_t>> rawIBO(new std::vector<uint8_t>());
   std::fstream sphereFile("Assets/UncappedCylinder.sp");
-  StuInterface::loadProprietarySR5AssetFile(sphereFile, *rawVBO, *rawIBO);
+  Interface::loadProprietarySR5AssetFile(sphereFile, *rawVBO, *rawIBO);
 
   std::vector<std::string> attribNames = {"aPos", "aNormal"};
-  StuInterface::IBO_TYPE iboType = StuInterface::IBO_16BIT;
+  Interface::IBO_TYPE iboType = Interface::IBO_16BIT;
 
   // Add necessary VBO's and IBO's
   std::string vboName = "vbo1";
   std::string iboName = "ibo1";
-  mStuInterface->addVBO(vboName, rawVBO, attribNames);
-  mStuInterface->addIBO(iboName, rawIBO, iboType);
+  mSpire->addVBO(vboName, rawVBO, attribNames);
+  mSpire->addIBO(iboName, rawIBO, iboType);
 
   // Build shaders
   std::string shaderName = "UniformColor";
-  mStuInterface->addPersistentShader(
+  mSpire->addPersistentShader(
       shaderName, 
-      { {"UniformColor.vsh", StuInterface::VERTEX_SHADER}, 
-        {"UniformColor.fsh", StuInterface::FRAGMENT_SHADER},
+      { {"UniformColor.vsh", Interface::VERTEX_SHADER}, 
+        {"UniformColor.fsh", Interface::FRAGMENT_SHADER},
       });
 
   // Add object
   std::string objectName = "obj1";
-  mStuInterface->addObject(objectName);
-  mStuInterface->addPassToObject(objectName, shaderName, vboName, iboName, 
-                                 StuInterface::TRIANGLE_STRIP);
-  mStuInterface->addLambdaObjectUniforms(objectName, lambdaUniformObjTrafs);
+  mSpire->addObject(objectName);
+  mSpire->addPassToObject(objectName, shaderName, vboName, iboName, 
+                          Interface::TRIANGLE_STRIP);
+  mSpire->addLambdaObjectUniforms(objectName, lambdaUniformObjTrafs);
   
   // Object pass uniforms (can be set at a global level)
-  mStuInterface->addObjectPassUniform(objectName, "uColor", V4(1.0f, 0.0f, 0.0f, 1.0f));    // default pass
-  mStuInterface->addObjectGlobalUniform(objectName, "uProjIVObject", mCamera->getWorldToProjection());
+  mSpire->addObjectPassUniform(objectName, "uColor", V4(1.0f, 0.0f, 0.0f, 1.0f));    // default pass
+  mSpire->addObjectGlobalUniform(objectName, "uProjIVObject", mCamera->getWorldToProjection());
 
   // No longer need VBO and IBO (will stay resident in the passes -- when the
   // passes are destroyed, the VBO / IBOs will be destroyed).
-  mStuInterface->removeIBO(iboName);
-  mStuInterface->removeVBO(vboName);
+  mSpire->removeIBO(iboName);
+  mSpire->removeVBO(vboName);
 
-  mSpire->doFrame();
+  mSpire->ntsDoFrame();
 
   // Write the resultant png to a temporary directory and compare against
   // the golden image results.
@@ -753,56 +718,56 @@ TEST_F(StuPipeTestFixture, TestRenderingWithAttributes)
   std::shared_ptr<std::vector<uint8_t>> rawVBO(new std::vector<uint8_t>());
   std::shared_ptr<std::vector<uint8_t>> rawIBO(new std::vector<uint8_t>());
   std::fstream sphereFile("Assets/Sphere.sp");
-  StuInterface::loadProprietarySR5AssetFile(sphereFile, *rawVBO, *rawIBO);
+  Interface::loadProprietarySR5AssetFile(sphereFile, *rawVBO, *rawIBO);
 
   std::vector<std::string> attribNames = {"aPos", "aNormal"};
-  StuInterface::IBO_TYPE iboType = StuInterface::IBO_16BIT;
+  Interface::IBO_TYPE iboType = Interface::IBO_16BIT;
 
   // Add necessary VBO's and IBO's
   std::string vboName = "vbo1";
   std::string iboName = "ibo1";
-  mStuInterface->addVBO(vboName, rawVBO, attribNames);
-  mStuInterface->addIBO(iboName, rawIBO, iboType);
+  mSpire->addVBO(vboName, rawVBO, attribNames);
+  mSpire->addIBO(iboName, rawIBO, iboType);
 
   // Build shaders
   std::string shaderName = "DirGouraud";
-  mStuInterface->addPersistentShader(
+  mSpire->addPersistentShader(
       shaderName, 
-      { {"DirGouraud.vsh", StuInterface::VERTEX_SHADER}, 
-        {"DirGouraud.fsh", StuInterface::FRAGMENT_SHADER},
+      { {"DirGouraud.vsh", Interface::VERTEX_SHADER}, 
+        {"DirGouraud.fsh", Interface::FRAGMENT_SHADER},
       });
 
   // Add object
   std::string objectName = "obj1";
-  mStuInterface->addObject(objectName);
-  mStuInterface->addPassToObject(objectName, shaderName, vboName, iboName, 
-                                 StuInterface::TRIANGLE_STRIP);
-  mStuInterface->addLambdaObjectUniforms(objectName, lambdaUniformObjTrafs);
+  mSpire->addObject(objectName);
+  mSpire->addPassToObject(objectName, shaderName, vboName, iboName, 
+                          Interface::TRIANGLE_STRIP);
+  mSpire->addLambdaObjectUniforms(objectName, lambdaUniformObjTrafs);
   
   // Object pass uniforms (can be set at a global level)
-  mStuInterface->addObjectPassUniform(objectName, "uAmbientColor", V4(0.1f, 0.1f, 0.1f, 1.0f));
-  mStuInterface->addObjectPassUniform(objectName, "uDiffuseColor", V4(0.8f, 0.8f, 0.0f, 1.0f));
-  mStuInterface->addObjectPassUniform(objectName, "uSpecularColor", V4(0.5f, 0.5f, 0.5f, 1.0f));
-  mStuInterface->addObjectPassUniform(objectName, "uSpecularPower", 32.0f);
+  mSpire->addObjectPassUniform(objectName, "uAmbientColor", V4(0.1f, 0.1f, 0.1f, 1.0f));
+  mSpire->addObjectPassUniform(objectName, "uDiffuseColor", V4(0.8f, 0.8f, 0.0f, 1.0f));
+  mSpire->addObjectPassUniform(objectName, "uSpecularColor", V4(0.5f, 0.5f, 0.5f, 1.0f));
+  mSpire->addObjectPassUniform(objectName, "uSpecularPower", 32.0f);
 
   // Object spire attributes (used for computing appropriate uniforms).
   M44 xform;
   xform[3] = V4(1.0f, 0.0f, 0.0f, 1.0f);
-  mStuInterface->addObjectPassSpireAttribute(
+  mSpire->addObjectPassSpireAttribute(
       objectName, std::get<0>(SRCommonAttributes::getObjectToWorldTrafo()), xform);
 
   // No longer need VBO and IBO (will stay resident in the passes -- when the
   // passes are destroyed, the VBO / IBOs will be destroyed).
-  mStuInterface->removeIBO(iboName);
-  mStuInterface->removeVBO(vboName);
+  mSpire->removeIBO(iboName);
+  mSpire->removeVBO(vboName);
 
   // Global uniforms
-  mStuInterface->addGlobalUniform("uLightDirWorld", V3(1.0f, 0.0f, 0.0f));
+  mSpire->addGlobalUniform("uLightDirWorld", V3(1.0f, 0.0f, 0.0f));
 
   // Setup camera uniforms.
-  mCamera->setSRCommonUniforms(mStuInterface);
+  mCamera->setSRCommonUniforms(mSpire);
 
-  mSpire->doFrame();
+  mSpire->ntsDoFrame();
 
   // Write the resultant png to a temporary directory and compare against
   // the golden image results.
@@ -816,7 +781,6 @@ TEST_F(StuPipeTestFixture, TestRenderingWithAttributes)
   Spire::GlobalTestEnvironment::instance()->writeFBO(targetImage);
 
   EXPECT_TRUE(Spire::fileExists(targetImage)) << "Failed to write output image! " << targetImage;
-  std::cout << "Wrote output image to: " << imageName << std::endl;
 
 #ifdef TEST_PERCEPTUAL_COMPARE
   // Perform the perceptual comparison using the given regression directory.

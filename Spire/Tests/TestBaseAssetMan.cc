@@ -29,7 +29,7 @@
 /// \author James Hughes
 /// \date   January 2013
 
-#include "Common.h"
+#include "Core/Common.h"
 
 namespace Spire {
 

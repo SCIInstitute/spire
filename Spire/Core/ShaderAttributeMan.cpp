@@ -35,8 +35,8 @@
 #include "Common.h"
 #include "Exceptions.h"
 
-#include "Core/ShaderAttributeMan.h"
-#include "Core/ShaderProgramMan.h"
+#include "ShaderAttributeMan.h"
+#include "ShaderProgramMan.h"
 
 namespace Spire {
 

@@ -59,11 +59,6 @@ public:
     mSpire = std::shared_ptr<Spire::Interface>(new Spire::Interface(
         ctx, shaderSearchDirs, false));
 
-    // Build and bind StuPipe.
-    mStuInterface = std::shared_ptr<Spire::StuInterface>(
-        new Spire::StuInterface(*mSpire.get()));
-    mSpire->pipePushBack(mStuInterface);
-
     // Build camera that we will use for testing purposes.
     mCamera = std::unique_ptr<TestCamera>(new TestCamera);
   }
@@ -74,8 +69,6 @@ public:
   }
 
   std::shared_ptr<Spire::Interface>     mSpire;
-  std::shared_ptr<Spire::StuInterface>  mStuInterface;
-
   std::unique_ptr<TestCamera>           mCamera;
 };
 
@@ -97,11 +90,6 @@ public:
     mSpire = std::shared_ptr<Spire::SCIRun::SRInterface>(
         new Spire::SCIRun::SRInterface(ctx, shaderSearchDirs, false));
 
-    // Build and bind StuPipe.
-    mStuInterface = std::shared_ptr<Spire::StuInterface>(
-        new Spire::StuInterface(*mSpire.get()));
-    mSpire->pipePushBack(mStuInterface);
-
     // Build camera that we will use for testing purposes.
     mCamera = std::unique_ptr<TestCamera>(new TestCamera);
   }
@@ -112,8 +100,6 @@ public:
   }
 
   std::shared_ptr<Spire::SCIRun::SRInterface> mSpire;
-  std::shared_ptr<Spire::StuInterface>        mStuInterface;
-
   std::unique_ptr<TestCamera>                 mCamera;
 };
 

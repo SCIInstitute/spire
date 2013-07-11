@@ -192,6 +192,17 @@ void InterfaceImplementation::addPassToFront(InterfaceImplementation& self, std:
 }
 
 //------------------------------------------------------------------------------
+void InterfaceImplementation::addPassToBack(InterfaceImplementation& self, std::string passName)
+{
+  if (self.hasPass(passName) == true)
+    throw std::runtime_error("Pass (" + passName + ") already exists!");
+
+  std::shared_ptr<Pass> pass(new Pass(passName));
+  self.mPasses.push_front(pass);
+  self.mNameToPass[passName] = pass;
+}
+
+//------------------------------------------------------------------------------
 void InterfaceImplementation::addObject(InterfaceImplementation& self, std::string objectName)
 {
   if (self.mNameToObject.find(objectName) != self.mNameToObject.end())

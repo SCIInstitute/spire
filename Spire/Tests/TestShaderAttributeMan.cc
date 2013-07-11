@@ -30,8 +30,8 @@
 /// \date   December 2012
 
 #include <gtest/gtest.h>
-#include "Common.h"
-#include "Exceptions.h"
+#include "Core/Common.h"
+#include "Core/Exceptions.h"
 #include "Core/ShaderAttributeMan.h"
 
 using namespace Spire;

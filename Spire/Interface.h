@@ -182,10 +182,6 @@ public:
   /// Removes all objects from the system.
   void removeAllObjects();
 
-  /// Assigns a new rendering order to the object
-  /// Throws std::range_error if object is not found.
-  void assignRenderOrder(const std::string& object, int32_t renderOrder);
-
 
   /// Adds a VBO. This VBO can be re-used by adding passes to the object.
   /// Throws an std::out_of_range exception if the object is not found in the 

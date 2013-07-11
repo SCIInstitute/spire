@@ -97,7 +97,7 @@ void TestCamera::setViewTransform(const Spire::M44& trafo)
 }
 
 //------------------------------------------------------------------------------
-void TestCamera::setSRCommonUniforms(std::shared_ptr<Spire::StuInterface> iface)
+void TestCamera::setSRCommonUniforms(std::shared_ptr<Spire::Interface> iface)
 {
   // Update appropriate uniforms.
   iface->addGlobalUniform(std::get<0>(Spire::SRCommonUniforms::getToCameraToProjection()), mPIV);
