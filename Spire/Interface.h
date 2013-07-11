@@ -268,13 +268,6 @@ public:
                        const std::string& iboName,
                        PRIMITIVE_TYPES type,
                        const std::string& pass = SPIRE_DEFAULT_PASS);
-  void addPassToObject(const std::string& object,
-                       const std::string& program,
-                       const std::string& vboName,
-                       const std::string& iboName,
-                       PRIMITIVE_TYPES type,
-                       int32_t passOrder,
-                       const std::string& pass = SPIRE_DEFAULT_PASS);
 
   /// Removes a pass from the object.
   /// Throws an std::out_of_range exception if the object or pass is not found 
@@ -284,14 +277,6 @@ public:
   void removePassFromObject(const std::string& object,
                             const std::string& pass);
 
-
-  /// Associates an object -> world transform with the given object / pass
-  /// combination. Default is the identity transformation.
-  /// This is the only 'special' case variable associated with passes / objects
-  /// other than uniforms. We generally want to concatenate the object -> world
-  /// transform with the inverse view transform and projection transform.
-  void addObjectTransform(const std::string& object,
-                          const M44& transform);
 
   //----------
   // Uniforms

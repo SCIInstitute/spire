@@ -130,5 +130,230 @@ void Interface::removeVBO(const std::string& vboName)
   mHub->addFunctionToThreadQueue(fun);
 }
 
+//------------------------------------------------------------------------------
+void Interface::addIBO(const std::string& name,
+                       std::shared_ptr<std::vector<uint8_t>> iboData,
+                       IBO_TYPE type)
+{
+  Hub::RemoteFunction fun =
+      std::bind(InterfaceImplementation::addIBO, _1, name, iboData, type);
+  mHub->addFunctionToThreadQueue(fun);
+}
+
+//------------------------------------------------------------------------------
+void Interface::removeIBO(const std::string& iboName)
+{
+  Hub::RemoteFunction fun =
+      std::bind(InterfaceImplementation::removeIBO, _1, iboName);
+  mHub->addFunctionToThreadQueue(fun);
+}
+
+//------------------------------------------------------------------------------
+void Interface::addPassToObject(const std::string& object,
+                                const std::string& program,
+                                const std::string& vboName,
+                                const std::string& iboName,
+                                PRIMITIVE_TYPES type,
+                                const std::string& pass)
+{
+  Hub::RemoteFunction fun =
+      std::bind(InterfaceImplementation::addPassToObject, _1, object, program, 
+                vboName, iboName, type, pass);
+  mHub->addFunctionToThreadQueue(fun);
+}
+
+//------------------------------------------------------------------------------
+void Interface::removePassFromObject(const std::string& object, const std::string& pass)
+{
+  Hub::RemoteFunction fun =
+      std::bind(InterfaceImplementation::removePassFromObject, _1, object, pass);
+  mHub->addFunctionToThreadQueue(fun);
+}
+
+//------------------------------------------------------------------------------
+void Interface::addObjectPassUniformConcrete(const std::string& object,
+                                             const std::string& uniformName,
+                                             std::shared_ptr<AbstractUniformStateItem> item,
+                                             const std::string& pass)
+{
+  Hub::RemoteFunction fun =
+      std::bind(InterfaceImplementation::addObjectPassUniformConcrete, _1,
+                object, uniformName, item, pass);
+  mHub->addFunctionToThreadQueue(fun);
+}
+
+
+//------------------------------------------------------------------------------
+void Interface::addObjectGlobalUniformConcrete(const std::string& object,
+                                               const std::string& uniformName,
+                                               std::shared_ptr<AbstractUniformStateItem> item)
+{
+  Hub::RemoteFunction fun =
+      std::bind(InterfaceImplementation::addObjectGlobalUniformConcrete, _1, object, uniformName, item);
+  mHub->addFunctionToThreadQueue(fun);
+}
+
+//------------------------------------------------------------------------------
+void Interface::addObjectPassGPUState(const std::string& object, const GPUState& state,
+                                      const std::string& pass)
+{
+  Hub::RemoteFunction fun =
+      std::bind(InterfaceImplementation::addObjectPassGPUState, _1, object, state, pass);
+  mHub->addFunctionToThreadQueue(fun);
+}
+
+//------------------------------------------------------------------------------
+void Interface::addGlobalUniformConcrete(const std::string& uniformName,
+                                         std::shared_ptr<AbstractUniformStateItem> item)
+{
+  Hub::RemoteFunction fun =
+      std::bind(InterfaceImplementation::addGlobalUniformConcrete, _1, uniformName, item);
+  mHub->addFunctionToThreadQueue(fun);
+}
+
+
+
+
+//------------------------------------------------------------------------------
+size_t Interface::loadProprietarySR5AssetFile(std::istream& stream,
+                                              std::vector<uint8_t>& vbo,
+                                              std::vector<uint8_t>& ibo)
+{
+  // Read default SCIRun asset header.
+  std::string header = "SCR5";
+
+  char headerStrIn_Raw[5];
+  stream.read(headerStrIn_Raw, 4);
+  headerStrIn_Raw[4] = '\0';
+  std::string headerStrIn = headerStrIn_Raw;
+
+  if (headerStrIn != header)
+  {
+    /// \todo Use more appropriate I/O exception.
+    throw std::invalid_argument("Header does not match asset file.");
+  }
+
+  // Read in the number of meshes (this is ignored for now and the first mesh is
+  // used).
+  uint32_t numMeshes = 0;
+  stream.read(reinterpret_cast<char*>(&numMeshes), sizeof(uint32_t));
+  if (numMeshes == 0)
+  {
+    throw std::invalid_argument("Need at least one mesh in asset file.");
+  }
+
+  // Read in the first mesh (this is the only mesh we will read in)
+  uint32_t numVertices = 0;
+  stream.read(reinterpret_cast<char*>(&numVertices), sizeof(uint32_t));
+
+  V3 position;
+  V3 normal;
+
+  // Reserve appropriate space in the vbo.
+  size_t vboSize = sizeof(float) * 6 * numVertices;
+  vbo.resize(vboSize); // linear complexity.
+  float* vboPtr = reinterpret_cast<float*>(&vbo[0]); // Remember, standard guarantees that vectors are contiguous in memory.
+
+  for (size_t i = 0; i < numVertices; i++)
+  {
+    // Read position data
+    stream.read(reinterpret_cast<char*>(&position.x), sizeof(float));
+    stream.read(reinterpret_cast<char*>(&position.y), sizeof(float));
+    stream.read(reinterpret_cast<char*>(&position.z), sizeof(float));
+    vboPtr[0] = position.x;
+    vboPtr[1] = position.y;
+    vboPtr[2] = position.z;
+    vboPtr += 3;
+
+    // Read normal data
+    stream.read(reinterpret_cast<char*>(&normal.x), sizeof(float));
+    stream.read(reinterpret_cast<char*>(&normal.y), sizeof(float));
+    stream.read(reinterpret_cast<char*>(&normal.z), sizeof(float));
+    vboPtr[0] = normal.x;
+    vboPtr[1] = normal.y;
+    vboPtr[2] = normal.z;
+    vboPtr += 3;
+  }
+
+  // Read in the IBO data.
+  uint32_t numTriangles = 0;  // Will be counted when loading.
+  uint32_t numFaces = 0;
+  stream.read(reinterpret_cast<char*>(&numFaces), sizeof(uint32_t));
+
+  // Worst case number of triangles: 2 * numFaces (all quads).
+  // The following has pretty harsh algorithmic time -- 3*N. Can easily be sped
+  // up by using the preprocessing program to determine how many triangles there
+  // are in the object. This would reduce the complexity to 2*N.
+  uint32_t numTrianglesWorstCase = numFaces * 2;
+  size_t iboWorstCaseSize = numTrianglesWorstCase * sizeof(uint16_t) * 3;
+  ibo.resize(iboWorstCaseSize); // linear in complexity
+  uint16_t* iboPtr = reinterpret_cast<uint16_t*>(&ibo[0]); // Remember, standard guarantees that vectors are contiguous in memory.
+
+  for (size_t i = 0; i < numFaces; i++)
+  {
+    uint8_t numIndices;
+    stream.read(reinterpret_cast<char*>(&numIndices), sizeof(uint8_t));
+    if (numIndices == 3)
+    {
+      uint16_t index0;
+      uint16_t index1;
+      uint16_t index2;
+      stream.read(reinterpret_cast<char*>(&index0), sizeof(uint16_t));
+      stream.read(reinterpret_cast<char*>(&index1), sizeof(uint16_t));
+      stream.read(reinterpret_cast<char*>(&index2), sizeof(uint16_t));
+      iboPtr[0] = index0;
+      iboPtr[1] = index1;
+      iboPtr[2] = index2;
+
+      iboPtr += 3;
+      ++numTriangles;
+    }
+    else if (numIndices == 4)
+    {
+      // Two triangles
+      {
+        uint16_t index0;
+        uint16_t index1;
+        uint16_t index2;
+        stream.read(reinterpret_cast<char*>(&index0), sizeof(uint16_t));
+        stream.read(reinterpret_cast<char*>(&index1), sizeof(uint16_t));
+        stream.read(reinterpret_cast<char*>(&index2), sizeof(uint16_t));
+
+        iboPtr[0] = index0;
+        iboPtr[1] = index1;
+        iboPtr[2] = index2;
+
+        iboPtr += 3;
+      }
+
+      {
+        uint16_t index0;
+        uint16_t index1;
+        uint16_t index2;
+        stream.read(reinterpret_cast<char*>(&index0), sizeof(uint16_t));
+        stream.read(reinterpret_cast<char*>(&index1), sizeof(uint16_t));
+        stream.read(reinterpret_cast<char*>(&index2), sizeof(uint16_t));
+
+        iboPtr[0] = index0;
+        iboPtr[1] = index1;
+        iboPtr[2] = index2;
+
+        iboPtr += 3;
+      }
+
+      numTriangles += 2;
+    }
+
+  }
+
+  // Resize the IBO appropriately (this is the operation that can be eliminated
+  // if we know how many triangles there will be beforehand).
+  size_t realIBOSize = numTriangles * sizeof(uint16_t) * 3;
+  ibo.resize(realIBOSize); // linear in complexity
+
+  return numTriangles;
+}
+
+
 } // end of namespace Renderer
 

@@ -36,6 +36,10 @@
 
 namespace Spire {
 
+// Simple static function to convert from PRIMITIVE_TYPES to GL types.
+// Not part of the class due to the return type (interface class should have
+// nothing GL specific in them).
+GLenum getGLPrimitive(Interface::PRIMITIVE_TYPES type);
 
 //------------------------------------------------------------------------------
 InterfaceImplementation::InterfaceImplementation(Hub& hub) :
@@ -232,6 +236,147 @@ void InterfaceImplementation::addIBO(InterfaceImplementation& self, std::string 
 
   self.mIBOMap.insert(std::make_pair(
           iboName, std::shared_ptr<IBOObject>(new IBOObject(iboData, type))));
+}
+
+//------------------------------------------------------------------------------
+void InterfaceImplementation::removeIBO(InterfaceImplementation& self, std::string iboName)
+{
+  size_t numElementsRemoved = self.mIBOMap.erase(iboName);
+  if (numElementsRemoved == 0)
+    throw std::out_of_range("Could not find IBO to remove.");
+}
+
+//------------------------------------------------------------------------------
+void InterfaceImplementation::addPassToObject(InterfaceImplementation& self, std::string object,
+                                              std::string program, std::string vboName, std::string iboName,
+                                              Interface::PRIMITIVE_TYPES type,
+                                              std::string pass)
+{
+  std::shared_ptr<SpireObject> obj = self.mNameToObject.at(object);
+  std::shared_ptr<VBOObject> vbo = self.mVBOMap.at(vboName);
+  std::shared_ptr<IBOObject> ibo = self.mIBOMap.at(iboName);
+
+  // Check to see if the pass exists.
+  auto passIt = self.mNameToPass.find(pass);
+  if (passIt == self.mNameToPass.end())
+    throw std::runtime_error("Pass (" + pass + ") does not exist.");
+
+  // Add object to pass if it isn't already part of the pass.
+  auto objectInPass = passIt->second->mNameToObject.find(object);
+  if (objectInPass == self.mNameToObject.end())
+    passIt->second->mNameToObject[object] = obj;
+
+  obj->addPass(pass, program, vbo, ibo, getGLPrimitive(type));
+}
+
+
+//------------------------------------------------------------------------------
+void InterfaceImplementation::removePassFromObject(InterfaceImplementation& self,
+                                                   std::string object, std::string pass)
+{
+  std::shared_ptr<SpireObject> obj = self.mNameToObject.at(object);
+  obj->removePass(pass);
+}
+
+//------------------------------------------------------------------------------
+void InterfaceImplementation::addObjectPassUniformConcrete(InterfaceImplementation& self, 
+                                                           std::string object, std::string uniformName,
+                                                           std::shared_ptr<AbstractUniformStateItem> item,
+                                                           std::string pass)
+{
+  std::shared_ptr<SpireObject> obj = self.mNameToObject.at(object);
+  obj->addPassUniform(pass, uniformName, item);
+}
+
+//------------------------------------------------------------------------------
+void InterfaceImplementation::addObjectGlobalUniformConcrete(InterfaceImplementation& self,
+                                                             std::string objectName,
+                                                             std::string uniformName,
+                                                             std::shared_ptr<AbstractUniformStateItem> item)
+{
+  std::shared_ptr<SpireObject> obj = self.mNameToObject.at(objectName);
+  obj->addGlobalUniform(uniformName, item);
+}
+
+
+//------------------------------------------------------------------------------
+void InterfaceImplementation::addObjectPassGPUState(InterfaceImplementation& self,
+                                                    std::string object,
+                                                    GPUState state, 
+                                                    std::string pass)
+{
+  std::shared_ptr<SpireObject> obj = self.mNameToObject.at(object);
+  obj->addPassGPUState(pass, state);
+}
+
+//------------------------------------------------------------------------------
+void InterfaceImplementation::addGlobalUniformConcrete(InterfaceImplementation& self,
+                                                       std::string uniformName,
+                                                       std::shared_ptr<AbstractUniformStateItem> item)
+{
+  // Access uniform state manager and apply/update uniform value.
+  self.mHub.getGlobalUniformStateMan().updateGlobalUniform(uniformName, item);
+}
+
+
+//------------------------------------------------------------------------------
+GLenum getGLPrimitive(Interface::PRIMITIVE_TYPES type)
+{
+  switch (type)
+  {
+    case Interface::POINTS:
+      return GL_POINTS;
+      break;
+
+    case Interface::LINES:
+      return GL_LINES;
+      break;
+
+    case Interface::LINE_LOOP:
+      return GL_LINE_LOOP;
+      break;
+
+    case Interface::LINE_STRIP:
+      return GL_LINE_STRIP;
+      break;
+
+    case Interface::TRIANGLES:
+      return GL_TRIANGLES;
+      break;
+
+    case Interface::TRIANGLE_STRIP:
+      return GL_TRIANGLE_STRIP;
+      break;
+
+    case Interface::TRIANGLE_FAN:
+      return GL_TRIANGLE_FAN;
+      break;
+
+    case Interface::LINES_ADJACENCY:
+      return GL_LINES_ADJACENCY;
+      break;
+
+    case Interface::LINE_STRIP_ADJACENCY:
+      return GL_LINE_STRIP_ADJACENCY;
+      break;
+
+    case Interface::TRIANGLES_ADJACENCY:
+      return GL_TRIANGLES_ADJACENCY;
+      break;
+
+    case Interface::TRIANGLE_STRIP_ADJACENCY:
+      return GL_TRIANGLE_STRIP_ADJACENCY;
+      break;
+
+    default:
+      {
+        std::stringstream stream;
+        stream << "Expected type to be one of PRIMITIVE_TYPES, received " << type;
+        throw std::invalid_argument(stream.str());
+      }
+  }
+
+  return GL_TRIANGLES;
 }
 
 } // end of namespace Spire

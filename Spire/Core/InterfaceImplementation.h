@@ -130,10 +130,32 @@ public:
                               std::shared_ptr<std::vector<uint8_t>> vboData,
                               std::vector<std::string> attribNames);
   static void removeVBO(InterfaceImplementation& self, std::string vboName);
-
   static void addIBO(InterfaceImplementation& self, std::string iboName,
                      std::shared_ptr<std::vector<uint8_t>> iboData,
                      Interface::IBO_TYPE type);
+  static void removeIBO(InterfaceImplementation& self, std::string iboName);
+  static void addPassToObject(InterfaceImplementation& self, std::string object,
+                              std::string program, std::string vboName, 
+                              std::string iboName, Interface::PRIMITIVE_TYPES type,
+                              std::string pass);
+  static void removePassFromObject(InterfaceImplementation& self, std::string object,
+                                   std::string pass);
+
+  //----------
+  // Uniforms
+  //----------
+  static void addObjectPassUniformConcrete(InterfaceImplementation& self, 
+                                           std::string object, std::string uniformName,
+                                           std::shared_ptr<AbstractUniformStateItem> item,
+                                           std::string pass);
+  static void addObjectGlobalUniformConcrete(InterfaceImplementation& self, std::string object,
+                                             std::string uniformName,
+                                             std::shared_ptr<AbstractUniformStateItem> item);
+  static void addObjectPassGPUState(InterfaceImplementation& self, std::string object,
+                                    GPUState state, std::string pass);
+  static void addGlobalUniformConcrete(InterfaceImplementation& self,
+                                       std::string uniformName,
+                                       std::shared_ptr<AbstractUniformStateItem> item);
 
 private:
 
