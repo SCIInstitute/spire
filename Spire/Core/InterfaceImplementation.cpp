@@ -34,6 +34,9 @@
 #include "SpireObject.h"
 #include "Exceptions.h"
 
+#include "LambdaInterface.h"
+#include "ObjectLambda.h"
+
 namespace Spire {
 
 // Simple static function to convert from PRIMITIVE_TYPES to GL types.
@@ -45,7 +48,7 @@ GLenum getGLPrimitive(Interface::PRIMITIVE_TYPES type);
 InterfaceImplementation::InterfaceImplementation(Hub& hub) :
     mHub(hub)
 {
-  addPassToBack(SPIRE_DEFAULT_PASS);
+  addPassToBack(*this, SPIRE_DEFAULT_PASS);
 }
 
 //------------------------------------------------------------------------------
@@ -85,7 +88,7 @@ void InterfaceImplementation::executeQueue()
 
 
 //------------------------------------------------------------------------------
-void InterfaceImplementation::resize(Hub& hub, size_t width, size_t height)
+void InterfaceImplementation::resize(InterfaceImplementation& self, size_t width, size_t height)
 {
   GL(glViewport(0, 0, width, height));
 }

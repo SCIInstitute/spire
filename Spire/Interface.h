@@ -532,7 +532,4 @@ private:
 
 } // namespace spire
 
-#include "Core/LambdaInterface.h"
-#include "Core/ObjectLambda.h"
-
 #endif // SPIRE_INTERFACE_H
