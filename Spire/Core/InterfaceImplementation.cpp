@@ -33,7 +33,6 @@
 #include "InterfaceImplementation.h"
 #include "SpireObject.h"
 #include "Exceptions.h"
-
 #include "LambdaInterface.h"
 #include "ObjectLambda.h"
 
@@ -59,7 +58,7 @@ bool InterfaceImplementation::addFunctionToQueue(const Hub::RemoteFunction& fun)
 #else
   // Call the function immediately. This case (without std threads) will be 
   // used as our synchronized test harness.
-  fun(mHub);
+  fun(*this);
   return true;
 #endif
 }

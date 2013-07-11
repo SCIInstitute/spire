@@ -29,12 +29,12 @@
 /// \author James Hughes
 /// \date   February 2013
 
-#include "StuIBOObject.h"
+#include "IBOObject.h"
 
 namespace Spire {
 
 IBOObject::IBOObject(std::shared_ptr<std::vector<uint8_t>> iboData,
-                     StuInterface::IBO_TYPE type)
+                     Interface::IBO_TYPE type)
 {
   GL(glGenBuffers(1, &mGLIndex));
   GL(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mGLIndex));
@@ -43,23 +43,23 @@ IBOObject::IBOObject(std::shared_ptr<std::vector<uint8_t>> iboData,
   // Calculate number of elements based on the IBO type.
   switch (type)
   {
-    case StuInterface::IBO_8BIT:
+    case Interface::IBO_8BIT:
       mNumElements = iboData->size() / sizeof(uint8_t);
       mType = GL_UNSIGNED_BYTE;
       break;
 
-    case StuInterface::IBO_16BIT:
+    case Interface::IBO_16BIT:
       mNumElements = iboData->size() / sizeof(uint16_t);
       mType = GL_UNSIGNED_SHORT;
       break;
 
-    case StuInterface::IBO_32BIT:
+    case Interface::IBO_32BIT:
       mNumElements = iboData->size() / sizeof(uint32_t);
       mType = GL_UNSIGNED_INT;
       break;
 
     default:
-      throw std::invalid_argument("IBO type expected to be of type StuInetrface::IBO_TYPE.");
+      throw std::invalid_argument("IBO type expected to be of type Interface::IBO_TYPE.");
       break;
   }
 }

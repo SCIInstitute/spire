@@ -36,6 +36,8 @@
 #include "Exceptions.h"
 #include "Hub.h"
 #include "ShaderUniformStateMan.h"
+#include "LambdaInterface.h"
+#include "ObjectLambda.h"
 
 
 namespace Spire {

@@ -43,8 +43,6 @@
 #include "ShaderProgramMan.h"
 #include "ShaderUniformStateMan.h"
 
-#include "../StuPipe/Driver.h"
-
 #ifdef SPIRE_USING_WIN
   // Disable warning: 'this' used in a base member initializer list warning.
   #pragma warning(disable:4355)
@@ -196,12 +194,7 @@ void Hub::doFrame()
   // stupipe, when we route through the stupipe? It almost appears that it has
   // to. Should we just build the pipe and see where it leads us to?
   mInterfaceImpl->executeQueue();
-
-  // Iterate over pipes and render.
-  for (auto it = mPipes.begin(); it != mPipes.end(); ++it)
-  {
-    (*it)->ntsDoAllPasses();
-  }
+  mInterfaceImpl->doAllPasses();
 }
 
 //------------------------------------------------------------------------------

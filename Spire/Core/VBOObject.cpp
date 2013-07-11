@@ -29,7 +29,7 @@
 /// \author James Hughes
 /// \date   February 2013
 
-#include "StuVBOObject.h"
+#include "VBOObject.h"
 
 namespace Spire {
 

@@ -196,11 +196,6 @@ file (GLOB Source_Caching
   "Caching/*.h"
   )
 
-file (GLOB Source_Pipes
-  "StuPipe/*.cpp"
-  "StuPipe/*.h"
-  )
-
 if(USE_SCIRUN_INTERFACE)
   file (GLOB Source_SCIRun
     "AppSpecific/SCIRun/*.cpp"
@@ -224,7 +219,6 @@ add_library(${SPIRE_TARGET_NAME}
   ${Source_High}
   ${Source_Low}
   ${Source_Caching}
-  ${Source_Pipes}
   ${Source_GLEW}
   ${Source_Testing}
   ${Source_SCIRun}
