@@ -145,7 +145,7 @@ set(CommonSources
   3rdParty/CImg/CImg.h)
 
 file(GLOB TestSources
-  "${BASE_SPIRE_DIR}/Spire/Tests/*.cc"
+  "${BASE_SPIRE_DIR}/Spire/Tests/*.cpp"
   "${BASE_SPIRE_DIR}/Spire/Tests/*.h"
   )
 
