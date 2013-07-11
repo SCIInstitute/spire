@@ -80,22 +80,6 @@ public:
   void executeQueue();
 
   //============================================================================
-  // STATIC IMPLEMENTATION -- Called from interface
-  //============================================================================
-  // All of the functions below constitute the implementation of the interface
-  // to spire. 
-  // NOTE: None of the functions below should not take references or raw
-  // pointers with the exception of the Hub* raw poiner (unfortunately
-  // unavoidable). We don't want to worry about the lifetime of the objects
-  // during cross-thread communication.
-
-  //----------
-  // Graphics
-  //----------
-  /// Called in the event of a resize. This calls glViewport with 0, 0, width, height.
-  static void resize(Hub& hub, size_t width, size_t height);
-
-  //============================================================================
   // IMPLEMENTATION
   //============================================================================
   /// Cleans up all GL resources.
@@ -113,34 +97,43 @@ public:
   /// Returns true if the pass already exists.
   bool hasPass(const std::string& pass) const;
 
-  /// \note: All of the functions below except all of their parameters by
-  ///        *value* not by reference. The only exception is the Hub variable,
-  ///        which is passed by the current thread so we are guarenteed that it
-  ///        has not gone out of scope. We have no such guarantees about 
-  ///        variables on a separate thread.
+  //============================================================================
+  // CALLBACK IMPLEMENTATION -- Called from interface or a derived class.
+  //============================================================================
+  // All of the functions below constitute the implementation of the interface
+  // to spire. 
+  // NOTE: None of the functions below should not take references or raw
+  // pointers with the exception of the self reference. We don't want to worry
+  // about the lifetime of the objects during cross-thread communication.
 
-  //============================================================================
-  // CALLBACK IMPLEMENTATION -- Called from interface
-  //============================================================================
+  //-------------------
+  // Window Management
+  //-------------------
+  /// Called in the event of a resize. This calls glViewport with 0, 0, width, height.
+  static void resize(InterfaceImplementation& self, size_t width, size_t height);
 
   //--------
   // Passes
   //--------
 
-  /// Adds a pass to the front of the pass list. Passes at the front of the list
-  /// are rendered first.
   static void addPassToFront(InterfaceImplementation& self, std::string passName);
-
-  /// Adds a pass to the back of the pass list. Passes at the back of the list
-  /// are rendered last.
   static void addPassToBack(InterfaceImplementation& self, std::string passName);
 
   //---------
   // Objects
   //---------
 
-  /// Adds a renderable 'object' to the scene.
-  void addObject(InterfaceImplementation& self, std::string objectName);
+  static void addObject(InterfaceImplementation& self, std::string objectName);
+  static void removeObject(InterfaceImplementation& self, std::string objectName);
+  static void removeAllObjects(InterfaceImplementation& self);
+  static void addVBO(InterfaceImplementation& self, std::string vboName,
+                              std::shared_ptr<std::vector<uint8_t>> vboData,
+                              std::vector<std::string> attribNames);
+  static void removeVBO(InterfaceImplementation& self, std::string vboName);
+
+  static void addIBO(InterfaceImplementation& self, std::string iboName,
+                     std::shared_ptr<std::vector<uint8_t>> iboData,
+                     Interface::IBO_TYPE type);
 
 private:
 

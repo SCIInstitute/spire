@@ -88,5 +88,47 @@ void Interface::addPassToBack(const std::string& passName)
   mHub->addFunctionToThreadQueue(fun);
 }
 
+//------------------------------------------------------------------------------
+void Interface::addObject(const std::string& objectName)
+{
+  Hub::RemoteFunction fun =
+      std::bind(InterfaceImplementation::addObject, _1, objectName);
+  mHub->addFunctionToThreadQueue(fun);
+}
+
+//------------------------------------------------------------------------------
+void Interface::removeObject(const std::string& objectName)
+{
+  Hub::RemoteFunction fun =
+      std::bind(InterfaceImplementation::removeObject, _1, objectName);
+  mHub->addFunctionToThreadQueue(fun);
+}
+
+//------------------------------------------------------------------------------
+void Interface::removeAllObjects()
+{
+  Hub::RemoteFunction fun =
+      std::bind(InterfaceImplementation::removeAllObjects, _1);
+  mHub->addFunctionToThreadQueue(fun);
+}
+
+//------------------------------------------------------------------------------
+void Interface::addVBO(const std::string& name,
+                       std::shared_ptr<std::vector<uint8_t>> vboData,
+                       const std::vector<std::string>& attribNames)
+{
+  Hub::RemoteFunction fun =
+      std::bind(InterfaceImplementation::addVBO, _1, name, vboData, attribNames);
+  mHub->addFunctionToThreadQueue(fun);
+}
+
+//------------------------------------------------------------------------------
+void Interface::removeVBO(const std::string& vboName)
+{
+  Hub::RemoteFunction fun =
+      std::bind(InterfaceImplementation::removeVBO, _1, vboName);
+  mHub->addFunctionToThreadQueue(fun);
+}
+
 } // end of namespace Renderer
 

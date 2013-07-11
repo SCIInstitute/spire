@@ -41,6 +41,7 @@ namespace Spire {
 InterfaceImplementation::InterfaceImplementation(Hub& hub) :
     mHub(hub)
 {
+  addPassToBack(SPIRE_DEFAULT_PASS);
 }
 
 //------------------------------------------------------------------------------
@@ -173,6 +174,64 @@ void InterfaceImplementation::addObject(InterfaceImplementation& self, std::stri
   std::shared_ptr<SpireObject> obj = std::shared_ptr<SpireObject>(
       new SpireObject(self.mHub, objectName));
   self.mNameToObject[objectName] = obj;
+}
+
+//------------------------------------------------------------------------------
+void InterfaceImplementation::removeObject(InterfaceImplementation& self,
+                                           std::string objectName)
+{
+  if (self.mNameToObject.find(objectName) == self.mNameToObject.end())
+    throw std::range_error("Object to remove does not exist!");
+
+  std::shared_ptr<SpireObject> obj = self.mNameToObject.at(objectName);
+  self.mNameToObject.erase(objectName);
+}
+
+//------------------------------------------------------------------------------
+void InterfaceImplementation::removeAllObjects(InterfaceImplementation& self)
+{
+  self.mNameToObject.clear();
+
+  // Clear all objects from all passes. This should clean up any lingering
+  // ponters to the objects.
+  for (auto it = self.mPasses.begin(); it != self.mPasses.end(); ++it)
+  {
+    (*it)->mNameToObject.clear();
+  }
+}
+
+//------------------------------------------------------------------------------
+void InterfaceImplementation::addVBO(InterfaceImplementation& self, std::string vboName,
+                                     std::shared_ptr<std::vector<uint8_t>> vboData,
+                                     std::vector<std::string> attribNames)
+{
+  if (self.mVBOMap.find(vboName) != self.mVBOMap.end())
+    throw Duplicate("Attempting to add duplicate VBO to object.");
+
+  self.mVBOMap.insert(std::make_pair(
+          vboName, std::shared_ptr<VBOObject>(
+              new VBOObject(vboData, attribNames, self.mHub.getShaderAttributeManager()))));
+}
+
+//------------------------------------------------------------------------------
+void InterfaceImplementation::removeVBO(InterfaceImplementation& self,
+                                        std::string vboName)
+{
+  size_t numElementsRemoved = self.mVBOMap.erase(vboName);
+  if (numElementsRemoved == 0)
+    throw std::out_of_range("Could not find VBO to remove.");
+}
+
+//------------------------------------------------------------------------------
+void InterfaceImplementation::addIBO(InterfaceImplementation& self, std::string iboName,
+                                     std::shared_ptr<std::vector<uint8_t>> iboData,
+                                     Interface::IBO_TYPE type)
+{
+  if (self.mIBOMap.find(iboName) != self.mIBOMap.end())
+    throw Duplicate("Attempting to add duplicate IBO to object.");
+
+  self.mIBOMap.insert(std::make_pair(
+          iboName, std::shared_ptr<IBOObject>(new IBOObject(iboData, type))));
 }
 
 } // end of namespace Spire

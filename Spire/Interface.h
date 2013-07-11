@@ -171,10 +171,6 @@ public:
   // Objects
   //---------
 
-  /// \todo Add BVH which only stores object names and is used for frustum
-  ///       culling. This BVH should be mutex locked so the UI thread can cast
-  ///       rays into it.
-
   /// Adds a renderable 'object' to the scene.
   void addObject(const std::string& object);
 
