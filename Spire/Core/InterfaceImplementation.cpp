@@ -32,6 +32,7 @@
 #include "Hub.h"
 #include "InterfaceImplementation.h"
 #include "SpireObject.h"
+#include "Exceptions.h"
 
 namespace Spire {
 
@@ -64,7 +65,7 @@ void InterfaceImplementation::executeQueue()
   {
     try
     {
-      msg.execute(this);
+      msg.execute(*this);
     }
     catch (std::exception& e)
     {
@@ -88,7 +89,6 @@ void InterfaceImplementation::resize(Hub& hub, size_t width, size_t height)
 void InterfaceImplementation::clearGLResources()
 {
   mNameToObject.clear();
-  mRenderOrderToObjects.clear();
   mPersistentShaders.clear();
   mVBOMap.clear();
   mIBOMap.clear();
@@ -153,15 +153,26 @@ void InterfaceImplementation::doPass(const std::string& passName)
 }
 
 //------------------------------------------------------------------------------
-void InterfaceImplementation::addPassToFront(InterfaceImplementation* self, std::string pass)
+void InterfaceImplementation::addPassToFront(InterfaceImplementation& self, std::string passName)
 {
   // Verify that there is no pass by that name already.
-  if (self->hasPass(passName) == true)
+  if (self.hasPass(passName) == true)
     throw std::runtime_error("Pass (" + passName + ") already exists!");
 
   std::shared_ptr<Pass> pass(new Pass(passName));
-  self->mPasses.push_back(pass);
-  self->mNameToPass[passName] = pass;
+  self.mPasses.push_back(pass);
+  self.mNameToPass[passName] = pass;
+}
+
+//------------------------------------------------------------------------------
+void InterfaceImplementation::addObject(InterfaceImplementation& self, std::string objectName)
+{
+  if (self.mNameToObject.find(objectName) != self.mNameToObject.end())
+    throw Duplicate("There already exists an object by that name!");
+
+  std::shared_ptr<SpireObject> obj = std::shared_ptr<SpireObject>(
+      new SpireObject(self.mHub, objectName));
+  self.mNameToObject[objectName] = obj;
 }
 
 } // end of namespace Spire

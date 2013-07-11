@@ -47,13 +47,12 @@ namespace Spire {
 //------------------------------------------------------------------------------
 ObjectPass::ObjectPass(
     Hub& hub,
-    const std::string& passName, const std::string& programName, int32_t passOrder,
+    const std::string& passName, const std::string& programName,
     std::shared_ptr<VBOObject> vbo, std::shared_ptr<IBOObject> ibo, GLenum primitiveType) :
 
     mVBO(vbo),
     mIBO(ibo),
     mName(passName),
-    mPassOrder(passOrder),
     mPrimitiveType(primitiveType),
     mHub(hub)
 {
@@ -113,7 +112,7 @@ void ObjectPass::renderPass(ObjectLambdaInterface& lambdaInterface)
 
   // Assign global uniforms, searches through 3 levels in an attempt to find the
   // uniform: object global -> pass global -> and global.
-  std::list<StuInterface::UnsatisfiedUniform> unsatisfiedGlobalUniforms;
+  std::list<Interface::UnsatisfiedUniform> unsatisfiedGlobalUniforms;
   for (auto it = mUnsatisfiedUniforms.begin(); it != mUnsatisfiedUniforms.end(); ++it)
   {
     bool applied = mHub.getPassUniformStateMan().tryApplyUniform(mName, it->uniformName, it->shaderLocation);
@@ -121,7 +120,7 @@ void ObjectPass::renderPass(ObjectLambdaInterface& lambdaInterface)
     {
       if (mHub.getGlobalUniformStateMan().applyUniform(it->uniformName, it->shaderLocation) == false)
         unsatisfiedGlobalUniforms.push_back(
-            StuInterface::UnsatisfiedUniform(it->uniformName, it->shaderLocation, it->uniformType));
+            Interface::UnsatisfiedUniform(it->uniformName, it->shaderLocation, it->uniformType));
     }
   }
 
@@ -297,13 +296,13 @@ std::shared_ptr<const AbstractUniformStateItem> ObjectPass::getSpireAttribute(
 }
 
 //------------------------------------------------------------------------------
-void ObjectPass::addRenderLambda(const StuInterface::ObjectLambdaFunction& fp)
+void ObjectPass::addRenderLambda(const Interface::ObjectLambdaFunction& fp)
 {
   mRenderLambdas.push_back(fp);
 }
 
 //------------------------------------------------------------------------------
-void ObjectPass::addUniformLambda(const StuInterface::ObjectUniformLambdaFunction& fp)
+void ObjectPass::addUniformLambda(const Interface::ObjectUniformLambdaFunction& fp)
 {
   mUniformLambdas.push_back(fp);
 }
@@ -316,9 +315,8 @@ void ObjectPass::addUniformLambda(const StuInterface::ObjectUniformLambdaFunctio
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-SpireObject::SpireObject(Hub& hub, const std::string& name, int32_t renderOrder) :
+SpireObject::SpireObject(Hub& hub, const std::string& name) :
     mName(name),
-    mRenderOrder(renderOrder),
     mHub(hub)
 {
   // Reserve at least one slot for the object transformation, and one more for
@@ -333,19 +331,15 @@ void SpireObject::addPass(
     const std::string& program,
     std::shared_ptr<VBOObject> vbo,
     std::shared_ptr<IBOObject> ibo,
-    GLenum type,
-    int32_t passOrder)
+    GLenum type)
 {
   // Check to see if there already is a pass by that name...
   if (mPasses.find(passName) != mPasses.end())
     throw Duplicate("There already exists a pass with the specified pass name.");
 
   // Build the pass.
-  std::shared_ptr<ObjectPass> pass(new ObjectPass(mHub, passName, program, passOrder,
-                                            vbo, ibo, type));
-  
+  std::shared_ptr<ObjectPass> pass(new ObjectPass(mHub, passName, program, vbo, ibo, type));
   mPasses.insert(std::make_pair(passName, pass));
-  mPassRenderOrder.insert(std::make_pair(passOrder, pass));
 
   // Copy any global uniforms that may be relevant to the pass' shader.
   for (auto it = mObjectGlobalUniforms.begin(); it != mObjectGlobalUniforms.end(); ++it)
@@ -368,24 +362,6 @@ void SpireObject::removePass(const std::string& passName)
   std::shared_ptr<ObjectPass> pass = getPassByName(passName);
 
   mPasses.erase(passName);
-  removePassFromOrderList(pass->getName(), pass->getPassOrder());
-}
-
-//------------------------------------------------------------------------------
-void SpireObject::removePassFromOrderList(const std::string& passName,
-                                        int32_t passOrder)
-{
-  auto it = mPassRenderOrder.find(passOrder);
-  /// \xxx Should we be only iterating to mRenderOrderToObjects.count(objRenderOrder)?
-  for (; it != mPassRenderOrder.end(); ++it)
-  {
-    if (it->second->getName() == passName)
-    {
-      mPassRenderOrder.erase(it);
-      return;
-    }
-  }
-  throw std::range_error("Unable to find object to remove in render order map.");
 }
 
 //------------------------------------------------------------------------------
@@ -427,12 +403,6 @@ std::shared_ptr<const AbstractUniformStateItem> SpireObject::getObjectPassSpireA
 {
   std::shared_ptr<ObjectPass> pass = getPassByName(passName);
   return pass->getSpireAttribute(attribName);
-}
-
-//------------------------------------------------------------------------------
-void SpireObject::addObjectTransform(const M44& transform)
-{
-  mObjectTransform = transform;
 }
 
 //------------------------------------------------------------------------------
@@ -499,16 +469,6 @@ std::shared_ptr<ObjectPass> SpireObject::getPassByName(const std::string& name) 
 }
 
 //------------------------------------------------------------------------------
-void SpireObject::renderAllPasses()
-{
-  for (auto it = mPassRenderOrder.begin(); it != mPassRenderOrder.end(); ++it)
-  {
-    ObjectLambdaInterface lambdaInterface(mHub, it->second->getName(), *this);
-    it->second->renderPass(lambdaInterface);
-  }
-}
-
-//------------------------------------------------------------------------------
 bool SpireObject::hasGlobalUniform(const std::string& uniformName) const
 {
   for (auto it = mObjectGlobalUniforms.begin(); it != mObjectGlobalUniforms.end(); ++it)
@@ -528,35 +488,15 @@ void SpireObject::renderPass(const std::string& passName)
 }
 
 //------------------------------------------------------------------------------
-void SpireObject::addPassRenderLambda(const std::string& pass, const StuInterface::ObjectLambdaFunction& fp)
+void SpireObject::addPassRenderLambda(const std::string& pass, const Interface::ObjectLambdaFunction& fp)
 {
   getPassByName(pass)->addRenderLambda(fp);
 }
 
 //------------------------------------------------------------------------------
-void SpireObject::addPassUniformLambda(const std::string& pass, const StuInterface::ObjectUniformLambdaFunction& fp)
+void SpireObject::addPassUniformLambda(const std::string& pass, const Interface::ObjectUniformLambdaFunction& fp)
 {
   getPassByName(pass)->addUniformLambda(fp);
-}
-
-//------------------------------------------------------------------------------
-bool SpireObject::hasPassRenderingOrder(const std::vector<std::string>& passes) const
-{
-  // Iterate over the map (we will iterate over the map in ascending order).
-  // This is the same loop we will be using in the renderer.
-  auto itToTest = passes.begin();
-  auto itOrder = mPassRenderOrder.begin();
-  for (; itOrder != mPassRenderOrder.end() && itToTest != passes.end();
-       ++itOrder, ++itToTest)
-  {
-    if (itOrder->second->getName() != *itToTest)
-      return false;
-  }
-
-  if (itToTest == passes.end() && itOrder == mPassRenderOrder.end())
-    return true;
-  else
-    return false;
 }
 
 } // end of namespace Spire

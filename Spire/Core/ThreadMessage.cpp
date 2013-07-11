@@ -46,7 +46,7 @@ ThreadMessage::ThreadMessage(const Hub::RemoteFunction& toCall) :
 }
 
 //------------------------------------------------------------------------------
-void ThreadMessage::execute(Hub& hub)
+void ThreadMessage::execute(InterfaceImplementation& hub)
 {
   mToCall(hub);
 }

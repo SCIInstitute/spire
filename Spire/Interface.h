@@ -178,10 +178,6 @@ public:
   /// Adds a renderable 'object' to the scene.
   void addObject(const std::string& object);
 
-  /// Adds a renderable 'object' to the scene, and assigns it 'renderOrder'.
-  /// Objects with lower render orders will be rendered first.
-  void addObject(const std::string& object, int32_t renderOrder);
-
   /// Completely removes 'object' from the pipe. This includes removing all of
   /// the object's passes as well.
   /// Throws an std::out_of_range exception if the object is not found in the 

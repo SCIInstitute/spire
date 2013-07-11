@@ -71,7 +71,7 @@ public:
   virtual ~Hub();
 
   /// Definition of what a remote function should accept.
-  typedef std::function<void (InterfaceImplementation* impl)> RemoteFunction;
+  typedef std::function<void (InterfaceImplementation& impl)> RemoteFunction;
 
   /// One-time initialization of the renderer.
   /// Called by the rendering thread, or the thread where this Interface class

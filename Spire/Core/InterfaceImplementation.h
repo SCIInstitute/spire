@@ -96,7 +96,7 @@ public:
   static void resize(Hub& hub, size_t width, size_t height);
 
   //============================================================================
-  // IMPLEMENTATION -- Called from interface
+  // IMPLEMENTATION
   //============================================================================
   /// Cleans up all GL resources.
   void clearGLResources();
@@ -110,9 +110,6 @@ public:
   /// Retrieves number of objects.
   size_t getNumObjects()      {return mNameToObject.size();}
 
-  /// Retrieves current render order.
-  int32_t getRenderOrder()    {return mCurrentRenderOrder;}
-
   /// Returns true if the pass already exists.
   bool hasPass(const std::string& pass) const;
 
@@ -122,17 +119,28 @@ public:
   ///        has not gone out of scope. We have no such guarantees about 
   ///        variables on a separate thread.
 
+  //============================================================================
+  // CALLBACK IMPLEMENTATION -- Called from interface
+  //============================================================================
+
   //--------
   // Passes
   //--------
 
   /// Adds a pass to the front of the pass list. Passes at the front of the list
   /// are rendered first.
-  static void addPassToFront(InterfaceImplementation* self, std::string pass);
+  static void addPassToFront(InterfaceImplementation& self, std::string passName);
 
   /// Adds a pass to the back of the pass list. Passes at the back of the list
   /// are rendered last.
-  static void addPassToBack(InterfaceImplementation* self, std::string passName);
+  static void addPassToBack(InterfaceImplementation& self, std::string passName);
+
+  //---------
+  // Objects
+  //---------
+
+  /// Adds a renderable 'object' to the scene.
+  void addObject(InterfaceImplementation& self, std::string objectName);
 
 private:
 
@@ -151,15 +159,8 @@ private:
     /// \todo Rendering order for the objects?
   };
 
-  /// Remove the specified object from the order list.
-  void removeObjectFromOrderList(const std::string& objectName, int32_t objectOrder);
-
   /// This unordered map is a 1-1 mapping of object names onto objects.
   std::unordered_map<std::string, std::shared_ptr<SpireObject>>   mNameToObject;
-
-  /// Rendering order of objects. This map is not a well-defined function: one
-  /// value in the domain possibly maps to multiple values in the range.
-  std::multimap<int32_t, std::shared_ptr<SpireObject>>            mRenderOrderToObjects;
 
   /// List of shaders that are stored persistently by this pipe (will never
   /// be GC'ed unless this pipe is destroyed).
@@ -180,12 +181,6 @@ private:
   std::vector<Interface::PassLambdaFunction>                      mGlobalBeginLambdas;
   std::vector<Interface::PassLambdaFunction>                      mGlobalEndLambdas;
   /// @}
-
-  // NOTE:  The following variable should only be accessed on the client side.
-  //        Never by the renderer. This var just makes it easier when adding
-  //        objects and you don't care about their order.
-  int32_t mCurrentRenderOrder;    ///< Current rendering order. Used for automatic order assignment.
-  int32_t mCurrentPassOrder;      ///< Current pass rendering order.
 
 private:
 

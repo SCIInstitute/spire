@@ -55,14 +55,13 @@ class ObjectPass
 public:
   ObjectPass(
       Hub& hub,
-      const std::string& passName, const std::string& programName, int32_t passOrder,
+      const std::string& passName, const std::string& programName,
       std::shared_ptr<VBOObject> vbo, std::shared_ptr<IBOObject> ibo, GLenum primitiveType);
   virtual ~ObjectPass();
   
   void renderPass(ObjectLambdaInterface& lambdaInterface);
 
   const std::string& getName() const    {return mName;}
-  int32_t getPassOrder() const          {return mPassOrder;}
   GLenum getPrimitiveType() const       {return mPrimitiveType;}
 
   /// Adds a local uniform to the pass.
@@ -92,10 +91,10 @@ public:
       const std::string& attribName) const;
 
   /// Add render lambda.
-  void addRenderLambda(const StuInterface::ObjectLambdaFunction& fp);
+  void addRenderLambda(const Interface::ObjectLambdaFunction& fp);
 
   /// Add uniform lambda.
-  void addUniformLambda(const StuInterface::ObjectUniformLambdaFunction& fp);
+  void addUniformLambda(const Interface::ObjectUniformLambdaFunction& fp);
 
 protected:
 
@@ -151,7 +150,6 @@ protected:
 
 
   std::string                           mName;      ///< Simple pass name.
-  int32_t                               mPassOrder; ///< Pass order.
   GLenum                                mPrimitiveType;
 
   /// List of unsatisfied uniforms (the list of uniforms that are not covered
@@ -178,8 +176,8 @@ protected:
   Hub&                                  mHub;     ///< Hub.
 
   /// Lambda callbacks.
-  std::vector<StuInterface::ObjectUniformLambdaFunction> mUniformLambdas;
-  std::vector<StuInterface::ObjectLambdaFunction>        mRenderLambdas;
+  std::vector<Interface::ObjectUniformLambdaFunction> mUniformLambdas;
+  std::vector<Interface::ObjectLambdaFunction>        mRenderLambdas;
 };
 
 //------------------------------------------------------------------------------
@@ -189,21 +187,16 @@ class SpireObject
 {
 public:
 
-  SpireObject(Hub& hub, const std::string& name, int32_t renderOrder);
+  SpireObject(Hub& hub, const std::string& name);
 
   std::string getName() const     {return mName;}
-  int32_t getRenderOrder() const  {return mRenderOrder;}
-
-  /// Set new rendering order.
-  void setRenderOrder(int32_t renderOrder) {mRenderOrder = renderOrder;}
 
   /// Adds a geometry pass with the specified index / vertex buffer objects.
   void addPass(const std::string& pass,
                const std::string& program,
                std::shared_ptr<VBOObject> vbo,
                std::shared_ptr<IBOObject> ibo,
-               GLenum primType,
-               int32_t passOrder);
+               GLenum primType);
 
   /// \note If we add ability to remove IBOs and VBOs, the IBOs and VBOs will
   ///       not be removed until their corresponding passes are removed
@@ -246,18 +239,11 @@ public:
       const std::string& passName,
       const std::string& attribName) const;
 
-  /// Adds an object -> world transformation to this object.
-  /// This transform is passed to the pass before rendering occurs.
-  void addObjectTransform(const M44& transform);
-
   /// Add GPU state to the pass.
   void addPassGPUState(const std::string& pass,
                        const GPUState& state);
 
   bool hasPassRenderingOrder(const std::vector<std::string>& passes) const;
-
-  /// Renders all passes associated with this object.
-  void renderAllPasses();
 
   /// \todo Ability to render a single named pass. See github issue #15.
   void renderPass(const std::string& pass);
@@ -273,10 +259,10 @@ public:
   bool hasGlobalUniform(const std::string& uniformName) const;
 
   /// Adds a render lambda to the given pass.
-  void addPassRenderLambda(const std::string& pass, const StuInterface::ObjectLambdaFunction& fp);
+  void addPassRenderLambda(const std::string& pass, const Interface::ObjectLambdaFunction& fp);
 
   /// Adds a uniform lambda to the given pass.
-  void addPassUniformLambda(const std::string& pass, const StuInterface::ObjectUniformLambdaFunction& fp);
+  void addPassUniformLambda(const std::string& pass, const Interface::ObjectUniformLambdaFunction& fp);
 
 protected:
 
@@ -292,14 +278,11 @@ protected:
     std::shared_ptr<AbstractUniformStateItem> item;
   };
 
-  void removePassFromOrderList(const std::string& pass, int32_t passOrder);
-
   /// Retrieves the pass by name.
   std::shared_ptr<ObjectPass> getPassByName(const std::string& name) const;
 
   /// All registered passes.
   std::unordered_map<std::string, std::shared_ptr<ObjectPass>>  mPasses;
-  std::map<int32_t, std::shared_ptr<ObjectPass>>                mPassRenderOrder;
   std::vector<ObjectGlobalUniformItem>                          mObjectGlobalUniforms;
   std::unordered_map<std::string, std::shared_ptr<AbstractUniformStateItem>> mSpireAttributes;
 
@@ -308,12 +291,7 @@ protected:
   // now until we identify an actual performance bottlenecks.
   // size_t represents a std::hash of a string.
   std::hash<std::string>                        mHashFun;
-
   std::string                                   mName;
-  int32_t                                       mRenderOrder;
-
-  /// Object -> world transform.
-  M44                                           mObjectTransform;
 
   Hub&                                          mHub;
 };

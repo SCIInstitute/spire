@@ -39,6 +39,8 @@
 namespace Spire
 {
 
+class InterfaceImplementation;
+
 /// Encapsulates a function that will be executed on a remote thread.
 /// Used instead of an inbox along with message ID's and whatnot.
 /// std::bind along with std::function are used to execute functions on the 
@@ -57,7 +59,7 @@ public:
   void setFunction(const Hub::RemoteFunction& toCall);
 
   /// Execute function stored in message.
-  void execute(Hub& hub);
+  void execute(InterfaceImplementation& hub);
 
   /// Clears the bound function. This is important as there may be shared_ptr
   /// references that have been bound into the function.
