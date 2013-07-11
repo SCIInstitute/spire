@@ -797,10 +797,7 @@ void StuInterface::addPersistentShader(const std::string& programName,
   std::vector<std::tuple<std::string, SHADER_TYPES>> shaders;
   shaders.push_back(make_tuple(vertexShader, VERTEX_SHADER));
   shaders.push_back(make_tuple(fragmentShader, FRAGMENT_SHADER));
-
-  Hub::RemoteFunction fun =
-      std::bind(addPersistentShaderImpl, _1, this, programName, shaders);
-  mHub.addFunctionToThreadQueue(fun);
+  addPersistentShader(programName, shaders);
 }
 
 //------------------------------------------------------------------------------

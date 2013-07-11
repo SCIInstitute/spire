@@ -300,6 +300,15 @@ void InterfaceImplementation::addObjectGlobalUniformConcrete(InterfaceImplementa
 
 
 //------------------------------------------------------------------------------
+void InterfaceImplementation::addGlobalUniformConcrete(InterfaceImplementation& self,
+                                                       std::string uniformName,
+                                                       std::shared_ptr<AbstractUniformStateItem> item)
+{
+  // Access uniform state manager and apply/update uniform value.
+  self.mHub.getGlobalUniformStateMan().updateGlobalUniform(uniformName, item);
+}
+
+//------------------------------------------------------------------------------
 void InterfaceImplementation::addObjectPassGPUState(InterfaceImplementation& self,
                                                     std::string object,
                                                     GPUState state, 
@@ -310,14 +319,63 @@ void InterfaceImplementation::addObjectPassGPUState(InterfaceImplementation& sel
 }
 
 //------------------------------------------------------------------------------
-void InterfaceImplementation::addGlobalUniformConcrete(InterfaceImplementation& self,
-                                                       std::string uniformName,
-                                                       std::shared_ptr<AbstractUniformStateItem> item)
+void InterfaceImplementation::addObjectGlobalSpireAttributeConcrete(InterfaceImplementation& self,
+                                                                    std::string objectName,
+                                                                    std::string attributeName,
+                                                                    std::shared_ptr<AbstractUniformStateItem> item)
 {
-  // Access uniform state manager and apply/update uniform value.
-  self.mHub.getGlobalUniformStateMan().updateGlobalUniform(uniformName, item);
+  std::shared_ptr<SpireObject> obj = self.mNameToObject.at(objectName);
+  obj->addObjectGlobalSpireAttribute(attributeName, item);
 }
 
+//------------------------------------------------------------------------------
+void InterfaceImplementation::addObjectPassSpireAttributeConcrete(InterfaceImplementation& self, std::string objectName,
+                                                                  std::string attributeName,
+                                                                  std::shared_ptr<AbstractUniformStateItem> item,
+                                                                  std::string passName)
+{
+  std::shared_ptr<SpireObject> obj = self.mNameToObject.at(objectName);
+  obj->addObjectPassSpireAttribute(passName, attributeName, item);
+}
+
+//------------------------------------------------------------------------------
+void InterfaceImplementation::addPersistentShader(InterfaceImplementation& self,
+                                                  std::string programName,
+                                                  std::vector<std::tuple<std::string, Interface::SHADER_TYPES>> tempShaders)
+{
+  std::list<std::tuple<std::string, GLenum>> shaders;
+  for (auto it = tempShaders.begin(); it != tempShaders.end(); ++it)
+  {
+    GLenum glType = GL_VERTEX_SHADER;
+    switch (std::get<1>(*it))
+    {
+      case Interface::VERTEX_SHADER:
+        glType = GL_VERTEX_SHADER;
+        break;
+
+      case Interface::FRAGMENT_SHADER:
+        glType = GL_FRAGMENT_SHADER;
+        break;
+
+      default:
+        throw UnsupportedException("This shader is not supported yet.");
+        break;
+    }
+    shaders.push_back(make_tuple(std::get<0>(*it), glType));
+  }
+
+  std::shared_ptr<ShaderProgramAsset> shader = 
+      self.mHub.getShaderProgramManager().loadProgram(programName, shaders);
+
+  // Check to make sure we haven't already added this shader.
+  for (auto it = self.mPersistentShaders.begin();
+       it != self.mPersistentShaders.end(); ++it)
+  {
+    if (shader == *it)
+      throw Duplicate("Attempted to add duplicate shader to persistent shader list");
+  }
+  self.mPersistentShaders.push_back(shader);
+}
 
 //------------------------------------------------------------------------------
 GLenum getGLPrimitive(Interface::PRIMITIVE_TYPES type)

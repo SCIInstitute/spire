@@ -324,15 +324,6 @@ public:
                                       const std::string& uniformName,
                                       std::shared_ptr<AbstractUniformStateItem> item);
 
-  /// GPU state that will be applied directly before the object is rendered.
-  /// Note: The default GPU state is consists of the default GPUState 
-  ///       constructor.
-  void addObjectPassGPUState(const std::string& object,
-                             const GPUState& state,
-                             const std::string& pass = SPIRE_DEFAULT_PASS);
-
-  /// \todo addPassUniform
-
   /// Will add *or* update the global uniform if it already exsits.
   /// A shader of a given name is only allowed to be one type. If you attempt
   /// to bind different values to a uniform, this function will throw a
@@ -349,9 +340,13 @@ public:
   void addGlobalUniformConcrete(const std::string& uniformName,
                                 std::shared_ptr<AbstractUniformStateItem> item);
 
+  /// GPU state that will be applied directly before the object is rendered.
+  /// Note: The default GPU state is consists of the default GPUState 
+  ///       constructor.
+  void addObjectPassGPUState(const std::string& object,
+                             const GPUState& state,
+                             const std::string& pass = SPIRE_DEFAULT_PASS);
 
-  /// \todo Create method to add uniforms to the UniformManager (NOT the state
-  ///       manager -- uniform manager is the type checker).
 
   //------------------
   // Spire Attributes

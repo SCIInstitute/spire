@@ -151,11 +151,21 @@ public:
   static void addObjectGlobalUniformConcrete(InterfaceImplementation& self, std::string object,
                                              std::string uniformName,
                                              std::shared_ptr<AbstractUniformStateItem> item);
-  static void addObjectPassGPUState(InterfaceImplementation& self, std::string object,
-                                    GPUState state, std::string pass);
   static void addGlobalUniformConcrete(InterfaceImplementation& self,
                                        std::string uniformName,
                                        std::shared_ptr<AbstractUniformStateItem> item);
+  static void addObjectPassGPUState(InterfaceImplementation& self, std::string object,
+                                    GPUState state, std::string pass);
+  static void addObjectGlobalSpireAttributeConcrete(InterfaceImplementation& self,
+                                                    std::string object,
+                                                    std::string attributeName,
+                                                    std::shared_ptr<AbstractUniformStateItem> item);
+  static void addObjectPassSpireAttributeConcrete(InterfaceImplementation& self, std::string object,
+                                                  std::string attributeName,
+                                                  std::shared_ptr<AbstractUniformStateItem> item,
+                                                  std::string passName);
+  static void addPersistentShader(InterfaceImplementation& self, std::string programName,
+                                  std::vector<std::tuple<std::string, Interface::SHADER_TYPES>> tempShaders);
 
 private:
 

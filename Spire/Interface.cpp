@@ -194,6 +194,15 @@ void Interface::addObjectGlobalUniformConcrete(const std::string& object,
 }
 
 //------------------------------------------------------------------------------
+void Interface::addGlobalUniformConcrete(const std::string& uniformName,
+                                         std::shared_ptr<AbstractUniformStateItem> item)
+{
+  Hub::RemoteFunction fun =
+      std::bind(InterfaceImplementation::addGlobalUniformConcrete, _1, uniformName, item);
+  mHub->addFunctionToThreadQueue(fun);
+}
+
+//------------------------------------------------------------------------------
 void Interface::addObjectPassGPUState(const std::string& object, const GPUState& state,
                                       const std::string& pass)
 {
@@ -203,15 +212,45 @@ void Interface::addObjectPassGPUState(const std::string& object, const GPUState&
 }
 
 //------------------------------------------------------------------------------
-void Interface::addGlobalUniformConcrete(const std::string& uniformName,
-                                         std::shared_ptr<AbstractUniformStateItem> item)
+void Interface::addObjectGlobalSpireAttributeConcrete(const std::string& object,
+                                                      const std::string& attributeName,
+                                                      std::shared_ptr<AbstractUniformStateItem> item)
 {
   Hub::RemoteFunction fun =
-      std::bind(InterfaceImplementation::addGlobalUniformConcrete, _1, uniformName, item);
+      std::bind(InterfaceImplementation::addObjectGlobalSpireAttributeConcrete, _1, object, attributeName, item);
   mHub->addFunctionToThreadQueue(fun);
 }
 
+//------------------------------------------------------------------------------
+void Interface::addObjectPassSpireAttributeConcrete(const std::string& object,
+                                                    const std::string& attributeName,
+                                                    std::shared_ptr<AbstractUniformStateItem> item,
+                                                    const std::string& passName)
+{
+  Hub::RemoteFunction fun =
+      std::bind(InterfaceImplementation::addObjectPassSpireAttributeConcrete, _1, object, attributeName, item, passName);
+  mHub->addFunctionToThreadQueue(fun);
+}
 
+//------------------------------------------------------------------------------
+void Interface::addPersistentShader(const std::string& programName,
+                                    const std::string& vertexShader,
+                                    const std::string& fragmentShader)
+{
+  std::vector<std::tuple<std::string, SHADER_TYPES>> shaders;
+  shaders.push_back(make_tuple(vertexShader, VERTEX_SHADER));
+  shaders.push_back(make_tuple(fragmentShader, FRAGMENT_SHADER));
+  addPersistentShader(programName, shaders);
+}
+
+//------------------------------------------------------------------------------
+void Interface::addPersistentShader(const std::string& programName,
+                                    const std::vector<std::tuple<std::string, SHADER_TYPES>>& shaders)
+{
+  Hub::RemoteFunction fun =
+      std::bind(InterfaceImplementation::addPersistentShader, _1, programName, shaders);
+  mHub->addFunctionToThreadQueue(fun);
+}
 
 
 //------------------------------------------------------------------------------
