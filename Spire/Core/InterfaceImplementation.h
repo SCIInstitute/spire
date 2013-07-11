@@ -97,6 +97,12 @@ public:
   /// Returns true if the pass already exists.
   bool hasPass(const std::string& pass) const;
 
+  /// Retrieves the object with the specified name.
+  std::shared_ptr<const SpireObject> getObjectWithName(const std::string& name) const;
+
+  /// Returns true if the object is in the given pass.
+  bool isObjectInPass(const std::string& object, const std::string& pass) const;
+
   //============================================================================
   // CALLBACK IMPLEMENTATION -- Called from interface or a derived class.
   //============================================================================

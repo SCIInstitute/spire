@@ -495,36 +495,19 @@ public:
   ///       for the first time.
   void ntsDoFrame();
 
-  /// Renders all passes, in order.
-  void ntsDoAllPasses();
-
-  /// Perform the entire pass.
-  /// \todo Add timing and other semantics here.
-  void ntsDoPass(const std::string& pass);
-
   /// Obtain the current number of objects.
   /// \todo This function nedes to go to the implementation.
-  size_t ntsGetNumObjects() const;           // {return mNameToObject.size();}
-
-  /// Obtain the current rendering order.
-  /// (technically, this is thread safe as the rendering thread never accesses
-  ///  this value and is only used on the client thread).
-  /// \todo This function nedes to go to the implementation.
-  int32_t ntsGetRenderOrder() const;       // {return mCurrentRenderOrder;}
+  size_t ntsGetNumObjects() const;
 
   /// Obtain the object associated with 'name'.
   /// throws std::range_error if the object is not found.
   std::shared_ptr<const SpireObject> ntsGetObjectWithName(const std::string& name) const;
-  
-  /// Returns true if the system would render the list of object names in the
-  /// specified order.
-  bool ntsHasRenderingOrder(const std::vector<std::string>& renderOrder) const;
 
   /// Cleans up all GL resources.
   /// Should ONLY be called from the rendering thread.
   /// In our case, this amounts to disposing of all of our objects and VBO/IBOs
   /// and persistent shader objects.
-  virtual void clearGLResources();
+  void ntsClearGLResources();
 
   /// Returns true if the specified object is in the pass.
   bool ntsIsObjectInPass(const std::string& object, const std::string& pass) const;

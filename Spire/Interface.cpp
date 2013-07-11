@@ -73,6 +73,36 @@ void Interface::ntsDoFrame()
 }
 
 //------------------------------------------------------------------------------
+size_t Interface::ntsGetNumObjects() const
+{
+  return mHub->getInterfaceImpl()->getNumObjects();
+}
+
+//------------------------------------------------------------------------------
+std::shared_ptr<const SpireObject> Interface::ntsGetObjectWithName(const std::string& name) const
+{
+  return mHub->getInterfaceImpl()->getObjectWithName(name);
+}
+
+//------------------------------------------------------------------------------
+void Interface::ntsClearGLResources()
+{
+  mHub->getInterfaceImpl()->clearGLResources();
+}
+
+//------------------------------------------------------------------------------
+bool Interface::ntsIsObjectInPass(const std::string& object, const std::string& pass) const
+{
+  return mHub->getInterfaceImpl()->isObjectInPass(object, pass);
+}
+
+//------------------------------------------------------------------------------
+bool Interface::ntsHasPass(const std::string& pass) const
+{
+  return mHub->getInterfaceImpl()->hasPass(pass);
+}
+
+//------------------------------------------------------------------------------
 void Interface::addPassToFront(const std::string& passName)
 {
   Hub::RemoteFunction fun =

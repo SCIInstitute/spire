@@ -139,6 +139,26 @@ bool InterfaceImplementation::hasPass(const std::string& pass) const
 }
 
 //------------------------------------------------------------------------------
+std::shared_ptr<const SpireObject> InterfaceImplementation::getObjectWithName(const std::string& name) const
+{
+  return mNameToObject.at(name);
+}
+
+//------------------------------------------------------------------------------
+bool InterfaceImplementation::isObjectInPass(const std::string& object, const std::string& pass) const
+{
+  if (hasPass(pass))
+  {
+    std::shared_ptr<Pass> passPtr = mNameToPass.at(pass);
+    return (passPtr->mNameToObject.find(object) != passPtr->mNameToObject.end());
+  }
+  else
+  {
+    return false;
+  }
+}
+
+//------------------------------------------------------------------------------
 void InterfaceImplementation::doPass(const std::string& passName)
 {
   std::shared_ptr<Pass> pass = mNameToPass.at(passName);
