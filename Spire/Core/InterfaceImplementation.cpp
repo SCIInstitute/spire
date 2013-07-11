@@ -378,6 +378,54 @@ void InterfaceImplementation::addPersistentShader(InterfaceImplementation& self,
 }
 
 //------------------------------------------------------------------------------
+void InterfaceImplementation::addLambdaBeginAllPasses(InterfaceImplementation& self, Interface::PassLambdaFunction fp)
+{
+  self.mGlobalBeginLambdas.push_back(fp);
+}
+
+//------------------------------------------------------------------------------
+void InterfaceImplementation::addLambdaEndAllPasses(InterfaceImplementation& self, Interface::PassLambdaFunction fp)
+{
+  self.mGlobalEndLambdas.push_back(fp);
+}
+
+//------------------------------------------------------------------------------
+void InterfaceImplementation::addLambdaPrePass(InterfaceImplementation& self, Interface::PassLambdaFunction fp, std::string pass)
+{
+  auto passIt = self.mNameToPass.find(pass);
+  if (passIt == self.mNameToPass.end())
+    throw std::runtime_error("Pass (" + pass + ") does not exist.");
+
+  passIt->second->mPassBeginLambdas.push_back(fp);
+}
+
+//------------------------------------------------------------------------------
+void InterfaceImplementation::addLambdaPostPass(InterfaceImplementation& self, Interface::PassLambdaFunction fp, std::string pass)
+{
+  auto passIt = self.mNameToPass.find(pass);
+  if (passIt == self.mNameToPass.end())
+    throw std::runtime_error("Pass (" + pass + ") does not exist.");
+
+  passIt->second->mPassEndLambdas.push_back(fp);
+}
+
+//------------------------------------------------------------------------------
+void InterfaceImplementation::addLambdaObjectRender(InterfaceImplementation& self, 
+                                                    std::string object, Interface::ObjectLambdaFunction fp, std::string pass)
+{
+  std::shared_ptr<SpireObject> obj = self.mNameToObject.at(object);
+  obj->addPassRenderLambda(pass, fp);
+}
+
+//------------------------------------------------------------------------------
+void InterfaceImplementation::addLambdaObjectUniforms(InterfaceImplementation& self, std::string object, 
+                                                      Interface::ObjectUniformLambdaFunction fp, std::string pass)
+{
+  std::shared_ptr<SpireObject> obj = self.mNameToObject.at(object);
+  obj->addPassUniformLambda(pass, fp);
+}
+
+//------------------------------------------------------------------------------
 GLenum getGLPrimitive(Interface::PRIMITIVE_TYPES type)
 {
   switch (type)

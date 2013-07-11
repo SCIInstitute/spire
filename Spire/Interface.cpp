@@ -252,6 +252,54 @@ void Interface::addPersistentShader(const std::string& programName,
   mHub->addFunctionToThreadQueue(fun);
 }
 
+//------------------------------------------------------------------------------
+void Interface::addLambdaBeginAllPasses(const PassLambdaFunction& fp)
+{
+  Hub::RemoteFunction fun =
+      std::bind(InterfaceImplementation::addLambdaBeginAllPasses, _1, fp);
+  mHub->addFunctionToThreadQueue(fun);
+}
+
+//------------------------------------------------------------------------------
+void Interface::addLambdaEndAllPasses(const PassLambdaFunction& fp)
+{
+  Hub::RemoteFunction fun =
+      std::bind(InterfaceImplementation::addLambdaEndAllPasses, _1, fp);
+  mHub->addFunctionToThreadQueue(fun);
+}
+
+//------------------------------------------------------------------------------
+void Interface::addLambdaPrePass(const PassLambdaFunction& fp, const std::string& pass)
+{
+  Hub::RemoteFunction fun =
+      std::bind(InterfaceImplementation::addLambdaPrePass, _1, fp, pass);
+  mHub->addFunctionToThreadQueue(fun);
+}
+
+//------------------------------------------------------------------------------
+void Interface::addLambdaPostPass(const PassLambdaFunction& fp, const std::string& pass)
+{
+  Hub::RemoteFunction fun =
+      std::bind(InterfaceImplementation::addLambdaPostPass, _1, fp, pass);
+  mHub->addFunctionToThreadQueue(fun);
+}
+
+//------------------------------------------------------------------------------
+void Interface::addLambdaObjectRender(const std::string& object, const ObjectLambdaFunction& fp, const std::string& pass)
+{
+  Hub::RemoteFunction fun =
+      std::bind(InterfaceImplementation::addLambdaObjectRender, _1, object ,fp, pass);
+  mHub->addFunctionToThreadQueue(fun);
+}
+
+//------------------------------------------------------------------------------
+void Interface::addLambdaObjectUniforms(const std::string& object, const ObjectUniformLambdaFunction& fp, const std::string& pass)
+{
+  Hub::RemoteFunction fun =
+      std::bind(InterfaceImplementation::addLambdaObjectUniforms, _1, object ,fp, pass);
+  mHub->addFunctionToThreadQueue(fun);
+}
+
 
 //------------------------------------------------------------------------------
 size_t Interface::loadProprietarySR5AssetFile(std::istream& stream,

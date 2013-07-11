@@ -164,8 +164,22 @@ public:
                                                   std::string attributeName,
                                                   std::shared_ptr<AbstractUniformStateItem> item,
                                                   std::string passName);
+  //-----------------
+  // Shader Programs
+  //-----------------
+
   static void addPersistentShader(InterfaceImplementation& self, std::string programName,
                                   std::vector<std::tuple<std::string, Interface::SHADER_TYPES>> tempShaders);
+
+  //---------
+  // Lambdas
+  //---------
+  static void addLambdaBeginAllPasses(InterfaceImplementation& self, Interface::PassLambdaFunction fp);
+  static void addLambdaEndAllPasses(InterfaceImplementation& self, Interface::PassLambdaFunction fp);
+  static void addLambdaPrePass(InterfaceImplementation& self, Interface::PassLambdaFunction fp, std::string pass);
+  static void addLambdaPostPass(InterfaceImplementation& self, Interface::PassLambdaFunction fp, std::string pass);
+  static void addLambdaObjectRender(InterfaceImplementation& self, std::string object, Interface::ObjectLambdaFunction fp, std::string pass);
+  static void addLambdaObjectUniforms(InterfaceImplementation& self, std::string object, Interface::ObjectUniformLambdaFunction fp, std::string pass);
 
 private:
 
