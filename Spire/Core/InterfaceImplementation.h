@@ -41,9 +41,7 @@
 #include <map>
 #include <tuple>
 #include <cstdint>
-#include "../Common.h"
-#include "../Interface.h"
-#include "../InterfaceCommon.h"
+#include "Common.h"
 
 #include "ObjectLambda.h"
 #include "ThreadMessage.h"

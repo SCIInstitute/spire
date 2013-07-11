@@ -33,7 +33,7 @@
 #define SPIRE_TESTS_TESTCAMERA_H
 
 // Include spire interface so that we have access to the mathematical types.
-#include "Spire/Common.h"
+#include "Spire/Core/Common.h"
 
 namespace Spire {
 class StuInterface;

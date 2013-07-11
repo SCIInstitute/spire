@@ -35,9 +35,9 @@
 #include <cstddef>
 #include <sstream>
 #include <vector>
-#include "../InterfaceCommon.h"
-#include "../Core/Math.h"
-#include "../Core/GLMathUtil.h"
+#include "WinDLLExport.h"
+#include "Math.h"
+#include "GLMathUtil.h"
 
 namespace Spire {
 

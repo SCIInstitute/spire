@@ -34,7 +34,7 @@
 
 #include "BatchContext.h"
 #include "Spire/Tests/GlobalTestEnvironment.h"
-#include "Spire/Common.h"
+#include "Spire/Core/Common.h"
 #include "Spire/Core/Log.h"
 
 // Defining cimg_display to 0 ensures CImg doesn't try to include OS specific

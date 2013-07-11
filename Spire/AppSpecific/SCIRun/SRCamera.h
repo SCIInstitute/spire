@@ -32,7 +32,7 @@
 #ifndef SPIRE_APPSPECIFIC_SCIRUN_SRUNCAMERA_H
 #define SPIRE_APPSPECIFIC_SCIRUN_SRUNCAMERA_H
 
-#include "Common.h"
+#include "Core/Common.h"
 
 #include "SRInterface.h"
 

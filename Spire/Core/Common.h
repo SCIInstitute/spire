@@ -34,6 +34,8 @@
 
 #include <cstddef>
 
+#include "../Interface.h"
+
 // OpenGL headers
 #ifdef SPIRE_USING_OSX
   #include "3rdParty/GLEW/include/GL/glew.h"

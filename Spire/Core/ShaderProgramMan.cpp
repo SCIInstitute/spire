@@ -29,8 +29,8 @@
 /// \author James Hughes
 /// \date   January 2013
 
-#include "../Common.h"
-#include "../Exceptions.h"
+#include "Common.h"
+#include "Exceptions.h"
 
 #include "Hub.h"
 #include "ShaderProgramMan.h"

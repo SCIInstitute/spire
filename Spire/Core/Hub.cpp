@@ -31,8 +31,8 @@
 
 #include <sstream>
 
-#include "../Common.h"
-#include "../Exceptions.h"
+#include "Common.h"
+#include "Exceptions.h"
 
 #include "Hub.h"
 #include "Log.h"

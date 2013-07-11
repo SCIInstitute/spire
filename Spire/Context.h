@@ -32,7 +32,8 @@
 #ifndef SPIRE_CONTEXT_H
 #define SPIRE_CONTEXT_H
 
-#include "InterfaceCommon.h"
+#include "Interface.h"
+#include "Core/WinDLLExport.h"
 
 namespace Spire {
 

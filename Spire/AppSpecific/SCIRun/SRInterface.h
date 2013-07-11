@@ -33,7 +33,6 @@
 #define SPIRE_APPSPECIFIC_SCIRUN_SCIRUNINTERFACE_H
 
 #include "../../Interface.h"
-#include "../../InterfaceCommon.h"
 
 namespace Spire {
 namespace SCIRun {
@@ -51,7 +50,7 @@ public:
   SRInterface(std::shared_ptr<Context> context,
               const std::vector<std::string>& shaderDirs,
               bool createThread, LogFunction logFP = LogFunction());
-  virtual ~SRInterface();
+  ~SRInterface();
 
   /// Call this whenever the window is resized. This will modify the viewport
   /// appropriately.
@@ -73,10 +72,6 @@ public:
   /// @}
 
   void inputMouseWheel(int32_t delta);
-
-  /// Stupipe interface. This is the pipe that SCIRun uses to render its
-  /// geometry.
-  std::shared_ptr<Spire::StuInterface> getStuPipe() {return mStuInterface;}
 
   /// \todo Selecting objects...
 
@@ -100,8 +95,6 @@ private:
 
   /// Recalculates camera transform using the most relevant data.
   void buildAndApplyCameraTransform();
-
-  std::shared_ptr<Spire::StuInterface>    mStuInterface;
 
   size_t                    mScreenWidth;   ///< Screen width in pixels.
   size_t                    mScreenHeight;  ///< Screen height in pixels.

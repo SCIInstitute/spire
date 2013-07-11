@@ -47,15 +47,12 @@ SRInterface::SRInterface(std::shared_ptr<Context> context,
                          const std::vector<std::string>& shaderDirs,
                          bool createThread, LogFunction logFP) :
     Interface(context, shaderDirs, createThread, logFP),
-    mStuInterface(new StuInterface(*this)),
     mSciBall(new SciBall(V3(0.0f, 0.0f, 0.0f), 1.0f)),
     mCamera(new SRCamera(*this)),
     mCamDistance(7.0f),
     mScreenWidth(640),
     mScreenHeight(480)
 {
-  // Add stu pipe to the current pipes.
-  pipePushBack(mStuInterface);
   buildAndApplyCameraTransform();
 }
 

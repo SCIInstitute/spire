@@ -32,7 +32,7 @@
 #ifndef SPIRE_HIGH_SHADERATTRIBUTEMAN_H
 #define SPIRE_HIGH_SHADERATTRIBUTEMAN_H
 
-#include "../Common.h"
+#include "Common.h"
 #include <vector>
 #include <string>
 #include <tuple>

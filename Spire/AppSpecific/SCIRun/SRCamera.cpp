@@ -99,14 +99,14 @@ void SRCamera::setViewTransform(const Spire::M44& trafo)
   mPIV  = mP * mIV;
 
   // Update appropriate uniforms.
-  mInterface.getStuPipe()->addGlobalUniform(std::get<0>(SRCommonUniforms::getToCameraToProjection()), mPIV);
-  mInterface.getStuPipe()->addGlobalUniform(std::get<0>(SRCommonUniforms::getToProjection()), mP);
-  mInterface.getStuPipe()->addGlobalUniform(std::get<0>(SRCommonUniforms::getCameraToWorld()), mV);
+  mInterface.addGlobalUniform(std::get<0>(SRCommonUniforms::getToCameraToProjection()), mPIV);
+  mInterface.addGlobalUniform(std::get<0>(SRCommonUniforms::getToProjection()), mP);
+  mInterface.addGlobalUniform(std::get<0>(SRCommonUniforms::getCameraToWorld()), mV);
 
   // We've modified our projection transform so that the positive Z axis is the
   // axis which our camera will be looking down.
-  mInterface.getStuPipe()->addGlobalUniform(std::get<0>(SRCommonUniforms::getCameraViewVec()), V3(mV[2].xyz()));
-  mInterface.getStuPipe()->addGlobalUniform(std::get<0>(SRCommonUniforms::getCameraUpVec()), V3(mV[1].xyz()));
+  mInterface.addGlobalUniform(std::get<0>(SRCommonUniforms::getCameraViewVec()), V3(mV[2].xyz()));
+  mInterface.addGlobalUniform(std::get<0>(SRCommonUniforms::getCameraUpVec()), V3(mV[1].xyz()));
 }
 
 } // namespace SCIRun

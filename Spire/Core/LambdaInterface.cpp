@@ -29,7 +29,7 @@
 /// \author James Hughes
 /// \date   July 2013
 
-#include "../Common.h"
+#include "Common.h"
 #include "ShaderUniformMan.h"
 #include "LambdaInterface.h"
 

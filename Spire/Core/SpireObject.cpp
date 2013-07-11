@@ -31,7 +31,7 @@
 
 #include <utility>
 
-#include "../Common.h"
+#include "Common.h"
 #include "SpireObject.h"
 #include "Exceptions.h"
 #include "Hub.h"

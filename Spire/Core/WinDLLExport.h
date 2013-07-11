@@ -3,10 +3,10 @@
 
    The MIT License
 
-   Copyright (c) 2012 Scientific Computing and Imaging Institute,
+   Copyright (c) 2013 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -27,10 +27,10 @@
 */
 
 /// \author James Hughes
-/// \date   March 2013
+/// \date   July 2013
 
-#ifndef SPIRE_INTERFACE_COMMON_H
-#define SPIRE_INTERFACE_COMMON_H
+#ifndef WINDLLEXPORT_H
+#define WINDLLEXPORT_H
 
 #if defined(_WIN32)
 #define WIN_DLL __declspec(dllexport)
@@ -38,5 +38,4 @@
 #define WIN_DLL
 #endif
 
-#endif
-
+#endif 

@@ -38,9 +38,9 @@
 #include <functional>
 #include <memory>
 
-#include "InterfaceCommon.h"
 #include "Context.h"
 
+#include "Core/WinDLLExport.h"
 #include "Core/Math.h"  // Necessary in order to communicate vector types.
 #include "Core/ShaderUniformStateManTemplates.h"
 #include "Core/GPUStateManager.h"
@@ -139,7 +139,6 @@ public:
     TRIANGLES_ADJACENCY,
     TRIANGLE_STRIP_ADJACENCY,
   };
-
 
 
   //============================================================================
