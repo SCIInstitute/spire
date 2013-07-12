@@ -125,5 +125,47 @@ void V4toArray4(const V4& in, float* out)
 	out[3] = in.w;
 }
 
+M44 quaternionToMatrix(const Quat& in)
+{
+  float n, s;
+  float xs, ys, zs;
+  float wx, wy, wz;
+  float xx, xy, xz;
+  float yy, yz, zz;
+
+  float x = in.x;
+  float y = in.y;
+  float z = in.z;
+  float w = in.w;
+
+  n = (x * x) + (y * y) + (z * z) + (w * w);
+  s = (n > 0.0f) ? (2.0f / n) : 0.0f;
+
+  xs = x * s;
+  ys = y * s;
+  zs = z * s;
+  wx = w * xs;
+  wy = w * ys;
+  wz = w * zs;
+  xx = x * xs;
+  xy = x * ys;
+  xz = x * zs;
+  yy = y * ys;
+  yz = y * zs;
+  zz = z * zs;
+
+  M44 transposed = M44(1.0f - (yy + zz), xy - wz,          xz + wy,          0,
+                       xy + wz,          1.0f - (xx + zz), yz - wx,          0,
+                       xz - wy,          yz + wx,          1.0f - (xx + yy), 0,
+                       0,                0,                0,                1);
+  return glm::transpose(transposed);
+
+  // Old code, row based.
+  //return M44(1.0f - (yy + zz), xy - wz,          xz + wy,          0,
+  //           xy + wz,          1.0f - (xx + zz), yz - wx,          0,
+  //           xz - wy,          yz + wx,          1.0f - (xx + yy), 0,
+  //           0,                0,                0,                1);
+}
+
 } // end of namespace Spire
 

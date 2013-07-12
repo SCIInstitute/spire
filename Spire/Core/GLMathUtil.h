@@ -39,6 +39,9 @@ namespace Spire {
 
 void printM44(const M44& mat);
 
+// Quaternion utility funcitons.
+M44 quaternionToMatrix(const Quat& in);
+
 //----------------------------------------------------------------------------------------
 //
 // Internal format conversion to GL representation.

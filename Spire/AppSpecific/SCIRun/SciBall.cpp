@@ -30,6 +30,7 @@
 /// \date   April 2013
 
 #include "SciBall.h"
+#include "../../Core/GLMathUtil.h"
 
 namespace Spire {
 namespace SCIRun {
@@ -114,7 +115,7 @@ void SciBall::drag(const V2& msc)
   q.y = -q.y;
   q.z = -q.z;
   q.w =  q.w;
-  mMatNow = glm::mat4_cast(q);
+  mMatNow = quaternionToMatrix(q);//glm::mat4_cast(q);
 }
 
 //------------------------------------------------------------------------------
