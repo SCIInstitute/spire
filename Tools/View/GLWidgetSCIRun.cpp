@@ -49,7 +49,7 @@ using Spire::M44;
 // Simple function to handle object transformations so that the GPU does not
 // need to do the same calculation for each vertex.
 static void lambdaUniformObjTrafs(ObjectLambdaInterface& iface, 
-                                  std::list<StuInterface::UnsatisfiedUniform>& unsatisfiedUniforms)
+                                  std::list<Interface::UnsatisfiedUniform>& unsatisfiedUniforms)
 {
   // Cache object to world transform.
   M44 objToWorld = iface.getObjectSpireAttribute<M44>(
@@ -128,29 +128,27 @@ GLWidget::GLWidget(const QGLFormat& format) :
 //------------------------------------------------------------------------------
 void GLWidget::buildScene()
 {
-  std::shared_ptr<Spire::StuInterface> stuPipe = mSpire->getStuPipe();
-
   // Uniform color shader (nothing that interesting).
   std::string uniformColorShader = "UniformColor";
-  stuPipe->addPersistentShader(
+  mSpire->addPersistentShader(
       uniformColorShader, 
-      { {"UniformColor.vsh", Spire::StuInterface::VERTEX_SHADER}, 
-        {"UniformColor.fsh", Spire::StuInterface::FRAGMENT_SHADER},
+      { {"UniformColor.vsh", Spire::Interface::VERTEX_SHADER}, 
+        {"UniformColor.fsh", Spire::Interface::FRAGMENT_SHADER},
       });
 
   // Directional gouraud shading.
   std::string dirGouraudShader = "DirGouraud";
-  stuPipe->addPersistentShader(
+  mSpire->addPersistentShader(
       dirGouraudShader, 
-      { {"DirGouraud.vsh", Spire::StuInterface::VERTEX_SHADER}, 
-        {"DirGouraud.fsh", Spire::StuInterface::FRAGMENT_SHADER},
+      { {"DirGouraud.vsh", Spire::Interface::VERTEX_SHADER}, 
+        {"DirGouraud.fsh", Spire::Interface::FRAGMENT_SHADER},
       });
 
   // This load asset function operates only on the default pass, since optional
   // arguments are NOT allowed in lambdas.
-  auto loadAsset = [stuPipe](const std::string& assetFileName, 
-                             const std::string& shader,
-                             const std::string& objectName)
+  auto loadAsset = [this](const std::string& assetFileName, 
+                          const std::string& shader,
+                          const std::string& objectName)
   {
     // Load asset data from 'exported assets'.
     std::shared_ptr<std::vector<uint8_t>> vbo(new std::vector<uint8_t>());
@@ -159,29 +157,29 @@ void GLWidget::buildScene()
     std::ifstream fstream(assetFileName, std::ifstream::binary);
     if (fstream.fail())
       throw std::runtime_error("Unable to open resource file: " + assetFileName);
-    size_t numTriangles = Spire::StuInterface::loadProprietarySR5AssetFile(fstream, *vbo, *ibo);
+    size_t numTriangles = Spire::Interface::loadProprietarySR5AssetFile(fstream, *vbo, *ibo);
     fstream.close();
 
     // loadProprietarySR5ASsetFile always produces positions and normals in the
     // vbo and 16bit index buffers.
     std::vector<std::string> attribNames = {"aPos", "aNormal"};
-    Spire::StuInterface::IBO_TYPE iboType = Spire::StuInterface::IBO_16BIT;
+    Spire::Interface::IBO_TYPE iboType = Spire::Interface::IBO_16BIT;
 
     // Add necessary VBO's and IBO's
     std::string vbo1 = objectName + "vbo1";
     std::string ibo1 = objectName + "ibo1";
-    stuPipe->addVBO(vbo1, vbo, attribNames);
-    stuPipe->addIBO(ibo1, ibo, iboType);
+    mSpire->addVBO(vbo1, vbo, attribNames);
+    mSpire->addIBO(ibo1, ibo, iboType);
 
     // Add object
-    stuPipe->addObject(objectName);
+    mSpire->addObject(objectName);
 
     // Build the pass
-    stuPipe->addPassToObject(objectName, shader, vbo1, ibo1, Spire::StuInterface::TRIANGLES);
+    mSpire->addPassToObject(objectName, shader, vbo1, ibo1, Spire::Interface::TRIANGLES);
   };
 
   // Directional light in world space.
-  stuPipe->addGlobalUniform("uLightDirWorld", V3(1.0f, 0.0f, 0.0f));
+  mSpire->addGlobalUniform("uLightDirWorld", V3(1.0f, 0.0f, 0.0f));
 
   // Cylinder
   {
@@ -189,13 +187,13 @@ void GLWidget::buildScene()
 
     loadAsset("Assets/CappedCylinder.sp", uniformColorShader, objName);
 
-    stuPipe->addObjectPassUniform(objName, "uColor", V4(0.74f, 0.0f, 0.0f, 1.0f));
+    mSpire->addObjectPassUniform(objName, "uColor", V4(0.74f, 0.0f, 0.0f, 1.0f));
 
-    stuPipe->addLambdaObjectUniforms(objName, lambdaUniformObjTrafs);
+    mSpire->addLambdaObjectUniforms(objName, lambdaUniformObjTrafs);
 
     M44 xform;
     xform[3] = V4(1.0f, 0.0f, 0.0f, 1.0f);
-    stuPipe->addObjectPassSpireAttribute(
+    mSpire->addObjectPassSpireAttribute(
         objName, std::get<0>(SRCommonAttributes::getObjectToWorldTrafo()), xform);
   }
 
@@ -205,16 +203,16 @@ void GLWidget::buildScene()
 
     loadAsset("Assets/Sphere.sp", dirGouraudShader, objName);
 
-    stuPipe->addObjectPassUniform(objName, "uAmbientColor", V4(0.1f, 0.1f, 0.1f, 1.0f));
-    stuPipe->addObjectPassUniform(objName, "uDiffuseColor", V4(0.8f, 0.8f, 0.0f, 1.0f));
-    stuPipe->addObjectPassUniform(objName, "uSpecularColor", V4(0.5f, 0.5f, 0.5f, 1.0f));
-    stuPipe->addObjectPassUniform(objName, "uSpecularPower", 32.0f);
+    mSpire->addObjectPassUniform(objName, "uAmbientColor", V4(0.1f, 0.1f, 0.1f, 1.0f));
+    mSpire->addObjectPassUniform(objName, "uDiffuseColor", V4(0.0f, 0.8f, 0.0f, 1.0f));
+    mSpire->addObjectPassUniform(objName, "uSpecularColor", V4(0.5f, 0.5f, 0.5f, 1.0f));
+    mSpire->addObjectPassUniform(objName, "uSpecularPower", 32.0f);
 
-    stuPipe->addLambdaObjectUniforms(objName, lambdaUniformObjTrafs);
+    mSpire->addLambdaObjectUniforms(objName, lambdaUniformObjTrafs);
 
     M44 xform;
     xform[3] = V4(0.0f, 0.0f, 0.0f, 1.0f);
-    stuPipe->addObjectPassSpireAttribute(
+    mSpire->addObjectPassSpireAttribute(
         objName, std::get<0>(SRCommonAttributes::getObjectToWorldTrafo()), xform);
   }
 
@@ -224,13 +222,13 @@ void GLWidget::buildScene()
 
     loadAsset("Assets/UncappedCylinder.sp", uniformColorShader, objName);
 
-    stuPipe->addObjectPassUniform(objName, "uColor", V4(0.0f, 0.0f, 0.74f, 1.0f));
+    mSpire->addObjectPassUniform(objName, "uColor", V4(0.0f, 0.0f, 0.74f, 1.0f));
 
-    stuPipe->addLambdaObjectUniforms(objName, lambdaUniformObjTrafs);
+    mSpire->addLambdaObjectUniforms(objName, lambdaUniformObjTrafs);
 
     M44 xform;
     xform[3] = V4(-1.0f, 0.0f, 0.0f, 1.0f);
-    stuPipe->addObjectPassSpireAttribute(
+    mSpire->addObjectPassSpireAttribute(
         objName, std::get<0>(SRCommonAttributes::getObjectToWorldTrafo()), xform);
   }
 }
@@ -311,7 +309,7 @@ void GLWidget::closeEvent(QCloseEvent *evt)
 void GLWidget::updateRenderer()
 {
   mContext->makeCurrent();    // Required on windows...
-  mSpire->doFrame();
+  mSpire->ntsDoFrame();
   mContext->swapBuffers();
 }
 
