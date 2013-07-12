@@ -160,7 +160,7 @@ void SRInterface::inputMouseUp(const glm::ivec2& pos, MouseButton btn)
 void SRInterface::buildAndApplyCameraTransform()
 {
   M44 camRot      = mSciBall->getTransformation();
-  M44 finalTrafo  = camRot * glm::rotate(M44(), PI, V3(0.0, 1.0, 0.0));
+  M44 finalTrafo  = camRot;
 
   // Translation is a post rotation operation where as zoom is a pre transform
   // operation. We should probably ensure the user doesn't scroll passed zero.

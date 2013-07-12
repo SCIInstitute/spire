@@ -46,7 +46,7 @@ SRCamera::SRCamera(SRInterface& iface) :
 {
   setAsPerspective();
 
-  // Camera looking down positive Z axis, located at -5.0f z.
+  // Camera looking down negative Z axis, located at -5.0f z.
   Spire::M44 cam;
   cam[3] = (Spire::V4(0.0f, 0.0f, 7.0f, 1.0f));
   
@@ -66,13 +66,6 @@ void SRCamera::setAsPerspective()
   float aspect = static_cast<float>(mInterface.getScreenWidthPixels()) / 
                  static_cast<float>(mInterface.getScreenHeightPixels());
   mP = glm::perspective(mFOV, aspect, mZNear, mZFar);
-
-  // Rotate about the Y axis by 180 degrees. Many perspective matrices
-  // (see Hughes, et al...) are built looking down negative Z. This is the case
-  // with our perspective matrices. As such, we rotate by 180 degrees to re-orient
-  // our matrix down positive Z.
-  Spire::M44 y180 = glm::rotate(M44(), Spire::PI, V3(0.0, 1.0, 0.0));
-  mP = mP * y180;
 }
 
 //------------------------------------------------------------------------------
@@ -83,10 +76,6 @@ void SRCamera::setAsOrthographic(float halfWidth, float halfHeight)
 	mP = glm::ortho(-halfWidth, halfWidth, 
                   -halfHeight, halfHeight, 
                   mZNear, mZFar);
-
-  // Same reason we rotate the perspective camera by 180 degrees.
-  Spire::M44 y180 = glm::rotate(M44(), Spire::PI, V3(0.0, 1.0, 0.0));
-  mP = mP * y180;
 }
 
 //------------------------------------------------------------------------------
@@ -103,9 +92,9 @@ void SRCamera::setViewTransform(const Spire::M44& trafo)
   mInterface.addGlobalUniform(std::get<0>(SRCommonUniforms::getToProjection()), mP);
   mInterface.addGlobalUniform(std::get<0>(SRCommonUniforms::getCameraToWorld()), mV);
 
-  // We've modified our projection transform so that the positive Z axis is the
-  // axis which our camera will be looking down.
-  mInterface.addGlobalUniform(std::get<0>(SRCommonUniforms::getCameraViewVec()), V3(mV[2].xyz()));
+  // Projection matrix is oriented down negative z. So we are looking down 
+  // negative z, which is -V3(mV[2].xyz()).
+  mInterface.addGlobalUniform(std::get<0>(SRCommonUniforms::getCameraViewVec()), -V3(mV[2].xyz()));
   mInterface.addGlobalUniform(std::get<0>(SRCommonUniforms::getCameraUpVec()), V3(mV[1].xyz()));
 }
 

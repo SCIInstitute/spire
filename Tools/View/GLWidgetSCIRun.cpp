@@ -314,8 +314,8 @@ void GLWidget::buildScene()
 
     mSpire->addLambdaObjectUniforms(objName, lambdaUniformObjTrafs);
 
-    // Rotate by negative 90 about y axis to get arrow pointing down xAxis.
-    M44 xform = glm::rotate(M44(), -Spire::PI / 2.0f, V3(0.0, 1.0, 0.0));
+    // Rotate by positive 90 degrees about y axis to get arrow pointing down xAxis.
+    M44 xform = glm::rotate(M44(), Spire::PI / 2.0f, V3(0.0, 1.0, 0.0));
     xform[3] = V4(coordinateAxesCenter, 1.0f);
     mSpire->addObjectPassSpireAttribute(
         objName, std::get<0>(SRCommonAttributes::getObjectToWorldTrafo()), xform);
@@ -335,7 +335,7 @@ void GLWidget::buildScene()
     mSpire->addLambdaObjectUniforms(objName, lambdaUniformObjTrafs);
 
     // Rotate by positive 90 about x axis to get arrow pointing down yAxis.
-    M44 xform = glm::rotate(M44(), Spire::PI / 2.0f, V3(1.0, 0.0, 0.0));
+    M44 xform = glm::rotate(M44(), -Spire::PI / 2.0f, V3(1.0, 0.0, 0.0));
     xform[3] = V4(coordinateAxesCenter, 1.0f);
     mSpire->addObjectPassSpireAttribute(
         objName, std::get<0>(SRCommonAttributes::getObjectToWorldTrafo()), xform);
@@ -360,6 +360,29 @@ void GLWidget::buildScene()
     mSpire->addObjectPassSpireAttribute(
         objName, std::get<0>(SRCommonAttributes::getObjectToWorldTrafo()), xform);
   }
+
+  // Coord axes
+  {
+    std::string objName = "coordAxes";
+
+    loadAsset("Assets/CoordAxes.sp", dirPhongSphere, objName);
+
+    mSpire->addObjectPassUniform(objName, "uAmbientColor", V4(0.5f, 0.5f, 0.5f, 1.0f));
+    mSpire->addObjectPassUniform(objName, "uDiffuseColor", V4(1.0f, 1.0f, 1.0f, 1.0f));
+    mSpire->addObjectPassUniform(objName, "uSpecularColor", V4(0.5f, 0.5f, 0.5f, 1.0f));
+    mSpire->addObjectPassUniform(objName, "uSpecularPower", 16.0f);
+
+    mSpire->addLambdaObjectUniforms(objName, lambdaUniformObjTrafs);
+
+    // Don't rotate at all, UnitArrow is initially pointing down the z axis.
+    M44 xform;
+    xform[3] = V4(coordinateAxesCenter, 1.0f);
+    mSpire->addObjectPassSpireAttribute(
+        objName, std::get<0>(SRCommonAttributes::getObjectToWorldTrafo()), xform);
+  }
+
+  // Another version of the coordinate axes...
+
 }
 
 //------------------------------------------------------------------------------
