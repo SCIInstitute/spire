@@ -50,11 +50,9 @@ void main( void )
   vec3  reflection      = reflect(uLightDirWorld, worldSpaceNorm);
   float spec            = max(0.0, dot(reflection, uCamViewVec));
 
-  spec        = pow(spec, uSpecularPower);
-  //fColor      = spec * uSpecularColor + diffuse * uDiffuseColor + uAmbientColor;
-
   // Convert color into gamma space before rasterization.
-  fColor      = pow(spec * uSpecularColor + diffuse * uDiffuseColor + uAmbientColor, vec4(1.0/2.2));
+  spec        = pow(spec, uSpecularPower);
+  fColor      = pow(diffuse * spec * uSpecularColor + diffuse * uDiffuseColor + uAmbientColor, vec4(1.0/2.2));
 
   gl_Position = uProjIVObject * vec4(aPos, 1.0);
 }

@@ -211,7 +211,7 @@ void GLWidget::buildScene()
 
     loadAsset("Assets/Sphere.sp", dirGouraudShader, objName);
 
-    mSpire->addObjectPassUniform(objName, "uAmbientColor", V4(0.1f, 0.1f, 0.1f, 1.0f));
+    mSpire->addObjectPassUniform(objName, "uAmbientColor", V4(0.01f, 0.01f, 0.01f, 1.0f));
     mSpire->addObjectPassUniform(objName, "uDiffuseColor", V4(0.0f, 0.8f, 0.0f, 1.0f));
     mSpire->addObjectPassUniform(objName, "uSpecularColor", V4(1.0f, 1.0f, 1.0f, 1.0f));
     mSpire->addObjectPassUniform(objName, "uSpecularPower", 32.0f);
@@ -224,13 +224,32 @@ void GLWidget::buildScene()
         objName, std::get<0>(SRCommonAttributes::getObjectToWorldTrafo()), xform);
   }
 
+  // Gouraud Sphere
+  {
+    std::string objName = "sphere2";
+
+    loadAsset("Assets/Sphere.sp", dirGouraudShader, objName);
+
+    mSpire->addObjectPassUniform(objName, "uAmbientColor", V4(0.01f, 0.01f, 0.01f, 1.0f));
+    mSpire->addObjectPassUniform(objName, "uDiffuseColor", V4(0.0f, 0.8f, 0.0f, 1.0f));
+    mSpire->addObjectPassUniform(objName, "uSpecularColor", V4(0.0f, 0.0f, 0.0f, 1.0f));
+    mSpire->addObjectPassUniform(objName, "uSpecularPower", 32.0f);
+
+    mSpire->addLambdaObjectUniforms(objName, lambdaUniformObjTrafs);
+
+    M44 xform;
+    xform[3] = V4(0.0f, -1.0f, 0.0f, 1.0f);
+    mSpire->addObjectPassSpireAttribute(
+        objName, std::get<0>(SRCommonAttributes::getObjectToWorldTrafo()), xform);
+  }
+
   // Phong Sphere
   {
     std::string objName = "phongSphere";
 
     loadAsset("Assets/Sphere.sp", dirPhongSphere, objName);
 
-    mSpire->addObjectPassUniform(objName, "uAmbientColor", V4(0.1f, 0.1f, 0.1f, 1.0f));
+    mSpire->addObjectPassUniform(objName, "uAmbientColor", V4(0.01f, 0.01f, 0.01f, 1.0f));
     mSpire->addObjectPassUniform(objName, "uDiffuseColor", V4(0.0f, 0.8f, 0.0f, 1.0f));
     mSpire->addObjectPassUniform(objName, "uSpecularColor", V4(0.5f, 0.5f, 0.5f, 1.0f));
     mSpire->addObjectPassUniform(objName, "uSpecularPower", 16.0f);
@@ -239,6 +258,25 @@ void GLWidget::buildScene()
 
     M44 xform;
     xform[3] = V4(0.0f, 0.0f, 1.0f, 1.0f);
+    mSpire->addObjectPassSpireAttribute(
+        objName, std::get<0>(SRCommonAttributes::getObjectToWorldTrafo()), xform);
+  }
+
+  // Phong Sphere
+  {
+    std::string objName = "phongSphere2";
+
+    loadAsset("Assets/Sphere.sp", dirPhongSphere, objName);
+
+    mSpire->addObjectPassUniform(objName, "uAmbientColor", V4(0.01f, 0.01f, 0.01f, 1.0f));
+    mSpire->addObjectPassUniform(objName, "uDiffuseColor", V4(0.0f, 0.8f, 0.0f, 1.0f));
+    mSpire->addObjectPassUniform(objName, "uSpecularColor", V4(0.0f, 0.0f, 0.0f, 1.0f));
+    mSpire->addObjectPassUniform(objName, "uSpecularPower", 16.0f);
+
+    mSpire->addLambdaObjectUniforms(objName, lambdaUniformObjTrafs);
+
+    M44 xform;
+    xform[3] = V4(0.0f, -1.0f, 1.0f, 1.0f);
     mSpire->addObjectPassSpireAttribute(
         objName, std::get<0>(SRCommonAttributes::getObjectToWorldTrafo()), xform);
   }
