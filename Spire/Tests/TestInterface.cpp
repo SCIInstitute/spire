@@ -95,7 +95,7 @@ static void lambdaUniformObjTrafs(ObjectLambdaInterface& iface,
 }
 
 //------------------------------------------------------------------------------
-TEST(StuInterfaceTests, TestSR5AssetLoader)
+TEST(InterfaceTests, TestSR5AssetLoader)
 {
   std::ostringstream sRaw;
 
@@ -203,7 +203,7 @@ TEST(StuInterfaceTests, TestSR5AssetLoader)
 }
 
 //------------------------------------------------------------------------------
-TEST_F(StuPipeTestFixture, TestPublicInterface)
+TEST_F(InterfaceTestFixture, TestPublicInterface)
 {
   // This test is contrived and won't yield that much knowledge if you are 
   // attempting to learn the system.
@@ -215,7 +215,7 @@ TEST_F(StuPipeTestFixture, TestPublicInterface)
   std::string obj2 = "obj2";
   std::string obj3 = "obj3";
 
-  // We have a fresh instance of spire with a StuPipe bound.
+  // We have a fresh instance of spire.
   mSpire->addObject(obj1);
   EXPECT_THROW(mSpire->addObject(obj1), Duplicate);
   EXPECT_EQ(1, mSpire->ntsGetNumObjects());
@@ -241,9 +241,9 @@ TEST_F(StuPipeTestFixture, TestPublicInterface)
 }
 
 //------------------------------------------------------------------------------
-TEST_F(StuPipeTestFixture, TestTriangle)
+TEST_F(InterfaceTestFixture, TestTriangle)
 {
-  // Test the rendering of a triangle with StuPipe.
+  // Test the rendering of a triangle.
 
   // Call Interface's doFrame manually. Then, since we are single threaded,
   // use the OpenGL context to extract a frame from the GPU and compare it with
@@ -461,7 +461,7 @@ TEST_F(StuPipeTestFixture, TestTriangle)
 }
 
 //------------------------------------------------------------------------------
-TEST_F(StuPipeTestFixture, TestObjectsStructure)
+TEST_F(InterfaceTestFixture, TestObjectsStructure)
 {
   // Test various functions in Object and ObjectPass.
   std::vector<float> vboData = 
@@ -621,9 +621,9 @@ TEST_F(StuPipeTestFixture, TestObjectsStructure)
 }
 
 //------------------------------------------------------------------------------
-TEST_F(StuPipeTestFixture, TestRenderingWithSR5Object)
+TEST_F(InterfaceTestFixture, TestRenderingWithSR5Object)
 {
-  // This test demonstrates a quick and dirty rendering pipeline using
+  // This test demonstrates a quick and dirty renderer using
   // attributes and lambdas. Spire knows nothing about the objects, but allows
   // sufficient flexibility that it is possible to do many things.
 
@@ -708,9 +708,9 @@ TEST_F(StuPipeTestFixture, TestRenderingWithSR5Object)
 
 
 //------------------------------------------------------------------------------
-TEST_F(StuPipeTestFixture, TestRenderingWithAttributes)
+TEST_F(InterfaceTestFixture, TestRenderingWithAttributes)
 {
-  // This test demonstrates a quick and dirty rendering pipeline using
+  // This test demonstrates a quick and dirty renderer usin
   // attributes and lambdas. Spire knows nothing about the objects, but allows
   // sufficient flexibility that it is possible to do many things.
 

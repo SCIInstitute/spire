@@ -41,19 +41,19 @@
 #include "TestCamera.h"
 
 //------------------------------------------------------------------------------
-// Basic StuPipe test fixture.
+// Basic interface test fixture.
 //------------------------------------------------------------------------------
-class StuPipeTestFixture : public testing::Test
+class InterfaceTestFixture : public testing::Test
 {
 public:
-  StuPipeTestFixture() {}
+  InterfaceTestFixture () {}
 
   virtual void SetUp() override
   {
     std::vector<std::string> shaderSearchDirs;
     shaderSearchDirs.push_back("Shaders");
 
-    // Build StuPipe using the context from GlobalTestEnvironment.
+    // Build spire using the context from GlobalTestEnvironment.
     std::shared_ptr<Spire::Context> ctx = Spire::GlobalTestEnvironment::instance()->getContext();
     ctx->makeCurrent();
     mSpire = std::shared_ptr<Spire::Interface>(new Spire::Interface(
@@ -73,19 +73,19 @@ public:
 };
 
 //------------------------------------------------------------------------------
-// SCIRun with StuPipe test fixture.
+// SCIRun test fixture.
 //------------------------------------------------------------------------------
-class SCIRunStuPipeTestFixture : public testing::Test
+class SCIRunTestFixture : public testing::Test
 {
 public:
-  SCIRunStuPipeTestFixture() {}
+  SCIRunTestFixture() {}
 
   virtual void SetUp() override
   {
     std::vector<std::string> shaderSearchDirs;
     shaderSearchDirs.push_back("Shaders");
 
-    // Build StuPipe using the context from GlobalTestEnvironment.
+    // Build spire using the context from GlobalTestEnvironment.
     std::shared_ptr<Spire::Context> ctx = Spire::GlobalTestEnvironment::instance()->getContext();
     mSpire = std::shared_ptr<Spire::SCIRun::SRInterface>(
         new Spire::SCIRun::SRInterface(ctx, shaderSearchDirs, false));
