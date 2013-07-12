@@ -34,9 +34,25 @@
   #endif
 #endif
 
-varying vec4	fColor;
+uniform vec3    uCamViewVec;        // Camera 'at' vector in world space
+uniform vec4    uAmbientColor;      // Ambient color
+uniform vec4    uDiffuseColor;      // Diffuse color
+uniform vec4    uSpecularColor;     // Specular color     
+uniform float   uSpecularPower;     // Specular power
+uniform vec3    uLightDirWorld;     // Directional light (world space).
+
+// Lighting in world space. Generally, it's better to light in eye space if you
+// are dealing with point lights. Since we are only dealing with directional
+// lights we light in world space.
+varying vec3  vNormal;
 
 void main()
 {
-	gl_FragColor 		= fColor;
+  vec3 normal       = normalize(vNormal);
+  float diffuse     = max(0.0, dot(normal, uLightDirWorld));
+  vec3  reflection  = reflect(uLightDirWorld, normal);
+  float spec        = max(0.0, dot(reflection, uCamViewVec));
+
+  spec              = pow(spec, uSpecularPower);
+  gl_FragColor      = pow(spec * uSpecularColor + diffuse * uDiffuseColor + uAmbientColor, vec4(1.0/2.2));
 }

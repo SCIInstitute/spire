@@ -144,6 +144,14 @@ void GLWidget::buildScene()
         {"DirGouraud.fsh", Spire::Interface::FRAGMENT_SHADER},
       });
 
+  // Directional phong shading.
+  std::string dirPhongSphere = "DirPhong";
+  mSpire->addPersistentShader(
+      dirPhongSphere , 
+      { {"DirPhong.vsh", Spire::Interface::VERTEX_SHADER}, 
+        {"DirPhong.fsh", Spire::Interface::FRAGMENT_SHADER},
+      });
+
   // This load asset function operates only on the default pass, since optional
   // arguments are NOT allowed in lambdas.
   auto loadAsset = [this](const std::string& assetFileName, 
@@ -192,12 +200,12 @@ void GLWidget::buildScene()
     mSpire->addLambdaObjectUniforms(objName, lambdaUniformObjTrafs);
 
     M44 xform;
-    xform[3] = V4(1.0f, 0.0f, 0.0f, 1.0f);
+    xform[3] = V4(-2.0f, 0.0f, 0.0f, 1.0f);
     mSpire->addObjectPassSpireAttribute(
         objName, std::get<0>(SRCommonAttributes::getObjectToWorldTrafo()), xform);
   }
 
-  // Sphere
+  // Gouraud Sphere
   {
     std::string objName = "sphere";
 
@@ -205,13 +213,32 @@ void GLWidget::buildScene()
 
     mSpire->addObjectPassUniform(objName, "uAmbientColor", V4(0.1f, 0.1f, 0.1f, 1.0f));
     mSpire->addObjectPassUniform(objName, "uDiffuseColor", V4(0.0f, 0.8f, 0.0f, 1.0f));
-    mSpire->addObjectPassUniform(objName, "uSpecularColor", V4(0.5f, 0.5f, 0.5f, 1.0f));
+    mSpire->addObjectPassUniform(objName, "uSpecularColor", V4(1.0f, 1.0f, 1.0f, 1.0f));
     mSpire->addObjectPassUniform(objName, "uSpecularPower", 32.0f);
 
     mSpire->addLambdaObjectUniforms(objName, lambdaUniformObjTrafs);
 
     M44 xform;
     xform[3] = V4(0.0f, 0.0f, 0.0f, 1.0f);
+    mSpire->addObjectPassSpireAttribute(
+        objName, std::get<0>(SRCommonAttributes::getObjectToWorldTrafo()), xform);
+  }
+
+  // Phong Sphere
+  {
+    std::string objName = "phongSphere";
+
+    loadAsset("Assets/Sphere.sp", dirPhongSphere, objName);
+
+    mSpire->addObjectPassUniform(objName, "uAmbientColor", V4(0.1f, 0.1f, 0.1f, 1.0f));
+    mSpire->addObjectPassUniform(objName, "uDiffuseColor", V4(0.0f, 0.8f, 0.0f, 1.0f));
+    mSpire->addObjectPassUniform(objName, "uSpecularColor", V4(0.5f, 0.5f, 0.5f, 1.0f));
+    mSpire->addObjectPassUniform(objName, "uSpecularPower", 16.0f);
+
+    mSpire->addLambdaObjectUniforms(objName, lambdaUniformObjTrafs);
+
+    M44 xform;
+    xform[3] = V4(0.0f, 0.0f, 1.0f, 1.0f);
     mSpire->addObjectPassSpireAttribute(
         objName, std::get<0>(SRCommonAttributes::getObjectToWorldTrafo()), xform);
   }
