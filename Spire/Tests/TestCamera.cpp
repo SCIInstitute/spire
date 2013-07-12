@@ -45,7 +45,7 @@ TestCamera::TestCamera() :
 
   // Camera looking down positive Z axis, located at -5.0f z.
   Spire::M44 cam;
-  cam[3] = Spire::V4(0.0f, 0.0f, -5.0f, 1.0f);
+  cam[3] = Spire::V4(0.0f, 0.0f, 5.0f, 1.0f);
 
   setViewTransform(cam);
 }
@@ -104,9 +104,9 @@ void TestCamera::setSRCommonUniforms(std::shared_ptr<Spire::Interface> iface)
   iface->addGlobalUniform(std::get<0>(Spire::SRCommonUniforms::getToProjection()), mP);
   iface->addGlobalUniform(std::get<0>(Spire::SRCommonUniforms::getCameraToWorld()), mV);
 
-  // We've modified our projection transform so that the positive Z axis is the
-  // axis which our camera will be looking down.
-  iface->addGlobalUniform(std::get<0>(Spire::SRCommonUniforms::getCameraViewVec()), Spire::V3(mV[2].xyz()));
+  // We project down the negative Z axis. Hence the negation of the camera's
+  // 'at' vector.
+  iface->addGlobalUniform(std::get<0>(Spire::SRCommonUniforms::getCameraViewVec()), -Spire::V3(mV[2].xyz()));
   iface->addGlobalUniform(std::get<0>(Spire::SRCommonUniforms::getCameraUpVec()), Spire::V3(mV[1].xyz()));
 }
 

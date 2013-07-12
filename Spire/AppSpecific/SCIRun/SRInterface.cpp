@@ -48,6 +48,8 @@ SRInterface::SRInterface(std::shared_ptr<Context> context,
                          bool createThread, LogFunction logFP) :
     Interface(context, shaderDirs, createThread, logFP),
     mSciBall(new SciBall(V3(0.0f, 0.0f, 0.0f), 1.0f)),
+    mCamAccumPosNow(0.0f, 0.0f, 0.0f),
+    mCamAccumPosDown(0.0f, 0.0f, 0.0f),
     mCamera(new SRCamera(*this)),
     mCamDistance(7.0f),
     mScreenWidth(640),
@@ -164,6 +166,7 @@ void SRInterface::buildAndApplyCameraTransform()
 
   // Translation is a post rotation operation where as zoom is a pre transform
   // operation. We should probably ensure the user doesn't scroll passed zero.
+  // Remember, we are looking down NEGATIVE z.
   finalTrafo[3].xyz() = mCamAccumPosNow + static_cast<V3>(camRot[2].xyz()) * mCamDistance;
 
   mCamera->setViewTransform(finalTrafo);

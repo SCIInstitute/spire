@@ -46,7 +46,6 @@ SRCamera::SRCamera(SRInterface& iface) :
 {
   setAsPerspective();
 
-  // Camera looking down negative Z axis, located at -5.0f z.
   Spire::M44 cam;
   cam[3] = (Spire::V4(0.0f, 0.0f, 7.0f, 1.0f));
   
@@ -82,6 +81,9 @@ void SRCamera::setAsOrthographic(float halfWidth, float halfHeight)
 void SRCamera::setViewTransform(const Spire::M44& trafo)
 {
   ++mTrafoSeq;
+
+  //std::cout << "Transform: " << std::endl;
+  //printM44(trafo);
 
   mV    = trafo;
   mIV   = glm::affineInverse(trafo);

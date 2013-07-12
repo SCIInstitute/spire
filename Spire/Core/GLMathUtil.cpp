@@ -30,10 +30,25 @@
 /// \date   January 2013
 /// \brief  Common GL math utilities.
 
+#include <iostream>
 #include "Common.h"
 #include "GLMathUtil.h"
 
 namespace Spire {
+
+// print out matrix by rows
+void printM44(const M44& mat)
+{
+  int i,j;
+  for (j = 0; j < 4; j++)
+  {
+    for (i = 0; i < 4; i++)
+    {
+      std::cout << mat[i][j] << " ";
+    }
+    std::cout << std::endl;
+  }
+}
 
 void M33toArray9(const M33& in, float* out)
 {

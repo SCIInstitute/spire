@@ -37,6 +37,8 @@
 
 namespace Spire {
 
+void printM44(const M44& mat);
+
 //----------------------------------------------------------------------------------------
 //
 // Internal format conversion to GL representation.
