@@ -152,6 +152,14 @@ void GLWidget::buildScene()
         {"DirPhong.fsh", Spire::Interface::FRAGMENT_SHADER},
       });
 
+  // Varying color shader
+  std::string attribColorShader = "AttribColor";
+  mSpire->addPersistentShader(
+      attribColorShader, 
+      { {"Color.vsh", Spire::Interface::VERTEX_SHADER}, 
+        {"Color.fsh", Spire::Interface::FRAGMENT_SHADER},
+      });
+
   // This load asset function operates only on the default pass, since optional
   // arguments are NOT allowed in lambdas.
   auto loadAsset = [this](const std::string& assetFileName, 
@@ -361,16 +369,71 @@ void GLWidget::buildScene()
         objName, std::get<0>(SRCommonAttributes::getObjectToWorldTrafo()), xform);
   }
 
-  // Coord axes
+
+  coordinateAxesCenter = V3(3.0f, 3.0f, -3.0f);
+  // Line based coord axes
   {
-    std::string objName = "coordAxes";
+    std::string objName = "lineCoordAxes";
 
-    loadAsset("Assets/CoordAxes.sp", dirPhongSphere, objName);
+    // Build 3 lines down each of the coordinate axes and color them
+    // appropriately.
+    std::vector<float> vboData =
+    {
+      // X Vector
+      0.0f, 0.0f, 0.0f,
+      1.0f, 0.0f, 0.0f, 1.0f,
+      1.0f, 0.0f, 0.0f,
+      1.0f, 0.0f, 0.0f, 1.0f,
 
-    mSpire->addObjectPassUniform(objName, "uAmbientColor", V4(0.5f, 0.5f, 0.5f, 1.0f));
-    mSpire->addObjectPassUniform(objName, "uDiffuseColor", V4(1.0f, 1.0f, 1.0f, 1.0f));
-    mSpire->addObjectPassUniform(objName, "uSpecularColor", V4(0.5f, 0.5f, 0.5f, 1.0f));
-    mSpire->addObjectPassUniform(objName, "uSpecularPower", 16.0f);
+      // Y Vector
+      0.0f, 0.0f, 0.0f,
+      0.0f, 1.0f, 0.0f, 1.0f,
+      0.0f, 1.0f, 0.0f,
+      0.0f, 1.0f, 0.0f, 1.0f,
+
+      // Z Vector
+      0.0f, 0.0f, 0.0f,
+      0.0f, 0.0f, 1.0f, 1.0f,
+      0.0f, 0.0f, 1.0f,
+      0.0f, 0.0f, 1.0f, 1.0f
+    };
+    std::vector<std::string> attribNames = {"aPos", "aColorFloat"};
+
+    std::vector<uint16_t> iboData =
+    {
+      0, 1,
+      2, 3,
+      4, 5
+    };
+    Interface::IBO_TYPE iboType = Interface::IBO_16BIT;
+
+    // This is pretty contorted interface due to the marshalling between
+    // std::vector<float> and std::vector<uint8_t>.
+    uint8_t*  rawBegin;
+    size_t    rawSize;
+
+    // Copy vboData into vector of uint8_t. Using std::copy.
+    std::shared_ptr<std::vector<uint8_t>> rawVBO(new std::vector<uint8_t>());
+    rawSize = vboData.size() * (sizeof(float) / sizeof(uint8_t));
+    rawVBO->reserve(rawSize);
+    rawBegin = reinterpret_cast<uint8_t*>(&vboData[0]); // Remember, standard guarantees that vectors are contiguous in memory.
+    rawVBO->assign(rawBegin, rawBegin + rawSize);
+
+    // Copy iboData into vector of uint8_t. Using std::vector::assign.
+    std::shared_ptr<std::vector<uint8_t>> rawIBO(new std::vector<uint8_t>());
+    rawSize = iboData.size() * (sizeof(uint16_t) / sizeof(uint8_t));
+    rawIBO->reserve(rawSize);
+    rawBegin = reinterpret_cast<uint8_t*>(&iboData[0]); // Remember, standard guarantees that vectors are contiguous in memory.
+    rawIBO->assign(rawBegin, rawBegin + rawSize);
+
+    // Add necessary VBO's and IBO's
+    std::string vbo1 = "lineCoordAxesVbo";
+    std::string ibo1 = "lineCoordAxesIbo";
+    mSpire->addVBO(vbo1, rawVBO, attribNames);
+    mSpire->addIBO(ibo1, rawIBO, iboType);
+
+    mSpire->addObject(objName);
+    mSpire->addPassToObject(objName, attribColorShader, vbo1, ibo1, Interface::LINES);
 
     mSpire->addLambdaObjectUniforms(objName, lambdaUniformObjTrafs);
 

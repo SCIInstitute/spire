@@ -269,7 +269,7 @@ TEST_F(InterfaceTestFixture, TestTriangle)
 
   // This is pretty contorted interface due to the marshalling between
   // std::vector<float> and std::vector<uint8_t>. In practice, you would want
-  // to calculate the size of your VBO and using one std::vector<uint8_t> and
+  // to calculate the size of your VBO using one std::vector<uint8_t> and
   // reserve the necessary space in it. Then cast it's contents to floats or
   // uint16_t as necessary (attributes can have a wide array of types, including
   // half floats).

@@ -31,7 +31,7 @@ uniform mat4    uProjIVObject;      // Projection * Inverse View * World XForm
 
 // Attributes
 attribute vec3  aPos;
-attribute vec4  aColor;
+attribute vec4  aColorFloat;
 
 // Outputs to the fragment shader.
 varying vec4    fColor;
@@ -39,5 +39,5 @@ varying vec4    fColor;
 void main( void )
 {
   gl_Position = uProjIVObject * vec4(aPos, 1.0);
-  fColor      = aColor;
+  fColor      = aColorFloat;
 }

@@ -71,6 +71,9 @@ ShaderAttributeMan::ShaderAttributeMan(bool addDefaultAttributes)
     addAttribute("aColor", 4, true, 
                  sizeof(char) * 4, sizeof(char) * 4,
                  GL_UNSIGNED_BYTE, GL_UNSIGNED_BYTE);
+    addAttribute("aColorFloat", 4, false, 
+                 sizeof(float) * 4, sizeof(short) * 4,
+                 GL_FLOAT, GL_HALF_FLOAT_OES);
     addAttribute("aTangent", 3, false, 
                  sizeof(float) * 3, sizeof(short) * 3 + sizeof(short),
                  GL_FLOAT, GL_HALF_FLOAT_OES);
