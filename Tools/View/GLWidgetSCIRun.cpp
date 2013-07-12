@@ -194,9 +194,7 @@ void GLWidget::buildScene()
     std::string objName = "cylinder";
 
     loadAsset("Assets/CappedCylinder.sp", uniformColorShader, objName);
-
     mSpire->addObjectPassUniform(objName, "uColor", V4(0.74f, 0.0f, 0.0f, 1.0f));
-
     mSpire->addLambdaObjectUniforms(objName, lambdaUniformObjTrafs);
 
     M44 xform;
@@ -293,6 +291,72 @@ void GLWidget::buildScene()
 
     M44 xform;
     xform[3] = V4(-1.0f, 0.0f, 0.0f, 1.0f);
+    mSpire->addObjectPassSpireAttribute(
+        objName, std::get<0>(SRCommonAttributes::getObjectToWorldTrafo()), xform);
+  }
+
+  // Coordinate axes.
+  // UnitArrow asset is pointing down the Z axis with it's origin at the center
+  // of object space.
+
+  V3 coordinateAxesCenter(3.0f, 3.0f, 3.0f);
+
+  // x-axis.
+  {
+    std::string objName = "xAxis";
+
+    loadAsset("Assets/UnitArrow.sp", dirPhongSphere, objName);
+
+    mSpire->addObjectPassUniform(objName, "uAmbientColor", V4(0.5f, 0.01f, 0.01f, 1.0f));
+    mSpire->addObjectPassUniform(objName, "uDiffuseColor", V4(1.0f, 0.0f, 0.0f, 1.0f));
+    mSpire->addObjectPassUniform(objName, "uSpecularColor", V4(0.5f, 0.5f, 0.5f, 1.0f));
+    mSpire->addObjectPassUniform(objName, "uSpecularPower", 16.0f);
+
+    mSpire->addLambdaObjectUniforms(objName, lambdaUniformObjTrafs);
+
+    // Rotate by negative 90 about y axis to get arrow pointing down xAxis.
+    M44 xform = glm::rotate(M44(), -Spire::PI / 2.0f, V3(0.0, 1.0, 0.0));
+    xform[3] = V4(coordinateAxesCenter, 1.0f);
+    mSpire->addObjectPassSpireAttribute(
+        objName, std::get<0>(SRCommonAttributes::getObjectToWorldTrafo()), xform);
+  }
+
+  // y-axis.
+  {
+    std::string objName = "yAxis";
+
+    loadAsset("Assets/UnitArrow.sp", dirPhongSphere, objName);
+
+    mSpire->addObjectPassUniform(objName, "uAmbientColor", V4(0.01f, 0.5f, 0.01f, 1.0f));
+    mSpire->addObjectPassUniform(objName, "uDiffuseColor", V4(0.0f, 1.0f, 0.0f, 1.0f));
+    mSpire->addObjectPassUniform(objName, "uSpecularColor", V4(0.5f, 0.5f, 0.5f, 1.0f));
+    mSpire->addObjectPassUniform(objName, "uSpecularPower", 16.0f);
+
+    mSpire->addLambdaObjectUniforms(objName, lambdaUniformObjTrafs);
+
+    // Rotate by positive 90 about x axis to get arrow pointing down yAxis.
+    M44 xform = glm::rotate(M44(), Spire::PI / 2.0f, V3(1.0, 0.0, 0.0));
+    xform[3] = V4(coordinateAxesCenter, 1.0f);
+    mSpire->addObjectPassSpireAttribute(
+        objName, std::get<0>(SRCommonAttributes::getObjectToWorldTrafo()), xform);
+  }
+
+  // z-axis.
+  {
+    std::string objName = "zAxis";
+
+    loadAsset("Assets/UnitArrow.sp", dirPhongSphere, objName);
+
+    mSpire->addObjectPassUniform(objName, "uAmbientColor", V4(0.01f, 0.01f, 0.5f, 1.0f));
+    mSpire->addObjectPassUniform(objName, "uDiffuseColor", V4(0.0f, 0.0f, 1.0f, 1.0f));
+    mSpire->addObjectPassUniform(objName, "uSpecularColor", V4(0.5f, 0.5f, 0.5f, 1.0f));
+    mSpire->addObjectPassUniform(objName, "uSpecularPower", 16.0f);
+
+    mSpire->addLambdaObjectUniforms(objName, lambdaUniformObjTrafs);
+
+    // Don't rotate at all, UnitArrow is initially pointing down the z axis.
+    M44 xform;
+    xform[3] = V4(coordinateAxesCenter, 1.0f);
     mSpire->addObjectPassSpireAttribute(
         objName, std::get<0>(SRCommonAttributes::getObjectToWorldTrafo()), xform);
   }
