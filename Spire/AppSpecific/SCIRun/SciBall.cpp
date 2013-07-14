@@ -117,7 +117,7 @@ void SciBall::drag(const V2& msc)
   q.y = -q.y;
   q.z = -q.z;
   q.w =  q.w;
-  mMatNow = quaternionToMatrix(q);//glm::mat4_cast(q);
+  mMatNow = glm::mat4_cast(q);
 }
 
 //------------------------------------------------------------------------------
