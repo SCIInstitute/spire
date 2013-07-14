@@ -41,7 +41,9 @@ SciBall::SciBall(const V3& center, float radius, const M44& screenToTCS) :
     mRadius(radius),
     mScreenToTCS(screenToTCS)
 {
-  Quat qOne(0.0f, 0.0f, 0.0f, 1.0f);
+  // glm uses the following format for quaternions: w,x,y,z.
+  //        w,    x,    y,    z
+  Quat qOne(1.0f, 0.0f, 0.0f, 0.0f);
   V3   vZero(0.0f, 0.0f, 0.0f);
 
   mVDown    = vZero;
