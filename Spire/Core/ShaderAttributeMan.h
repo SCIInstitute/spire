@@ -139,7 +139,7 @@ public:
   /// \param size           Size of the attribute in bytes, including padding.
   /// \param type           Type of the attribute.
   void addAttribute(const std::string& codeName, size_t numComponents,
-                    bool normalize, size_t size, GLenum type);
+                    bool normalize, size_t size, Interface::DATA_TYPES type);
 
   /// Returns the index associated with the attribute whose name is 'codeName'.
   /// \return the first tuple parameter (bool) indicates whether or not an 

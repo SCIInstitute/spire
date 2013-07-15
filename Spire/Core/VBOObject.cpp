@@ -46,7 +46,7 @@ VBOObject::VBOObject(
 
   for (auto it = attributes.begin(); it != attributes.end(); ++it)
   {
-    mAttributeCollection.addAttribute(*it, false);
+    mAttributeCollection.addAttribute(*it);
   }
 }
 

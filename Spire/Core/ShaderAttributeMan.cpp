@@ -44,28 +44,28 @@ namespace Spire {
 ShaderAttributeMan::ShaderAttributeMan(bool addDefaultAttributes)
 {
   // Unknown attribute (attribute at 0 index).
-  addAttribute(getUnknownName(), 1, false, sizeof(float), GL_FLOAT);
+  addAttribute(getUnknownName(), 1, false, sizeof(float), Interface::DATATYPE_FLOAT);
 
   // Add default attributes if requested -- we should never add 'default'
   // attributes. Just the unknown attribute and let the user define the
   // attributes that they require.
   if (addDefaultAttributes)
   {
-    addAttribute("aPos",         3,  false,  sizeof(float) * 3,  GL_FLOAT);
-    addAttribute("aNormal",      3,  false,  sizeof(float) * 3,  GL_FLOAT);
-    addAttribute("aTexCoord0",   2,  false,  sizeof(float) * 2,  GL_FLOAT);
-    addAttribute("aTexCoord1",   2,  false,  sizeof(float) * 2,  GL_FLOAT);
-    addAttribute("aTexCoord2",   2,  false,  sizeof(float) * 2,  GL_FLOAT);
-    addAttribute("aTexCoord3",   2,  false,  sizeof(float) * 2,  GL_FLOAT);
-    addAttribute("aColor",       4,  true,   sizeof(char) * 4,   GL_UNSIGNED_BYTE);
-    addAttribute("aColorFloat",  4,  false,  sizeof(float) * 4,  GL_FLOAT);
-    addAttribute("aTangent",     3,  false,  sizeof(float) * 3,  GL_FLOAT);
-    addAttribute("aBinormal",    3,  false,  sizeof(float) * 3,  GL_FLOAT);
-    addAttribute("aGenPos",      3,  false,  sizeof(float) * 3,  GL_FLOAT);
-    addAttribute("aGenNormal",   3,  false,  sizeof(float) * 3,  GL_FLOAT);
-    addAttribute("aGenUV",       2,  false,  sizeof(float) * 2,  GL_FLOAT);
-    addAttribute("aGenFloat",    1,  false,  sizeof(float) * 1,  GL_FLOAT);
-    addAttribute("aFieldData",   1,  false,  sizeof(float) * 1,  GL_FLOAT);
+    addAttribute("aPos",         3,  false,  sizeof(float) * 3,  Interface::DATATYPE_FLOAT);
+    addAttribute("aNormal",      3,  false,  sizeof(float) * 3,  Interface::DATATYPE_FLOAT);
+    addAttribute("aTexCoord0",   2,  false,  sizeof(float) * 2,  Interface::DATATYPE_FLOAT);
+    addAttribute("aTexCoord1",   2,  false,  sizeof(float) * 2,  Interface::DATATYPE_FLOAT);
+    addAttribute("aTexCoord2",   2,  false,  sizeof(float) * 2,  Interface::DATATYPE_FLOAT);
+    addAttribute("aTexCoord3",   2,  false,  sizeof(float) * 2,  Interface::DATATYPE_FLOAT);
+    addAttribute("aColor",       4,  true,   sizeof(char) * 4,   Interface::DATATYPE_UBYTE);
+    addAttribute("aColorFloat",  4,  false,  sizeof(float) * 4,  Interface::DATATYPE_FLOAT);
+    addAttribute("aTangent",     3,  false,  sizeof(float) * 3,  Interface::DATATYPE_FLOAT);
+    addAttribute("aBinormal",    3,  false,  sizeof(float) * 3,  Interface::DATATYPE_FLOAT);
+    addAttribute("aGenPos",      3,  false,  sizeof(float) * 3,  Interface::DATATYPE_FLOAT);
+    addAttribute("aGenNormal",   3,  false,  sizeof(float) * 3,  Interface::DATATYPE_FLOAT);
+    addAttribute("aGenUV",       2,  false,  sizeof(float) * 2,  Interface::DATATYPE_FLOAT);
+    addAttribute("aGenFloat",    1,  false,  sizeof(float) * 1,  Interface::DATATYPE_FLOAT);
+    addAttribute("aFieldData",   1,  false,  sizeof(float) * 1,  Interface::DATATYPE_FLOAT);
   }
 }
 
@@ -145,8 +145,7 @@ AttribState ShaderAttributeMan::getAttributeAtIndex(size_t index) const
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-ShaderAttributeCollection::AttribSpecificData 
-ShaderAttributeCollection::getAttribute(size_t index) const
+AttribState ShaderAttributeCollection::getAttribute(size_t index) const
 {
   if (index >= mAttributes.size())
     throw std::range_error("Index greater than size of mAttributes.");
@@ -167,7 +166,7 @@ bool ShaderAttributeCollection::hasAttribute(const std::string& attribName) cons
 
   for (auto it = mAttributes.begin(); it != mAttributes.end(); ++it)
   {
-    AttribState state = it->attrib;
+    AttribState state = *it;
     if (state.nameHash == hash)
     {
       // Check for hash collisions
@@ -213,14 +212,13 @@ void ShaderAttributeCollection::addAttribute(const std::string& attribName)
   std::tuple<bool,size_t> ret = mAttributeMan.findAttributeWithName(attribName);
   if (std::get<0>(ret))
   {
-    AttribSpecificData attribData;
-    attribData.attrib = mAttributeMan.getAttributeAtIndex(std::get<1>(ret));
+    AttribState attribData = mAttributeMan.getAttributeAtIndex(std::get<1>(ret));
     mAttributes.push_back(attribData);
 
     // Re-sort the array.
     std::sort(mAttributes.begin(), mAttributes.end(),
-         [] (const AttribSpecificData& a, const AttribSpecificData& b) 
-          { return a.attrib.index < b.attrib.index; });
+         [] (const AttribState& a, const AttribState& b) 
+          { return a.index < b.index; });
   }
   else
   {
@@ -232,7 +230,7 @@ void ShaderAttributeCollection::addAttribute(const std::string& attribName)
 //------------------------------------------------------------------------------
 size_t ShaderAttributeCollection::getFullAttributeSize(const AttribState& att) const
 {
-  return att.size();
+  return att.size;
 }
 
 //------------------------------------------------------------------------------
@@ -243,11 +241,11 @@ void ShaderAttributeCollection::bindAttributes(std::shared_ptr<ShaderProgramAsse
   for (auto it = mAttributes.begin(); it != mAttributes.end(); ++it)
   {
     /// \todo Make this check more efficient.
-    if (program->getAttributes().hasAttribute(it->attrib.codeName))
+    if (program->getAttributes().hasAttribute(it->codeName))
     {
-      if (it->attrib.index != ShaderAttributeMan::getUnknownAttributeIndex())
+      if (it->index != ShaderAttributeMan::getUnknownAttributeIndex())
       {
-        AttribState attrib = it->attrib;
+        AttribState attrib = *it;
         GLuint attribPos = glGetAttribLocation(program->getProgramID(), attrib.codeName.c_str());
         GL(glEnableVertexAttribArray(attribPos));
         //Log::debug() << "Binding attribute " << attribPos << " with name '" << attrib.codeName << "' "
@@ -260,7 +258,7 @@ void ShaderAttributeCollection::bindAttributes(std::shared_ptr<ShaderProgramAsse
       }
     }
 
-    offset += it->attrib.size;
+    offset += it->size;
   }
 }
 
@@ -272,7 +270,7 @@ size_t ShaderAttributeCollection::calculateNumCommonAttributes(const ShaderAttri
   // This check could be done much faster since both arrays are sorted.
   for (auto it = mAttributes.begin(); it != mAttributes.end(); ++it)
   {
-    if (compare.hasIndex(it->attrib.index))
+    if (compare.hasIndex(it->index))
       ++numCommon;
   }
 
@@ -285,7 +283,7 @@ bool ShaderAttributeCollection::hasIndex(size_t targetIndex) const
   // Could perform a binary search here...
   for (auto it = mAttributes.begin(); it != mAttributes.end(); ++it)
   {
-    if (targetIndex == it->attrib.index)
+    if (targetIndex == it->index)
       return true;
   }
 
