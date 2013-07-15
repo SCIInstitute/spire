@@ -38,29 +38,34 @@ IBOObject::IBOObject(std::shared_ptr<std::vector<uint8_t>> iboData,
 {
   GL(glGenBuffers(1, &mGLIndex));
   GL(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mGLIndex));
-  GL(glBufferData(GL_ELEMENT_ARRAY_BUFFER, iboData->size(), &(*iboData)[0], GL_STATIC_DRAW));
+  GL(glBufferData(GL_ELEMENT_ARRAY_BUFFER, static_cast<GLsizeiptr>(iboData->size()),
+                  &(*iboData)[0], GL_STATIC_DRAW));
 
   // Calculate number of elements based on the IBO type.
   switch (type)
   {
     case Interface::IBO_8BIT:
-      mNumElements = iboData->size() / sizeof(uint8_t);
+      mNumElements = static_cast<GLuint>(iboData->size() / sizeof(uint8_t));
       mType = GL_UNSIGNED_BYTE;
       break;
 
     case Interface::IBO_16BIT:
-      mNumElements = iboData->size() / sizeof(uint16_t);
+      mNumElements = static_cast<GLuint>(iboData->size() / sizeof(uint16_t));
       mType = GL_UNSIGNED_SHORT;
       break;
 
     case Interface::IBO_32BIT:
-      mNumElements = iboData->size() / sizeof(uint32_t);
+      mNumElements = static_cast<GLuint>(iboData->size() / sizeof(uint32_t));
       mType = GL_UNSIGNED_INT;
       break;
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wunreachable-code"
     default:
       throw std::invalid_argument("IBO type expected to be of type Interface::IBO_TYPE.");
       break;
+#pragma clang diagnostic pop
+
   }
 }
 

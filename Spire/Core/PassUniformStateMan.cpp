@@ -53,7 +53,7 @@ PassUniformStateMan::PassUniforms* PassUniformStateMan::getPass(const std::strin
 {
   // Not very efficient -- but still more efficient than other methods when the
   // number of passes is low.
-  for (int i = 0; i < mPasses.size(); i++)
+  for (size_t i = 0; i < mPasses.size(); i++)
   {
     if (mPasses[i].passName == pass)
     {
@@ -69,7 +69,7 @@ const PassUniformStateMan::PassUniforms* PassUniformStateMan::getPass(const std:
 {
   // Not very efficient -- but still more efficient than other methods when the
   // number of passes is low.
-  for (int i = 0; i < mPasses.size(); i++)
+  for (size_t i = 0; i < mPasses.size(); i++)
   {
     if (mPasses[i].passName == pass)
     {

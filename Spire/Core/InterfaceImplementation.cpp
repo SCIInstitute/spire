@@ -87,9 +87,9 @@ void InterfaceImplementation::executeQueue()
 
 
 //------------------------------------------------------------------------------
-void InterfaceImplementation::resize(InterfaceImplementation& self, size_t width, size_t height)
+void InterfaceImplementation::resize(InterfaceImplementation& /*self*/, size_t width, size_t height)
 {
-  GL(glViewport(0, 0, width, height));
+  GL(glViewport(0, 0, static_cast<GLsizei>(width), static_cast<GLsizei>(height)));
 }
 
 //------------------------------------------------------------------------------
@@ -392,7 +392,6 @@ void InterfaceImplementation::addPersistentShader(InterfaceImplementation& self,
 
       default:
         throw UnsupportedException("This shader is not supported yet.");
-        break;
     }
     shaders.push_back(make_tuple(std::get<0>(*it), glType));
   }
@@ -463,56 +462,27 @@ GLenum InterfaceImplementation::getGLPrimitive(Interface::PRIMITIVE_TYPES type)
 {
   switch (type)
   {
-    case Interface::POINTS:
-      return GL_POINTS;
-      break;
+    case Interface::POINTS:                   return GL_POINTS;
+    case Interface::LINES:                    return GL_LINES;
+    case Interface::LINE_LOOP:                return GL_LINE_LOOP;
+    case Interface::LINE_STRIP:               return GL_LINE_STRIP;
+    case Interface::TRIANGLES:                return GL_TRIANGLES;
+    case Interface::TRIANGLE_STRIP:           return GL_TRIANGLE_STRIP;
+    case Interface::TRIANGLE_FAN:             return GL_TRIANGLE_FAN;
+    case Interface::LINES_ADJACENCY:          return GL_LINES_ADJACENCY;
+    case Interface::LINE_STRIP_ADJACENCY:     return GL_LINE_STRIP_ADJACENCY;
+    case Interface::TRIANGLES_ADJACENCY:      return GL_TRIANGLES_ADJACENCY;
+    case Interface::TRIANGLE_STRIP_ADJACENCY: return GL_TRIANGLE_STRIP_ADJACENCY;
 
-    case Interface::LINES:
-      return GL_LINES;
-      break;
-
-    case Interface::LINE_LOOP:
-      return GL_LINE_LOOP;
-      break;
-
-    case Interface::LINE_STRIP:
-      return GL_LINE_STRIP;
-      break;
-
-    case Interface::TRIANGLES:
-      return GL_TRIANGLES;
-      break;
-
-    case Interface::TRIANGLE_STRIP:
-      return GL_TRIANGLE_STRIP;
-      break;
-
-    case Interface::TRIANGLE_FAN:
-      return GL_TRIANGLE_FAN;
-      break;
-
-    case Interface::LINES_ADJACENCY:
-      return GL_LINES_ADJACENCY;
-      break;
-
-    case Interface::LINE_STRIP_ADJACENCY:
-      return GL_LINE_STRIP_ADJACENCY;
-      break;
-
-    case Interface::TRIANGLES_ADJACENCY:
-      return GL_TRIANGLES_ADJACENCY;
-      break;
-
-    case Interface::TRIANGLE_STRIP_ADJACENCY:
-      return GL_TRIANGLE_STRIP_ADJACENCY;
-      break;
-
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wunreachable-code"
     default:
       {
         std::stringstream stream;
         stream << "Expected type to be one of PRIMITIVE_TYPES, received " << type;
         throw std::invalid_argument(stream.str());
       }
+#pragma clang diagnostic pop
   }
 
   return GL_TRIANGLES;
@@ -523,55 +493,32 @@ GLenum InterfaceImplementation::getGLType(Interface::DATA_TYPES type)
 {
   switch (type)
   {
-    case Interface::DATATYPE_BYTE:
-      return GL_BYTE;
-      break;
-
-    case Interface::DATATYPE_UBYTE:
-      return GL_UNSIGNED_BYTE;
-      break;
-
-    case Interface::DATATYPE_SHORT:
-      return GL_SHORT;
-      break;
-
-    case Interface::DATATYPE_USHORT:
-      return GL_UNSIGNED_SHORT;
-      break;
-
-    case Interface::DATATYPE_INT:
-      return GL_INT;
-      break;
-
-    case Interface::DATATYPE_UINT:
-      return GL_UNSIGNED_INT;
-      break;
-
-    case Interface::DATATYPE_FLOAT:
-      return GL_FLOAT;
-      break;
-
+    case Interface::DATATYPE_BYTE:        return GL_BYTE;
+    case Interface::DATATYPE_UBYTE:       return GL_UNSIGNED_BYTE;
+    case Interface::DATATYPE_SHORT:       return GL_SHORT;
+    case Interface::DATATYPE_USHORT:      return GL_UNSIGNED_SHORT;
+    case Interface::DATATYPE_INT:         return GL_INT;
+    case Interface::DATATYPE_UINT:        return GL_UNSIGNED_INT;
+    case Interface::DATATYPE_FLOAT:       return GL_FLOAT;
 #ifdef SPIRE_OPENGL_ES_2
-    case Interface::DATATYPE_HALFFLOAT:
-      return GL_HALF_FLOAT_OES;
-      break;
+    case Interface::DATATYPE_HALFFLOAT:   return GL_HALF_FLOAT_OES;
 #else
     case Interface::DATATYPE_HALFFLOAT:
       Log::error() << "Half-float not supported on non-ES platforms.";
       return GL_FLOAT;
-      break;
 #endif
 
-    case Interface::DATATYPE_DOUBLE:
-      return GL_DOUBLE;
-      break;
+    case Interface::DATATYPE_DOUBLE:      return GL_DOUBLE;
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wunreachable-code"
     default:
     {
       std::stringstream stream;
       stream << "Expected type to be one of Interface::DATA_TYPES, received " << type;
       throw std::invalid_argument(stream.str());
     }
+#pragma clang diagnostic pop
   }
 
   return GL_FLOAT;

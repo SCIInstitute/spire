@@ -73,7 +73,7 @@ public:
   };
 
   /// \todo Change back to constexpr
-  static const GLuint getInvalidProgramHandle()  {return static_cast<GLuint>(0);}
+  static GLuint getInvalidProgramHandle()  {return static_cast<GLuint>(0);}
 
   /// Adds a uniform with the specified name.
   /// Also queries the OpenGL shader program for the position of the uniform.

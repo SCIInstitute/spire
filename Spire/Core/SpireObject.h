@@ -102,11 +102,11 @@ protected:
   {
     UniformItem(const std::string& name,
                 std::shared_ptr<AbstractUniformStateItem> uniformItem,
-                GLint location, bool passSpecific) :
+                GLint location, bool passSpecificIn) :
         uniformName(name),
         item(uniformItem),
         shaderLocation(location),
-        passSpecific(passSpecific)
+        passSpecific(passSpecificIn)
     {}
 
     std::string                               uniformName;

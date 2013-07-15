@@ -190,7 +190,7 @@ bool ShaderAttributeCollection::doesSatisfyShader(const ShaderAttributeCollectio
     return false;
 
   // Compare number of common attributes and the size of our attribute array.
-  int numCommonAttribs = calculateNumCommonAttributes(compare);
+  size_t numCommonAttribs = calculateNumCommonAttributes(compare);
   return (numCommonAttribs == mAttributes.size());
 }
 
@@ -247,12 +247,12 @@ void ShaderAttributeCollection::bindAttributes(std::shared_ptr<ShaderProgramAsse
       if (it->index != ShaderAttributeMan::getUnknownAttributeIndex())
       {
         AttribState attrib = *it;
-        GLuint attribPos = glGetAttribLocation(program->getProgramID(), attrib.codeName.c_str());
-        GL(glEnableVertexAttribArray(attribPos));
+        GLint attribPos = glGetAttribLocation(program->getProgramID(), attrib.codeName.c_str());
+        GL(glEnableVertexAttribArray(static_cast<GLuint>(attribPos)));
         //Log::debug() << "Binding attribute " << attribPos << " with name '" << attrib.codeName << "' "
         //             << "with num components " << attrib.numComponents << " type " << attrib.type
         //             << " normalize " << attrib.normalize << " and stride: " << stride << std::endl;
-        GL(glVertexAttribPointer(attribPos,
+        GL(glVertexAttribPointer(static_cast<GLuint>(attribPos),
                                  static_cast<GLint>(attrib.numComponents),
                                  InterfaceImplementation::getGLType(attrib.type), 
                                  static_cast<GLboolean>(attrib.normalize),
@@ -286,7 +286,7 @@ void ShaderAttributeCollection::unbindAttributes(std::shared_ptr<ShaderProgramAs
 //------------------------------------------------------------------------------
 size_t ShaderAttributeCollection::calculateNumCommonAttributes(const ShaderAttributeCollection& compare) const
 {
-  int numCommon = 0;
+  size_t numCommon = 0;
 
   // This check could be done much faster since both arrays are sorted.
   for (auto it = mAttributes.begin(); it != mAttributes.end(); ++it)

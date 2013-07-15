@@ -84,6 +84,9 @@ public:
   /// Binds attributes to the shader indicated by parameter 'program'.
   void bindAttributes(std::shared_ptr<ShaderProgramAsset> program) const;
 
+  /// Unbinds all attributes (glDisableVertexAttribArray).
+  void unbindAttributes(std::shared_ptr<ShaderProgramAsset> program) const;
+
   /// Calculates the stride between vertices based on the attribute sizes
   /// calculated using calculateAttributeSizes.
   size_t calculateStride() const;
