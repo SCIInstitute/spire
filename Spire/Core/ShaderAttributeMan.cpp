@@ -265,6 +265,25 @@ void ShaderAttributeCollection::bindAttributes(std::shared_ptr<ShaderProgramAsse
 }
 
 //------------------------------------------------------------------------------
+void ShaderAttributeCollection::unbindAttributes(std::shared_ptr<ShaderProgramAsset> program) const
+{
+  for (auto it = mAttributes.begin(); it != mAttributes.end(); ++it)
+  {
+    /// \todo Make this check more efficient.
+    if (program->getAttributes().hasAttribute(it->codeName))
+    {
+      if (it->index != ShaderAttributeMan::getUnknownAttributeIndex())
+      {
+        AttribState attrib = *it;
+        GLint attribPos = glGetAttribLocation(program->getProgramID(), attrib.codeName.c_str());
+        GL(glDisableVertexAttribArray(static_cast<GLuint>(attribPos)));
+      }
+    }
+  }
+
+}
+
+//------------------------------------------------------------------------------
 size_t ShaderAttributeCollection::calculateNumCommonAttributes(const ShaderAttributeCollection& compare) const
 {
   int numCommon = 0;

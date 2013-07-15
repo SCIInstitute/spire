@@ -152,6 +152,9 @@ void ObjectPass::renderPass(ObjectLambdaInterface& lambdaInterface)
     GL(glDrawElements(mPrimitiveType, mIBO->getNumElements(), mIBO->getType(), 0));
   }
 
+  // We can do away with this once we switch to VAOs.
+  attribs.unbindAttributes(mShader);
+
   if (mGPUState != nullptr)
     mHub.getGPUStateManager().apply(priorGPUState);
 }
