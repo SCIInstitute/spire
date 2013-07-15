@@ -153,7 +153,7 @@ void ObjectPass::renderPass(ObjectLambdaInterface& lambdaInterface)
   }
 
   // We can do away with this once we switch to VAOs.
-  //attribs.unbindAttributes(mShader);
+  attribs.unbindAttributes(mShader);
 
   if (mGPUState != nullptr)
     mHub.getGPUStateManager().apply(priorGPUState);
