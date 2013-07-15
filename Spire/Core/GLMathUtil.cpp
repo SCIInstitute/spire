@@ -39,10 +39,9 @@ namespace Spire {
 // print out matrix by rows
 void printM44(const M44& mat)
 {
-  int i,j;
-  for (j = 0; j < 4; j++)
+  for (size_t j = 0; j < 4; j++)
   {
-    for (i = 0; i < 4; i++)
+    for (size_t i = 0; i < 4; i++)
     {
       std::cout << mat[i][j] << " ";
     }

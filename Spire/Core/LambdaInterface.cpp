@@ -36,7 +36,7 @@
 namespace Spire {
 
 //------------------------------------------------------------------------------
-int LambdaInterface::uniformToGLType(UNIFORM_TYPE type)
+unsigned int LambdaInterface::uniformToGLType(UNIFORM_TYPE type)
 {
   return ShaderUniformMan::uniformTypeToGL(type);
 }

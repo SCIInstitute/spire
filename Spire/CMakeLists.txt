@@ -52,7 +52,8 @@ if(UNIX)
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 
   if(APPLE)
-    set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libc++ -Wall -Wextra -Werror")
+    set (CMAKE_CXX_FLAGS 
+      "${CMAKE_CXX_FLAGS} -stdlib=libc++ -Wall -Wextra -Werror -Wconversion -Wshadow -Wunreachable-code")
 
     # Make sure the compiler knows how to treat these system includes.
     set (CMAKE_INCLUDE_SYSTEM_FLAG_CXX="isystem")

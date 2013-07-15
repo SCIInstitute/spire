@@ -79,7 +79,7 @@ std::string findFile(const std::string& file, bool subdirs);
 std::string removeExt(const std::string& fileName)
 {
   size_t indexDot = fileName.find_last_of(".");
-  size_t indexSlash = std::max(int(fileName.find_last_of("\\")),int(fileName.find_last_of("/")));
+  size_t indexSlash = std::max(fileName.find_last_of("\\"),fileName.find_last_of("/"));
   if (indexDot == std::string::npos ||
       (indexSlash != std::string::npos && indexDot < indexSlash))
     return fileName;
@@ -96,7 +96,7 @@ std::string changeExt(const std::string& fileName, const std::string& newext)
 std::string getExt(const std::string& fileName)
 {
   size_t indexDot = fileName.find_last_of(".");
-  size_t indexSlash = std::max(int(fileName.find_last_of("\\")),int(fileName.find_last_of("/")));
+  size_t indexSlash = std::max(fileName.find_last_of("\\"),fileName.find_last_of("/"));
   if (indexDot == std::string::npos || (indexSlash != std::string::npos && indexDot < indexSlash)) return "";
   std::string ext = fileName.substr(indexDot+1);
   return ext;
@@ -316,7 +316,7 @@ std::string getCurrentWorkingDir()
 std::string getPath(const std::string& fileName)
 {
   std::string path = fileName.substr(
-      0,std::max(int(fileName.find_last_of("\\")),int(fileName.find_last_of("/")))+1);
+      0,std::max(fileName.find_last_of("\\"),fileName.find_last_of("/"))+1);
   if(path.empty()) { path = "./"; }
   return path;
 }

@@ -41,8 +41,8 @@ GLenum CULL_ORDERToGL(CULL_ORDER order)
 {
   switch (order)
   {
-    case ORDER_CCW:                 return GL_CCW;                    break;
-    case ORDER_CW:                  return GL_CW;                     break;
+    case ORDER_CCW:                 return GL_CCW;
+    case ORDER_CW:                  return GL_CW;
   }
   return GL_CCW;  // CCW is GL's default
 }
@@ -52,8 +52,8 @@ CULL_ORDER GLToCULL_ORDER(GLenum order)
 {
   switch (order)
   {
-    case GL_CCW:                    return ORDER_CCW;                 break;
-    case GL_CW:                     return ORDER_CW;                  break;
+    case GL_CCW:                    return ORDER_CCW;
+    case GL_CW:                     return ORDER_CW;
   }
   return ORDER_CCW;
 }
@@ -63,17 +63,17 @@ GLenum BLEND_FUNCToGL(BLEND_FUNC func)
 {
   switch (func) 
   {
-    case BF_ZERO:                   return GL_ZERO;                   break;
-    case BF_ONE:                    return GL_ONE;                    break;
-    case BF_SRC_COLOR:              return GL_SRC_COLOR;              break;
-    case BF_ONE_MINUS_SRC_COLOR:    return GL_ONE_MINUS_SRC_COLOR;    break;
-    case BF_DST_COLOR:              return GL_DST_COLOR;              break;
-    case BF_ONE_MINUS_DST_COLOR:    return GL_ONE_MINUS_DST_COLOR;    break;
-    case BF_SRC_ALPHA:              return GL_SRC_ALPHA;              break;
-    case BF_ONE_MINUS_SRC_ALPHA:    return GL_ONE_MINUS_SRC_ALPHA;    break;
-    case BF_DST_ALPHA:              return GL_DST_ALPHA;              break;
-    case BF_ONE_MINUS_DST_ALPHA:    return GL_ONE_MINUS_DST_ALPHA;    break;
-    case BF_SRC_ALPHA_SATURATE:     return GL_SRC_ALPHA_SATURATE;     break;
+    case BF_ZERO:                   return GL_ZERO;
+    case BF_ONE:                    return GL_ONE;
+    case BF_SRC_COLOR:              return GL_SRC_COLOR;
+    case BF_ONE_MINUS_SRC_COLOR:    return GL_ONE_MINUS_SRC_COLOR;
+    case BF_DST_COLOR:              return GL_DST_COLOR;
+    case BF_ONE_MINUS_DST_COLOR:    return GL_ONE_MINUS_DST_COLOR;
+    case BF_SRC_ALPHA:              return GL_SRC_ALPHA;
+    case BF_ONE_MINUS_SRC_ALPHA:    return GL_ONE_MINUS_SRC_ALPHA;
+    case BF_DST_ALPHA:              return GL_DST_ALPHA;
+    case BF_ONE_MINUS_DST_ALPHA:    return GL_ONE_MINUS_DST_ALPHA;
+    case BF_SRC_ALPHA_SATURATE:     return GL_SRC_ALPHA_SATURATE;
   }
   return GL_ONE;
 }
@@ -83,17 +83,17 @@ BLEND_FUNC GLToBLEND_FUNC(GLenum func)
 {
   switch (func) 
   {
-    case GL_ZERO:                   return BF_ZERO;                   break;
-    case GL_ONE:                    return BF_ONE;                    break;
-    case GL_SRC_COLOR:              return BF_SRC_COLOR;              break;
-    case GL_ONE_MINUS_SRC_COLOR:    return BF_ONE_MINUS_SRC_COLOR;    break;
-    case GL_DST_COLOR:              return BF_DST_COLOR;              break;
-    case GL_ONE_MINUS_DST_COLOR:    return BF_ONE_MINUS_DST_COLOR;    break;
-    case GL_SRC_ALPHA:              return BF_SRC_ALPHA;              break;
-    case GL_ONE_MINUS_SRC_ALPHA:    return BF_ONE_MINUS_SRC_ALPHA;    break;
-    case GL_DST_ALPHA:              return BF_DST_ALPHA;              break;
-    case GL_ONE_MINUS_DST_ALPHA:    return BF_ONE_MINUS_DST_ALPHA;    break;
-    case GL_SRC_ALPHA_SATURATE:     return BF_SRC_ALPHA_SATURATE;     break;
+    case GL_ZERO:                   return BF_ZERO;
+    case GL_ONE:                    return BF_ONE;
+    case GL_SRC_COLOR:              return BF_SRC_COLOR;
+    case GL_ONE_MINUS_SRC_COLOR:    return BF_ONE_MINUS_SRC_COLOR;
+    case GL_DST_COLOR:              return BF_DST_COLOR;
+    case GL_ONE_MINUS_DST_COLOR:    return BF_ONE_MINUS_DST_COLOR;
+    case GL_SRC_ALPHA:              return BF_SRC_ALPHA;
+    case GL_ONE_MINUS_SRC_ALPHA:    return BF_ONE_MINUS_SRC_ALPHA;
+    case GL_DST_ALPHA:              return BF_DST_ALPHA;
+    case GL_ONE_MINUS_DST_ALPHA:    return BF_ONE_MINUS_DST_ALPHA;
+    case GL_SRC_ALPHA_SATURATE:     return BF_SRC_ALPHA_SATURATE;
   }
   return BF_ONE;
 }
@@ -103,15 +103,15 @@ GLenum BLEND_EQToGL(BLEND_EQ func)
 {
   switch (func) 
   {
-    case BE_FUNC_ADD:               return GL_FUNC_ADD;               break;
-    case BE_FUNC_SUBTRACT:          return GL_FUNC_SUBTRACT;          break;
-    case BE_FUNC_REVERSE_SUBTRACT:  return GL_FUNC_REVERSE_SUBTRACT;  break;
+    case BE_FUNC_ADD:               return GL_FUNC_ADD;
+    case BE_FUNC_SUBTRACT:          return GL_FUNC_SUBTRACT;
+    case BE_FUNC_REVERSE_SUBTRACT:  return GL_FUNC_REVERSE_SUBTRACT;
 #ifdef SPIRE_OPENGL_ES_2
     case BE_MIN:                    Log::error() << "GL_MIN not supported in ES 2.0" << std::endl; break;
     case BE_MAX:                    Log::error() << "GL_MAX not supported in ES 2.0" << std::endl; break;
 #else
-    case BE_MIN:                    return GL_MIN;                    break;
-    case BE_MAX:                    return GL_MAX;                    break;
+    case BE_MIN:                    return GL_MIN;
+    case BE_MAX:                    return GL_MAX;
 #endif
   }
   return GL_FUNC_ADD;
@@ -122,12 +122,12 @@ BLEND_EQ GLToBLEND_EQ(const GLenum& func)
 {
   switch (func) 
   {
-    case GL_FUNC_ADD:               return BE_FUNC_ADD;               break;
-    case GL_FUNC_SUBTRACT:          return BE_FUNC_SUBTRACT;          break;
-    case GL_FUNC_REVERSE_SUBTRACT:  return BE_FUNC_REVERSE_SUBTRACT;  break;
+    case GL_FUNC_ADD:               return BE_FUNC_ADD;
+    case GL_FUNC_SUBTRACT:          return BE_FUNC_SUBTRACT;
+    case GL_FUNC_REVERSE_SUBTRACT:  return BE_FUNC_REVERSE_SUBTRACT;
 #ifndef SPIRE_OPENGL_ES_2
-    case GL_MIN:                    return BE_MIN;                    break;
-    case GL_MAX:                    return BE_MAX;                    break;
+    case GL_MIN:                    return BE_MIN;
+    case GL_MAX:                    return BE_MAX;
 #endif
   }
   return BE_FUNC_ADD;
@@ -138,14 +138,14 @@ GLenum DEPTH_FUNCToGL(const DEPTH_FUNC& func)
 {
   switch (func) 
   {
-    case DF_NEVER:                  return GL_NEVER;                  break;
-    case DF_LESS:                   return GL_LESS;                   break;
-    case DF_EQUAL:                  return GL_EQUAL;                  break;
-    case DF_LEQUAL:                 return GL_LEQUAL;                 break;
-    case DF_GREATER:                return GL_GREATER;                break;
-    case DF_NOTEQUAL:               return GL_NOTEQUAL;               break;
-    case DF_GEQUAL:                 return GL_GEQUAL;                 break;
-    case DF_ALWAYS:                 return GL_ALWAYS;                 break;
+    case DF_NEVER:                  return GL_NEVER;
+    case DF_LESS:                   return GL_LESS;
+    case DF_EQUAL:                  return GL_EQUAL;
+    case DF_LEQUAL:                 return GL_LEQUAL;
+    case DF_GREATER:                return GL_GREATER;
+    case DF_NOTEQUAL:               return GL_NOTEQUAL;
+    case DF_GEQUAL:                 return GL_GEQUAL;
+    case DF_ALWAYS:                 return GL_ALWAYS;
   }
   return GL_LEQUAL;
 }
@@ -155,14 +155,14 @@ DEPTH_FUNC GLToDEPTH_FUNC(const GLenum& func)
 {
   switch (func) 
   {
-    case GL_NEVER:                  return DF_NEVER;                  break;
-    case GL_LESS:                   return DF_LESS;                   break;
-    case GL_EQUAL:                  return DF_EQUAL;                  break;
-    case GL_LEQUAL:                 return DF_LEQUAL;                 break;
-    case GL_GREATER:                return DF_GREATER;                break;
-    case GL_NOTEQUAL:               return DF_NOTEQUAL;               break;
-    case GL_GEQUAL:                 return DF_GEQUAL;                 break;
-    case GL_ALWAYS:                 return DF_ALWAYS;                 break;
+    case GL_NEVER:                  return DF_NEVER;
+    case GL_LESS:                   return DF_LESS;
+    case GL_EQUAL:                  return DF_EQUAL;
+    case GL_LEQUAL:                 return DF_LEQUAL;
+    case GL_GREATER:                return DF_GREATER;
+    case GL_NOTEQUAL:               return DF_NOTEQUAL;
+    case GL_GEQUAL:                 return DF_GEQUAL;
+    case GL_ALWAYS:                 return DF_ALWAYS;
   }
   return DF_LEQUAL;
 }
@@ -274,7 +274,7 @@ GPUState GPUStateManager::getStateFromOpenGL() const
   GLint e;
   glGetIntegerv(GL_DEPTH_FUNC, &e);
   state.mDepthTestEnable              = glIsEnabled(GL_DEPTH_TEST) != 0;
-  state.mDepthFunc                    = GLToDEPTH_FUNC(e);
+  state.mDepthFunc                    = GLToDEPTH_FUNC(static_cast<GLenum>(e));
 
   state.mCullFaceEnable               = glIsEnabled(GL_CULL_FACE) != 0;
 
@@ -284,7 +284,7 @@ GPUState GPUStateManager::getStateFromOpenGL() const
   state.mBlendEnable                  = glIsEnabled(GL_BLEND) != 0;
 
   glGetIntegerv(GL_FRONT_FACE, &e);
-  state.mCullOrder                    = GLToCULL_ORDER(e);
+  state.mCullOrder                    = GLToCULL_ORDER(static_cast<GLenum>(e));
 
   for(size_t i=0; i < getMaxTextureUnits(); ++i)
   {
@@ -334,12 +334,12 @@ GPUState GPUStateManager::getStateFromOpenGL() const
   glGetIntegerv(GL_BLEND_SRC, &src);
   glGetIntegerv(GL_BLEND_DST, &dest);
 #endif
-  state.mBlendFuncSrc = GLToBLEND_FUNC(src);
-  state.mBlendFuncDst = GLToBLEND_FUNC(dest);
+  state.mBlendFuncSrc = GLToBLEND_FUNC(static_cast<GLenum>(src));
+  state.mBlendFuncDst = GLToBLEND_FUNC(static_cast<GLenum>(dest));
 
   GLint equation;
   GL(glGetIntegerv(GL_BLEND_EQUATION_RGB, &equation));
-  state.mBlendEquation = GLToBLEND_EQ(equation);
+  state.mBlendEquation = GLToBLEND_EQ(static_cast<GLenum>(equation));
 
   return state;
 }
