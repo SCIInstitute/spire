@@ -48,12 +48,14 @@ endif()
 
 ########################################################################
 # Compiler settings
-
 if(UNIX)
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 
   if(APPLE)
-    set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libc++")
+    set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libc++ -Wall -Wextra -Werror")
+
+    # Make sure the compiler knows how to treat these system includes.
+    set (CMAKE_INCLUDE_SYSTEM_FLAG_CXX="isystem")
 
     # We were using CoreFoundation to look up shaders in the bundle.
     find_library(CORE_FOUNDATION_FRAMEWORK CoreFoundation)
@@ -82,20 +84,29 @@ else(UNIX)
   endif(WIN32)
 endif(UNIX)
 
-include_directories(${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/3rdParty/glew/include ${CMAKE_CURRENT_SOURCE_DIR}/3rdParty ${OPENGL_INCLUDE_DIRS})
+include_directories(${CMAKE_CURRENT_SOURCE_DIR})
+
+# Indicate that headers from 3rdParty libraries should be treated as system files.
+# This suppresses warnings in clang. With -Werror, this is mandatory for repos
+# which I do not manage.
+# See: http://clang.llvm.org/docs/UsersManual.html#controlling-errors-and-warnings
+include_directories(SYSTEM
+  ${CMAKE_CURRENT_SOURCE_DIR}/3rdParty/glew/include
+  ${CMAKE_CURRENT_SOURCE_DIR}/3rdParty
+  ${OPENGL_INCLUDE_DIRS})
 
 ########################################################################
 # Eigen
 
 # Eigen include directory.
-INCLUDE_DIRECTORIES( "${CMAKE_CURRENT_SOURCE_DIR}/3rdParty/eigen" )
+include_directories(SYSTEM "${CMAKE_CURRENT_SOURCE_DIR}/3rdParty/eigen" )
 add_definitions(-DEIGEN_INITIALIZE_MATRICES_BY_ZERO)
 
 ########################################################################
 # GLM
 
 # GLM include directory.
-INCLUDE_DIRECTORIES( "${CMAKE_CURRENT_SOURCE_DIR}/3rdParty/glm" )
+INCLUDE_DIRECTORIES(SYSTEM "${CMAKE_CURRENT_SOURCE_DIR}/3rdParty/glm" )
 
 ########################################################################
 # Tuvok
