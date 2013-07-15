@@ -64,7 +64,7 @@ void AbstractUniformStateItem::uniform3f(int location, float v0, float v1,
 void AbstractUniformStateItem::uniform3fv(int location, size_t count,
                                           const float* value)
 {
-  GL(glUniform4fv(static_cast<GLint>(location), count,
+  GL(glUniform4fv(static_cast<GLint>(location), static_cast<GLsizei>(count),
                   static_cast<const GLfloat*>(value)));
 }
 
@@ -79,7 +79,7 @@ void AbstractUniformStateItem::uniform4f(int location, float v0, float v1,
 void AbstractUniformStateItem::uniformMatrix4fv(int location, size_t count, 
                                                 bool transpose, const float* value)
 {
-  GL(glUniformMatrix4fv(static_cast<GLint>(location), count, transpose,
+  GL(glUniformMatrix4fv(static_cast<GLint>(location), static_cast<GLsizei>(count), transpose,
                         static_cast<const GLfloat*>(value)));
 }
 

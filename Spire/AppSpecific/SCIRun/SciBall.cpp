@@ -79,7 +79,7 @@ V3 SciBall::mouseOnSphere(const V3& tscMouse)
     // We are not at the edge of the sphere, we are inside of it.
     // Essentially, we are normalizing the vector by adding the missing z
     // component.
-    ballMouse.z = sqrt(1.0f - mag);
+    ballMouse.z = sqrtf(1.0f - mag);
   }
 
   return ballMouse;

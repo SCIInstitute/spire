@@ -98,12 +98,11 @@ private:
   /// Recalculates camera transform using the most relevant data.
   void buildAndApplyCameraTransform();
 
-  size_t                    mScreenWidth;   ///< Screen width in pixels.
-  size_t                    mScreenHeight;  ///< Screen height in pixels.
-
   std::unique_ptr<SRCamera> mCamera;        ///< Primary camera.
   std::unique_ptr<SciBall>  mSciBall;       ///< SCIRun 4's arcball camera.
 
+  size_t                    mScreenWidth;   ///< Screen width in pixels.
+  size_t                    mScreenHeight;  ///< Screen height in pixels.
 
   V2                        mTransClick;    ///< Start of the translation.
 

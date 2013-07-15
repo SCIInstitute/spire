@@ -42,7 +42,7 @@ VBOObject::VBOObject(
 {
   GL(glGenBuffers(1, &mGLIndex));
   GL(glBindBuffer(GL_ARRAY_BUFFER, mGLIndex));
-  GL(glBufferData(GL_ARRAY_BUFFER, vboData->size(), &(*vboData)[0], GL_STATIC_DRAW));
+  GL(glBufferData(GL_ARRAY_BUFFER, static_cast<GLsizeiptr>(vboData->size()), &(*vboData)[0], GL_STATIC_DRAW));
 
   for (auto it = attributes.begin(); it != attributes.end(); ++it)
   {

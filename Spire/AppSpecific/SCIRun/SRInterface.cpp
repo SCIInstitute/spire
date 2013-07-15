@@ -47,13 +47,13 @@ SRInterface::SRInterface(std::shared_ptr<Context> context,
                          const std::vector<std::string>& shaderDirs,
                          bool createThread, LogFunction logFP) :
     Interface(context, shaderDirs, createThread, logFP),
-    mSciBall(new SciBall(V3(0.0f, 0.0f, 0.0f), 1.0f)),
-    mCamAccumPosNow(0.0f, 0.0f, 0.0f),
-    mCamAccumPosDown(0.0f, 0.0f, 0.0f),
     mCamera(new SRCamera(*this)),
-    mCamDistance(7.0f),
+    mSciBall(new SciBall(V3(0.0f, 0.0f, 0.0f), 1.0f)),
     mScreenWidth(640),
-    mScreenHeight(480)
+    mScreenHeight(480),
+    mCamAccumPosDown(0.0f, 0.0f, 0.0f),
+    mCamAccumPosNow(0.0f, 0.0f, 0.0f),
+    mCamDistance(7.0f)
 {
   buildAndApplyCameraTransform();
 }
@@ -154,7 +154,7 @@ void SRInterface::inputMouseWheel(int32_t delta)
 }
 
 //------------------------------------------------------------------------------
-void SRInterface::inputMouseUp(const glm::ivec2& pos, MouseButton btn)
+void SRInterface::inputMouseUp(const glm::ivec2& /*pos*/, MouseButton /*btn*/)
 {
 }
 

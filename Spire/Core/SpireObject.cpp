@@ -52,10 +52,10 @@ ObjectPass::ObjectPass(
     const std::string& passName, const std::string& programName,
     std::shared_ptr<VBOObject> vbo, std::shared_ptr<IBOObject> ibo, GLenum primitiveType) :
 
-    mVBO(vbo),
-    mIBO(ibo),
     mName(passName),
     mPrimitiveType(primitiveType),
+    mVBO(vbo),
+    mIBO(ibo),
     mHub(hub)
 {
   // findProgram will throw an exception of type std::out_of_range if shader is
@@ -149,11 +149,11 @@ void ObjectPass::renderPass(ObjectLambdaInterface& lambdaInterface)
   }
   else
   {
-    GL(glDrawElements(mPrimitiveType, mIBO->getNumElements(), mIBO->getType(), 0));
+    GL(glDrawElements(mPrimitiveType, static_cast<GLsizei>(mIBO->getNumElements()), mIBO->getType(), 0));
   }
 
   // We can do away with this once we switch to VAOs.
-  attribs.unbindAttributes(mShader);
+  //attribs.unbindAttributes(mShader);
 
   if (mGPUState != nullptr)
     mHub.getGPUStateManager().apply(priorGPUState);

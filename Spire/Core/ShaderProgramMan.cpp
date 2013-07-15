@@ -138,7 +138,7 @@ ShaderProgramAsset::ShaderProgramAsset(
       GLsizei charsWritten = 0;
       GLint attribSize;
       GLenum type;
-      GL(glGetActiveAttrib(program, i, maxAttribNameSize, &charsWritten,
+      GL(glGetActiveAttrib(program, static_cast<GLuint>(i), maxAttribNameSize, &charsWritten,
                            &attribSize, &type, attributeName));
 
       try
@@ -169,7 +169,7 @@ ShaderProgramAsset::ShaderProgramAsset(
       GLsizei charsWritten = 0;
       GLint uniformSize;
       GLenum type;
-      GL(glGetActiveUniform(program, i, maxUniformNameSize, &charsWritten,
+      GL(glGetActiveUniform(program, static_cast<GLuint>(i), maxUniformNameSize, &charsWritten,
                             &uniformSize, &type, uniformName));
 
       try
@@ -237,8 +237,10 @@ std::shared_ptr<ShaderProgramAsset> ShaderProgramMan::findProgram(
   {
     throw std::out_of_range("Unable to find shader program.");
   }
-
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wunreachable-code"
   return nullptr;
+#pragma clang diagnostic pop
 }
 
 
