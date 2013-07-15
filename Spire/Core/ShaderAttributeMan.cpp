@@ -44,57 +44,28 @@ namespace Spire {
 ShaderAttributeMan::ShaderAttributeMan(bool addDefaultAttributes)
 {
   // Unknown attribute (attribute at 0 index).
-  addAttribute(getUnknownName(), 1, false, sizeof(float), sizeof(short),
-               GL_FLOAT, GL_HALF_FLOAT_OES);
+  addAttribute(getUnknownName(), 1, false, sizeof(float), GL_FLOAT);
 
-  // Add default attributes if requested.
+  // Add default attributes if requested -- we should never add 'default'
+  // attributes. Just the unknown attribute and let the user define the
+  // attributes that they require.
   if (addDefaultAttributes)
   {
-    addAttribute("aPos", 3, false, 
-                 sizeof(float) * 3, sizeof(short) * 3 + sizeof(short),
-                 GL_FLOAT, GL_HALF_FLOAT_OES);
-    addAttribute("aNormal", 3, false, 
-                 sizeof(float) * 3, sizeof(short) * 3 + sizeof(short),
-                 GL_FLOAT, GL_HALF_FLOAT_OES);
-    addAttribute("aTexCoord0", 2, false, 
-                 sizeof(float) * 2, sizeof(short) * 2,
-                 GL_FLOAT, GL_HALF_FLOAT_OES);
-    addAttribute("aTexCoord1", 2, false, 
-                 sizeof(float) * 2, sizeof(short) * 2,
-                 GL_FLOAT, GL_HALF_FLOAT_OES);
-    addAttribute("aTexCoord2", 2, false, 
-                 sizeof(float) * 2, sizeof(short) * 2,
-                 GL_FLOAT, GL_HALF_FLOAT_OES);
-    addAttribute("aTexCoord3", 2, false, 
-                 sizeof(float) * 2, sizeof(short) * 2,
-                 GL_FLOAT, GL_HALF_FLOAT_OES);
-    addAttribute("aColor", 4, true, 
-                 sizeof(char) * 4, sizeof(char) * 4,
-                 GL_UNSIGNED_BYTE, GL_UNSIGNED_BYTE);
-    addAttribute("aColorFloat", 4, false, 
-                 sizeof(float) * 4, sizeof(short) * 4,
-                 GL_FLOAT, GL_HALF_FLOAT_OES);
-    addAttribute("aTangent", 3, false, 
-                 sizeof(float) * 3, sizeof(short) * 3 + sizeof(short),
-                 GL_FLOAT, GL_HALF_FLOAT_OES);
-    addAttribute("aBinormal", 3, false, 
-                 sizeof(float) * 3, sizeof(short) * 3 + sizeof(short),
-                 GL_FLOAT, GL_HALF_FLOAT_OES);
-    addAttribute("aGenPos", 3, false, 
-                 sizeof(float) * 3, sizeof(float) * 3,
-                 GL_FLOAT, GL_FLOAT);
-    addAttribute("aGenNormal", 3, false, 
-                 sizeof(float) * 3, sizeof(float) * 3,
-                 GL_FLOAT, GL_FLOAT);
-    addAttribute("aGenUV", 2, false, 
-                 sizeof(float) * 2, sizeof(float) * 2,
-                 GL_FLOAT, GL_FLOAT);
-    addAttribute("aGenFloat", 1, false, 
-                 sizeof(float) * 1, sizeof(float) * 1,
-                 GL_FLOAT, GL_FLOAT);
-    addAttribute("aFieldData", 1, false, 
-                 sizeof(float) * 1, sizeof(short) * 1,
-                 GL_FLOAT, GL_HALF_FLOAT_OES);
+    addAttribute("aPos",         3,  false,  sizeof(float) * 3,  GL_FLOAT);
+    addAttribute("aNormal",      3,  false,  sizeof(float) * 3,  GL_FLOAT);
+    addAttribute("aTexCoord0",   2,  false,  sizeof(float) * 2,  GL_FLOAT);
+    addAttribute("aTexCoord1",   2,  false,  sizeof(float) * 2,  GL_FLOAT);
+    addAttribute("aTexCoord2",   2,  false,  sizeof(float) * 2,  GL_FLOAT);
+    addAttribute("aTexCoord3",   2,  false,  sizeof(float) * 2,  GL_FLOAT);
+    addAttribute("aColor",       4,  true,   sizeof(char) * 4,   GL_UNSIGNED_BYTE);
+    addAttribute("aColorFloat",  4,  false,  sizeof(float) * 4,  GL_FLOAT);
+    addAttribute("aTangent",     3,  false,  sizeof(float) * 3,  GL_FLOAT);
+    addAttribute("aBinormal",    3,  false,  sizeof(float) * 3,  GL_FLOAT);
+    addAttribute("aGenPos",      3,  false,  sizeof(float) * 3,  GL_FLOAT);
+    addAttribute("aGenNormal",   3,  false,  sizeof(float) * 3,  GL_FLOAT);
+    addAttribute("aGenUV",       2,  false,  sizeof(float) * 2,  GL_FLOAT);
+    addAttribute("aGenFloat",    1,  false,  sizeof(float) * 1,  GL_FLOAT);
+    addAttribute("aFieldData",   1,  false,  sizeof(float) * 1,  GL_FLOAT);
   }
 }
 
@@ -106,8 +77,7 @@ ShaderAttributeMan::~ShaderAttributeMan()
 //------------------------------------------------------------------------------
 void ShaderAttributeMan::addAttribute(const std::string& codeName,
                                       size_t numComponents, bool normalize,
-                                      size_t size, size_t halfFloatSize,
-                                      GLenum type, GLenum halfFloatType)
+                                      size_t size, Interface::DATA_TYPES type)
 {
   AttribState attrib;
   attrib.index          = mAttributes.size();
@@ -115,9 +85,7 @@ void ShaderAttributeMan::addAttribute(const std::string& codeName,
   attrib.numComponents  = numComponents;
   attrib.normalize      = normalize;
   attrib.size           = size;
-  attrib.halfFloatSize  = halfFloatSize;
   attrib.type           = type;
-  attrib.halfFloatType  = halfFloatType;
   attrib.nameHash       = hashString(codeName);
 
   mAttributes.push_back(attrib);
@@ -240,15 +208,13 @@ size_t ShaderAttributeCollection::calculateStride() const
 }
 
 //------------------------------------------------------------------------------
-void ShaderAttributeCollection::addAttribute(const std::string& attribName, 
-                                    bool isHalfFloat)
+void ShaderAttributeCollection::addAttribute(const std::string& attribName)
 {
   std::tuple<bool,size_t> ret = mAttributeMan.findAttributeWithName(attribName);
   if (std::get<0>(ret))
   {
     AttribSpecificData attribData;
     attribData.attrib = mAttributeMan.getAttributeAtIndex(std::get<1>(ret));
-    attribData.isHalfFloat = isHalfFloat;
     mAttributes.push_back(attribData);
 
     // Re-sort the array.
@@ -264,17 +230,9 @@ void ShaderAttributeCollection::addAttribute(const std::string& attribName,
 }
 
 //------------------------------------------------------------------------------
-size_t ShaderAttributeCollection::getFullAttributeSize(const AttribSpecificData& att) const
+size_t ShaderAttributeCollection::getFullAttributeSize(const AttribState& att) const
 {
-  AttribState state = att.attrib;
-  if (!att.isHalfFloat)
-  {
-    return state.size;
-  }
-  else
-  {
-    return state.halfFloatSize;
-  }
+  return att.size();
 }
 
 //------------------------------------------------------------------------------

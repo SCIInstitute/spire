@@ -45,15 +45,13 @@ class ShaderProgramAsset;
 /// Holds all information regarding one attribute.
 struct AttribState
 {
-  size_t      index;          ///< Arbitrarily assigned index.
-  std::string codeName;       ///< In-shader code name.
-  size_t      nameHash;       ///< Hash of 'codeName'.
-  size_t      numComponents;  ///< Number of attribute components.
-  bool        normalize;      ///< True = normalize.
-  size_t      size;           ///< Size, in bytes, of all components.
-  size_t      halfFloatSize;  ///< Half-float size, in bytes, of all components.
-  GLenum      type;           ///< GL-type of each component.
-  GLenum      halfFloatType;  ///< Half-float GL-type of each component.
+  size_t                index;          ///< Arbitrarily assigned index.
+  std::string           codeName;       ///< In-shader code name.
+  size_t                nameHash;       ///< Hash of 'codeName'.
+  size_t                numComponents;  ///< Number of attribute components.
+  bool                  normalize;      ///< True = normalize.
+  size_t                size;           ///< Size, in bytes, of all components.
+  Interface::DATA_TYPES type;           ///< GLtype of each component.
 };
 
 /// Shader attrtibutes class used to sort and compare shader input attributes.
@@ -66,19 +64,8 @@ public:
       mAttributeMan(man)
   {}
 
-  struct AttribSpecificData
-  {
-    bool        isHalfFloat;    ///< True if we should be using a half-float 
-                                ///< representation of the data.
-    AttribState attrib;         ///< The values in this variable are either an
-                                ///< exact replica of the shader attribute at
-                                ///< 'index' in ShaderAttributeMan, or has index
-                                ///< UNKNOWN_ATTRIBUTE_INDEX and is populated
-                                ///< with known data about the attribute.
-  };
-
   /// Retrieves the attribute at 'index' from ShaderAttributeMan.
-  AttribSpecificData getAttribute(size_t index) const;
+  AttribState getAttribute(size_t index) const;
 
   /// Retrieves number of attributes stored in mAttributes.
   size_t getNumAttributes() const;
@@ -89,7 +76,7 @@ public:
   /// and it's codeName / nameHash components populated appropriately. The rest 
   /// of the AttribState structure is 0 and GL_FLOAT. Also, if the attribute
   /// is not found, then a warning is produced.
-  void addAttribute(const std::string& attribName, bool isHalfFloat = false);
+  void addAttribute(const std::string& attribName);
 
   /// If 'attrib' is contained herein, returns true.
   bool hasAttribute(const std::string& attribName) const;
@@ -114,7 +101,7 @@ private:
 
   /// Retrieves the full (including padding) size of the attribute
   /// in the vertex buffer.
-  size_t getFullAttributeSize(const AttribSpecificData& attrib) const;
+  size_t getFullAttributeSize(const AttribState& attrib) const;
 
   /// Returns true if the attribute array contains a reference to 'index'.
   /// This is the index into the array in ShaderAttributeMan.
@@ -125,7 +112,7 @@ private:
   const ShaderAttributeMan&         mAttributeMan;
 
   /// Contains indices to attributes in ShaderAttributeMan, sorted (ascending).
-  std::vector<AttribSpecificData>   mAttributes;
+  std::vector<AttribState>          mAttributes;
 
 };
 
@@ -135,10 +122,6 @@ class ShaderAttributeMan
 public:
   ShaderAttributeMan(bool addDefaultAttributes = true);
   virtual ~ShaderAttributeMan();
-
-  /// Seed value to use when hashing strings for comparison purposes.
-  /// \todo Change back to constexpr after switch to VS 2012
-  static uint32_t getMurmurSeedValue()      {return 0x9783f23d;}
 
   /// Whenever an attribute has this index, it is not known how to handle it.
   /// \todo Change back to constexpr after switch to VS 2012
@@ -154,12 +137,9 @@ public:
   /// \param numComponents  Number of components associated with this attribute.
   /// \param normalize      If true, the attribute will be normalized.
   /// \param size           Size of the attribute in bytes, including padding.
-  /// \param halfFloatSize  Half float size of the attribute, including padding.
   /// \param type           Type of the attribute.
-  /// \param halfFloatType  Half float type of the attribute.
   void addAttribute(const std::string& codeName, size_t numComponents,
-                    bool normalize, size_t size, size_t halfFloatSize,
-                    GLenum type, GLenum halfFloatType);
+                    bool normalize, size_t size, GLenum type);
 
   /// Returns the index associated with the attribute whose name is 'codeName'.
   /// \return the first tuple parameter (bool) indicates whether or not an 
