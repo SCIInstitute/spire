@@ -101,6 +101,12 @@ public:
   /// Returns true if the object is in the given pass.
   bool isObjectInPass(const std::string& object, const std::string& pass) const;
 
+  /// Retrieves appropriate primitive type GLenum from Interface primitives.
+  GLenum getGLPrimitive(Interface::PRIMITIVE_TYPES type);
+
+  /// Retrieve gl type from Interface::DATA_TYPES.
+  GLenum getGLType(Interface::DATA_TYPES type);
+
   //============================================================================
   // CALLBACK IMPLEMENTATION -- Called from interface or a derived class.
   //============================================================================

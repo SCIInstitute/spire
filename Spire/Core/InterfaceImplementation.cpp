@@ -459,7 +459,7 @@ void InterfaceImplementation::addLambdaObjectUniforms(InterfaceImplementation& s
 }
 
 //------------------------------------------------------------------------------
-GLenum getGLPrimitive(Interface::PRIMITIVE_TYPES type)
+GLenum InterfaceImplementation::getGLPrimitive(Interface::PRIMITIVE_TYPES type)
 {
   switch (type)
   {
@@ -516,6 +516,65 @@ GLenum getGLPrimitive(Interface::PRIMITIVE_TYPES type)
   }
 
   return GL_TRIANGLES;
+}
+
+//------------------------------------------------------------------------------
+GLenum InterfaceImplementation::getGLType(Interface::DATA_TYPES type)
+{
+  switch (type)
+  {
+    case DATATYPE_BYTE:
+      return GL_BYTE
+      break;
+
+    case DATATYPE_UBYTE:
+      return GL_UNSIGNED_BYTE;
+      break;
+
+    case DATATYPE_SHORT:
+      return GL_SHORT;
+      break;
+
+    case DATATYPE_USHORT:
+      return GL_UNSIGNED_SHORT;
+      break;
+
+    case DATATYPE_INT:
+      return GL_INT;
+      break;
+
+    case DATATYPE_UINT:
+      return GL_UNSIGNED_INT;
+      break;
+
+    case DATATYPE_FLOAT:
+      return GL_FLOAT;
+      break;
+
+#ifdef SPIRE_OPENGL_ES_2
+    case DATATYPE_HALFFLOAT:
+      return GL_HALF_FLOAT_OES;
+      break;
+#else
+    case DATATYPE_HALFFLOAT:
+      Log::error() << "Half-float not supported on non-ES platforms.";
+      return GL_FLOAT;
+      break;
+#endif
+
+    case DATATYPE_DOUBLE:
+      return GL_DOUBLE;
+      break;
+
+    default:
+    {
+      std::stringstream stream;
+      stream << "Expected type to be one of Interface::DATA_TYPES, received " << type;
+      throw std::invalid_argument(stream.str());
+    }
+  }
+
+  return GL_FLOAT;
 }
 
 } // end of namespace Spire
