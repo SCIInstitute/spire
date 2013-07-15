@@ -523,46 +523,46 @@ GLenum InterfaceImplementation::getGLType(Interface::DATA_TYPES type)
 {
   switch (type)
   {
-    case DATATYPE_BYTE:
-      return GL_BYTE
+    case Interface::DATATYPE_BYTE:
+      return GL_BYTE;
       break;
 
-    case DATATYPE_UBYTE:
+    case Interface::DATATYPE_UBYTE:
       return GL_UNSIGNED_BYTE;
       break;
 
-    case DATATYPE_SHORT:
+    case Interface::DATATYPE_SHORT:
       return GL_SHORT;
       break;
 
-    case DATATYPE_USHORT:
+    case Interface::DATATYPE_USHORT:
       return GL_UNSIGNED_SHORT;
       break;
 
-    case DATATYPE_INT:
+    case Interface::DATATYPE_INT:
       return GL_INT;
       break;
 
-    case DATATYPE_UINT:
+    case Interface::DATATYPE_UINT:
       return GL_UNSIGNED_INT;
       break;
 
-    case DATATYPE_FLOAT:
+    case Interface::DATATYPE_FLOAT:
       return GL_FLOAT;
       break;
 
 #ifdef SPIRE_OPENGL_ES_2
-    case DATATYPE_HALFFLOAT:
+    case Interface::DATATYPE_HALFFLOAT:
       return GL_HALF_FLOAT_OES;
       break;
 #else
-    case DATATYPE_HALFFLOAT:
+    case Interface::DATATYPE_HALFFLOAT:
       Log::error() << "Half-float not supported on non-ES platforms.";
       return GL_FLOAT;
       break;
 #endif
 
-    case DATATYPE_DOUBLE:
+    case Interface::DATATYPE_DOUBLE:
       return GL_DOUBLE;
       break;
 

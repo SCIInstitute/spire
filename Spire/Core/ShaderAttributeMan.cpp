@@ -34,6 +34,7 @@
 
 #include "Common.h"
 #include "Exceptions.h"
+#include "InterfaceImplementation.h"
 
 #include "ShaderAttributeMan.h"
 #include "ShaderProgramMan.h"
@@ -253,7 +254,8 @@ void ShaderAttributeCollection::bindAttributes(std::shared_ptr<ShaderProgramAsse
         //             << " normalize " << attrib.normalize << " and stride: " << stride << std::endl;
         GL(glVertexAttribPointer(attribPos,
                                  static_cast<GLint>(attrib.numComponents),
-                                 attrib.type, static_cast<GLboolean>(attrib.normalize),
+                                 InterfaceImplementation::getGLType(attrib.type), 
+                                 static_cast<GLboolean>(attrib.normalize),
                                  stride, reinterpret_cast<const void*>(offset)));
       }
     }
