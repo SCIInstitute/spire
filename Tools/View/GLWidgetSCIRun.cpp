@@ -173,7 +173,8 @@ void GLWidget::buildScene()
     std::ifstream fstream(assetFileName, std::ifstream::binary);
     if (fstream.fail())
       throw std::runtime_error("Unable to open resource file: " + assetFileName);
-    size_t numTriangles = Spire::Interface::loadProprietarySR5AssetFile(fstream, *vbo, *ibo);
+    // The number of triangles is returned from loadProprietarySR5AssetFile.
+    Spire::Interface::loadProprietarySR5AssetFile(fstream, *vbo, *ibo);
     fstream.close();
 
     // loadProprietarySR5ASsetFile always produces positions and normals in the
@@ -507,12 +508,12 @@ void GLWidget::wheelEvent(QWheelEvent * event)
 //------------------------------------------------------------------------------
 void GLWidget::resizeGL(int width, int height)
 {
-  mSpire->eventResize(static_cast<int32_t>(width),
-                      static_cast<int32_t>(height));
+  mSpire->eventResize(static_cast<size_t>(width),
+                      static_cast<size_t>(height));
 }
 
 //------------------------------------------------------------------------------
-void GLWidget::closeEvent(QCloseEvent *evt)
+void GLWidget::closeEvent(QCloseEvent* /*evt*/)
 {
   // Kill off the graphics thread.
   mSpire->terminate();

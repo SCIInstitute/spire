@@ -7,17 +7,6 @@ cmake_minimum_required(VERSION 2.8 FATAL_ERROR)
 
 project(SpireViewer)
 
-########################################################################
-# Find and configure Qt
-
-set(QT_MIN_VERSION "4.8.0")
-find_package(Qt4 REQUIRED)
-
-if (QT_FOUND)
-  include_directories("${QT_INCLUDE_DIR}")
-else ()
-  message(FATAL_ERROR "QT 4.8 or greater is required to build Spire Viewer")
-endif ()
 
 ########################################################################
 # Configure OpenGL
@@ -47,18 +36,6 @@ if (USE_SCIRUN_INTERFACE)
 endif()
 
 ########################################################################
-# Eigen
-
-# Eigen include directory.
-INCLUDE_DIRECTORIES( "${BASE_SPIRE_DIR}/Spire/3rdParty/eigen" )
-
-########################################################################
-# GLM
-
-# GLM include directory.
-INCLUDE_DIRECTORIES( "${BASE_SPIRE_DIR}/Spire/3rdParty/glm" )
-
-########################################################################
 # Compiler settings
 
 if (UNIX)
@@ -66,16 +43,41 @@ if (UNIX)
 endif ()
 
 if (APPLE)
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libc++")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libc++ -Wall -Wextra -Werror -Wconversion -Wshadow")
   set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -stdlib=libc++")
+  set(CMAKE_INCLUDE_SYSTEM_FLAG_CXX="isystem")
+endif ()
+
+# Since moc and UIC happen outside of the source tree, we need to
+# add the binary directory to the include path.
+include_directories("${CMAKE_CURRENT_BINARY_DIR}" "${BASE_SPIRE_DIR}" )
+
+########################################################################
+# Find and configure Qt
+
+set(QT_MIN_VERSION "4.8.0")
+find_package(Qt4 REQUIRED)
+
+if (QT_FOUND)
+  include_directories(SYSTEM "${QT_INCLUDE_DIR}")
+else ()
+  message(FATAL_ERROR "QT 4.8 or greater is required to build Spire Viewer")
 endif ()
 
 include(${QT_USE_FILE})
 add_definitions(${QT_DEFINITIONS})
 
-# Since moc and UIC happen outside of the source tree, we need to
-# add the binary directory to the include path.
-include_directories("${CMAKE_CURRENT_BINARY_DIR}" "${BASE_SPIRE_DIR}" )
+########################################################################
+# Eigen
+
+# Eigen include directory.
+include_directories(SYSTEM "${BASE_SPIRE_DIR}/Spire/3rdParty/eigen" )
+
+########################################################################
+# GLM
+
+# GLM include directory.
+include_directories(SYSTEM "${BASE_SPIRE_DIR}/Spire/3rdParty/glm" )
 
 ########################################################################
 # Setup source
