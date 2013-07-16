@@ -127,11 +127,11 @@ TEST(InterfaceTests, TestSR5AssetLoader)
 
   // Number of vertices
   ASSERT_EQ(positions.size(), normals.size());
-  writeUInt32(sRaw, positions.size());
+  writeUInt32(sRaw, static_cast<uint32_t>(positions.size()));
 
   // Write out the positions / normals.
-  size_t vec3Size = sizeof(float) * 3;
-  for (int i = 0; i < positions.size(); i++)
+  std::streamsize vec3Size = sizeof(float) * 3; // std::streamsize is the signed counterpart to size_t
+  for (size_t i = 0; i < positions.size(); i++)
   {
     V3 pos = positions[i];
     V3 norm = normals[i];
@@ -143,8 +143,8 @@ TEST(InterfaceTests, TestSR5AssetLoader)
   ASSERT_EQ(0, indices.size() % 3);
 
   // Number of faces
-  writeUInt32(sRaw, indices.size() / 3);
-  for (int i = 0; i < indices.size(); i+=3)
+  writeUInt32(sRaw, static_cast<uint32_t>(indices.size() / 3));
+  for (size_t i = 0; i < indices.size(); i+=3)
   {
     writeUInt8(sRaw, 3);
     sRaw.write(reinterpret_cast<const char*>(&indices[i+0]), sizeof(uint16_t));
@@ -171,28 +171,28 @@ TEST(InterfaceTests, TestSR5AssetLoader)
   // Darn it! I want polymorphic lambdas!
   // The following 2 anonymous functions can be collapsed down to one with
   // polymorphic lambdas.
-  auto verifySSFloat = [](float expectedVal, std::istream& ss)
+  auto verifySSFloat = [](float expectedVal, std::istream& iss)
   {
     float fromStream;
-    ss.read(reinterpret_cast<char*>(&fromStream), sizeof(float));
+    iss.read(reinterpret_cast<char*>(&fromStream), sizeof(float));
     ASSERT_FLOAT_EQ(expectedVal, fromStream);
   };
 
-  auto verifySSUInt16 = [](uint16_t expectedVal, std::istream& ss)
+  auto verifySSUInt16 = [](uint16_t expectedVal, std::istream& iss)
   {
     uint16_t fromStream;
-    ss.read(reinterpret_cast<char*>(&fromStream), sizeof(uint16_t));
+    iss.read(reinterpret_cast<char*>(&fromStream), sizeof(uint16_t));
     ASSERT_EQ(expectedVal, fromStream);
   };
 
-  auto checkVector = [&verifySSFloat](const V3& vec, std::istream& ss)
+  auto checkVector = [&verifySSFloat](const V3& vec, std::istream& iss)
   {
-    verifySSFloat(vec.x, ss);
-    verifySSFloat(vec.y, ss);
-    verifySSFloat(vec.z, ss);
+    verifySSFloat(vec.x, iss);
+    verifySSFloat(vec.y, iss);
+    verifySSFloat(vec.z, iss);
   };
 
-  for (int i = 0; i < positions.size(); i++)
+  for (size_t i = 0; i < positions.size(); i++)
   {
     checkVector(positions[i], vboStream);
     checkVector(normals[i], vboStream);
@@ -588,9 +588,9 @@ TEST_F(InterfaceTestFixture, TestObjectsStructure)
   mSpire->addObjectPassSpireAttribute<M44>(obj1, "passTransform", testUniform, pass1);
 
   auto testMatrixEquality = [](const M44& a, const M44& b) {
-    for (int c = 0; c < 4; c++)
+    for (size_t c = 0; c < 4; c++)
     {
-      for (int r = 0; r < 4; r++)
+      for (size_t r = 0; r < 4; r++)
       {
         EXPECT_FLOAT_EQ(a[c][r], b[c][r]);
       }

@@ -40,7 +40,7 @@
 // Defining cimg_display to 0 ensures CImg doesn't try to include OS specific
 // windowing header files.
 #define cimg_display 0
-#include "3rdParty/CImg/CImg.h"
+#include "CImg.h"
 using namespace cimg_library;
 
 // Lots of yucky code in the test-environment.
@@ -81,8 +81,9 @@ public:
 
     GL(glBindTexture(GL_TEXTURE_2D, mGLColorTexture));
     GL(glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR));
-    GL(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, mWidth, mHeight, 0,
-                 GL_RGBA, GL_INT, NULL));
+    GL(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, static_cast<GLsizei>(mWidth),
+                    static_cast<GLsizei>(mHeight), 0,
+                    GL_RGBA, GL_INT, NULL));
     GL(glFramebufferTexture2DEXT(GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT,
                               GL_TEXTURE_2D, mGLColorTexture, 0));
 
@@ -90,9 +91,9 @@ public:
     // initialize depth renderbuffer
     GL(glBindRenderbufferEXT(GL_RENDERBUFFER_EXT, mGLDepthBuffer));
     GL(glRenderbufferStorageEXT(GL_RENDERBUFFER_EXT, GL_DEPTH_COMPONENT24,
-                             mWidth, mHeight));
+                                static_cast<GLsizei>(mWidth), static_cast<GLsizei>(mHeight)));
     GL(glFramebufferRenderbufferEXT(GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT,
-                                 GL_RENDERBUFFER_EXT, mGLDepthBuffer));
+                                    GL_RENDERBUFFER_EXT, mGLDepthBuffer));
   }
 
 
@@ -118,7 +119,8 @@ public:
     GL(glPixelStorei(GL_PACK_ALIGNMENT, 1));
     GL(glPixelStorei(GL_UNPACK_ALIGNMENT, 1));
     GL(glReadBuffer(GL_COLOR_ATTACHMENT0));     // Reading straight from the FBO
-    GL(glReadPixels(0,0,mWidth,mHeight,GL_RGBA,GL_UNSIGNED_BYTE,&mRawImage[0]));
+    GL(glReadPixels(0,0,static_cast<GLsizei>(mWidth),static_cast<GLsizei>(mHeight),
+                    GL_RGBA,GL_UNSIGNED_BYTE,&mRawImage[0]));
 
     // We are using shared memory for the CImg class so it doesn't have to allocate its own.
     // It would be better to std::move vector into CImg though.
@@ -130,17 +132,19 @@ public:
     uint8_t* glData     = &mRawImage[0];
     uint8_t* cimgData   = img.data();
 
-    size_t channelSize  = mWidth * mHeight;
-    size_t imgSize      = channelSize * 4;
+    int channelSize  = static_cast<int>(mWidth * mHeight);
+    size_t imgSize   = static_cast<size_t>(channelSize) * 4;
 
-    int pixIndex = 0; // pixel index.
-    for (size_t i = 0, pixIndex = 0; i < imgSize; i += 4, ++pixIndex)
+    size_t  i        = 0;
+    int     pixIndex = 0;
+    for (i = 0, pixIndex = 0; i < imgSize; i += 4, ++pixIndex)
     {
       // Origin is at bottom left for OpenGL. So while we are de-interleaving,
       // we may as well flip the image. This is what the subtraction is all
       // about, and the multiplication start at 1 instead of 0.
-      int row = (pixIndex / mWidth) * mWidth; // Expect this to be floored.
-      int offset = pixIndex % mWidth;         // Offset from the beginning of the row.
+      int row = static_cast<int>(
+          (static_cast<uint32_t>(pixIndex) / mWidth) * mWidth); // Expect this to be floored.
+      int offset = pixIndex % static_cast<int>(mWidth);         // Offset from the beginning of the row.
       int rowoff = row + offset;              // Combined row / offset.
       cimgData[(channelSize*1-1) - rowoff] = glData[i + 0];
       cimgData[(channelSize*2-1) - rowoff] = glData[i + 1]; 
@@ -167,14 +171,16 @@ private:
   {
     std::shared_ptr<Spire::BatchContext> ctx(
         Spire::BatchContext::Create(width,height,
-                                    colorBits,depthBits,stencilBits, 
+                                    static_cast<uint8_t>(colorBits),
+                                    static_cast<uint8_t>(depthBits),
+                                    static_cast<uint8_t>(stencilBits),
                                     doubleBuffer,visible));
     if (ctx->isValid() == false)
       throw std::runtime_error("Invalid context generated.");
     ctx->makeCurrent();
 
     // Setup the viewport correctly.
-    GL(glViewport(0, 0, width, height));
+    GL(glViewport(0, 0, static_cast<GLsizei>(width), static_cast<GLsizei>(height)));
 
     return ctx;
   }
@@ -196,7 +202,7 @@ private:
 int main(int argc, char** argv)
 {
   // Create the global testing environment.
-  ::testing::Environment* const testEnv = 
+  //::testing::Environment* const testEnv = 
       ::testing::AddGlobalTestEnvironment(
           new TestEnvironment(600, 600, 32, 24, 8, true, false));
 

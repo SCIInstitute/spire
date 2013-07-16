@@ -17,11 +17,6 @@ find_package(OpenGL REQUIRED)
 
 set (BASE_SPIRE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../..)
 
-########################################################################
-# GLM
-
-# GLM include directory.
-INCLUDE_DIRECTORIES( "${BASE_SPIRE_DIR}/Spire/3rdParty/glm" )
 
 ########################################################################
 # Required libraries
@@ -40,10 +35,8 @@ if (USE_SCIRUN_INTERFACE)
   add_definitions(-DSPIRE_USE_SCIRUN_INTERFACE)
 endif()
 
-# Include gtest
-add_definitions(-DGTEST_USE_OWN_TR1_TUPLE=1)
-include_directories(${BASE_SPIRE_DIR}/Spire/3rdParty/gtest/include ${BASE_SPIRE_DIR} ${BASE_SPIRE_DIR}/Spire)
 # Note: The spire tests require that ${BASE_SPIRE_DIR}/Spire is in the include path.
+include_directories(${BASE_SPIRE_DIR} ${BASE_SPIRE_DIR}/Spire)
 
 ########################################################################
 # Find and configure Git
@@ -95,6 +88,8 @@ if (UNIX)
     set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -stdlib=libc++")
     add_definitions(-DSPIRE_USING_OSX)
 
+    set (CMAKE_INCLUDE_SYSTEM_FLAG_CXX="isystem")
+
     # Find necessary apple libraries (cocoa).
     FIND_LIBRARY(COCOA_LIBRARY Cocoa)
     set(OS_SPECIFIC_LIBS ${COCOA_LIBRARY})
@@ -129,9 +124,31 @@ else()
 endif ()
 
 ########################################################################
-# Google test must come after setting compiler flags.
+# Google Test - must come after setting compiler flags.
 
+add_definitions(-DGTEST_USE_OWN_TR1_TUPLE=1)
 add_subdirectory(${BASE_SPIRE_DIR}/Spire/3rdParty/gtest ${BASE_SPIRE_DIR}/bin/gtest)
+
+# Include gtest
+include_directories(SYSTEM ${BASE_SPIRE_DIR}/Spire/3rdParty/gtest/include)
+
+########################################################################
+# GLM
+
+# GLM include directory.
+INCLUDE_DIRECTORIES(SYSTEM "${BASE_SPIRE_DIR}/Spire/3rdParty/glm" )
+
+########################################################################
+# CImg
+
+# GLM include directory.
+INCLUDE_DIRECTORIES(SYSTEM "${BASE_SPIRE_DIR}/Tools/Batch/3rdParty/CImg" )
+
+########################################################################
+# After adding third-party libraries, turn on strict warnings.
+if (APPLE)
+  set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Werror -Wconversion -Wshadow")
+endif ()
 
 ########################################################################
 # Setup source
@@ -141,8 +158,7 @@ add_subdirectory(${BASE_SPIRE_DIR}/Spire/3rdParty/gtest ${BASE_SPIRE_DIR}/bin/gt
 set(CommonSources
   BatchContext.cpp
   BatchContext.h
-  main.cpp
-  3rdParty/CImg/CImg.h)
+  main.cpp)
 
 file(GLOB TestSources
   "${BASE_SPIRE_DIR}/Spire/Tests/*.cpp"
