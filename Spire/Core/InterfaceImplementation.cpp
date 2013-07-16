@@ -493,22 +493,22 @@ GLenum InterfaceImplementation::getGLType(Interface::DATA_TYPES type)
 {
   switch (type)
   {
-    case Interface::DATATYPE_BYTE:        return GL_BYTE;
-    case Interface::DATATYPE_UBYTE:       return GL_UNSIGNED_BYTE;
-    case Interface::DATATYPE_SHORT:       return GL_SHORT;
-    case Interface::DATATYPE_USHORT:      return GL_UNSIGNED_SHORT;
-    case Interface::DATATYPE_INT:         return GL_INT;
-    case Interface::DATATYPE_UINT:        return GL_UNSIGNED_INT;
-    case Interface::DATATYPE_FLOAT:       return GL_FLOAT;
+    case Interface::TYPE_BYTE:        return GL_BYTE;
+    case Interface::TYPE_UBYTE:       return GL_UNSIGNED_BYTE;
+    case Interface::TYPE_SHORT:       return GL_SHORT;
+    case Interface::TYPE_USHORT:      return GL_UNSIGNED_SHORT;
+    case Interface::TYPE_INT:         return GL_INT;
+    case Interface::TYPE_UINT:        return GL_UNSIGNED_INT;
+    case Interface::TYPE_FLOAT:       return GL_FLOAT;
 #ifdef SPIRE_OPENGL_ES_2
-    case Interface::DATATYPE_HALFFLOAT:   return GL_HALF_FLOAT_OES;
+    case Interface::TYPE_HALFFLOAT:   return GL_HALF_FLOAT_OES;
 #else
-    case Interface::DATATYPE_HALFFLOAT:
+    case Interface::TYPE_HALFFLOAT:
       Log::error() << "Half-float not supported on non-ES platforms.";
       return GL_FLOAT;
 #endif
 
-    case Interface::DATATYPE_DOUBLE:      return GL_DOUBLE;
+    case Interface::TYPE_DOUBLE:      return GL_DOUBLE;
 
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wunreachable-code"

@@ -143,15 +143,15 @@ public:
   /// Used for setting up incoming shader attributes.
   enum DATA_TYPES
   {
-    DATATYPE_BYTE,      ///< GLbyte   - 8-bit signed integer,   C-Type (signed char),   Suffix (b)
-    DATATYPE_UBYTE,     ///< GLubyte  - 8-bit unsigned integer, C-Type (unsigned char), Suffix (ub)
-    DATATYPE_SHORT,     ///< GLshort  - 16-bit integer,         C-Type (short),         Suffix (s)
-    DATATYPE_USHORT,    ///< GLushort - 16-bit unsigned integer,C-Type (unsigned short),Suffix (us)
-    DATATYPE_INT,       ///< GLint    - 32-bit integer          C-Type (long),          Suffix (I)
-    DATATYPE_UINT,      ///< GLuint   - 32-bit unsigned integer,C-Type (unsigned long), Suffix (ui)
-    DATATYPE_FLOAT,     ///< GLfloat  - 32-bit floating,        C-Type (float),         Suffix (f)
-    DATATYPE_HALFFLOAT, ///< GLfloat  - 16-bit floating,        C-Type (?),             Suffix (?)
-    DATATYPE_DOUBLE,    ///< GLdouble - 64-bit floating,        C-Type (double),        Suffix (d)
+    TYPE_BYTE,      ///< GLbyte   - 8-bit signed integer,   C-Type (signed char),   Suffix (b)
+    TYPE_UBYTE,     ///< GLubyte  - 8-bit unsigned integer, C-Type (unsigned char), Suffix (ub)
+    TYPE_SHORT,     ///< GLshort  - 16-bit integer,         C-Type (short),         Suffix (s)
+    TYPE_USHORT,    ///< GLushort - 16-bit unsigned integer,C-Type (unsigned short),Suffix (us)
+    TYPE_INT,       ///< GLint    - 32-bit integer          C-Type (long),          Suffix (I)
+    TYPE_UINT,      ///< GLuint   - 32-bit unsigned integer,C-Type (unsigned long), Suffix (ui)
+    TYPE_FLOAT,     ///< GLfloat  - 32-bit floating,        C-Type (float),         Suffix (f)
+    TYPE_HALFFLOAT, ///< GLfloat  - 16-bit floating,        C-Type (?),             Suffix (?)
+    TYPE_DOUBLE,    ///< GLdouble - 64-bit floating,        C-Type (double),        Suffix (d)
   };
 
 

@@ -106,8 +106,7 @@ TEST_F(ShaderAttributeManInvolved, addingAttributes)
   // Add attributes and ensure that they have been appropriately added.
   std::string attribName = "att1";
   mAttribMan.addAttribute(attribName, 3, false, 
-                          sizeof(float) * 3, sizeof(short) * 3 + sizeof(short),
-                          GL_FLOAT, GL_HALF_FLOAT_OES);
+                          sizeof(float) * 3, Interface::TYPE_FLOAT);
 
   // This test uses a different method of obtaining the attribute than the
   // next attribute. This uses findAttributeWithName, while the other uses
@@ -122,15 +121,12 @@ TEST_F(ShaderAttributeManInvolved, addingAttributes)
   EXPECT_EQ(3, state.numComponents);
   EXPECT_EQ(false, state.normalize);
   EXPECT_EQ(sizeof(float) * 3, state.size);
-  EXPECT_EQ(sizeof(short) * 3 + sizeof(short), state.halfFloatSize);
-  EXPECT_EQ(GL_FLOAT, state.type);
-  EXPECT_EQ(GL_HALF_FLOAT_OES, state.halfFloatType);
+  EXPECT_EQ(Interface::TYPE_FLOAT, state.type);
 
 
   attribName = "att2";
   mAttribMan.addAttribute(attribName, 2, true, 
-                          sizeof(char) * 2, sizeof(char) * 2,
-                          GL_UNSIGNED_BYTE, GL_UNSIGNED_BYTE);
+                          sizeof(char) * 2, Interface::TYPE_UBYTE);
   ASSERT_NO_THROW(state = mAttribMan.getAttributeWithName(attribName));
   EXPECT_EQ(beginSize + 1, state.index);
   EXPECT_EQ(attribName, state.codeName);
@@ -138,9 +134,7 @@ TEST_F(ShaderAttributeManInvolved, addingAttributes)
   EXPECT_EQ(2, state.numComponents);
   EXPECT_EQ(true, state.normalize);
   EXPECT_EQ(sizeof(char) * 2, state.size);
-  EXPECT_EQ(sizeof(char) * 2, state.halfFloatSize);
-  EXPECT_EQ(GL_UNSIGNED_BYTE, state.type);
-  EXPECT_EQ(GL_UNSIGNED_BYTE, state.halfFloatType);
+  EXPECT_EQ(Interface::TYPE_UBYTE, state.type);
 
   EXPECT_EQ(beginSize + 2, mAttribMan.getNumAttributes());
 }
@@ -158,14 +152,10 @@ protected:
 
   virtual void SetUp()
   {
-    mAttribMan.addAttribute("at1", 3, false, sizeof(float)*3, sizeof(float)*3,
-                            GL_FLOAT, GL_FLOAT);
-    mAttribMan.addAttribute("at2", 3, false, sizeof(float)*3, sizeof(float)*3,
-                            GL_FLOAT, GL_FLOAT);
-    mAttribMan.addAttribute("at3", 1, false, sizeof(float), sizeof(float),
-                            GL_FLOAT, GL_FLOAT);
-    mAttribMan.addAttribute("at4", 4, false, sizeof(char)*4, sizeof(char)*4,
-                            GL_UNSIGNED_BYTE, GL_UNSIGNED_BYTE);
+    mAttribMan.addAttribute("at1",  3,  false,  sizeof(float)*3,  Interface::TYPE_FLOAT);
+    mAttribMan.addAttribute("at2",  3,  false,  sizeof(float)*3,  Interface::TYPE_FLOAT);
+    mAttribMan.addAttribute("at3",  1,  false,  sizeof(float),    Interface::TYPE_FLOAT);
+    mAttribMan.addAttribute("at4",  4,  false,  sizeof(char)*4,   Interface::TYPE_UBYTE);
 
     mCol1.addAttribute("at1");
     mCol1.addAttribute("at3");
@@ -194,32 +184,31 @@ TEST_F(ShaderAttributeCollectionTests, primaryTest)
   AttribState state;
 
   // Check first attribute and most of its values.
-  ASSERT_NO_THROW(state = mCol1.getAttribute(0).attrib);
+  ASSERT_NO_THROW(state = mCol1.getAttribute(0));
   EXPECT_EQ("at1", state.codeName);
   EXPECT_EQ(3, state.numComponents);
   EXPECT_EQ(false, state.normalize);
   EXPECT_EQ(sizeof(float) * 3, state.size);
-  EXPECT_EQ(sizeof(float) * 3, state.halfFloatSize);
-  EXPECT_EQ(GL_FLOAT, state.type);
+  EXPECT_EQ(Interface::TYPE_FLOAT, state.type);
 
   // Now just check that the attributes are in the expected order.
-  ASSERT_NO_THROW(state = mCol1.getAttribute(1).attrib);
+  ASSERT_NO_THROW(state = mCol1.getAttribute(1));
   EXPECT_EQ("at3", state.codeName);
 
-  ASSERT_NO_THROW(state = mCol2.getAttribute(0).attrib);
+  ASSERT_NO_THROW(state = mCol2.getAttribute(0));
   EXPECT_EQ("at1", state.codeName);
-  ASSERT_NO_THROW(state = mCol2.getAttribute(1).attrib);
+  ASSERT_NO_THROW(state = mCol2.getAttribute(1));
   EXPECT_EQ("at2", state.codeName);
-  ASSERT_NO_THROW(state = mCol2.getAttribute(2).attrib);
+  ASSERT_NO_THROW(state = mCol2.getAttribute(2));
   EXPECT_EQ("at3", state.codeName);
 
-  ASSERT_NO_THROW(state = mCol3.getAttribute(0).attrib);
+  ASSERT_NO_THROW(state = mCol3.getAttribute(0));
   EXPECT_EQ("at1", state.codeName);
-  ASSERT_NO_THROW(state = mCol3.getAttribute(1).attrib);
+  ASSERT_NO_THROW(state = mCol3.getAttribute(1));
   EXPECT_EQ("at2", state.codeName);
-  ASSERT_NO_THROW(state = mCol3.getAttribute(2).attrib);
+  ASSERT_NO_THROW(state = mCol3.getAttribute(2));
   EXPECT_EQ("at3", state.codeName);
-  ASSERT_NO_THROW(state = mCol3.getAttribute(3).attrib);
+  ASSERT_NO_THROW(state = mCol3.getAttribute(3));
   EXPECT_EQ("at4", state.codeName);
 }
 
