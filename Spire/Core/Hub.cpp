@@ -272,14 +272,6 @@ void Hub::rendererThread()
 
   mInterfaceImpl->clearGLResources();
 
-  // The following needs to be done whether or not the hub is destroyed in this
-  // function.
-  for (auto it = mPipes.begin(); it != mPipes.end(); ++it)
-  {
-    (*it)->clearGLResources();
-    it->reset();
-  }
-
   mThreadRunning.store(false);
 }
 #endif

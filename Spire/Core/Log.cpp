@@ -29,7 +29,7 @@
 /// \author James Hughes
 /// \date   November 2012
 
-#include "Core/Log.h"
+#include "Log.h"
 #include "Exceptions.h"
 
 namespace Spire {
@@ -122,7 +122,10 @@ std::ostream& Log::debug()
     throw new Exception("Could not find thread in logging map.");
     // Returning this is dangerous in a multithreaded environment. Hence
     // the exception.
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wunreachable-code"
     return mCNull;
+#pragma clang diagnostic pop
   }
 #else
   // We will always be single threaded.
@@ -148,7 +151,10 @@ std::ostream& Log::message()
     throw new Exception("Could not find thread in logging map.");
     // Returning this is dangerous in a multithreaded environment. Hence
     // the exception.
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wunreachable-code"
     return mCNull;
+#pragma clang diagnostic pop
   }
 #else
   if (mLog == nullptr) mLog = new Log(nullptr);
@@ -173,7 +179,10 @@ std::ostream& Log::warning()
     throw new Exception("Could not find thread in logging map.");
     // Returning this is dangerous in a multithreaded environment. Hence
     // the exception.
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wunreachable-code"
     return mCNull;
+#pragma clang diagnostic pop
   }
 #else
   if (mLog == nullptr) mLog = new Log(nullptr);
@@ -198,7 +207,10 @@ std::ostream& Log::error()
     throw new Exception("Could not find thread in logging map.");
     // Returning this is dangerous in a multithreaded environment. Hence
     // the exception.
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wunreachable-code"
     return mCNull;
+#pragma clang diagnostic pop
   }
 #else
   if (mLog == nullptr) mLog = new Log(nullptr);

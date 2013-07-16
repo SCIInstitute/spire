@@ -98,8 +98,7 @@ private:
   /// Recalculates camera transform using the most relevant data.
   void buildAndApplyCameraTransform();
 
-  std::unique_ptr<SRCamera> mCamera;        ///< Primary camera.
-  std::unique_ptr<SciBall>  mSciBall;       ///< SCIRun 4's arcball camera.
+  float                     mCamDistance;   ///< Camera's distance from the origin.
 
   size_t                    mScreenWidth;   ///< Screen width in pixels.
   size_t                    mScreenHeight;  ///< Screen height in pixels.
@@ -111,7 +110,9 @@ private:
 
   MouseButton               mActiveDrag;    ///< The button we are currently dragging.
 
-  float                     mCamDistance;   ///< Camera's distance from the origin.
+  std::unique_ptr<SRCamera> mCamera;        ///< Primary camera.
+  std::unique_ptr<SciBall>  mSciBall;       ///< SCIRun 4's arcball camera.
+
 };
 
 } // namespace SCIRun
