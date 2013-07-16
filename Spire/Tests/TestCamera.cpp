@@ -63,13 +63,6 @@ void TestCamera::setAsPerspective()
   float aspect = static_cast<float>(Spire::GlobalTestEnvironment::instance()->getScreenWidth()) / 
                  static_cast<float>(Spire::GlobalTestEnvironment::instance()->getScreenHeight());
   mP = glm::perspective(mFOV, aspect, mZNear, mZFar);
-
-  // Rotate about the Y axis by 180 degrees. Many perspective matrices
-  // (see Hughes, et al...) are built looking down negative Z. This is the case
-  // with our perspective matrices. As such, we rotate by 180 degrees to re-orient
-  // our matrix down positive Z.
-  Spire::M44 y180 = glm::rotate(Spire::M44(), Spire::PI, Spire::V3(0.0, 1.0, 0.0));
-  mP = mP * y180;
 }
 
 //------------------------------------------------------------------------------
@@ -80,10 +73,6 @@ void TestCamera::setAsOrthographic(float halfWidth, float halfHeight)
 	mP = glm::ortho(-halfWidth, halfWidth, 
                   -halfHeight, halfHeight, 
                   mZNear, mZFar);
-
-  // Same reason we rotate the perspective camera by 180 degrees.
-  Spire::M44 y180 = glm::rotate(Spire::M44(), Spire::PI, Spire::V3(0.0, 1.0, 0.0));
-  mP = mP * y180;
 }
 
 //------------------------------------------------------------------------------
