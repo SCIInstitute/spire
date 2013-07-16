@@ -51,7 +51,7 @@ static void lambdaUniformObjTrafs(ObjectLambdaInterface& iface,
                                   std::list<Interface::UnsatisfiedUniform>& unsatisfiedUniforms)
 {
   // Cache object to world transform.
-  M44 objToWorld = iface.getObjectSpireAttribute<M44>(
+  M44 objToWorld = iface.getObjectMetadata<M44>(
       std::get<0>(SRCommonAttributes::getObjectToWorldTrafo()));
 
   std::string objectTrafoName = std::get<0>(SRCommonUniforms::getObject());
@@ -584,8 +584,8 @@ TEST_F(InterfaceTestFixture, TestObjectsStructure)
   // Test attributes
   M44 testUniform;
   testUniform[3] = V4(1.0f, 1.0f, 1.0f, 1.0f);
-  mSpire->addObjectGlobalSpireAttribute<M44>(obj1, "objectTransform", testUniform);
-  mSpire->addObjectPassSpireAttribute<M44>(obj1, "passTransform", testUniform, pass1);
+  mSpire->addObjectGlobalMetadata<M44>(obj1, "objectTransform", testUniform);
+  mSpire->addObjectPassMetadata<M44>(obj1, "passTransform", testUniform, pass1);
 
   auto testMatrixEquality = [](const M44& a, const M44& b) {
     for (size_t c = 0; c < 4; c++)
@@ -600,19 +600,19 @@ TEST_F(InterfaceTestFixture, TestObjectsStructure)
   M44 retUnif;
   std::shared_ptr<const AbstractUniformStateItem> uniformItem;
 
-  retUnif = object1->getObjectGlobalSpireAttribute("objectTransform")->getData<M44>();
+  retUnif = object1->getObjectGlobalMetadata("objectTransform")->getData<M44>();
   testMatrixEquality(retUnif, testUniform);
 
-  EXPECT_THROW(object1->getObjectGlobalSpireAttribute("nonexistant"), std::runtime_error);
+  EXPECT_THROW(object1->getObjectGlobalMetadata("nonexistant"), std::runtime_error);
 
-  uniformItem = object1->getObjectPassSpireAttribute(pass1, "passTransform");
+  uniformItem = object1->getObjectPassMetadata(pass1, "passTransform");
   retUnif = uniformItem->getData<M44>();
   testMatrixEquality(retUnif, testUniform);
 
-  uniformItem = object1->getObjectPassSpireAttribute(pass1, "nonexistant");
+  uniformItem = object1->getObjectPassMetadata(pass1, "nonexistant");
   EXPECT_EQ(nullptr, uniformItem);
 
-  uniformItem = object1->getObjectPassSpireAttribute(SPIRE_DEFAULT_PASS, "objectTransform");
+  uniformItem = object1->getObjectPassMetadata(SPIRE_DEFAULT_PASS, "objectTransform");
   EXPECT_EQ(nullptr, uniformItem);
 
   // Perform the frame. If there are any missing shaders we'll know about it
@@ -753,7 +753,7 @@ TEST_F(InterfaceTestFixture, TestRenderingWithAttributes)
   // Object spire attributes (used for computing appropriate uniforms).
   M44 xform;
   xform[3] = V4(1.0f, 0.0f, 0.0f, 1.0f);
-  mSpire->addObjectPassSpireAttribute(
+  mSpire->addObjectPassMetadata(
       objectName, std::get<0>(SRCommonAttributes::getObjectToWorldTrafo()), xform);
 
   // No longer need VBO and IBO (will stay resident in the passes -- when the

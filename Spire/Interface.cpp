@@ -242,23 +242,23 @@ void Interface::addObjectPassGPUState(const std::string& object, const GPUState&
 }
 
 //------------------------------------------------------------------------------
-void Interface::addObjectGlobalSpireAttributeConcrete(const std::string& object,
-                                                      const std::string& attributeName,
-                                                      std::shared_ptr<AbstractUniformStateItem> item)
+void Interface::addObjectGlobalMetadataConcrete(const std::string& object,
+                                                const std::string& attributeName,
+                                                std::shared_ptr<AbstractUniformStateItem> item)
 {
   Hub::RemoteFunction fun =
-      std::bind(InterfaceImplementation::addObjectGlobalSpireAttributeConcrete, _1, object, attributeName, item);
+      std::bind(InterfaceImplementation::addObjectGlobalMetadataConcrete, _1, object, attributeName, item);
   mHub->addFunctionToThreadQueue(fun);
 }
 
 //------------------------------------------------------------------------------
-void Interface::addObjectPassSpireAttributeConcrete(const std::string& object,
-                                                    const std::string& attributeName,
-                                                    std::shared_ptr<AbstractUniformStateItem> item,
-                                                    const std::string& passName)
+void Interface::addObjectPassMetadataConcrete(const std::string& object,
+                                              const std::string& attributeName,
+                                              std::shared_ptr<AbstractUniformStateItem> item,
+                                              const std::string& passName)
 {
   Hub::RemoteFunction fun =
-      std::bind(InterfaceImplementation::addObjectPassSpireAttributeConcrete, _1, object, attributeName, item, passName);
+      std::bind(InterfaceImplementation::addObjectPassMetadataConcrete, _1, object, attributeName, item, passName);
   mHub->addFunctionToThreadQueue(fun);
 }
 

@@ -35,14 +35,14 @@
 namespace Spire {
 
 std::shared_ptr<const AbstractUniformStateItem>
-ObjectLambdaInterface::getObjectSpireAttribute(const std::string& attribName)
+ObjectLambdaInterface::getObjectMetadata(const std::string& attribName)
 {
   // Check to see if there exists a pass level attribute, if not, grab the
   // object global level attribute.
   std::shared_ptr<const AbstractUniformStateItem> attrib = 
-      mObject.getObjectPassSpireAttribute(mPass, attribName);
+      mObject.getObjectPassMetadata(mPass, attribName);
   if (attrib == nullptr)
-    return mObject.getObjectGlobalSpireAttribute(attribName);
+    return mObject.getObjectGlobalMetadata(attribName);
   else
     return attrib;
 }

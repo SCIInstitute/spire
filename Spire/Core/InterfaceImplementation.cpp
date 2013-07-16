@@ -352,23 +352,23 @@ void InterfaceImplementation::addObjectPassGPUState(InterfaceImplementation& sel
 }
 
 //------------------------------------------------------------------------------
-void InterfaceImplementation::addObjectGlobalSpireAttributeConcrete(InterfaceImplementation& self,
+void InterfaceImplementation::addObjectGlobalMetadataConcrete(InterfaceImplementation& self,
                                                                     std::string objectName,
                                                                     std::string attributeName,
                                                                     std::shared_ptr<AbstractUniformStateItem> item)
 {
   std::shared_ptr<SpireObject> obj = self.mNameToObject.at(objectName);
-  obj->addObjectGlobalSpireAttribute(attributeName, item);
+  obj->addObjectGlobalMetadata(attributeName, item);
 }
 
 //------------------------------------------------------------------------------
-void InterfaceImplementation::addObjectPassSpireAttributeConcrete(InterfaceImplementation& self, std::string objectName,
+void InterfaceImplementation::addObjectPassMetadataConcrete(InterfaceImplementation& self, std::string objectName,
                                                                   std::string attributeName,
                                                                   std::shared_ptr<AbstractUniformStateItem> item,
                                                                   std::string passName)
 {
   std::shared_ptr<SpireObject> obj = self.mNameToObject.at(objectName);
-  obj->addObjectPassSpireAttribute(passName, attributeName, item);
+  obj->addObjectPassMetadata(passName, attributeName, item);
 }
 
 //------------------------------------------------------------------------------

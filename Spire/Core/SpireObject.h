@@ -82,12 +82,12 @@ public:
   bool hasUniform(const std::string& uniformName) const;
 
   /// Adds a pass spire attribute.
-  void addSpireAttribute(const std::string& attributeName,
-                         std::shared_ptr<AbstractUniformStateItem> item);
+  void addMetadata(const std::string& attributeName,
+                   std::shared_ptr<AbstractUniformStateItem> item);
 
   /// Retrieves a pass spire attribute.
   /// Returns an empty shared_ptr if no such attribute is found.
-  std::shared_ptr<const AbstractUniformStateItem> getSpireAttribute(
+  std::shared_ptr<const AbstractUniformStateItem> getMetadata(
       const std::string& attribName) const;
 
   /// Add render lambda.
@@ -171,7 +171,7 @@ protected:
   ///       better representation in C++.
   std::unique_ptr<GPUState>             mGPUState; ///< GPU state to set (if any, default is none).
 
-  std::unordered_map<std::string, std::shared_ptr<AbstractUniformStateItem>> mSpireAttributes;
+  std::unordered_map<std::string, std::shared_ptr<AbstractUniformStateItem>> mMetadata;
 
   Hub&                                  mHub;     ///< Hub.
 
@@ -219,23 +219,22 @@ public:
   void addGlobalUniform(const std::string& uniformName,
                         std::shared_ptr<AbstractUniformStateItem> item);
 
-  /// Adds an object attribute to the system. Object attributes do not change
-  /// per-pass. Add another function 'addSpireObjectPassAttribute' if that is
-  /// really needed.
-  void addObjectGlobalSpireAttribute(const std::string& attributeName,
-                                     std::shared_ptr<AbstractUniformStateItem> item);
+  /// Adds object metadata to the system. Object metadata does not change
+  /// per-pass.
+  void addObjectGlobalMetadata(const std::string& attributeName,
+                               std::shared_ptr<AbstractUniformStateItem> item);
 
   /// Retrieves a spire attribute. Can be used in the Lambda callbacks for
   /// rendering.
   /// Returns an empty shared_ptr if no such attribute is found.
-  std::shared_ptr<const AbstractUniformStateItem> getObjectGlobalSpireAttribute(
+  std::shared_ptr<const AbstractUniformStateItem> getObjectGlobalMetadata(
       const std::string& attribName) const;
 
-  void addObjectPassSpireAttribute(const std::string& passName,
+  void addObjectPassMetadata(const std::string& passName,
                                    const std::string& attributeName,
                                    std::shared_ptr<AbstractUniformStateItem> item);
 
-  std::shared_ptr<const AbstractUniformStateItem> getObjectPassSpireAttribute(
+  std::shared_ptr<const AbstractUniformStateItem> getObjectPassMetadata(
       const std::string& passName,
       const std::string& attribName) const;
 
@@ -284,7 +283,7 @@ protected:
   /// All registered passes.
   std::unordered_map<std::string, std::shared_ptr<ObjectPass>>  mPasses;
   std::vector<ObjectGlobalUniformItem>                          mObjectGlobalUniforms;
-  std::unordered_map<std::string, std::shared_ptr<AbstractUniformStateItem>> mSpireAttributes;
+  std::unordered_map<std::string, std::shared_ptr<AbstractUniformStateItem>> mMetadata;
 
   // These maps may actually be more efficient implemented as an array. The map 
   // sizes are small and cache coherency will be more important. Ignoring for 

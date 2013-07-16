@@ -166,14 +166,18 @@ public:
                                        std::shared_ptr<AbstractUniformStateItem> item);
   static void addObjectPassGPUState(InterfaceImplementation& self, std::string object,
                                     GPUState state, std::string pass);
-  static void addObjectGlobalSpireAttributeConcrete(InterfaceImplementation& self,
+
+  //-----------------
+  // Object metadata
+  //-----------------
+  static void addObjectGlobalMetadataConcrete(InterfaceImplementation& self,
                                                     std::string object,
                                                     std::string attributeName,
                                                     std::shared_ptr<AbstractUniformStateItem> item);
-  static void addObjectPassSpireAttributeConcrete(InterfaceImplementation& self, std::string object,
-                                                  std::string attributeName,
-                                                  std::shared_ptr<AbstractUniformStateItem> item,
-                                                  std::string passName);
+  static void addObjectPassMetadataConcrete(InterfaceImplementation& self, std::string object,
+                                            std::string attributeName,
+                                            std::shared_ptr<AbstractUniformStateItem> item,
+                                            std::string passName);
   //-----------------
   // Shader Programs
   //-----------------

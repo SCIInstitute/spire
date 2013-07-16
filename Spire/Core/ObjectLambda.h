@@ -52,10 +52,10 @@ public:
   /// Retrieves object spire attribute (as opposed to shader attributes).
   /// Does not depend on the currently active pass.
   template <class T>
-  T getObjectSpireAttribute(const std::string& attribName)
+  T getObjectMetadata(const std::string& attribName)
   {
     std::shared_ptr<const AbstractUniformStateItem> uniformItem 
-        = getObjectSpireAttribute(attribName);
+        = getObjectMetadata(attribName);
     return uniformItem->getData<T>();
   }
 
@@ -67,7 +67,7 @@ public:
   
 private:
 
-  std::shared_ptr<const AbstractUniformStateItem> getObjectSpireAttribute(
+  std::shared_ptr<const AbstractUniformStateItem> getObjectMetadata(
       const std::string& attribName);
 
   const SpireObject&   mObject;

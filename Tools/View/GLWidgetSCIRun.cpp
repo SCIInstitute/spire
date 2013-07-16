@@ -52,7 +52,7 @@ static void lambdaUniformObjTrafs(ObjectLambdaInterface& iface,
                                   std::list<Interface::UnsatisfiedUniform>& unsatisfiedUniforms)
 {
   // Cache object to world transform.
-  M44 objToWorld = iface.getObjectSpireAttribute<M44>(
+  M44 objToWorld = iface.getObjectMetadata<M44>(
       std::get<0>(SRCommonAttributes::getObjectToWorldTrafo()));
 
   std::string objectTrafoName = std::get<0>(SRCommonUniforms::getObject());
@@ -208,7 +208,7 @@ void GLWidget::buildScene()
 
     M44 xform;
     xform[3] = V4(-2.0f, 0.0f, 0.0f, 1.0f);
-    mSpire->addObjectPassSpireAttribute(
+    mSpire->addObjectPassMetadata(
         objName, std::get<0>(SRCommonAttributes::getObjectToWorldTrafo()), xform);
   }
 
@@ -227,7 +227,7 @@ void GLWidget::buildScene()
 
     M44 xform;
     xform[3] = V4(0.0f, 0.0f, 0.0f, 1.0f);
-    mSpire->addObjectPassSpireAttribute(
+    mSpire->addObjectPassMetadata(
         objName, std::get<0>(SRCommonAttributes::getObjectToWorldTrafo()), xform);
   }
 
@@ -246,7 +246,7 @@ void GLWidget::buildScene()
 
     M44 xform;
     xform[3] = V4(0.0f, -1.0f, 0.0f, 1.0f);
-    mSpire->addObjectPassSpireAttribute(
+    mSpire->addObjectPassMetadata(
         objName, std::get<0>(SRCommonAttributes::getObjectToWorldTrafo()), xform);
   }
 
@@ -265,7 +265,7 @@ void GLWidget::buildScene()
 
     M44 xform;
     xform[3] = V4(0.0f, 0.0f, 1.0f, 1.0f);
-    mSpire->addObjectPassSpireAttribute(
+    mSpire->addObjectPassMetadata(
         objName, std::get<0>(SRCommonAttributes::getObjectToWorldTrafo()), xform);
   }
 
@@ -284,7 +284,7 @@ void GLWidget::buildScene()
 
     M44 xform;
     xform[3] = V4(0.0f, -1.0f, 1.0f, 1.0f);
-    mSpire->addObjectPassSpireAttribute(
+    mSpire->addObjectPassMetadata(
         objName, std::get<0>(SRCommonAttributes::getObjectToWorldTrafo()), xform);
   }
 
@@ -300,7 +300,7 @@ void GLWidget::buildScene()
 
     M44 xform;
     xform[3] = V4(-1.0f, 0.0f, 0.0f, 1.0f);
-    mSpire->addObjectPassSpireAttribute(
+    mSpire->addObjectPassMetadata(
         objName, std::get<0>(SRCommonAttributes::getObjectToWorldTrafo()), xform);
   }
 
@@ -326,7 +326,7 @@ void GLWidget::buildScene()
     // Rotate by positive 90 degrees about y axis to get arrow pointing down xAxis.
     M44 xform = glm::rotate(M44(), Spire::PI / 2.0f, V3(0.0, 1.0, 0.0));
     xform[3] = V4(coordinateAxesCenter, 1.0f);
-    mSpire->addObjectPassSpireAttribute(
+    mSpire->addObjectPassMetadata(
         objName, std::get<0>(SRCommonAttributes::getObjectToWorldTrafo()), xform);
   }
 
@@ -346,7 +346,7 @@ void GLWidget::buildScene()
     // Rotate by positive 90 about x axis to get arrow pointing down yAxis.
     M44 xform = glm::rotate(M44(), -Spire::PI / 2.0f, V3(1.0, 0.0, 0.0));
     xform[3] = V4(coordinateAxesCenter, 1.0f);
-    mSpire->addObjectPassSpireAttribute(
+    mSpire->addObjectPassMetadata(
         objName, std::get<0>(SRCommonAttributes::getObjectToWorldTrafo()), xform);
   }
 
@@ -366,7 +366,7 @@ void GLWidget::buildScene()
     // Don't rotate at all, UnitArrow is initially pointing down the z axis.
     M44 xform;
     xform[3] = V4(coordinateAxesCenter, 1.0f);
-    mSpire->addObjectPassSpireAttribute(
+    mSpire->addObjectPassMetadata(
         objName, std::get<0>(SRCommonAttributes::getObjectToWorldTrafo()), xform);
   }
 
@@ -441,7 +441,7 @@ void GLWidget::buildScene()
     // Don't rotate at all, UnitArrow is initially pointing down the z axis.
     M44 xform;
     xform[3] = V4(coordinateAxesCenter, 1.0f);
-    mSpire->addObjectPassSpireAttribute(
+    mSpire->addObjectPassMetadata(
         objName, std::get<0>(SRCommonAttributes::getObjectToWorldTrafo()), xform);
   }
 

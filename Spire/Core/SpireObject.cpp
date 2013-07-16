@@ -279,18 +279,18 @@ bool ObjectPass::hasUniform(const std::string& uniformName) const
 }
 
 //------------------------------------------------------------------------------
-void ObjectPass::addSpireAttribute(const std::string& attributeName,
-                                std::shared_ptr<AbstractUniformStateItem> item)
+void ObjectPass::addMetadata(const std::string& attributeName,
+                             std::shared_ptr<AbstractUniformStateItem> item)
 {
-  mSpireAttributes[attributeName] = item;
+  mMetadata[attributeName] = item;
 }
 
 //------------------------------------------------------------------------------
-std::shared_ptr<const AbstractUniformStateItem> ObjectPass::getSpireAttribute(
+std::shared_ptr<const AbstractUniformStateItem> ObjectPass::getMetadata(
     const std::string& attribName) const
 {
-  auto it = mSpireAttributes.find(attribName);
-  if (it != mSpireAttributes.end())
+  auto it = mMetadata.find(attribName);
+  if (it != mMetadata.end())
   {
     return it->second;
   }
@@ -326,7 +326,7 @@ SpireObject::SpireObject(Hub& hub, const std::string& name) :
 {
   // Reserve at least one slot for the object transformation, and one more for
   // good measure.
-  mSpireAttributes.reserve(2);
+  mMetadata.reserve(2);
 }
 
 
@@ -370,18 +370,18 @@ void SpireObject::removePass(const std::string& passName)
 }
 
 //------------------------------------------------------------------------------
-void SpireObject::addObjectGlobalSpireAttribute(const std::string& attributeName,
-                                              std::shared_ptr<AbstractUniformStateItem> item)
+void SpireObject::addObjectGlobalMetadata(const std::string& attributeName,
+                                          std::shared_ptr<AbstractUniformStateItem> item)
 {
-  mSpireAttributes[attributeName] = item;
+  mMetadata[attributeName] = item;
 }
 
 //------------------------------------------------------------------------------
-std::shared_ptr<const AbstractUniformStateItem> SpireObject::getObjectGlobalSpireAttribute(
+std::shared_ptr<const AbstractUniformStateItem> SpireObject::getObjectGlobalMetadata(
     const std::string& attribName) const
 {
-  auto it = mSpireAttributes.find(attribName);
-  if (it != mSpireAttributes.end())
+  auto it = mMetadata.find(attribName);
+  if (it != mMetadata.end())
   {
     return it->second;
   }
@@ -393,21 +393,21 @@ std::shared_ptr<const AbstractUniformStateItem> SpireObject::getObjectGlobalSpir
 }
 
 //------------------------------------------------------------------------------
-void SpireObject::addObjectPassSpireAttribute(const std::string& passName,
+void SpireObject::addObjectPassMetadata(const std::string& passName,
                                             const std::string& attributeName,
                                             std::shared_ptr<AbstractUniformStateItem> item)
 {
   std::shared_ptr<ObjectPass> pass = getPassByName(passName);
-  pass->addSpireAttribute(attributeName, item);
+  pass->addMetadata(attributeName, item);
 }
 
 //------------------------------------------------------------------------------
-std::shared_ptr<const AbstractUniformStateItem> SpireObject::getObjectPassSpireAttribute(
+std::shared_ptr<const AbstractUniformStateItem> SpireObject::getObjectPassMetadata(
     const std::string& passName,
     const std::string& attribName) const
 {
   std::shared_ptr<ObjectPass> pass = getPassByName(passName);
-  return pass->getSpireAttribute(attribName);
+  return pass->getMetadata(attribName);
 }
 
 //------------------------------------------------------------------------------
