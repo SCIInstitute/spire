@@ -356,42 +356,46 @@ public:
                              const GPUState& state,
                              const std::string& pass = SPIRE_DEFAULT_PASS);
 
+  //----------------------
+  // Rendering Attributes
+  //----------------------
 
-  //------------------
-  // Spire Attributes
-  //------------------
+  // Attributes just as they are in the OpenGL rendering pipeline.
+
+
+  //----------------
+  // Spire Metadata
+  //----------------
   template <typename T>
-  void addObjectGlobalSpireAttribute(const std::string& object,
-                                     const std::string& attributeName,
-                                     T uniformData)
+  void addObjectGlobalMetadata(const std::string& object,
+                               const std::string& metadataName, T metadata)
   {
-    addObjectGlobalSpireAttributeConcrete(object, attributeName, 
-                                          std::shared_ptr<AbstractUniformStateItem>(
-                                              new UniformStateItem<T>(uniformData)));
+    addObjectGlobalMetadataConcrete(object, metadataName, 
+                                    std::shared_ptr<AbstractUniformStateItem>(
+                                        new UniformStateItem<T>(metadata)));
   }
 
   // Concrete implementation of the above templated function.
-  void addObjectGlobalSpireAttributeConcrete(const std::string& object,
-                                             const std::string& attributeName,
-                                             std::shared_ptr<AbstractUniformStateItem> item);
+  void addObjectGlobalMetadataConcrete(const std::string& object,
+                                       const std::string& metadataName,
+                                       std::shared_ptr<AbstractUniformStateItem> item);
 
   template <typename T>
-  void addObjectPassSpireAttribute(const std::string& object,
-                                   const std::string& attributeName,
-                                   T uniformData,
-                                   const std::string& passName = SPIRE_DEFAULT_PASS)
+  void addObjectPassMetadata(const std::string& object,
+                             const std::string& metadataName, T metadata,
+                             const std::string& passName = SPIRE_DEFAULT_PASS)
   {
-    addObjectPassSpireAttributeConcrete(object, attributeName, 
-                                        std::shared_ptr<AbstractUniformStateItem>(
-                                            new UniformStateItem<T>(uniformData)), passName);
+    addObjectPassMetadataConcrete(object, metadataName, 
+                                  std::shared_ptr<AbstractUniformStateItem>(
+                                      new UniformStateItem<T>(metadata)), passName);
   }
 
   // Concrete implementation of the above templated function.
-  void addObjectPassSpireAttributeConcrete(const std::string& object,
-                                           const std::string& attributeName,
-                                           std::shared_ptr<AbstractUniformStateItem> item,
-                                           const std::string& passName = SPIRE_DEFAULT_PASS);
-  
+  void addObjectPassMetadataConcrete(const std::string& object,
+                                     const std::string& metadataName,
+                                     std::shared_ptr<AbstractUniformStateItem> item,
+                                     const std::string& passName = SPIRE_DEFAULT_PASS);
+
   //-----------------
   // Shader Programs
   //-----------------
