@@ -35,6 +35,7 @@
 #include <cstddef>
 #include <sstream>
 #include <vector>
+#include <stdexcept>
 #include "WinDLLExport.h"
 #include "Math.h"
 #include "GLMathUtil.h"
