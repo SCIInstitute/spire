@@ -167,6 +167,15 @@ public:
   static void addObjectPassGPUState(InterfaceImplementation& self, std::string object,
                                     GPUState state, std::string pass);
 
+  //-------------------
+  // Shader Attributes
+  //-------------------
+
+  // Attributes just as they are in the OpenGL rendering pipeline.
+  static void addShaderAttribute(InterfaceImplementation& self, std::string codeName,
+                                 size_t numComponents, bool normalize, size_t size,
+                                 Interface::DATA_TYPES t);
+
   //-----------------
   // Object metadata
   //-----------------

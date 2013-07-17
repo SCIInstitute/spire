@@ -356,15 +356,16 @@ public:
                              const GPUState& state,
                              const std::string& pass = SPIRE_DEFAULT_PASS);
 
-  //----------------------
-  // Rendering Attributes
-  //----------------------
+  //-------------------
+  // Shader Attributes
+  //-------------------
 
   // Attributes just as they are in the OpenGL rendering pipeline.
-
+  void addShaderAttribute(const std::string& codeName, size_t numComponents,
+                          bool normalize, size_t size, Interface::DATA_TYPES t);
 
   //----------------
-  // Spire Metadata
+  // Object Metadata
   //----------------
   template <typename T>
   void addObjectGlobalMetadata(const std::string& object,

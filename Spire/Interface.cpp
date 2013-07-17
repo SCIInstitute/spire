@@ -242,6 +242,16 @@ void Interface::addObjectPassGPUState(const std::string& object, const GPUState&
 }
 
 //------------------------------------------------------------------------------
+void Interface::addShaderAttribute(const std::string& codeName, size_t numComponents,
+                                   bool normalize, size_t size, Interface::DATA_TYPES type)
+{
+  Hub::RemoteFunction fun =
+      std::bind(InterfaceImplementation::addShaderAttribute, _1, codeName, numComponents, 
+                normalize, size, type);
+  mHub->addFunctionToThreadQueue(fun);
+}
+
+//------------------------------------------------------------------------------
 void Interface::addObjectGlobalMetadataConcrete(const std::string& object,
                                                 const std::string& attributeName,
                                                 std::shared_ptr<AbstractUniformStateItem> item)

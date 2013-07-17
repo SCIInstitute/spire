@@ -352,6 +352,14 @@ void InterfaceImplementation::addObjectPassGPUState(InterfaceImplementation& sel
 }
 
 //------------------------------------------------------------------------------
+void InterfaceImplementation::addShaderAttribute(InterfaceImplementation& self, std::string codeName,
+                                                 size_t numComponents, bool normalize, size_t size,
+                                                 Interface::DATA_TYPES t)
+{
+  self.mHub.getShaderAttributeManager().addAttribute(codeName, numComponents, normalize, size, t);
+}
+
+//------------------------------------------------------------------------------
 void InterfaceImplementation::addObjectGlobalMetadataConcrete(InterfaceImplementation& self,
                                                                     std::string objectName,
                                                                     std::string attributeName,
