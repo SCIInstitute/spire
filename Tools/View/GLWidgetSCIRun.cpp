@@ -128,6 +128,12 @@ GLWidget::GLWidget(const QGLFormat& format) :
 //------------------------------------------------------------------------------
 void GLWidget::buildScene()
 {
+  // Add shader attributes that we will be using.
+  mSpire->addShaderAttribute("aPos",         3,  false,  sizeof(float) * 3,  Spire::Interface::TYPE_FLOAT);
+  mSpire->addShaderAttribute("aNormal",      3,  false,  sizeof(float) * 3,  Spire::Interface::TYPE_FLOAT);
+  mSpire->addShaderAttribute("aColorFloat",  4,  false,  sizeof(float) * 4,  Spire::Interface::TYPE_FLOAT);
+  mSpire->addShaderAttribute("aColor",       4,  true,   sizeof(char) * 4,   Spire::Interface::TYPE_UBYTE);
+
   // Uniform color shader (nothing that interesting).
   std::string uniformColorShader = "UniformColor";
   mSpire->addPersistentShader(

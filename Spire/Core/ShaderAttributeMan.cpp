@@ -46,28 +46,6 @@ ShaderAttributeMan::ShaderAttributeMan()
 {
   // Unknown attribute (attribute at 0 index).
   addAttribute(getUnknownName(), 1, false, sizeof(float), Interface::TYPE_FLOAT);
-
-  // Add default attributes if requested -- we should never add 'default'
-  // attributes. Just the unknown attribute and let the user define the
-  // attributes that they require.
-  //if (addDefaultAttributes)
-  //{
-  //  addAttribute("aPos",         3,  false,  sizeof(float) * 3,  Interface::TYPE_FLOAT);
-  //  addAttribute("aNormal",      3,  false,  sizeof(float) * 3,  Interface::TYPE_FLOAT);
-  //  addAttribute("aTexCoord0",   2,  false,  sizeof(float) * 2,  Interface::TYPE_FLOAT);
-  //  addAttribute("aTexCoord1",   2,  false,  sizeof(float) * 2,  Interface::TYPE_FLOAT);
-  //  addAttribute("aTexCoord2",   2,  false,  sizeof(float) * 2,  Interface::TYPE_FLOAT);
-  //  addAttribute("aTexCoord3",   2,  false,  sizeof(float) * 2,  Interface::TYPE_FLOAT);
-  //  addAttribute("aColor",       4,  true,   sizeof(char) * 4,   Interface::TYPE_UBYTE);
-  //  addAttribute("aColorFloat",  4,  false,  sizeof(float) * 4,  Interface::TYPE_FLOAT);
-  //  addAttribute("aTangent",     3,  false,  sizeof(float) * 3,  Interface::TYPE_FLOAT);
-  //  addAttribute("aBinormal",    3,  false,  sizeof(float) * 3,  Interface::TYPE_FLOAT);
-  //  addAttribute("aGenPos",      3,  false,  sizeof(float) * 3,  Interface::TYPE_FLOAT);
-  //  addAttribute("aGenNormal",   3,  false,  sizeof(float) * 3,  Interface::TYPE_FLOAT);
-  //  addAttribute("aGenUV",       2,  false,  sizeof(float) * 2,  Interface::TYPE_FLOAT);
-  //  addAttribute("aGenFloat",    1,  false,  sizeof(float) * 1,  Interface::TYPE_FLOAT);
-  //  addAttribute("aFieldData",   1,  false,  sizeof(float) * 1,  Interface::TYPE_FLOAT);
-  //}
 }
 
 //------------------------------------------------------------------------------
