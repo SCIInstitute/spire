@@ -259,6 +259,8 @@ std::vector<std::string> getSubDirList(const std::string& dir)
 std::string getFromResourceOnMac(const std::string& strFileName)
 {
 #ifdef SPIRE_USING_OSX
+  std::string result;
+
   CFStringRef cfFilename = CFStringCreateWithCString(
       kCFAllocatorDefault, removeExt(getFilename(strFileName)).c_str(), 
       CFStringGetSystemEncoding());
@@ -268,19 +270,29 @@ std::string getFromResourceOnMac(const std::string& strFileName)
 
   CFURLRef imageURL = CFBundleCopyResourceURL(CFBundleGetMainBundle(), 
                                               cfFilename, cfExt, NULL);
-  if (imageURL == NULL) return "";
-  CFStringRef macPath = CFURLCopyFileSystemPath(imageURL, kCFURLPOSIXPathStyle);
-  const char *pathPtr = CFStringGetCStringPtr(macPath, 
-                                              CFStringGetSystemEncoding());
-  if (macPath != 0 && pathPtr != 0)
+  if (imageURL != NULL)
   {
-    std::string result = pathPtr;
-    return result;
+    CFStringRef macPath = CFURLCopyFileSystemPath(imageURL, kCFURLPOSIXPathStyle);
+    const char *pathPtr = CFStringGetCStringPtr(macPath, 
+                                                CFStringGetSystemEncoding());
+
+    if (macPath != 0 && pathPtr != 0)
+    {
+      result = pathPtr;
+    }
+    else
+    {
+      result = strFileName;
+    }
+
+    if (macPath)    CFRelease(macPath);
   }
-  else
-  {
-    return strFileName;
-  }
+
+  if (cfFilename) CFRelease(cfFilename);
+  if (cfExt)      CFRelease(cfExt);
+  if (imageURL)   CFRelease(imageURL);
+
+  return result;
 #else
   return strFileName;
 #endif
