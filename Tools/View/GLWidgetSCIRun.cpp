@@ -138,32 +138,32 @@ void GLWidget::buildScene()
   std::string uniformColorShader = "UniformColor";
   mSpire->addPersistentShader(
       uniformColorShader, 
-      { {"UniformColor.vsh", Spire::Interface::VERTEX_SHADER}, 
-        {"UniformColor.fsh", Spire::Interface::FRAGMENT_SHADER},
+      { std::make_tuple("UniformColor.vsh", Spire::Interface::VERTEX_SHADER), 
+        std::make_tuple("UniformColor.fsh", Spire::Interface::FRAGMENT_SHADER),
       });
 
   // Directional gouraud shading.
   std::string dirGouraudShader = "DirGouraud";
   mSpire->addPersistentShader(
       dirGouraudShader, 
-      { {"DirGouraud.vsh", Spire::Interface::VERTEX_SHADER}, 
-        {"DirGouraud.fsh", Spire::Interface::FRAGMENT_SHADER},
+      { std::make_tuple("DirGouraud.vsh", Spire::Interface::VERTEX_SHADER), 
+        std::make_tuple("DirGouraud.fsh", Spire::Interface::FRAGMENT_SHADER),
       });
 
   // Directional phong shading.
   std::string dirPhongSphere = "DirPhong";
   mSpire->addPersistentShader(
       dirPhongSphere , 
-      { {"DirPhong.vsh", Spire::Interface::VERTEX_SHADER}, 
-        {"DirPhong.fsh", Spire::Interface::FRAGMENT_SHADER},
+      { std::make_tuple("DirPhong.vsh", Spire::Interface::VERTEX_SHADER), 
+        std::make_tuple("DirPhong.fsh", Spire::Interface::FRAGMENT_SHADER),
       });
 
   // Varying color shader
   std::string attribColorShader = "AttribColor";
   mSpire->addPersistentShader(
       attribColorShader, 
-      { {"Color.vsh", Spire::Interface::VERTEX_SHADER}, 
-        {"Color.fsh", Spire::Interface::FRAGMENT_SHADER},
+      { std::make_tuple("Color.vsh", Spire::Interface::VERTEX_SHADER), 
+        std::make_tuple("Color.fsh", Spire::Interface::FRAGMENT_SHADER),
       });
 
   // This load asset function operates only on the default pass, since optional
