@@ -41,7 +41,7 @@ namespace {
 //------------------------------------------------------------------------------
 TEST(ShaderAttributeManBasic, TestUnknownAttribute)
 {
-  ShaderAttributeMan attribMan(false);
+  ShaderAttributeMan attribMan;
 
   ASSERT_EQ(1, attribMan.getNumAttributes());
 
@@ -61,7 +61,7 @@ TEST(ShaderAttributeManBasic, TestUnknownAttribute)
 //------------------------------------------------------------------------------
 TEST(ShaderAttributeManBasic, TestUnknownExceptions)
 {
-  ShaderAttributeMan attribMan(false);
+  ShaderAttributeMan attribMan;
 
   // Attempt to access the element passed the end of the array.
   EXPECT_THROW(
@@ -78,7 +78,7 @@ TEST(ShaderAttributeManBasic, TestUnknownExceptions)
 //------------------------------------------------------------------------------
 TEST(ShaderAttributeManBasic, TestDefaultAttributes)
 {
-  ShaderAttributeMan attribMan(true);
+  ShaderAttributeMan attribMan; // true
 
   EXPECT_LE(1, attribMan.getNumAttributes());
 }
@@ -87,12 +87,18 @@ TEST(ShaderAttributeManBasic, TestDefaultAttributes)
 class ShaderAttributeManInvolved : public testing::Test
 {
 protected:
-  ShaderAttributeManInvolved() :
-      mAttribMan(true)
-  {}
+  ShaderAttributeManInvolved() {}
 
-  virtual void SetUp()    {}
+  virtual void SetUp()    {addDefaultAttributes();}
   virtual void TearDown() {}
+
+  void addDefaultAttributes()
+  {
+    mAttribMan.addAttribute("aPos",         3,  false,  sizeof(float) * 3,  Spire::Interface::TYPE_FLOAT);
+    mAttribMan.addAttribute("aNormal",      3,  false,  sizeof(float) * 3,  Spire::Interface::TYPE_FLOAT);
+    mAttribMan.addAttribute("aColorFloat",  4,  false,  sizeof(float) * 4,  Spire::Interface::TYPE_FLOAT);
+    mAttribMan.addAttribute("aColor",       4,  true,   sizeof(char) * 4,   Spire::Interface::TYPE_UBYTE);
+  }
 
   ShaderAttributeMan  mAttribMan;
 };
@@ -144,7 +150,7 @@ class ShaderAttributeCollectionTests : public testing::Test
 {
 protected:
   ShaderAttributeCollectionTests() :
-      mAttribMan(true),
+      mAttribMan(),
       mCol1(mAttribMan),
       mCol2(mAttribMan),
       mCol3(mAttribMan)
@@ -152,6 +158,8 @@ protected:
 
   virtual void SetUp()
   {
+    addDefaultAttributes();
+
     mAttribMan.addAttribute("at1",  3,  false,  sizeof(float)*3,  Interface::TYPE_FLOAT);
     mAttribMan.addAttribute("at2",  3,  false,  sizeof(float)*3,  Interface::TYPE_FLOAT);
     mAttribMan.addAttribute("at3",  1,  false,  sizeof(float),    Interface::TYPE_FLOAT);
@@ -171,6 +179,14 @@ protected:
     mCol3.addAttribute("at2");
   }
   virtual void TearDown() {}
+
+  void addDefaultAttributes()
+  {
+    mAttribMan.addAttribute("aPos",         3,  false,  sizeof(float) * 3,  Spire::Interface::TYPE_FLOAT);
+    mAttribMan.addAttribute("aNormal",      3,  false,  sizeof(float) * 3,  Spire::Interface::TYPE_FLOAT);
+    mAttribMan.addAttribute("aColorFloat",  4,  false,  sizeof(float) * 4,  Spire::Interface::TYPE_FLOAT);
+    mAttribMan.addAttribute("aColor",       4,  true,   sizeof(char) * 4,   Spire::Interface::TYPE_UBYTE);
+  }
 
   ShaderAttributeMan          mAttribMan;
   ShaderAttributeCollection   mCol1;

@@ -123,7 +123,7 @@ private:
 class ShaderAttributeMan
 {
 public:
-  ShaderAttributeMan(bool addDefaultAttributes = true);
+  ShaderAttributeMan();
   virtual ~ShaderAttributeMan();
 
   /// Whenever an attribute has this index, it is not known how to handle it.

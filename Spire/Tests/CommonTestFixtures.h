@@ -59,6 +59,9 @@ public:
     mSpire = std::shared_ptr<Spire::Interface>(new Spire::Interface(
         ctx, shaderSearchDirs, false));
 
+    // Add default attributes.
+    addDefaultAttributes();
+
     // Build camera that we will use for testing purposes.
     mCamera = std::unique_ptr<TestCamera>(new TestCamera);
   }
@@ -66,6 +69,14 @@ public:
   virtual void TearDown() override
   {
     mSpire.reset();
+  }
+
+  void addDefaultAttributes()
+  {
+    mSpire->addShaderAttribute("aPos",         3,  false,  sizeof(float) * 3,  Spire::Interface::TYPE_FLOAT);
+    mSpire->addShaderAttribute("aNormal",      3,  false,  sizeof(float) * 3,  Spire::Interface::TYPE_FLOAT);
+    mSpire->addShaderAttribute("aColorFloat",  4,  false,  sizeof(float) * 4,  Spire::Interface::TYPE_FLOAT);
+    mSpire->addShaderAttribute("aColor",       4,  true,   sizeof(char) * 4,   Spire::Interface::TYPE_UBYTE);
   }
 
   std::shared_ptr<Spire::Interface>     mSpire;
@@ -90,6 +101,9 @@ public:
     mSpire = std::shared_ptr<Spire::SCIRun::SRInterface>(
         new Spire::SCIRun::SRInterface(ctx, shaderSearchDirs, false));
 
+    // Add default attributes.
+    addDefaultAttributes();
+
     // Build camera that we will use for testing purposes.
     mCamera = std::unique_ptr<TestCamera>(new TestCamera);
   }
@@ -97,6 +111,14 @@ public:
   virtual void TearDown() override
   {
     mSpire.reset();
+  }
+
+  void addDefaultAttributes()
+  {
+    mSpire->addShaderAttribute("aPos",         3,  false,  sizeof(float) * 3,  Spire::Interface::TYPE_FLOAT);
+    mSpire->addShaderAttribute("aNormal",      3,  false,  sizeof(float) * 3,  Spire::Interface::TYPE_FLOAT);
+    mSpire->addShaderAttribute("aColorFloat",  4,  false,  sizeof(float) * 4,  Spire::Interface::TYPE_FLOAT);
+    mSpire->addShaderAttribute("aColor",       4,  true,   sizeof(char) * 4,   Spire::Interface::TYPE_UBYTE);
   }
 
   std::shared_ptr<Spire::SCIRun::SRInterface> mSpire;
