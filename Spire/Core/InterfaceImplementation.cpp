@@ -477,10 +477,19 @@ GLenum InterfaceImplementation::getGLPrimitive(Interface::PRIMITIVE_TYPES type)
     case Interface::TRIANGLES:                return GL_TRIANGLES;
     case Interface::TRIANGLE_STRIP:           return GL_TRIANGLE_STRIP;
     case Interface::TRIANGLE_FAN:             return GL_TRIANGLE_FAN;
+#ifndef SPIRE_OPENGL_ES_2
     case Interface::LINES_ADJACENCY:          return GL_LINES_ADJACENCY;
     case Interface::LINE_STRIP_ADJACENCY:     return GL_LINE_STRIP_ADJACENCY;
     case Interface::TRIANGLES_ADJACENCY:      return GL_TRIANGLES_ADJACENCY;
     case Interface::TRIANGLE_STRIP_ADJACENCY: return GL_TRIANGLE_STRIP_ADJACENCY;
+#else
+    case Interface::LINES_ADJACENCY:
+    case Interface::LINE_STRIP_ADJACENCY:
+    case Interface::TRIANGLES_ADJACENCY:
+    case Interface::TRIANGLE_STRIP_ADJACENCY:
+      Log::error() << "Adjacency primitive types not supported in OpenGL ES 2.0";
+      return GL_TRIANGLES;
+#endif
 
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wunreachable-code"
@@ -516,7 +525,14 @@ GLenum InterfaceImplementation::getGLType(Interface::DATA_TYPES type)
       return GL_FLOAT;
 #endif
 
+    // Double type not sepported in OpenGL ES 2.0.
+#ifndef SPIRE_OPENGL_ES_2
     case Interface::TYPE_DOUBLE:      return GL_DOUBLE;
+#else
+    case Interface::TYPE_DOUBLE:
+      Log::error() << "Double type not supported on ES 2.0 platforms.";
+      return GL_FLOAT;
+#endif
 
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wunreachable-code"

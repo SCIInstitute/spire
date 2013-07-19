@@ -488,6 +488,10 @@ void GPUStateManager::setLineSmoothingEnable(bool value, bool force)
   if (force || value != mInternalState.mLineSmoothing)
   {
     mInternalState.mLineSmoothing = value;
+    // Line smoothing not supported in OpenGL ES.
+    // No warning is given because this is set by default at program
+    // initialization to a known value.
+#ifndef SPIRE_OPENGL_ES_2
     if (mInternalState.mLineSmoothing)
     {
       GL(glEnable(GL_LINE_SMOOTH));
@@ -496,6 +500,7 @@ void GPUStateManager::setLineSmoothingEnable(bool value, bool force)
     {
       GL(glDisable(GL_LINE_SMOOTH));
     }
+#endif
   }
 }
 } // end of namespace Spire

@@ -52,8 +52,14 @@ if(UNIX)
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 
   if(APPLE)
-    set (CMAKE_CXX_FLAGS 
-      "${CMAKE_CXX_FLAGS} -stdlib=libc++ -Wall -Wextra -Werror -Wconversion -Wshadow -Wunreachable-code")
+    if(BUILDING_IOS)
+      # No Werror on iOS builds yet.
+      set (CMAKE_CXX_FLAGS 
+        "${CMAKE_CXX_FLAGS} -stdlib=libc++ -Wall -Wextra -Wconversion -Wshadow -Wunreachable-code")
+    else()
+      set (CMAKE_CXX_FLAGS 
+        "${CMAKE_CXX_FLAGS} -stdlib=libc++ -Wall -Wextra -Werror -Wconversion -Wshadow -Wunreachable-code")
+    endif()
 
     # Make sure the compiler knows how to treat these system includes.
     set (CMAKE_INCLUDE_SYSTEM_FLAG_CXX="isystem")
