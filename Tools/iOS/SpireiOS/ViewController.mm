@@ -39,7 +39,7 @@ protected:
 
 @interface ViewController ()
 {
-  SpireContextiOS*    mContext;
+  std::shared_ptr<SpireContextiOS>    mContext;
   Spire::Interface*   mInterface;
 }
 @property (strong, nonatomic) EAGLContext *context;
@@ -71,7 +71,7 @@ protected:
   NSString* shaderDir = [fullPath stringByDeletingLastPathComponent];
   std::string shaderDirSTD([shaderDir UTF8String]);
 
-  mContext = new SpireContextiOS(self.context);
+  mContext = std::shared_ptr<SpireContextiOS>(new SpireContextiOS(self.context));
   try {
     mInterface = new Spire::Interface(mContext, { shaderDirSTD }, false);
   } catch (std::exception& e) {
@@ -83,12 +83,12 @@ protected:
 }
 
 - (void)dealloc
-{    
+{
   [self tearDownGL];
 
   // Remove spire and our thin context.
   delete mInterface;
-  delete mContext;
+  mContext.reset();
 
   if ([EAGLContext currentContext] == self.context)
   {
@@ -136,7 +136,7 @@ protected:
 - (void)glkView:(GLKView *)view drawInRect:(CGRect)rect
 {
   // Make a call to spire render.
-  mInterface->doFrame();
+  mInterface->ntsDoFrame();
 }
 
 @end

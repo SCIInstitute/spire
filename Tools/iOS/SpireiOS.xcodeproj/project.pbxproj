@@ -338,8 +338,13 @@
 			buildSettings = {
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "SpireiOS/SpireiOS-Prefix.pch";
+				HEADER_SEARCH_PATHS = (
+					../../,
+					../../Spire/3rdParty/glm,
+				);
 				INFOPLIST_FILE = "SpireiOS/SpireiOS-Info.plist";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				USER_HEADER_SEARCH_PATHS = "";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Debug;
@@ -349,8 +354,13 @@
 			buildSettings = {
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "SpireiOS/SpireiOS-Prefix.pch";
+				HEADER_SEARCH_PATHS = (
+					../../,
+					../../Spire/3rdParty/glm,
+				);
 				INFOPLIST_FILE = "SpireiOS/SpireiOS-Info.plist";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				USER_HEADER_SEARCH_PATHS = "";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Release;
