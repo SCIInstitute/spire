@@ -184,11 +184,12 @@ void Interface::addPassToObject(const std::string& object,
                                 const std::string& vboName,
                                 const std::string& iboName,
                                 PRIMITIVE_TYPES type,
-                                const std::string& pass)
+                                const std::string& pass,
+                                const std::string& parentPass)
 {
   Hub::RemoteFunction fun =
       std::bind(InterfaceImplementation::addPassToObject, _1, object, program, 
-                vboName, iboName, type, pass);
+                vboName, iboName, type, pass, parentPass);
   mHub->addFunctionToThreadQueue(fun);
 }
 

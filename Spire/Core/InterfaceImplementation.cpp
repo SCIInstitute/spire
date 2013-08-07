@@ -123,7 +123,6 @@ void InterfaceImplementation::doAllPasses()
   GPUState defaultGPUState;
   mHub.getGPUStateManager().apply(defaultGPUState, true); // true = force application of state.
 
-
   // Loop through all of the passes.
   for (auto it = mPasses.begin(); it != mPasses.end(); ++it)
   {
@@ -283,23 +282,33 @@ void InterfaceImplementation::removeIBO(InterfaceImplementation& self, std::stri
 void InterfaceImplementation::addPassToObject(InterfaceImplementation& self, std::string object,
                                               std::string program, std::string vboName, std::string iboName,
                                               Interface::PRIMITIVE_TYPES type,
-                                              std::string pass)
+                                              std::string pass, std::string parentPass)
 {
   std::shared_ptr<SpireObject> obj = self.mNameToObject.at(object);
   std::shared_ptr<VBOObject> vbo = self.mVBOMap.at(vboName);
   std::shared_ptr<IBOObject> ibo = self.mIBOMap.at(iboName);
 
-  // Check to see if the pass exists.
-  auto passIt = self.mNameToPass.find(pass);
-  if (passIt == self.mNameToPass.end())
-    throw std::runtime_error("Pass (" + pass + ") does not exist.");
+  if (parentPass.size() == 0)
+  {
+    // Attempt to find global pass since we are not the child of another pass.
+    auto passIt = self.mNameToPass.find(pass);
+    if (passIt != self.mNameToPass.end())
+    {
+      // Add object to pass if it isn't already part of the pass.
+      auto objectInPass = passIt->second->mNameToObject.find(object);
+      if (objectInPass == self.mNameToObject.end())
+        passIt->second->mNameToObject[object] = obj;
+    }
+    else
+    {
+      // This pass is NOT a subpass, the non-existance of a global pass must
+      // be an error.
+      Log::error() << "Unable to find global pass and parent pass was not specified.";
+      throw std::runtime_error("Global pass (" + pass + ") does not exist.");
+    }
+  }
 
-  // Add object to pass if it isn't already part of the pass.
-  auto objectInPass = passIt->second->mNameToObject.find(object);
-  if (objectInPass == self.mNameToObject.end())
-    passIt->second->mNameToObject[object] = obj;
-
-  obj->addPass(pass, program, vbo, ibo, getGLPrimitive(type));
+  obj->addPass(pass, program, vbo, ibo, getGLPrimitive(type), parentPass);
 }
 
 

@@ -147,7 +147,7 @@ public:
   static void addPassToObject(InterfaceImplementation& self, std::string object,
                               std::string program, std::string vboName, 
                               std::string iboName, Interface::PRIMITIVE_TYPES type,
-                              std::string pass);
+                              std::string pass, std::string parentPass);
   static void removePassFromObject(InterfaceImplementation& self, std::string object,
                                    std::string pass);
 

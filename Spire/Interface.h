@@ -276,7 +276,8 @@ public:
                        const std::string& vboName,
                        const std::string& iboName,
                        PRIMITIVE_TYPES type,
-                       const std::string& pass = SPIRE_DEFAULT_PASS);
+                       const std::string& pass = SPIRE_DEFAULT_PASS,
+                       const std::string& parentPass = "");
 
   /// Removes a pass from the object.
   /// Throws an std::out_of_range exception if the object or pass is not found 

@@ -336,15 +336,70 @@ void SpireObject::addPass(
     const std::string& program,
     std::shared_ptr<VBOObject> vbo,
     std::shared_ptr<IBOObject> ibo,
-    GLenum type)
+    GLenum type, const std::string& parentPass)
 {
   // Check to see if there already is a pass by that name...
-  if (mPasses.find(passName) != mPasses.end())
-    throw Duplicate("There already exists a pass with the specified pass name.");
-
-  // Build the pass.
+  auto foundPass = mPasses.find(passName);
   std::shared_ptr<ObjectPass> pass(new ObjectPass(mHub, passName, program, vbo, ibo, type));
-  mPasses.insert(std::make_pair(passName, pass));
+
+  // Check for corner case where subpasses were added to the object before
+  // the pass was added itself.
+  if (foundPass != mPasses.end())
+  {
+    // Corner case
+    if ((*foundPass).second.objectPass == nullptr)
+    {
+      (*foundPass).second.objectPass = pass;
+    }
+    else
+    {
+      Log::error() << "Attempting to add another object pass by the same name.";
+      throw Duplicate("There already exists a pass with the specified pass name.");
+    }
+  }
+  else
+  {
+    // Build the pass and associate it with any parent pass.
+    ObjectPassInternal internalPass(pass);
+
+    // Insert the pass into our array. Even sub-passes are added to the toplevel
+    // of our array. This is so that we can use the normal pass functions to
+    // manipulate subpasses without any extra logic.
+    mPasses.insert(std::make_pair(passName, internalPass));
+  }
+
+  // Check to see if we are adding a subpass. If we are, look up the parent
+  // pass' object. If the parent pass' object does not exist yet, simply
+  // create it. This auto-creation is the cause of the corner case above.
+  if (parentPass.size() > 0)
+  {
+    auto parentPassIt = mPasses.find(parentPass);
+
+    if (parentPassIt == mPasses.end())
+    {
+      ObjectPassInternal parentInternalPass(nullptr);
+
+      // Construct a dummy pass for the parent.
+      mPasses.insert(std::make_pair(parentPass, parentInternalPass));
+      parentPassIt = mPasses.find(parentPass);
+    }
+    
+    // Create subpass vector if it doesn't already exist.
+    if (parentPassIt->second.objectSubPasses == nullptr)
+    {
+      parentPassIt->second.objectSubPasses = 
+          std::shared_ptr<std::vector<std::shared_ptr<ObjectPass>>>(
+              new std::vector<std::shared_ptr<ObjectPass>>);
+    }
+
+    // Note that duplicate sub-passes have already been weeded out via the
+    // name checking that occurs above (since we add subpasses to the top level
+    // passes anyways).
+
+    // Now add the subpass to the parentPass' vector of subPasses.
+    std::vector<std::shared_ptr<ObjectPass>>& subPasses = *parentPassIt->second.objectSubPasses;
+    subPasses.push_back(pass);
+  }
 
   // Copy any global uniforms that may be relevant to the pass' shader.
   for (auto it = mObjectGlobalUniforms.begin(); it != mObjectGlobalUniforms.end(); ++it)
@@ -456,7 +511,8 @@ void SpireObject::addGlobalUniform(const std::string& uniformName,
   // Attempt to update any children pass' that contain this uniform.
   for (auto it = mPasses.begin(); it != mPasses.end(); ++it)
   {
-    it->second->addPassUniform(uniformName, item, true);
+    if (it->second.objectPass != nullptr)
+      it->second.objectPass->addPassUniform(uniformName, item, true);
   }
 }
 
@@ -470,7 +526,12 @@ void SpireObject::addPassGPUState(const std::string& passName, const GPUState& s
 //------------------------------------------------------------------------------
 std::shared_ptr<ObjectPass> SpireObject::getPassByName(const std::string& name) const
 {
-  return mPasses.at(name);
+  std::shared_ptr<ObjectPass> pass = mPasses.at(name).objectPass;
+
+  if (pass != nullptr)
+    return pass;
+  else
+    throw NotFound("Unable to find pass with given name.");
 }
 
 //------------------------------------------------------------------------------
@@ -488,8 +549,14 @@ bool SpireObject::hasGlobalUniform(const std::string& uniformName) const
 void SpireObject::renderPass(const std::string& passName)
 {
   ObjectLambdaInterface lambdaInterface(mHub, passName, *this);
-  std::shared_ptr<ObjectPass> pass = mPasses[passName];
-  pass->renderPass(lambdaInterface);
+  ObjectPassInternal& internalObjectPass = mPasses[passName];
+  std::shared_ptr<ObjectPass> pass = internalObjectPass.objectPass;
+
+  // Render the pass
+  if (pass != nullptr)
+    pass->renderPass(lambdaInterface);
+
+  // Now render any associated subpasses.
 }
 
 //------------------------------------------------------------------------------

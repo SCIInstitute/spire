@@ -176,8 +176,11 @@ protected:
   Hub&                                  mHub;     ///< Hub.
 
   /// Lambda callbacks.
+  /// @{
   std::vector<Interface::ObjectUniformLambdaFunction> mUniformLambdas;
   std::vector<Interface::ObjectLambdaFunction>        mRenderLambdas;
+  /// @}
+  
 };
 
 //------------------------------------------------------------------------------
@@ -196,7 +199,8 @@ public:
                const std::string& program,
                std::shared_ptr<VBOObject> vbo,
                std::shared_ptr<IBOObject> ibo,
-               GLenum primType);
+               GLenum primType,
+               const std::string& parentPass);
 
   /// \note If we add ability to remove IBOs and VBOs, the IBOs and VBOs will
   ///       not be removed until their corresponding passes are removed
@@ -265,6 +269,8 @@ public:
 
 protected:
 
+  typedef std::shared_ptr<AbstractUniformStateItem> ObjectUniformItem;
+
   struct ObjectGlobalUniformItem
   {
     ObjectGlobalUniformItem(const std::string& name,
@@ -273,17 +279,32 @@ protected:
         item(uniformItem)
     {}
 
-    std::string                               uniformName;
-    std::shared_ptr<AbstractUniformStateItem> item;
+    std::string         uniformName;
+    ObjectUniformItem   item;
+  };
+
+  struct ObjectPassInternal
+  {
+    ObjectPassInternal() { }
+    ObjectPassInternal(std::shared_ptr<ObjectPass> objectPassIn)
+    {
+      this->objectPass = objectPassIn;
+    }
+
+    /// Pointer to the actual object pass.
+    std::shared_ptr<ObjectPass>               objectPass;
+    
+    /// Pointer to the optional subpasses associated with this object pass.
+    std::shared_ptr<std::vector<std::shared_ptr<ObjectPass>>>  objectSubPasses;
   };
 
   /// Retrieves the pass by name.
   std::shared_ptr<ObjectPass> getPassByName(const std::string& name) const;
 
   /// All registered passes.
-  std::unordered_map<std::string, std::shared_ptr<ObjectPass>>  mPasses;
-  std::vector<ObjectGlobalUniformItem>                          mObjectGlobalUniforms;
-  std::unordered_map<std::string, std::shared_ptr<AbstractUniformStateItem>> mMetadata;
+  std::unordered_map<std::string, ObjectPassInternal>   mPasses;
+  std::vector<ObjectGlobalUniformItem>                  mObjectGlobalUniforms;
+  std::unordered_map<std::string, ObjectUniformItem>    mMetadata;
 
   // These maps may actually be more efficient implemented as an array. The map 
   // sizes are small and cache coherency will be more important. Ignoring for 
