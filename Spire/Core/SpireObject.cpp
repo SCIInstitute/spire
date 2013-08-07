@@ -557,6 +557,14 @@ void SpireObject::renderPass(const std::string& passName)
     pass->renderPass(lambdaInterface);
 
   // Now render any associated subpasses.
+  if (internalObjectPass.objectSubPasses != nullptr)
+  {
+    for (auto it = internalObjectPass.objectSubPasses->begin(); 
+         it != internalObjectPass.objectSubPasses->end(); ++it)
+    {
+      (*it)->renderPass(lambdaInterface);
+    }
+  }
 }
 
 //------------------------------------------------------------------------------
