@@ -114,6 +114,8 @@ void InterfaceImplementation::doAllPasses()
 
   /// \todo Move this outside of the interface!
   GL(glClearColor(0.0f, 0.0f, 0.0f, 1.0f));
+  if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+    Log::message() << "Incomplete frame buffer: " << glCheckFramebufferStatus(GL_FRAMEBUFFER) << std::endl;
   GL(glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT));
 
   /// \todo Make line width a part of the GPU state.
