@@ -58,7 +58,6 @@ void ShaderAttributeMan::addAttribute(const std::string& codeName,
                                       size_t numComponents, bool normalize,
                                       size_t size, Interface::DATA_TYPES type)
 {
-  Log::message() << "Adding shader attribute: " << codeName << std::endl;
   AttribState attrib;
   attrib.index          = mAttributes.size();
   attrib.codeName       = codeName;

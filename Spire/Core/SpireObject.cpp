@@ -526,12 +526,22 @@ void SpireObject::addPassGPUState(const std::string& passName, const GPUState& s
 //------------------------------------------------------------------------------
 std::shared_ptr<ObjectPass> SpireObject::getPassByName(const std::string& name) const
 {
-  std::shared_ptr<ObjectPass> pass = mPasses.at(name).objectPass;
+  std::shared_ptr<ObjectPass> pass;
+  try
+  {
+    pass = mPasses.at(name).objectPass;
+  }
+  catch (std::exception&)
+  {
+    Log::error() << "Unable to find SpireObject pass: " << name << ". " 
+                 << "Make sure it has been added to the system. "
+                 << "Generally this means that you should add passes to the object before performin this operation." << std::endl;
+  }
 
   if (pass != nullptr)
     return pass;
   else
-    throw NotFound("Unable to find pass with given name.");
+    throw NotFound("Pass was found, but no object provided. Unable to find pass with given name.");
 }
 
 //------------------------------------------------------------------------------
