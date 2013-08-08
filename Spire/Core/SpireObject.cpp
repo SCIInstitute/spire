@@ -572,7 +572,8 @@ void SpireObject::renderPass(const std::string& passName)
     for (auto it = internalObjectPass.objectSubPasses->begin(); 
          it != internalObjectPass.objectSubPasses->end(); ++it)
     {
-      (*it)->renderPass(lambdaInterface);
+      ObjectLambdaInterface subLambdaInterface(mHub, (*it)->getName(), *this);
+      (*it)->renderPass(subLambdaInterface);
     }
   }
 }
