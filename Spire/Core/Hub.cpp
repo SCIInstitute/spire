@@ -128,11 +128,22 @@ void Hub::oneTimeInitOnThread()
 
   Log::message() << std::endl << "------------------------------" << std::endl;
   Log::message() << "OpenGL initialization. Running on a " << vendor << " "
-                 << renderer << " with OpenGL version " << versionl
+                 << renderer << " with OpenGL version " << versionl << std::endl;
+
 #ifdef SPIRE_USE_STD_THREADS
-                 << std::endl << "GL made current on thread " << std::this_thread::get_id()
+  Log::message() << "Spire compiled with threading support." << std::endl;
+  if (isRendererThreadRunning())
+  {
+    Log::message() << "** Asynchronous spire on thread " << std::this_thread::get_id() << " **" << std::endl;
+  }
+  else
+  {
+    Log::message() << "** Synchronous spire on parent thread **" << std::endl;
+  }
+#else
+  Log::message() << "Spire compiled without thread support." << std::endl;
+  Log::message() << "** Synchronous spire on parent thread **" << std::endl;
 #endif
-                 << std::endl;
 
   GLint tmp;
   Log::debug() << "Hardware specific attributes" << std::endl;
