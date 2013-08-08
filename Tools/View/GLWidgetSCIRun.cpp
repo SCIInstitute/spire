@@ -183,7 +183,7 @@ void GLWidget::buildScene()
     Spire::Interface::loadProprietarySR5AssetFile(fstream, *vbo, *ibo);
     fstream.close();
 
-    // loadProprietarySR5ASsetFile always produces positions and normals in the
+    // loadProprietarySR5AssetFile always produces positions and normals in the
     // vbo and 16bit index buffers.
     std::vector<std::string> attribNames = {"aPos", "aNormal"};
     Spire::Interface::IBO_TYPE iboType = Spire::Interface::IBO_16BIT;

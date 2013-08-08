@@ -114,9 +114,12 @@ void InterfaceImplementation::doAllPasses()
 
   /// \todo Move this outside of the interface!
   GL(glClearColor(0.0f, 0.0f, 0.0f, 1.0f));
+  glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
+  glGetError(); // See: http://lists.apple.com/archives/mac-opengl/2012/Jul/msg00038.html
+
+  // GL_FRAMEBUFFER_UNDEFINED 
   if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
     Log::message() << "Incomplete frame buffer: " << glCheckFramebufferStatus(GL_FRAMEBUFFER) << std::endl;
-  GL(glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT));
 
   /// \todo Make line width a part of the GPU state.
   glLineWidth(2.0f);
