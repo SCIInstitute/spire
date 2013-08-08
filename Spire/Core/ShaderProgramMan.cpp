@@ -147,7 +147,7 @@ ShaderProgramAsset::ShaderProgramAsset(
       }
       catch (ShaderAttributeNotFound&)
       {
-        Log::error() << "Unable to find attribute: ''" << attributeName << "'"
+        Log::error() << "Unable to find attribute: '" << attributeName << "'"
                      << " in ShaderAttributeMan.\n";
       }
     }
