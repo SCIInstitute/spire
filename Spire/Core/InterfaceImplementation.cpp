@@ -293,24 +293,27 @@ void InterfaceImplementation::addPassToObject(InterfaceImplementation& self, std
   std::shared_ptr<VBOObject> vbo = self.mVBOMap.at(vboName);
   std::shared_ptr<IBOObject> ibo = self.mIBOMap.at(iboName);
 
-  if (parentPass.size() == 0)
+  // The 'responsiblePass' must exist. It is under this pass in which objects
+  // will be rendered.
+  std::string responsiblePass = pass;
+  if (parentPass.size() > 0)
+    responsiblePass = parentPass;
+
+  // Find the responsible pass and add this object to it.
+  auto passIt = self.mNameToPass.find(responsiblePass);
+  if (passIt != self.mNameToPass.end())
   {
-    // Attempt to find global pass since we are not the child of another pass.
-    auto passIt = self.mNameToPass.find(pass);
-    if (passIt != self.mNameToPass.end())
-    {
-      // Add object to pass if it isn't already part of the pass.
-      auto objectInPass = passIt->second->mNameToObject.find(object);
-      if (objectInPass == self.mNameToObject.end())
-        passIt->second->mNameToObject[object] = obj;
-    }
-    else
-    {
-      // This pass is NOT a subpass, the non-existance of a global pass must
-      // be an error.
-      Log::error() << "Unable to find global pass and parent pass was not specified.";
-      throw std::runtime_error("Global pass (" + pass + ") does not exist.");
-    }
+    // Add object to pass if it isn't already part of the pass.
+    auto objectInPass = passIt->second->mNameToObject.find(object);
+    if (objectInPass == self.mNameToObject.end())
+      passIt->second->mNameToObject[object] = obj;
+  }
+  else
+  {
+    // This pass is NOT a subpass, the non-existance of a global pass must
+    // be an error.
+    Log::error() << "Unable to find global pass and parent pass was not specified.";
+    throw std::runtime_error("Global pass (" + pass + ") does not exist.");
   }
 
   obj->addPass(pass, program, vbo, ibo, getGLPrimitive(type), parentPass);
