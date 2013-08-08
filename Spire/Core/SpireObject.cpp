@@ -541,7 +541,7 @@ std::shared_ptr<ObjectPass> SpireObject::getPassByName(const std::string& name) 
   if (pass != nullptr)
     return pass;
   else
-    throw NotFound("Pass was found, but no object provided. Unable to find pass with given name.");
+    throw NotFound("Pass (" + name + ") was found, but no object provided. Unable to find pass with given name.");
 }
 
 //------------------------------------------------------------------------------
