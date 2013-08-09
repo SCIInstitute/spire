@@ -306,7 +306,7 @@ void InterfaceImplementation::addPassToObject(InterfaceImplementation& self, std
   {
     // Add object to pass if it isn't already part of the pass.
     auto objectInPass = passIt->second->mNameToObject.find(object);
-    if (objectInPass == self.mNameToObject.end())
+    if (objectInPass == passIt->second->mNameToObject.end())
       passIt->second->mNameToObject[object] = obj;
   }
   else

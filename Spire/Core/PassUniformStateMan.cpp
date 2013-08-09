@@ -44,9 +44,9 @@ PassUniformStateMan::PassUniformStateMan(Hub& hub) :
 }
 
 //------------------------------------------------------------------------------
-PassUniformStateMan::~PassUniformStateMan()
-{
-}
+//PassUniformStateMan::~PassUniformStateMan()
+//{
+//}
 
 //------------------------------------------------------------------------------
 PassUniformStateMan::PassUniforms* PassUniformStateMan::getPass(const std::string& pass)

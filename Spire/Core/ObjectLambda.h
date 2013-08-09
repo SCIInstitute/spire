@@ -32,6 +32,7 @@
 #ifndef SPIRE_STUINTERFACE_LAMBDA_H
 #define SPIRE_STUINTERFACE_LAMBDA_H
 
+#include "WinDLLExport.h"
 #include "LambdaInterface.h"
 
 namespace Spire 
@@ -40,7 +41,7 @@ namespace Spire
 class SpireObject;
 
 /// StuPipe interface lambda.
-class ObjectLambdaInterface : public LambdaInterface
+class WIN_DLL ObjectLambdaInterface : public LambdaInterface
 {
 public:
   ObjectLambdaInterface(Hub& hub, const std::string& pass, const SpireObject& object) :

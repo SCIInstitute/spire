@@ -44,9 +44,9 @@ ShaderUniformStateMan::ShaderUniformStateMan(Hub& hub) :
 }
 
 //------------------------------------------------------------------------------
-ShaderUniformStateMan::~ShaderUniformStateMan()
-{
-}
+//ShaderUniformStateMan::~ShaderUniformStateMan()
+//{
+//}
 
 //------------------------------------------------------------------------------
 bool ShaderUniformStateMan::applyUniform(const std::string& name, int location)

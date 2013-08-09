@@ -34,7 +34,7 @@
 
 #include <map>
 #include <unordered_map>
-
+#include "WinDLLExport.h"
 #include "ShaderUniformStateManTemplates.h"
 
 namespace Spire {
@@ -43,11 +43,11 @@ class Hub;
 
 /// Unform state management. The currently available uniform state can be
 /// set and queried from this interface.
-class PassUniformStateMan
+class WIN_DLL PassUniformStateMan
 {
 public:
   PassUniformStateMan(Hub& hub);
-  virtual ~PassUniformStateMan();
+  virtual ~PassUniformStateMan() {}
   
   /// Adds a uniform to the global state.
   /// Throws std::out_of_range if a uniform of corresponding name is not found

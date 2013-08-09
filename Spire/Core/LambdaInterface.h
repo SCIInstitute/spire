@@ -33,6 +33,7 @@
 #define SPIRE_LAMBDA_INTERFACE_H
 
 #include <string>
+#include "WinDLLExport.h"
 #include "ShaderUniformStateManTemplates.h"
 #include "Hub.h"
 
@@ -41,7 +42,7 @@ namespace Spire
 
 /// Class that encapsulates all functionality that an anonymous function passed
 /// into an interface would need access to in order to do meaningful work.
-class LambdaInterface
+class WIN_DLL LambdaInterface
 {
 public:
   LambdaInterface(Hub& hub, const std::string& pass) :

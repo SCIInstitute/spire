@@ -32,11 +32,14 @@
 #ifndef SPIRE_INTERFACE_H
 #define SPIRE_INTERFACE_H
 
+#include <cstdint>
+#include <tuple>
 #include <string>
 #include <vector>
 #include <list>
 #include <functional>
 #include <memory>
+
 
 #include "Context.h"
 

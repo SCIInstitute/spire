@@ -326,7 +326,7 @@ SpireObject::SpireObject(Hub& hub, const std::string& name) :
 {
   // Reserve at least one slot for the object transformation, and one more for
   // good measure.
-  mMetadata.reserve(2);
+  //mMetadata.reserve(2);
 }
 
 
