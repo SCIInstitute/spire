@@ -27,35 +27,45 @@
 */
 
 /// \author James Hughes
-/// \date   February 2013
+/// \date   August 2013
 
-#include "VBOObject.h"
+#ifndef SPIREEXT_VISUALIZENORMALS_H
+#define SPIREEXT_VISUALIZENORMALS_H
+
+#include <string>
+#include <vector>
+#include <memory>
+
+#include "WinDLLExport.h"
 
 namespace Spire {
+namespace Extensions {
 
-//------------------------------------------------------------------------------
-VBOObject::VBOObject(
-    std::shared_ptr<std::vector<uint8_t>> vboData,
-    const std::vector<std::string>& attributes,
-    const ShaderAttributeMan& man)
-    : mAttributeCollection(man)
+/// \note This class only exists because we do not have access to geometry
+///       shaders on all platforms (Mac).
+
+/// \note In order for this class to work as planned, we would need to run it on
+//        the graphics thread since we need to grab the VBO using vboName...
+//        That means that we would need to script what comes after. This is 
+//        where continuation programming would need to come in. If thats really
+//        the mechanic that we want to use...
+
+/// Visualize normals using VBO name and the name of the position and normal
+/// attributes associated with that VBO.
+class WIN_DLL VisualizeNormals
 {
-  GL(glGenBuffers(1, &mGLIndex));
-  GL(glBindBuffer(GL_ARRAY_BUFFER, mGLIndex));
-  GL(glBufferData(GL_ARRAY_BUFFER, static_cast<GLsizeiptr>(vboData->size()), 
-                  &(*vboData)[0], GL_STATIC_DRAW));
+public:
+  VisualizeNormals(const std::string& vboName, 
+                   std::shared_ptr<std::vector<uint8_t>> vboData,
+                   const std::string& posAttribName,
+                   const std::string& normalAttribName,
+                   std::function<> continuation);
 
-  for (auto it = attributes.begin(); it != attributes.end(); ++it)
-  {
-    mAttributeCollection.addAttribute(*it);
-  }
-}
+  virtual ~VisualizeNormals();
+  
+};
 
-//------------------------------------------------------------------------------
-VBOObject::~VBOObject()
-{
-  GL(glDeleteBuffers(1, &mGLIndex));
-}
+} // namespace Extensions
+} // namespace Spire 
 
-
-} // end of namespace Spire
+#endif 

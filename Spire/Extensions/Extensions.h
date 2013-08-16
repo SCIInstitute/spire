@@ -27,35 +27,24 @@
 */
 
 /// \author James Hughes
-/// \date   February 2013
+/// \date   August 2013
 
-#include "VBOObject.h"
+#ifndef EXTENSIONS_H
+#define EXTENSIONS_H
 
 namespace Spire {
+namespace Extensions {
 
-//------------------------------------------------------------------------------
-VBOObject::VBOObject(
-    std::shared_ptr<std::vector<uint8_t>> vboData,
-    const std::vector<std::string>& attributes,
-    const ShaderAttributeMan& man)
-    : mAttributeCollection(man)
+/// 
+class Extensions
 {
-  GL(glGenBuffers(1, &mGLIndex));
-  GL(glBindBuffer(GL_ARRAY_BUFFER, mGLIndex));
-  GL(glBufferData(GL_ARRAY_BUFFER, static_cast<GLsizeiptr>(vboData->size()), 
-                  &(*vboData)[0], GL_STATIC_DRAW));
+public:
+  Extensions();
+  virtual ~Extensions();
+  
+};
 
-  for (auto it = attributes.begin(); it != attributes.end(); ++it)
-  {
-    mAttributeCollection.addAttribute(*it);
-  }
-}
+} // namespace Extensions
+} // namespace Spire 
 
-//------------------------------------------------------------------------------
-VBOObject::~VBOObject()
-{
-  GL(glDeleteBuffers(1, &mGLIndex));
-}
-
-
-} // end of namespace Spire
+#endif 
