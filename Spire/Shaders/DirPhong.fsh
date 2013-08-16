@@ -48,7 +48,7 @@ varying vec3  vNormal;
 
 void main()
 {
-  vec3 normal       = normalize(vNormal);
+  vec3  normal      = normalize(vNormal);
   float diffuse     = max(0.0, dot(normal, uLightDirWorld));
   vec3  reflection  = reflect(uLightDirWorld, normal);
   float spec        = max(0.0, dot(reflection, uCamViewVec));
@@ -56,3 +56,4 @@ void main()
   spec              = pow(spec, uSpecularPower);
   gl_FragColor      = pow(diffuse * spec * uSpecularColor + diffuse * uDiffuseColor + uAmbientColor, vec4(1.0/2.2));
 }
+
