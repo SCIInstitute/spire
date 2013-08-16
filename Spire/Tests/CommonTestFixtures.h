@@ -77,6 +77,9 @@ public:
     mSpire->addShaderAttribute("aNormal",      3,  false,  sizeof(float) * 3,  Spire::Interface::TYPE_FLOAT);
     mSpire->addShaderAttribute("aColorFloat",  4,  false,  sizeof(float) * 4,  Spire::Interface::TYPE_FLOAT);
     mSpire->addShaderAttribute("aColor",       4,  true,   sizeof(char) * 4,   Spire::Interface::TYPE_UBYTE);
+
+    // Used to test attribute mis-alignment.
+    mSpire->addShaderAttribute("aFieldData",   1,  false,  sizeof(float) * 1,  Spire::Interface::TYPE_FLOAT);
   }
 
   std::shared_ptr<Spire::Interface>     mSpire;

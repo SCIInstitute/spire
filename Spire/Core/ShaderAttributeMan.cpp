@@ -193,11 +193,6 @@ void ShaderAttributeCollection::addAttribute(const std::string& attribName)
   {
     AttribState attribData = mAttributeMan.getAttributeAtIndex(std::get<1>(ret));
     mAttributes.push_back(attribData);
-
-    // Re-sort the array.
-    std::sort(mAttributes.begin(), mAttributes.end(),
-         [] (const AttribState& a, const AttribState& b) 
-          { return a.index < b.index; });
   }
   else
   {
@@ -219,7 +214,6 @@ void ShaderAttributeCollection::bindAttributes(std::shared_ptr<ShaderProgramAsse
   size_t offset = 0;
   for (auto it = mAttributes.begin(); it != mAttributes.end(); ++it)
   {
-    /// \todo Make this check more efficient.
     if (program->getAttributes().hasAttribute(it->codeName))
     {
       if (it->index != ShaderAttributeMan::getUnknownAttributeIndex())
@@ -266,7 +260,6 @@ size_t ShaderAttributeCollection::calculateNumCommonAttributes(const ShaderAttri
 {
   size_t numCommon = 0;
 
-  // This check could be done much faster since both arrays are sorted.
   for (auto it = mAttributes.begin(); it != mAttributes.end(); ++it)
   {
     if (compare.hasIndex(it->index))

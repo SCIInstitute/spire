@@ -807,5 +807,119 @@ TEST_F(InterfaceTestFixture, TestRenderingWithAttributes)
 
 }
 
+//------------------------------------------------------------------------------
+TEST_F(InterfaceTestFixture, TestRenderingWithOutOfOrderAttributes)
+{
+  std::string testFileName = "orderOfAttributes.png";
+  // Test the rendering of a phong shaded quad with out of order attributes.
+  // aFieldData is unused in the phong shader.
+
+  // Ensure shader is loaded.
+  std::string shader1 = "DirPhong";
+  mSpire->addPersistentShader(
+      shader1, 
+      { std::make_tuple("DirPhong.vsh", Spire::Interface::VERTEX_SHADER), 
+        std::make_tuple("DirPhong.fsh", Spire::Interface::FRAGMENT_SHADER),
+      });
+
+  // Setup VBO / IBO.
+  std::vector<float> vboData = 
+  {
+    -1.0f,  1.0f,  0.0f,  0.0f,  0.0f, 0.0f, 1.0f,
+     1.0f,  1.0f,  0.0f,  0.0f,  0.0f, 0.0f, 1.0f,
+    -1.0f, -1.0f,  0.0f,  0.0f,  0.0f, 0.0f, 1.0f,
+     1.0f, -1.0f,  0.0f,  0.0f,  0.0f, 0.0f, 1.0f
+  };
+  std::vector<std::string> attribNames = {"aPos", "aFieldData", "aNormal"};
+
+  std::vector<uint16_t> iboData =
+  {
+    0, 1, 2, 3
+  };
+  Interface::IBO_TYPE iboType = Interface::IBO_16BIT;
+
+  uint8_t*  rawBegin;
+  size_t    rawSize;
+
+  // Copy vboData into vector of uint8_t. Using std::copy.
+  std::shared_ptr<std::vector<uint8_t>> rawVBO(new std::vector<uint8_t>());
+  rawSize = vboData.size() * (sizeof(float) / sizeof(uint8_t));
+  rawVBO->reserve(rawSize);
+  rawBegin = reinterpret_cast<uint8_t*>(&vboData[0]); // Remember, standard guarantees that vectors are contiguous in memory.
+  rawVBO->assign(rawBegin, rawBegin + rawSize);
+
+  // Copy iboData into vector of uint8_t. Using std::vector::assign.
+  std::shared_ptr<std::vector<uint8_t>> rawIBO(new std::vector<uint8_t>());
+  rawSize = iboData.size() * (sizeof(uint16_t) / sizeof(uint8_t));
+  rawIBO->reserve(rawSize);
+  rawBegin = reinterpret_cast<uint8_t*>(&iboData[0]); // Remember, standard guarantees that vectors are contiguous in memory.
+  rawIBO->assign(rawBegin, rawBegin + rawSize);
+
+  // Add necessary VBO's and IBO's
+  std::string vbo1 = "vbo1";
+  std::string ibo1 = "ibo1";
+  mSpire->addVBO(vbo1, rawVBO, attribNames);
+  mSpire->addIBO(ibo1, rawIBO, iboType);
+
+  // Setup object with default pass.
+  std::string obj1 = "obj1";
+  mSpire->addObject(obj1);
+  
+  mSpire->addPassToObject(obj1, shader1, vbo1, ibo1, Interface::TRIANGLE_STRIP);
+  mSpire->removeIBO(ibo1);
+  mSpire->removeVBO(vbo1);
+
+  mSpire->addObjectPassUniform(obj1, "uAmbientColor", V4(0.01f, 0.01f, 0.01f, 1.0f));
+  mSpire->addObjectPassUniform(obj1, "uDiffuseColor", V4(0.0f, 0.8f, 0.0f, 1.0f));
+  mSpire->addObjectPassUniform(obj1, "uSpecularColor", V4(0.0f, 0.0f, 0.0f, 1.0f));
+  mSpire->addObjectPassUniform(obj1, "uSpecularPower", 16.0f);
+  mSpire->addLambdaObjectUniforms(obj1, lambdaUniformObjTrafs);
+
+  M44 xform;
+  xform[3] = V4(0.0f, 0.0f, 0.0f, 1.0f);
+  mSpire->addObjectPassMetadata(
+      obj1, std::get<0>(SRCommonAttributes::getObjectToWorldTrafo()), xform);
+
+  // Setup uniforms unrelated to our object.
+  mSpire->addGlobalUniform("uLightDirWorld", V3(0.0f, 0.0f, 1.0f));
+  mCamera->setSRCommonUniforms(mSpire);
+
+  mSpire->ntsDoFrame();
+
+  // Write the resultant png to a temporary directory and compare against
+  // the golden image results.
+  /// \todo Look into using boost filesystem (but it isn't header-only). 
+
+#ifdef TEST_OUTPUT_IMAGES
+  std::string targetImage = TEST_IMAGE_OUTPUT_DIR;
+  targetImage += "/" + testFileName ;
+  Spire::GlobalTestEnvironment::instance()->writeFBO(targetImage);
+
+  EXPECT_TRUE(Spire::fileExists(targetImage)) << "Failed to write output image! " << targetImage;
+
+#ifdef TEST_PERCEPTUAL_COMPARE
+  // Perform the perceptual comparison using the given regression directory.
+  std::string compImage = TEST_IMAGE_COMPARE_DIR;
+  compImage += "/" + testFileName ;
+
+  ASSERT_TRUE(Spire::fileExists(compImage)) << "Failed to find comparison image! " << compImage;
+  // Test using perceptula comparison program that the user has provided
+  // (hopefully).
+  std::string command = TEST_PERCEPTUAL_COMPARE_BINARY;
+  command += " -threshold 50 ";
+  command += targetImage + " " + compImage;
+
+  // Usually the return code of std::system is implementation specific. But the
+  // majority of systems end up returning the exit code of the program.
+  if (std::system(command.c_str()) != 0)
+  {
+    // The images are NOT the same. Alert the user.
+    FAIL() << "Perceptual compare of " << testFileName << " failed.";
+  }
+#endif
+
+#endif
+}
+
 }
 

@@ -91,7 +91,14 @@ void ShaderUniformStateMan::updateGlobalUniform(const std::string& name,
 //------------------------------------------------------------------------------
 std::shared_ptr<const AbstractUniformStateItem> ShaderUniformStateMan::getGlobalUninform(const std::string& name)
 {
-  return mGlobalState.at(name);
+  try
+  {
+    return mGlobalState.at(name);
+  }
+  catch (std::exception&)
+  {
+    throw NotFound("Unable to find uniform at any level: '" + name + "'");
+  }
 }
 
 //------------------------------------------------------------------------------

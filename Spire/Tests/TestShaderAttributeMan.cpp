@@ -214,18 +214,18 @@ TEST_F(ShaderAttributeCollectionTests, primaryTest)
   ASSERT_NO_THROW(state = mCol2.getAttribute(0));
   EXPECT_EQ("at1", state.codeName);
   ASSERT_NO_THROW(state = mCol2.getAttribute(1));
-  EXPECT_EQ("at2", state.codeName);
-  ASSERT_NO_THROW(state = mCol2.getAttribute(2));
   EXPECT_EQ("at3", state.codeName);
+  ASSERT_NO_THROW(state = mCol2.getAttribute(2));
+  EXPECT_EQ("at2", state.codeName);
 
   ASSERT_NO_THROW(state = mCol3.getAttribute(0));
-  EXPECT_EQ("at1", state.codeName);
+  EXPECT_EQ("at4", state.codeName);
   ASSERT_NO_THROW(state = mCol3.getAttribute(1));
-  EXPECT_EQ("at2", state.codeName);
+  EXPECT_EQ("at1", state.codeName);
   ASSERT_NO_THROW(state = mCol3.getAttribute(2));
   EXPECT_EQ("at3", state.codeName);
   ASSERT_NO_THROW(state = mCol3.getAttribute(3));
-  EXPECT_EQ("at4", state.codeName);
+  EXPECT_EQ("at2", state.codeName);
 }
 
 }
