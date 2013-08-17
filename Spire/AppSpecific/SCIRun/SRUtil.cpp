@@ -45,7 +45,7 @@ size_t buildNormalRenderingForVBO(std::shared_ptr<std::vector<uint8_t>> vboData,
   uint8_t* rawData = &(*vboData)[0];
 
   // Figure out the size of out_vboData and out_iboData.
-  int numInVertices = vboData->size() / stride;
+  size_t numInVertices = vboData->size() / stride;
   size_t outVBOSize = numInVertices * (sizeof(float) * 3 + sizeof(float) * 3) * 2;
   size_t outIBOSize = numInVertices * (sizeof(uint16_t) * 2);
 
