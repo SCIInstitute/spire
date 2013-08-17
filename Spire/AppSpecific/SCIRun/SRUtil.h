@@ -40,18 +40,20 @@ namespace SCIRun {
 
 // Misc SCIRun utilities.
 
+/// \todo Possibly parameterize uint16_t output type for ibo using templates.
+
 /// Normal rendering. Expects position and normals to be floats.
 /// \param  vboData     The raw VBO that gets sent to spire.
 /// \param  stride      Stride between vertices.
+/// \param  normLength  Length of the normal.
 /// \param  posOffset   Offset to position.
 /// \param  normOffset  Offset to the normal.
-/// \param  out_vboData Output VBO data. Format: Position, normal. Where there
-///                     3 elements inside the position and normal and each 
-///                     element is a float.
+/// \param  out_vboData Output VBO data. Format: Position. Where the 3 elements
+///                     inside the position are floats.
 /// \param  out_iboData Output IBO data. Format: uint16_t, GL_LINE.
 /// \return The number of elements (GL_LINE) in the ibo data.
 size_t buildNormalRenderingForVBO(std::shared_ptr<std::vector<uint8_t>> vboData,
-                                  size_t stride,
+                                  size_t stride, float normLength,
                                   std::vector<uint8_t>& out_vboData,
                                   std::vector<uint8_t>& out_iboData,
                                   size_t posOffset = 0,
