@@ -88,8 +88,6 @@ if (UNIX)
     set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -stdlib=libc++")
     add_definitions(-DSPIRE_USING_OSX)
 
-    set (CMAKE_INCLUDE_SYSTEM_FLAG_CXX="isystem")
-
     # Find necessary apple libraries (cocoa).
     FIND_LIBRARY(COCOA_LIBRARY Cocoa)
     set(OS_SPECIFIC_LIBS ${COCOA_LIBRARY})

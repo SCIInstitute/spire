@@ -61,9 +61,6 @@ if(UNIX)
         "${CMAKE_CXX_FLAGS} -stdlib=libc++ -Wall -Wextra -Werror -Wconversion -Wshadow -Wunreachable-code")
     endif()
 
-    # Make sure the compiler knows how to treat these system includes.
-    set (CMAKE_INCLUDE_SYSTEM_FLAG_CXX="isystem")
-
     # We were using CoreFoundation to look up shaders in the bundle.
     find_library(CORE_FOUNDATION_FRAMEWORK CoreFoundation)
     set(OS_SPECIFIC_LIBS ${CORE_FOUNDATION_FRAMEWORK})
