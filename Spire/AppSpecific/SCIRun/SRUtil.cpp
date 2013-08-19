@@ -64,17 +64,19 @@ size_t buildNormalRenderingForVBO(std::shared_ptr<std::vector<uint8_t>> vboData,
   auto writeFloat = [](uint8_t* _rawData, size_t* offset, float data) {
     float* floatData = reinterpret_cast<float*>(&_rawData[*offset]);
     *floatData = data;
+    *offset += sizeof(float);
   };
 
   auto writeUInt16 = [](uint8_t* _rawData, size_t* offset, uint16_t data) {
     uint16_t* uintData = reinterpret_cast<uint16_t*>(&_rawData[*offset]);
     *uintData = data;
+    *offset += sizeof(uint16_t);
   };
 
   size_t outVboPos = 0;
   size_t outIboPos = 0;
   uint16_t iboIndex = 0;
-  for (size_t inputVboPos = 0; inputVboPos + stride < vboData->size();)
+  for (size_t inputVboPos = 0; inputVboPos + stride <= vboData->size();)
   {
     size_t inputOffset = inputVboPos + posOffset;
     V3 position;

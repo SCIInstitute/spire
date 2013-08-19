@@ -132,7 +132,15 @@ void InterfaceImplementation::doAllPasses()
   // Loop through all of the passes.
   for (auto it = mPasses.begin(); it != mPasses.end(); ++it)
   {
-    doPass((*it)->mName);
+    try
+    {
+      doPass((*it)->mName);
+    }
+    catch (std::exception& e)
+    {
+      Log::error() << "Caught exception when rendering pass: " << (*it)->mName << std::endl;
+      Log::error() << "Exception: " << e.what() << std::endl;
+    }
   }
 
   /// \todo Call all passes end lambdas. Used primarily to setup global

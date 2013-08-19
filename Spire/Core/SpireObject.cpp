@@ -443,7 +443,7 @@ std::shared_ptr<const AbstractUniformStateItem> SpireObject::getObjectGlobalMeta
   else
   {
     // This is the highest we can go looking for attributes. The buck stops here.
-    throw std::runtime_error("Unable to find object global attribute.");
+    throw Exception("Unable to find object global attribute: " + attribName);
   }
 }
 

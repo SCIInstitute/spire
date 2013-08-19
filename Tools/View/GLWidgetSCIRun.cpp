@@ -38,6 +38,7 @@
 #include <QWheelEvent>
 
 #include "GLWidgetSCIRun.h"
+#include "Spire/AppSpecific/SCIRun/SRUtil.h"
 
 using namespace SCIRun::Gui;
 using namespace Spire;
@@ -128,6 +129,8 @@ GLWidget::GLWidget(const QGLFormat& format) :
 //------------------------------------------------------------------------------
 void GLWidget::buildScene()
 {
+  bool buildNormals = true;
+
   // Add shader attributes that we will be using.
   mSpire->addShaderAttribute("aPos",         3,  false,  sizeof(float) * 3,  Spire::Interface::TYPE_FLOAT);
   mSpire->addShaderAttribute("aNormal",      3,  false,  sizeof(float) * 3,  Spire::Interface::TYPE_FLOAT);
@@ -168,9 +171,10 @@ void GLWidget::buildScene()
 
   // This load asset function operates only on the default pass, since optional
   // arguments are NOT allowed in lambdas.
-  auto loadAsset = [this](const std::string& assetFileName, 
-                          const std::string& shader,
-                          const std::string& objectName)
+  auto loadAsset = [this, buildNormals, uniformColorShader](const std::string& assetFileName, 
+                                        const std::string& shader,
+                                        const std::string& objectName,
+                                        const M44& xform)
   {
     // Load asset data from 'exported assets'.
     std::shared_ptr<std::vector<uint8_t>> vbo(new std::vector<uint8_t>());
@@ -194,11 +198,39 @@ void GLWidget::buildScene()
     mSpire->addVBO(vbo1, vbo, attribNames);
     mSpire->addIBO(ibo1, ibo, iboType);
 
-    // Add object
     mSpire->addObject(objectName);
-
-    // Build the pass
     mSpire->addPassToObject(objectName, shader, vbo1, ibo1, Spire::Interface::TRIANGLES);
+    mSpire->addLambdaObjectUniforms(objectName, lambdaUniformObjTrafs);
+
+    // Apply world transformation.
+    mSpire->addObjectPassMetadata(
+        objectName, std::get<0>(SRCommonAttributes::getObjectToWorldTrafo()), xform);
+
+    if (buildNormals)
+    {
+      // Construct a subpass of the default pass that will display the normals
+      // associated with the object.
+      std::shared_ptr<std::vector<uint8_t>> vboNormals(new std::vector<uint8_t>());
+      std::shared_ptr<std::vector<uint8_t>> iboNormals(new std::vector<uint8_t>());
+      Spire::SCIRun::buildNormalRenderingForVBO(vbo, 6 * sizeof(float), 0.5f, *vboNormals,
+                                                *iboNormals, 0, 3 * sizeof(float));
+
+      std::string normalsPassName= "normals pass";
+      std::vector<std::string> normalAttribNames = {"aPos"};
+      std::string normalVBO1 = objectName + "normal_vbo1";
+      std::string normalIBO1 = objectName + "normal_ibo1";
+      mSpire->addVBO(normalVBO1, vboNormals, normalAttribNames);
+      mSpire->addIBO(normalIBO1, iboNormals, iboType);
+      mSpire->addPassToObject(objectName, uniformColorShader, normalVBO1, normalIBO1, 
+                              Spire::Interface::LINES, normalsPassName, SPIRE_DEFAULT_PASS);
+      mSpire->addLambdaObjectUniforms(objectName, lambdaUniformObjTrafs, normalsPassName);
+
+      mSpire->addObjectPassUniform(objectName, "uColor", V4(0.74f, 0.0f, 0.0f, 1.0f), 
+                                   normalsPassName);
+      mSpire->addObjectPassMetadata(
+          objectName, std::get<0>(SRCommonAttributes::getObjectToWorldTrafo()),
+          xform, normalsPassName);
+    }
   };
 
   // Directional light in world space.
@@ -208,106 +240,83 @@ void GLWidget::buildScene()
   {
     std::string objName = "cylinder";
 
-    loadAsset("Assets/CappedCylinder.sp", uniformColorShader, objName);
-    mSpire->addObjectPassUniform(objName, "uColor", V4(0.74f, 0.0f, 0.0f, 1.0f));
-    mSpire->addLambdaObjectUniforms(objName, lambdaUniformObjTrafs);
-
     M44 xform;
     xform[3] = V4(-2.0f, 0.0f, 0.0f, 1.0f);
-    mSpire->addObjectPassMetadata(
-        objName, std::get<0>(SRCommonAttributes::getObjectToWorldTrafo()), xform);
+
+    loadAsset("Assets/CappedCylinder.sp", uniformColorShader, objName, xform);
+    mSpire->addObjectPassUniform(objName, "uColor", V4(0.74f, 0.0f, 0.0f, 1.0f));
   }
 
   // Gouraud Sphere
   {
     std::string objName = "sphere";
 
-    loadAsset("Assets/Sphere.sp", dirGouraudShader, objName);
+    M44 xform;
+    xform[3] = V4(0.0f, 0.0f, 0.0f, 1.0f);
+
+    loadAsset("Assets/Sphere.sp", dirGouraudShader, objName, xform);
 
     mSpire->addObjectPassUniform(objName, "uAmbientColor", V4(0.01f, 0.01f, 0.01f, 1.0f));
     mSpire->addObjectPassUniform(objName, "uDiffuseColor", V4(0.0f, 0.8f, 0.0f, 1.0f));
     mSpire->addObjectPassUniform(objName, "uSpecularColor", V4(1.0f, 1.0f, 1.0f, 1.0f));
     mSpire->addObjectPassUniform(objName, "uSpecularPower", 32.0f);
-
-    mSpire->addLambdaObjectUniforms(objName, lambdaUniformObjTrafs);
-
-    M44 xform;
-    xform[3] = V4(0.0f, 0.0f, 0.0f, 1.0f);
-    mSpire->addObjectPassMetadata(
-        objName, std::get<0>(SRCommonAttributes::getObjectToWorldTrafo()), xform);
   }
 
   // Gouraud Sphere
   {
     std::string objName = "sphere2";
 
-    loadAsset("Assets/Sphere.sp", dirGouraudShader, objName);
+    M44 xform;
+    xform[3] = V4(0.0f, -1.0f, 0.0f, 1.0f);
+
+    loadAsset("Assets/Sphere.sp", dirGouraudShader, objName, xform);
 
     mSpire->addObjectPassUniform(objName, "uAmbientColor", V4(0.01f, 0.01f, 0.01f, 1.0f));
     mSpire->addObjectPassUniform(objName, "uDiffuseColor", V4(0.0f, 0.8f, 0.0f, 1.0f));
     mSpire->addObjectPassUniform(objName, "uSpecularColor", V4(0.0f, 0.0f, 0.0f, 1.0f));
     mSpire->addObjectPassUniform(objName, "uSpecularPower", 32.0f);
-
-    mSpire->addLambdaObjectUniforms(objName, lambdaUniformObjTrafs);
-
-    M44 xform;
-    xform[3] = V4(0.0f, -1.0f, 0.0f, 1.0f);
-    mSpire->addObjectPassMetadata(
-        objName, std::get<0>(SRCommonAttributes::getObjectToWorldTrafo()), xform);
   }
 
   // Phong Sphere
   {
     std::string objName = "phongSphere";
 
-    loadAsset("Assets/Sphere.sp", dirPhongSphere, objName);
+    M44 xform;
+    xform[3] = V4(0.0f, 0.0f, 1.0f, 1.0f);
+
+    loadAsset("Assets/Sphere.sp", dirPhongSphere, objName, xform);
 
     mSpire->addObjectPassUniform(objName, "uAmbientColor", V4(0.01f, 0.01f, 0.01f, 1.0f));
     mSpire->addObjectPassUniform(objName, "uDiffuseColor", V4(0.0f, 0.8f, 0.0f, 1.0f));
     mSpire->addObjectPassUniform(objName, "uSpecularColor", V4(0.5f, 0.5f, 0.5f, 1.0f));
     mSpire->addObjectPassUniform(objName, "uSpecularPower", 16.0f);
-
-    mSpire->addLambdaObjectUniforms(objName, lambdaUniformObjTrafs);
-
-    M44 xform;
-    xform[3] = V4(0.0f, 0.0f, 1.0f, 1.0f);
-    mSpire->addObjectPassMetadata(
-        objName, std::get<0>(SRCommonAttributes::getObjectToWorldTrafo()), xform);
   }
 
   // Phong Sphere
   {
     std::string objName = "phongSphere2";
 
-    loadAsset("Assets/Sphere.sp", dirPhongSphere, objName);
+    M44 xform;
+    xform[3] = V4(0.0f, -1.0f, 1.0f, 1.0f);
+
+    loadAsset("Assets/Sphere.sp", dirPhongSphere, objName, xform);
 
     mSpire->addObjectPassUniform(objName, "uAmbientColor", V4(0.01f, 0.01f, 0.01f, 1.0f));
     mSpire->addObjectPassUniform(objName, "uDiffuseColor", V4(0.0f, 0.8f, 0.0f, 1.0f));
     mSpire->addObjectPassUniform(objName, "uSpecularColor", V4(0.0f, 0.0f, 0.0f, 1.0f));
     mSpire->addObjectPassUniform(objName, "uSpecularPower", 16.0f);
-
-    mSpire->addLambdaObjectUniforms(objName, lambdaUniformObjTrafs);
-
-    M44 xform;
-    xform[3] = V4(0.0f, -1.0f, 1.0f, 1.0f);
-    mSpire->addObjectPassMetadata(
-        objName, std::get<0>(SRCommonAttributes::getObjectToWorldTrafo()), xform);
   }
 
   // UnCapped cylinder
   {
     std::string objName = "uncylinder";
 
-    loadAsset("Assets/UncappedCylinder.sp", uniformColorShader, objName);
-
-    mSpire->addObjectPassUniform(objName, "uColor", V4(0.0f, 0.0f, 0.74f, 1.0f));
-
-    mSpire->addLambdaObjectUniforms(objName, lambdaUniformObjTrafs);
-
     M44 xform;
     xform[3] = V4(-1.0f, 0.0f, 0.0f, 1.0f);
-    mSpire->addObjectPassMetadata(
-        objName, std::get<0>(SRCommonAttributes::getObjectToWorldTrafo()), xform);
+
+    loadAsset("Assets/UncappedCylinder.sp", uniformColorShader, objName, xform);
+
+    mSpire->addObjectPassUniform(objName, "uColor", V4(0.0f, 0.0f, 0.74f, 1.0f));
   }
 
   // Coordinate axes.
@@ -320,60 +329,48 @@ void GLWidget::buildScene()
   {
     std::string objName = "xAxis";
 
-    loadAsset("Assets/UnitArrow.sp", dirPhongSphere, objName);
+    // Rotate by positive 90 degrees about y axis to get arrow pointing down xAxis.
+    M44 xform = glm::rotate(M44(), Spire::PI / 2.0f, V3(0.0, 1.0, 0.0));
+    xform[3] = V4(coordinateAxesCenter, 1.0f);
+
+    loadAsset("Assets/UnitArrow.sp", dirPhongSphere, objName, xform);
 
     mSpire->addObjectPassUniform(objName, "uAmbientColor", V4(0.5f, 0.01f, 0.01f, 1.0f));
     mSpire->addObjectPassUniform(objName, "uDiffuseColor", V4(1.0f, 0.0f, 0.0f, 1.0f));
     mSpire->addObjectPassUniform(objName, "uSpecularColor", V4(0.5f, 0.5f, 0.5f, 1.0f));
     mSpire->addObjectPassUniform(objName, "uSpecularPower", 16.0f);
-
-    mSpire->addLambdaObjectUniforms(objName, lambdaUniformObjTrafs);
-
-    // Rotate by positive 90 degrees about y axis to get arrow pointing down xAxis.
-    M44 xform = glm::rotate(M44(), Spire::PI / 2.0f, V3(0.0, 1.0, 0.0));
-    xform[3] = V4(coordinateAxesCenter, 1.0f);
-    mSpire->addObjectPassMetadata(
-        objName, std::get<0>(SRCommonAttributes::getObjectToWorldTrafo()), xform);
   }
 
   // y-axis.
   {
     std::string objName = "yAxis";
 
-    loadAsset("Assets/UnitArrow.sp", dirPhongSphere, objName);
+    // Rotate by positive 90 about x axis to get arrow pointing down yAxis.
+    M44 xform = glm::rotate(M44(), -Spire::PI / 2.0f, V3(1.0, 0.0, 0.0));
+    xform[3] = V4(coordinateAxesCenter, 1.0f);
+
+    loadAsset("Assets/UnitArrow.sp", dirPhongSphere, objName, xform);
 
     mSpire->addObjectPassUniform(objName, "uAmbientColor", V4(0.01f, 0.5f, 0.01f, 1.0f));
     mSpire->addObjectPassUniform(objName, "uDiffuseColor", V4(0.0f, 1.0f, 0.0f, 1.0f));
     mSpire->addObjectPassUniform(objName, "uSpecularColor", V4(0.5f, 0.5f, 0.5f, 1.0f));
     mSpire->addObjectPassUniform(objName, "uSpecularPower", 16.0f);
-
-    mSpire->addLambdaObjectUniforms(objName, lambdaUniformObjTrafs);
-
-    // Rotate by positive 90 about x axis to get arrow pointing down yAxis.
-    M44 xform = glm::rotate(M44(), -Spire::PI / 2.0f, V3(1.0, 0.0, 0.0));
-    xform[3] = V4(coordinateAxesCenter, 1.0f);
-    mSpire->addObjectPassMetadata(
-        objName, std::get<0>(SRCommonAttributes::getObjectToWorldTrafo()), xform);
   }
 
   // z-axis.
   {
     std::string objName = "zAxis";
 
-    loadAsset("Assets/UnitArrow.sp", dirPhongSphere, objName);
+    // Don't rotate at all, UnitArrow is initially pointing down the z axis.
+    M44 xform;
+    xform[3] = V4(coordinateAxesCenter, 1.0f);
+
+    loadAsset("Assets/UnitArrow.sp", dirPhongSphere, objName, xform);
 
     mSpire->addObjectPassUniform(objName, "uAmbientColor", V4(0.01f, 0.01f, 0.5f, 1.0f));
     mSpire->addObjectPassUniform(objName, "uDiffuseColor", V4(0.0f, 0.0f, 1.0f, 1.0f));
     mSpire->addObjectPassUniform(objName, "uSpecularColor", V4(0.5f, 0.5f, 0.5f, 1.0f));
     mSpire->addObjectPassUniform(objName, "uSpecularPower", 16.0f);
-
-    mSpire->addLambdaObjectUniforms(objName, lambdaUniformObjTrafs);
-
-    // Don't rotate at all, UnitArrow is initially pointing down the z axis.
-    M44 xform;
-    xform[3] = V4(coordinateAxesCenter, 1.0f);
-    mSpire->addObjectPassMetadata(
-        objName, std::get<0>(SRCommonAttributes::getObjectToWorldTrafo()), xform);
   }
 
 
