@@ -45,9 +45,10 @@ varying vec4    fColor;
 
 void main( void )
 {
+  vec3  invLightDir     = -uLightDirWorld;
   vec3  worldSpaceNorm  = vec3(uObject * vec4(aNormal, 0.0));
-  float diffuse         = max(0.0, dot(worldSpaceNorm, uLightDirWorld));
-  vec3  reflection      = reflect(uLightDirWorld, worldSpaceNorm);
+  float diffuse         = max(0.0, dot(worldSpaceNorm, invLightDir));
+  vec3  reflection      = reflect(invLightDir, worldSpaceNorm);
   float spec            = max(0.0, dot(reflection, uCamViewVec));
 
   // Convert color into gamma space before rasterization.
