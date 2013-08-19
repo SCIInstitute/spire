@@ -49,8 +49,8 @@ size_t buildNormalRenderingForVBO(std::shared_ptr<std::vector<uint8_t>> vboData,
   size_t outVBOSize = numInVertices * (sizeof(float) * 3 + sizeof(float) * 3) * 2;
   size_t outIBOSize = numInVertices * (sizeof(uint16_t) * 2);
 
-  out_vboData->resize(outVBOSize);
-  out_iboData->resize(outIBOSize);
+  out_vboData.resize(outVBOSize);
+  out_iboData.resize(outIBOSize);
 
   uint8_t* rawOutIBO = &out_iboData[0];
   uint8_t* rawOutVBO = &out_vboData[0];
@@ -61,15 +61,15 @@ size_t buildNormalRenderingForVBO(std::shared_ptr<std::vector<uint8_t>> vboData,
     return ret;
   };
 
-  auto writeFloat = [](uint8_t* rawData, size_t* offset, float data) {
-    float* data = reinterpret_cast<float*>(&rawData[*offset]);
-    *data = data;
-  }
+  auto writeFloat = [](uint8_t* _rawData, size_t* offset, float data) {
+    float* floatData = reinterpret_cast<float*>(&_rawData[*offset]);
+    *floatData = data;
+  };
 
-  auto writeUInt16 = [](uint8_t* rawData, size_t* offset, uint16_t data) {
-    uint16_t* data = reinterpret_cast<uint16_t*>(&rawData[*offset]);
-    *data = data;
-  }
+  auto writeUInt16 = [](uint8_t* _rawData, size_t* offset, uint16_t data) {
+    uint16_t* uintData = reinterpret_cast<uint16_t*>(&_rawData[*offset]);
+    *uintData = data;
+  };
 
   size_t outVboPos = 0;
   size_t outIboPos = 0;
@@ -82,7 +82,7 @@ size_t buildNormalRenderingForVBO(std::shared_ptr<std::vector<uint8_t>> vboData,
     position.y = readFloat(&inputOffset);
     position.z = readFloat(&inputOffset);
 
-    inputOffset = vboPos + normOffset;
+    inputOffset = inputVboPos + normOffset;
     V3 normal;
     normal.x = readFloat(&inputOffset);
     normal.y = readFloat(&inputOffset);
@@ -105,6 +105,8 @@ size_t buildNormalRenderingForVBO(std::shared_ptr<std::vector<uint8_t>> vboData,
     writeUInt16(rawOutIBO, &outIboPos, iboIndex); ++iboIndex;
     writeUInt16(rawOutIBO, &outIboPos, iboIndex); ++iboIndex;
   }
+
+  return numInVertices;
 }
 
 } // namespace SCIRun
