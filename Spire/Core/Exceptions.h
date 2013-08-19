@@ -38,91 +38,58 @@
 
 namespace Spire {
 
-/// \todo Have excetpions accept streams as input. See the spire log function.
-
-/// \todo Get rid of these ifdefs when we switch to a visual studio that
-///       supports noexcept (VS 2010 and VS 2012 do not).
-#ifndef SPIRE_USING_WIN
-  #define SPIRE_NOEXCEPT noexcept
-#else
-  #define SPIRE_NOEXCEPT
-#endif
-
-// Basic Spire exception.
-class Exception : virtual public std::exception
+class Exception : public std::runtime_error
 {
 public:
-  Exception() {}
-  Exception(std::string e) : mError(e) {}
-  virtual ~Exception() SPIRE_NOEXCEPT {}
-  virtual const char* what() const SPIRE_NOEXCEPT {return this->mError.c_str();}
-
-protected:
-  std::string mError;
+  Exception(std::string e) : std::runtime_error(e) {}
 };
 
-class ThreadException : virtual public Exception
+class ThreadException : public Exception
 {
 public:
-  ThreadException() : Exception(std::string("unknown error")) {}
   ThreadException(std::string e) : Exception(e) {}
-  virtual ~ThreadException() SPIRE_NOEXCEPT {}
 };
 
-class NotFound : virtual public Exception
+class NotFound : public Exception
 {
 public:
-  NotFound() : Exception(std::string("unknown error")) {}
   NotFound(std::string e) : Exception(e) {}
-  virtual ~NotFound() SPIRE_NOEXCEPT {}
 };
 
-class UnsupportedException : virtual public Exception
+class UnsupportedException : public Exception
 {
 public:
-  UnsupportedException() : Exception(std::string("unknown error")) {}
   UnsupportedException(std::string e) : Exception(e) {}
-  virtual ~UnsupportedException() SPIRE_NOEXCEPT {}
 };
 
-class GLError : virtual public Exception
+class GLError : public Exception
 {
 public:
-  GLError() : Exception(std::string("unknown error")) {}
   GLError(std::string e) : Exception(e) {}
-  virtual ~GLError() SPIRE_NOEXCEPT {}
 };
 
-class ShaderAttributeNotFound : virtual public NotFound
+class ShaderAttributeNotFound : public NotFound
 {
 public:
-  ShaderAttributeNotFound() : NotFound(std::string("unknown error")) {}
-  ShaderAttributeNotFound(std::string e) : Exception(e) {}
-  virtual ~ShaderAttributeNotFound() SPIRE_NOEXCEPT {}
+  ShaderAttributeNotFound(std::string e) : NotFound(e) {}
 };
 
-class ShaderUniformNotFound : virtual public NotFound
+class ShaderUniformNotFound : public NotFound
 {
 public:
-  ShaderUniformNotFound() : NotFound(std::string("unknown error")) {}
   ShaderUniformNotFound(std::string e) : NotFound(e) {}
-  virtual ~ShaderUniformNotFound() SPIRE_NOEXCEPT {}
 };
 
-class ShaderUniformTypeError : virtual public Exception
+class ShaderUniformTypeError : public Exception
 {
 public:
-  ShaderUniformTypeError() : Exception(std::string("unknown error")) {}
   ShaderUniformTypeError(std::string e) : Exception(e) {}
-  virtual ~ShaderUniformTypeError() SPIRE_NOEXCEPT {}
 };
 
-class Duplicate : virtual public Exception
+class Duplicate : public Exception
 {
 public:
-  Duplicate() : Exception(std::string("unknown error")) {}
   Duplicate(std::string e) : Exception(e) {}
-  virtual ~Duplicate() SPIRE_NOEXCEPT {}
 };
 
 } // namespace Spire
