@@ -85,6 +85,14 @@ else(UNIX)
     # GLEW Windows only: Since we are building a static library, we need
     # to define GLEW_STATIC <url:http://glew.sourceforge.net/install.html#^define the GLEW_STATIC>
     add_definitions(-DGLEW_STATIC)
+    # Get rid of a bunch of windows warnings.
+
+    # Disables needs to have dll-interface to be used by clients warning.
+    # This was happening on STL classes and leading to a lot of noise. While
+    # this is a valid warning if you want your DLL to be reusable across applications
+    # this is NOT what we want for Spire. Spire should be built side-by-ide with
+    # your application, using the same compiler and standard library.
+    add_definitions("/wd4251")
   endif(WIN32)
 endif(UNIX)
 
