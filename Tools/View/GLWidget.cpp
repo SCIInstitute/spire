@@ -34,11 +34,60 @@
 
 #include "GLWidget.h"
 
+#include "Spire/Core/LambdaInterface.h"
+#include "Spire/Core/ObjectLambda.h"
+
+using namespace Spire;
 using Spire::V4;
 using Spire::V3;
 using Spire::V2;
-using Spire::Vector2;
 using Spire::M44;
+
+// Simple function to handle object transformations so that the GPU does not
+// need to do the same calculation for each vertex.
+static void lambdaUniformObjTrafs(ObjectLambdaInterface& iface, 
+                                  std::list<Interface::UnsatisfiedUniform>& unsatisfiedUniforms)
+{
+  // Cache object to world transform.
+  M44 objToWorld = iface.getObjectMetadata<M44>("objToWorld");
+  std::string objectTrafoName = "uObject";
+  std::string objectToViewName = "uViewObject";
+  std::string objectToCamProjName = "uProjIVObject";
+
+  // Loop through the unsatisfied uniforms and see if we can provide any.
+  for (auto it = unsatisfiedUniforms.begin(); it != unsatisfiedUniforms.end(); /*nothing*/ )
+  {
+    if (it->uniformName == objectTrafoName)
+    {
+      LambdaInterface::setUniform<M44>(it->uniformType, it->uniformName,
+                                       it->shaderLocation, objToWorld);
+
+      it = unsatisfiedUniforms.erase(it);
+    }
+    else if (it->uniformName == objectToViewName)
+    {
+      // Grab the inverse view transform.
+      M44 inverseView = glm::affineInverse(
+          iface.getGlobalUniform<M44>("uView"));
+      LambdaInterface::setUniform<M44>(it->uniformType, it->uniformName,
+                                       it->shaderLocation, inverseView * objToWorld);
+
+      it = unsatisfiedUniforms.erase(it);
+    }
+    else if (it->uniformName == objectToCamProjName)
+    {
+      M44 inverseViewProjection = iface.getGlobalUniform<M44>("uProjIV");
+      LambdaInterface::setUniform<M44>(it->uniformType, it->uniformName,
+                                       it->shaderLocation, inverseViewProjection * objToWorld);
+
+      it = unsatisfiedUniforms.erase(it);
+    }
+    else
+    {
+      ++it;
+    }
+  }
+}
 
 //------------------------------------------------------------------------------
 GLWidget::GLWidget(const QGLFormat& format) :
@@ -60,11 +109,6 @@ GLWidget::GLWidget(const QGLFormat& format) :
   mTimer->start(35);
 #endif
 
-  // Build and bind StuPipe.
-  mStuInterface = std::shared_ptr<Spire::StuInterface>(
-      new Spire::StuInterface(*mSpire));
-  mSpire->pipePushBack(mStuInterface);
-
   buildScene();
 
   // We must disable auto buffer swap on the 'paintEvent'.
@@ -74,6 +118,12 @@ GLWidget::GLWidget(const QGLFormat& format) :
 //------------------------------------------------------------------------------
 void GLWidget::buildScene()
 {
+  // Add shader attributes that we will be using.
+  mSpire->addShaderAttribute("aPos",         3,  false,  sizeof(float) * 3,  Spire::Interface::TYPE_FLOAT);
+  mSpire->addShaderAttribute("aNormal",      3,  false,  sizeof(float) * 3,  Spire::Interface::TYPE_FLOAT);
+  mSpire->addShaderAttribute("aColorFloat",  4,  false,  sizeof(float) * 4,  Spire::Interface::TYPE_FLOAT);
+  mSpire->addShaderAttribute("aColor",       4,  true,   sizeof(char) * 4,   Spire::Interface::TYPE_UBYTE);
+
   // Simple plane -- complex method of transfering to spire.
   std::vector<float> vboData = 
   {
@@ -88,7 +138,7 @@ void GLWidget::buildScene()
   {
     0, 1, 2, 3
   };
-  Spire::StuInterface::IBO_TYPE iboType = Spire::StuInterface::IBO_16BIT;
+  Spire::Interface::IBO_TYPE iboType = Spire::Interface::IBO_16BIT;
   
   uint8_t*  rawBegin;
   size_t    rawSize;
@@ -110,32 +160,39 @@ void GLWidget::buildScene()
   // Add necessary VBO's and IBO's
   std::string vbo1 = "vbo1";
   std::string ibo1 = "ibo1";
-  mStuInterface->addVBO(vbo1, rawVBO, attribNames);
-  mStuInterface->addIBO(ibo1, rawIBO, iboType);
+  mSpire->addVBO(vbo1, rawVBO, attribNames);
+  mSpire->addIBO(ibo1, rawIBO, iboType);
 
   // Add object
   std::string obj1 = "obj1";
-  mStuInterface->addObject(obj1);
+  mSpire->addObject(obj1);
 
   // Ensure shader is resident.
   std::string shader1 = "UniformColor";
-  mStuInterface->addPersistentShader(
+  mSpire->addPersistentShader(
       shader1, 
-      { {"UniformColor.vsh", Spire::StuInterface::VERTEX_SHADER}, 
-        {"UniformColor.fsh", Spire::StuInterface::FRAGMENT_SHADER},
+      { {"UniformColor.vsh", Spire::Interface::VERTEX_SHADER}, 
+        {"UniformColor.fsh", Spire::Interface::FRAGMENT_SHADER},
       });
 
-  // Build the pass
-  std::string pass1 = "pass1";
-  mStuInterface->addPassToObject(obj1, pass1, shader1, vbo1, ibo1, Spire::StuInterface::TRIANGLE_STRIP);
+  // Build the pass (default pass).
+  mSpire->addPassToObject(obj1, shader1, vbo1, ibo1, Spire::Interface::TRIANGLE_STRIP);
 
-  // Be sure the global uniform 'uProjIVWorld' is set appropriately...
-  mStuInterface->addGlobalUniform("uProjIVWorld", M44());
-  mStuInterface->addPassUniform(obj1, pass1, "uColor", V4(1.0f, 0.0f, 0.0f, 1.0f));
+  M44 xform;
+  xform[3] = V4(0.0f, 0.0f, 0.0f, 1.0f);
+  mSpire->addObjectPassMetadata(obj1, "objToWorld", xform);
+
+  mSpire->addObjectPassUniform(obj1, "uColor", V4(1.0f, 0.0f, 0.0f, 1.0f));
+
+  mSpire->addLambdaObjectUniforms(obj1, lambdaUniformObjTrafs);
+
+  // Setup camera
+  M44 proj = glm::perspective(32.0f * (Spire::PI / 180.0f), 3.0f/2.0f, 0.1f, 1350.0f);
+  mSpire->addGlobalUniform("uProjIV", proj);
 }
 
 //------------------------------------------------------------------------------
-void GLWidget::resizeEvent(QResizeEvent *evt)
+void GLWidget::resizeEvent(QResizeEvent*)
 {
   /// @todo Inform the renderer that screen dimensions have changed.
   //mSpire.resizeViewport(evt->size());
@@ -153,18 +210,18 @@ void GLWidget::closeEvent(QCloseEvent *evt)
 void GLWidget::updateRenderer()
 {
   mContext->makeCurrent();    // Required on windows...
-  mSpire->doFrame();
+  mSpire->ntsDoFrame();
   mContext->swapBuffers();
 }
 
 //------------------------------------------------------------------------------
 void GLWidget::mouseMoveEvent(QMouseEvent* event)
 {
-  Vector2<int> thisPos;
+  glm::ivec2 thisPos;
   thisPos.x = event->x();
   thisPos.y = event->y();
 
-  Vector2<int> delta = thisPos - mLastMousePos;
+  glm::ivec2 delta = thisPos - mLastMousePos;
 
   // Apply this rotation extremelly naively to the camera.
   // divisor is a magic calibration number from pixels to rotation speed.
@@ -172,15 +229,11 @@ void GLWidget::mouseMoveEvent(QMouseEvent* event)
   float rx = static_cast<float>(-delta.y) / divisor;
   float ry = static_cast<float>(delta.x) / divisor;
 
-  M44 tx = M44::rotationX(rx);
-  M44 ty = M44::rotationY(ry);
+  M44 tx = glm::rotate(M44(), rx, V3(1.0, 0.0, 0.0));
+  M44 ty = glm::rotate(M44(), ry, V3(0.0, 1.0, 0.0));
 
   // x applied first in object space, then y.
   mCamWorld = mCamWorld * ty * tx;
-
-  // Send new camera transform to spire.
-  // BROKEN! -- Need to send camera transform via uniforms.
-  //mSpire->cameraSetTransform(mCamWorld);
 
   mLastMousePos = thisPos;
 }
@@ -193,7 +246,7 @@ void GLWidget::mousePressEvent(QMouseEvent* event)
 }
 
 //------------------------------------------------------------------------------
-void GLWidget::mouseReleaseEvent(QMouseEvent* event)
+void GLWidget::mouseReleaseEvent(QMouseEvent*)
 {
 }
 

@@ -65,8 +65,7 @@ private:
 
   std::shared_ptr<GLContext>            mContext;
   std::shared_ptr<Spire::Interface>     mSpire;
-  std::shared_ptr<Spire::StuInterface>  mStuInterface;
-  Spire::Vector2<int>                   mLastMousePos;
+  glm::ivec2                            mLastMousePos;
   Spire::M44                            mCamWorld;
 
 #ifndef SPIRE_USE_STD_THREADS
