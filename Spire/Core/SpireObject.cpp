@@ -175,7 +175,7 @@ bool ObjectPass::addPassUniform(const std::string uniformName,
     uniformGlType = uniformData.glType;
     uniformLoc = uniformData.glUniformLoc;
   }
-  catch (std::out_of_range& e)
+  catch (std::out_of_range&)
   {
     return false;  
   }

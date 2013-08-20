@@ -93,6 +93,11 @@ else(UNIX)
     # this is NOT what we want for Spire. Spire should be built side-by-ide with
     # your application, using the same compiler and standard library.
     add_definitions("/wd4251")
+
+    # Getting rid of unknown pragram warning. This warning isn't issued
+    # on any other compiler and is generally a source of noise if you are
+    # doing cross platform work.
+    add_definitions("/wd4068")
   endif(WIN32)
 endif(UNIX)
 

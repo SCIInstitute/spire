@@ -336,7 +336,7 @@ std::string getPath(const std::string& fileName)
 //------------------------------------------------------------------------------
 bool getTempDirectory(std::string& path)
 {
-#ifdef DETECTED_OS_WINDOWS
+#ifdef SPIRE_USING_WIN
   DWORD result = ::GetTempPathA(0, "");
   if(result == 0) return false;
   std::vector<char> tempPath(result + 1);
