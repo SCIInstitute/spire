@@ -53,6 +53,7 @@
 #elif SPIRE_USING_WIN
   #define NOMINMAX
   #include <Windows.h>
+  #include <GL/glew.h>
   #include <GL/gl.h>
   #include <GL/glext.h>
 #elif SPIRE_USING_LINUX

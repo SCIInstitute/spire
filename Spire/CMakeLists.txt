@@ -105,6 +105,19 @@ else(UNIX)
     # on any other compiler and is generally a source of noise if you are
     # doing cross platform work.
     add_definitions("/wd4068")
+
+    # GLEW
+    # GLEW is required on windows since Microsoft has not updated the OpenGL
+    # headers since OpenGL 1.1.
+
+    # Since we are building a static library, we need to define GLEW_STATIC
+    # <url:http://glew.sourceforge.net/install.html#^define the GLEW_STATIC>
+    add_definitions(-DGLEW_STATIC)
+
+    # GLEW include directories and source.
+    include_directories(SYSTEM ${CMAKE_CURRENT_SOURCE_DIR}/3rdParty/glew/include)
+    set(Source_GLEW_for_Windows 3rdParty/glew/src/glew.c)
+
   endif(WIN32)
 endif(UNIX)
 
@@ -249,6 +262,7 @@ add_library(${SPIRE_TARGET_NAME}
   ${Source_Caching}
   ${Source_Testing}
   ${Source_SCIRun}
+  ${Source_GLEW_for_Windows}
   )
 add_dependencies(${SPIRE_TARGET_NAME} ThirdParty_Tuvok)
 
