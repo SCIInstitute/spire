@@ -41,7 +41,7 @@
 #endif
 
 // OpenGL headers
-#ifdef SPIRE_USING_OSX
+#if defined(SPIRE_USING_OSX)
   #include <OpenGL/gl.h>
   #include <OpenGL/glext.h>
   #include <OpenGL/glu.h>
@@ -50,21 +50,21 @@
     // when they update this.
     #include <OpenGL/gl3.h> 
   #endif
-#elif SPIRE_USING_WIN
+#elif defined(SPIRE_USING_WIN)
   #define NOMINMAX
   #include <Windows.h>
   #include <GL/glew.h>
   #include <GL/gl.h>
-#elif SPIRE_USING_LINUX
+#elif defined(SPIRE_USING_LINUX)
   #define GL_GLEXT_PROTOTYPES
   #include <GL/gl.h>
   #include <GL/glext.h>
   #include <GL/glu.h>
   #include <GL/glx.h>
-#elif SPIRE_USING_IOS
+#elif defined(SPIRE_USING_IOS)
   #import <OpenGLES/ES2/gl.h>
   #import <OpenGLES/ES2/glext.h>
-#elif SPIRE_USING_ANDROID
+#elif defined(SPIRE_USING_ANDROID)
   #include <GLES2/gl2.h>
   #include <GLES2/gl2ext.h>
 #else
