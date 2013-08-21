@@ -197,7 +197,7 @@ GLenum ShaderUniformMan::uniformTypeToGL(UNIFORM_TYPE type)
     case UNIFORM_FLOAT_VEC2:                                 return GL_FLOAT_VEC2;
     case UNIFORM_FLOAT_VEC3:                                 return GL_FLOAT_VEC3;
     case UNIFORM_FLOAT_VEC4:                                 return GL_FLOAT_VEC4;
-#ifndef SPIRE_OPENGL_ES_2
+#if defined(USE_CORE_PROFILE_4)  // Doubles not supported until shader model 5.0.
     case UNIFORM_DOUBLE:                                     return GL_DOUBLE;
     case UNIFORM_DOUBLE_VEC2:                                return GL_DOUBLE_VEC2;
     case UNIFORM_DOUBLE_VEC3:                                return GL_DOUBLE_VEC3;
@@ -207,7 +207,7 @@ GLenum ShaderUniformMan::uniformTypeToGL(UNIFORM_TYPE type)
     case UNIFORM_DOUBLE_VEC2:
     case UNIFORM_DOUBLE_VEC3:
     case UNIFORM_DOUBLE_VEC4:
-      Log::error() << "Uniforms based off of the double type not supported in OpenGL ES 2.0.";
+      Log::error() << "Uniforms based off of the double type not supported (shader model 5).";
       return GL_FLOAT;
 #endif
     case UNIFORM_INT:                                        return GL_INT;
@@ -215,7 +215,7 @@ GLenum ShaderUniformMan::uniformTypeToGL(UNIFORM_TYPE type)
     case UNIFORM_INT_VEC3:                                   return GL_INT_VEC3;
     case UNIFORM_INT_VEC4:                                   return GL_INT_VEC4;
     case UNIFORM_UNSIGNED_INT:                               return GL_UNSIGNED_INT;
-#ifndef SPIRE_OPENGL_ES_2
+#if defined(USE_CORE_PROFILE_3)
     case UNIFORM_UNSIGNED_INT_VEC2:                          return GL_UNSIGNED_INT_VEC2;
     case UNIFORM_UNSIGNED_INT_VEC3:                          return GL_UNSIGNED_INT_VEC3;
     case UNIFORM_UNSIGNED_INT_VEC4:                          return GL_UNSIGNED_INT_VEC4;
@@ -223,7 +223,7 @@ GLenum ShaderUniformMan::uniformTypeToGL(UNIFORM_TYPE type)
     case UNIFORM_UNSIGNED_INT_VEC2:
     case UNIFORM_UNSIGNED_INT_VEC3:
     case UNIFORM_UNSIGNED_INT_VEC4:
-      Log::error() << "Uniform vectors based off of the unsigned int type not supported in OpenGL ES 2.0.";
+      Log::error() << "Uniform vectors based off of the unsigned int type not supported (shader model 4).";
       return GL_UNSIGNED_INT;
 #endif
     case UNIFORM_BOOL:                                       return GL_BOOL;
@@ -250,7 +250,7 @@ GLenum ShaderUniformMan::uniformTypeToGL(UNIFORM_TYPE type)
       Log::error() << "Non-square uniform matrix dimensions not supported in OpenGL ES 2.0.";
       return GL_FLOAT_MAT4;
 #endif
-#ifndef SPIRE_OPENGL_ES_2
+#if defined(USE_CORE_PROFILE_4) // Doubles not supported until shader model 5.0.
     case UNIFORM_DOUBLE_MAT2:                                return GL_DOUBLE_MAT2;
     case UNIFORM_DOUBLE_MAT3:                                return GL_DOUBLE_MAT3;
     case UNIFORM_DOUBLE_MAT4:                                return GL_DOUBLE_MAT4;
@@ -270,18 +270,28 @@ GLenum ShaderUniformMan::uniformTypeToGL(UNIFORM_TYPE type)
     case UNIFORM_DOUBLE_MAT3x4:
     case UNIFORM_DOUBLE_MAT4x2:
     case UNIFORM_DOUBLE_MAT4x3:
-      Log::error() << "Uniform matrices based off of the double type not supported in OpenGL ES 2.0.";
+      Log::error() << "Uniform matrices based off of the double type not supported (shader model 5).";
       return GL_FLOAT_MAT4;
 #endif
     
     case UNIFORM_SAMPLER_2D:                                 return GL_SAMPLER_2D;
     case UNIFORM_SAMPLER_CUBE:                               return GL_SAMPLER_CUBE;
     
-#ifndef SPIRE_OPENGL_ES_2
+#ifndef SPIRE_OPNEGL_ES_2
     case UNIFORM_SAMPLER_1D:                                 return GL_SAMPLER_1D;
     case UNIFORM_SAMPLER_3D:                                 return GL_SAMPLER_3D;
     case UNIFORM_SAMPLER_1D_SHADOW:                          return GL_SAMPLER_1D_SHADOW;
     case UNIFORM_SAMPLER_2D_SHADOW:                          return GL_SAMPLER_2D_SHADOW;
+#else
+    case UNIFORM_SAMPLER_1D:                               
+    case UNIFORM_SAMPLER_3D:                               
+    case UNIFORM_SAMPLER_1D_SHADOW:                        
+    case UNIFORM_SAMPLER_2D_SHADOW:                        
+      Log::error() << "Only the 2D and cube samplers are available in OpenGL ES 2.0.";
+      return GL_SAMPLER_2D;
+#endif
+
+#if defined (USE_CORE_PROFILE_3)
     case UNIFORM_SAMPLER_1D_ARRAY:                           return GL_SAMPLER_1D_ARRAY;
     case UNIFORM_SAMPLER_2D_ARRAY:                           return GL_SAMPLER_2D_ARRAY;
     case UNIFORM_SAMPLER_1D_ARRAY_SHADOW:                    return GL_SAMPLER_1D_ARRAY_SHADOW;
@@ -313,10 +323,6 @@ GLenum ShaderUniformMan::uniformTypeToGL(UNIFORM_TYPE type)
     case UNIFORM_UNSIGNED_INT_SAMPLER_BUFFER:                return GL_UNSIGNED_INT_SAMPLER_BUFFER;
     case UNIFORM_UNSIGNED_INT_SAMPLER_2D_RECT:               return GL_UNSIGNED_INT_SAMPLER_2D_RECT;
 #else
-    case UNIFORM_SAMPLER_1D:                               
-    case UNIFORM_SAMPLER_3D:                               
-    case UNIFORM_SAMPLER_1D_SHADOW:                        
-    case UNIFORM_SAMPLER_2D_SHADOW:                        
     case UNIFORM_SAMPLER_1D_ARRAY:                         
     case UNIFORM_SAMPLER_2D_ARRAY:                         
     case UNIFORM_SAMPLER_1D_ARRAY_SHADOW:                  
@@ -347,11 +353,11 @@ GLenum ShaderUniformMan::uniformTypeToGL(UNIFORM_TYPE type)
     case UNIFORM_UNSIGNED_INT_SAMPLER_2D_MULTISAMPLE_ARRAY:
     case UNIFORM_UNSIGNED_INT_SAMPLER_BUFFER:              
     case UNIFORM_UNSIGNED_INT_SAMPLER_2D_RECT:
-      Log::error() << "Only the 2D and cube samplers are available in OpenGL ES 2.0.";
+      Log::error() << "Integer types are only supported in shader model 4.";
       return GL_SAMPLER_2D;
 #endif
 
-#ifndef SPIRE_OPENGL_ES_2
+#if defined(USE_CORE_PROFILE_3)
     case UNIFORM_IMAGE_1D:                                   return GL_IMAGE_1D;
     case UNIFORM_IMAGE_2D:                                   return GL_IMAGE_2D;
     case UNIFORM_IMAGE_3D:                                   return GL_IMAGE_3D;
@@ -413,15 +419,17 @@ GLenum ShaderUniformMan::uniformTypeToGL(UNIFORM_TYPE type)
     case UNIFORM_UNSIGNED_INT_IMAGE_2D_ARRAY:            
     case UNIFORM_UNSIGNED_INT_IMAGE_2D_MULTISAMPLE:      
     case UNIFORM_UNSIGNED_INT_IMAGE_2D_MULTISAMPLE_ARRAY:
-      Log::error() << "No image types are supported in OpenGL ES 2.0.";
+      Log::error() << "No image types are supported.";
       return GL_SAMPLER_2D;
 #endif
 
-#ifndef SPIRE_OPENGL_ES_2
+#if defined(USE_CORE_PROFILE_4)
+    // This isn't defined till 4.2, but we keep it in core profile 4 because
+    // we eventually want to use 4.2.
     case UNIFORM_UNSIGNED_INT_ATOMIC_COUNTER:                return GL_UNSIGNED_INT_ATOMIC_COUNTER;
 #else
     case UNIFORM_UNSIGNED_INT_ATOMIC_COUNTER:
-      Log::error() << "Atomic counters not supported in OpenGL ES 2.0.";
+      Log::error() << "Atomic counters not supported.";
       return GL_FLOAT;
 #endif
 

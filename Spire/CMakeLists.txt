@@ -17,6 +17,8 @@ else()
   option(USE_STD_THREADS "Use standard library threads. If turned off, no threading support is available." ON)
 endif()
 option(USE_GOOGLE_PERF "Use google perf tools to profile Spire." OFF)
+option(USE_CORE_PROFILE_3 "Use OpenGL core profile 3.2 (supported by most macs)." OFF)
+option(USE_CORE_PROFILE_4 "Use OpenGL core profile 4.1 (supported by mac 10.9)." OFF)
 
 if(USE_TUVOK)
   add_definitions(-DSPIRE_USE_TUVOK)
@@ -37,6 +39,14 @@ endif()
 if (USE_GOOGLE_PERF)
   add_definitions(-DSPIRE_PROFILE)
   set(PROFILE_LIBS profiler)
+endif()
+
+if(USE_CORE_PROFILE_3)
+  add_definitions(-DUSE_CORE_PROFILE_3)
+endif()
+
+if(USE_CORE_PROFILE_4)
+  add_definitions(-DUSE_CORE_PROFILE_4)
 endif()
 
 ########################################################################
@@ -82,9 +92,6 @@ if(UNIX)
 else(UNIX)
   if(WIN32)
     add_definitions(-DSPIRE_USING_WIN)
-    # GLEW Windows only: Since we are building a static library, we need
-    # to define GLEW_STATIC <url:http://glew.sourceforge.net/install.html#^define the GLEW_STATIC>
-    add_definitions(-DGLEW_STATIC)
     # Get rid of a bunch of windows warnings.
 
     # Disables needs to have dll-interface to be used by clients warning.
@@ -108,7 +115,6 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 # which I do not manage.
 # See: http://clang.llvm.org/docs/UsersManual.html#controlling-errors-and-warnings
 include_directories(SYSTEM
-  ${CMAKE_CURRENT_SOURCE_DIR}/3rdParty/glew/include
   ${CMAKE_CURRENT_SOURCE_DIR}/3rdParty
   ${OPENGL_INCLUDE_DIRS})
 
@@ -231,12 +237,6 @@ if(USE_SCIRUN_INTERFACE)
     )
 endif()
 
-# GLEW is not support on mobile platforms.
-if(NOT DEFINED IOS)
-  set(Source_GLEW
-    3rdParty/glew/src/glew.c)
-endif()
-
 ########################################################################
 # Library setup
 
@@ -247,7 +247,6 @@ add_library(${SPIRE_TARGET_NAME}
   ${Source_High}
   ${Source_Low}
   ${Source_Caching}
-  ${Source_GLEW}
   ${Source_Testing}
   ${Source_SCIRun}
   )

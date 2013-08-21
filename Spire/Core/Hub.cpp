@@ -109,15 +109,6 @@ void Hub::oneTimeInitOnThread()
   // OpenGL initialization
   mContext->makeCurrent();
 
-#ifndef SPIRE_OPENGL_ES_2
-  GLenum err = glewInit();
-  if (GLEW_OK != err)
-  {
-    Log::error() << "GLEW init failed!" << std::endl;
-    throw GLError("GLEW failed to initialize!");
-  }
-#endif
-
   // Initialize OpenGL
   GL(glClearColor(0.0, 0.0, 0.0, 1.0));
 
@@ -171,21 +162,6 @@ void Hub::oneTimeInitOnThread()
 
   GL(glGetIntegerv(GL_MAX_TEXTURE_STACK_DEPTH, &tmp));
   Log::debug() << "  Texture stack depth: " << tmp << std::endl;
-
-  // Below are kept as a reference.
-  //const bool openGLSO12     = atof((const char*)versionl) >= 1.2;
-  //const bool openGLSO20     = atof((const char*)versionl) >= 2.0;
-  //const bool openGLSO       = glewGetExtension("GL_ARB_shader_objects");
-  //const bool openGLSL       = glewGetExtension("GL_ARB_shading_language_100");
-  //const bool openGL3DT      = glewGetExtension("GL_EXT_texture3D");
-  //const bool openGLFBO      = glewGetExtension("GL_EXT_framebuffer_object");
-
-  //const bool openGL32       = atof((const char*)versionl) >= 3.2;
-
-  //const bool openGL42       = atof((const char*)versionl) >= 4.2;
-  //const bool openGLILS_EXT  = glewGetExtension("GL_EXT_shader_image_load_store");
-  //const bool openGLILS_ARB  = glewGetExtension("GL_ARB_shader_image_load_store");
-  //const bool openGLCD_ARB   = glewGetExtension("GL_ARB_conservative_depth");
 #endif
     
   /// TODO: Add GPU memory checks using GL_NVX_gpu_memory_info for NVIDIA

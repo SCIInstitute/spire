@@ -503,7 +503,9 @@ GLenum InterfaceImplementation::getGLPrimitive(Interface::PRIMITIVE_TYPES type)
     case Interface::TRIANGLES:                return GL_TRIANGLES;
     case Interface::TRIANGLE_STRIP:           return GL_TRIANGLE_STRIP;
     case Interface::TRIANGLE_FAN:             return GL_TRIANGLE_FAN;
-#ifndef SPIRE_OPENGL_ES_2
+    // Adjacency is only supported in OpenGL 4.0 +. Will add when we support
+    // Core profiles, starting with core profile 4.1.
+#if defined(USE_CORE_PROFILE_4)
     case Interface::LINES_ADJACENCY:          return GL_LINES_ADJACENCY;
     case Interface::LINE_STRIP_ADJACENCY:     return GL_LINE_STRIP_ADJACENCY;
     case Interface::TRIANGLES_ADJACENCY:      return GL_TRIANGLES_ADJACENCY;

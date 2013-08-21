@@ -36,15 +36,29 @@
 
 #include "../Interface.h"
 
+#if defined(USE_CORE_PROFILE_3) && defined(USE_CORE_PROFILE_4)
+  #error Both USE_CORE_PROFILE_3 and USE_CORE_PROFILE_4 are defined. Ensure that only one is defined.
+#endif
+
 // OpenGL headers
 #ifdef SPIRE_USING_OSX
-  #include "3rdParty/GLEW/include/GL/glew.h"
+  #include <OpenGL/gl.h>
+  #include <OpenGL/glext.h>
+  #include <OpenGL/glu.h>
+  #if defined(USE_CORE_PROFILE_3) || defined(USE_CORE_PROFILE_4)
+    // Currently mac places gl4 specific definitions in the gl3 header. Change
+    // when they update this.
+    #include <OpenGL/gl3.h> 
+  #endif
 #elif SPIRE_USING_WIN
   #define NOMINMAX
   #include <Windows.h>
-  #include <GL/glew.h>
+  #include <GL/gl.h>
+  #include <GL/glext.h>
 #elif SPIRE_USING_LINUX
-  #include <GL/glew.h>
+  #include <GL/gl.h>
+  #include <GL/glext.h>
+  #include <GL/glx.h>
 #elif SPIRE_USING_IOS
   #import <OpenGLES/ES2/gl.h>
   #import <OpenGLES/ES2/glext.h>
@@ -52,6 +66,7 @@
   #include <GLES2/gl2.h>
   #include <GLES2/gl2ext.h>
 #else
+  /// \todo Look into emscriptem.
   #error OpenGL headers not defined for this platform.
 #endif
 
