@@ -125,19 +125,19 @@ void GLWidget::buildScene()
   mSpire->addShaderAttribute("aColor",       4,  true,   sizeof(char) * 4,   Spire::Interface::TYPE_UBYTE);
 
   // Simple plane -- complex method of transfering to spire.
-  std::vector<float> vboData = 
-  {
-    -1.0f,  1.0f, -5.0f,
-     1.0f,  1.0f, -5.0f,
-    -1.0f, -1.0f, -5.0f,
-     1.0f, -1.0f, -5.0f
-  };
-  std::vector<std::string> attribNames = {"aPos"};
+  std::vector<float> vboData;
+  vboData.push_back(-1.0f); vboData.push_back( 1.0f); vboData.push_back(-5.0f);
+  vboData.push_back( 1.0f); vboData.push_back( 1.0f); vboData.push_back(-5.0f);
+  vboData.push_back(-1.0f); vboData.push_back(-1.0f); vboData.push_back(-5.0f);
+  vboData.push_back( 1.0f); vboData.push_back(-1.0f); vboData.push_back(-5.0f);
+  std::vector<std::string> attribNames;
+  attribNames.push_back("aPos");
 
-  std::vector<uint16_t> iboData =
-  {
-    0, 1, 2, 3
-  };
+  std::vector<uint16_t> iboData;
+  iboData.push_back(0);
+  iboData.push_back(1);
+  iboData.push_back(2);
+  iboData.push_back(3);
   Spire::Interface::IBO_TYPE iboType = Spire::Interface::IBO_16BIT;
   
   uint8_t*  rawBegin;
@@ -169,11 +169,11 @@ void GLWidget::buildScene()
 
   // Ensure shader is resident.
   std::string shader1 = "UniformColor";
-  mSpire->addPersistentShader(
-      shader1, 
-      { {"UniformColor.vsh", Spire::Interface::VERTEX_SHADER}, 
-        {"UniformColor.fsh", Spire::Interface::FRAGMENT_SHADER},
-      });
+  std::vector<std::tuple<std::string, Spire::Interface::SHADER_TYPES>> shaderFiles;
+  shaderFiles.push_back(std::make_pair("UniformColor.vsh", Spire::Interface::VERTEX_SHADER));
+  shaderFiles.push_back(std::make_pair("UniformColor.fsh", Spire::Interface::FRAGMENT_SHADER));
+
+  mSpire->addPersistentShader(shader1, shaderFiles);
 
   // Build the pass (default pass).
   mSpire->addPassToObject(obj1, shader1, vbo1, ibo1, Spire::Interface::TRIANGLE_STRIP);
