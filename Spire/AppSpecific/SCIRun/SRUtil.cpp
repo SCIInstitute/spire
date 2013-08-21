@@ -55,7 +55,7 @@ size_t buildNormalRenderingForVBO(std::shared_ptr<std::vector<uint8_t>> vboData,
   uint8_t* rawOutIBO = &out_iboData[0];
   uint8_t* rawOutVBO = &out_vboData[0];
 
-  auto readFloat = [&rawData](size_t* offset) {
+  auto readFloat = [&rawData](size_t* offset) -> float {
     float ret = *reinterpret_cast<float*>(&rawData[*offset]);
     *offset += sizeof(float);
     return ret;

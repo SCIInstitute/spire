@@ -32,6 +32,7 @@
 #ifndef SRUTIL_H
 #define SRUTIL_H
 
+#include <cstdint>
 #include <string>
 #include <vector>
 
