@@ -58,6 +58,7 @@
 #elif SPIRE_USING_LINUX
   #include <GL/gl.h>
   #include <GL/glext.h>
+  #include <GL/glu.h>
   #include <GL/glx.h>
 #elif SPIRE_USING_IOS
   #import <OpenGLES/ES2/gl.h>
