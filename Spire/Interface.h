@@ -111,7 +111,6 @@ public:
   ///       determine what shaders we should us.
   /// \todo See glProvokingVertex for possible flat shading implementations
   ///       instead of using a geometry shader.
-  /// \xxx  Place in GPUMan?
   enum SHADER_TYPES
   {
     // Programmable pipeline
@@ -127,7 +126,6 @@ public:
 
   /// See: http://www.opengl.org/wiki/Primitive
   /// \todo Add patch tesselation primitives.
-  /// \xxx  Place in GPUMan?
   enum PRIMITIVE_TYPES
   {
     POINTS,
@@ -166,7 +164,7 @@ public:
   /// spire thread before returning. This should be called before the OpenGL
   /// context is destroyed.
   /// There is no mutex lock in this function, it should only be called by one
-  /// thread, but it doesn't matter what thread.
+  /// thread.
   void terminate();
 
   //--------
@@ -203,9 +201,6 @@ public:
   /// Adds a VBO. This VBO can be re-used by adding passes to the object.
   /// Throws an std::out_of_range exception if the object is not found in the 
   /// system.
-  /// \param  object        Name of the object to add the VBO to. The VBO will
-  ///                       be destroyed when the object is removed. If you want
-  ///                       to reuse VBO / IBOs add passes to this object.
   /// \param  name          Name of the VBO. See addIBOToObject for a full
   ///                       description of why you are required to name your
   ///                       VBO.
@@ -226,12 +221,8 @@ public:
   /// the passes are destroyed, their associated VBOs/IBOs will be destroyed.
   void removeVBO(const std::string& vboName);
 
-  /// Adds an IBO. This IBO can be re-used by adding passes to the object.
-  /// Throws an std::out_of_range exception if the object is not found in the 
-  /// system.
-  /// \param  object        Name of the object to add the VBO to. The VBO will
-  ///                       be destroyed when the object is removed. If you want
-  ///                       to reuse VBO / IBOs add passes to this object.
+  /// Adds an IBO. Throws an std::out_of_range exception if the object is not
+  /// found in the system.
   /// \param  name          Name of the IBO. You might find it odd that you are
   ///                       naming an IBO, and in certain terms you are right.
   ///                       IBOs are named here to avoid returning an identifier
@@ -244,8 +235,8 @@ public:
   ///                       of spire, it will be destroyed.
   /// \param  type          Specifies what kind of IBO iboData represents.
   void addIBO(const std::string& name,
-                      std::shared_ptr<std::vector<uint8_t>> iboData,
-                      IBO_TYPE type);
+              std::shared_ptr<std::vector<uint8_t>> iboData,
+              IBO_TYPE type);
 
   /// Removes specified ibo from the object. It is safe to issue this call even
   /// though some of your passes may still be referencing the VBOs/IBOs. When
@@ -268,11 +259,12 @@ public:
   /// system. If there already exists a geometry pass, it throws a 'Duplicate' 
   /// exception.
   /// \param  object        Unique object name.
-  /// \param  pass          Pass name.
   /// \param  program       Complete shader program to use when rendering.
   ///                       See the oveloaded addPersistentShader functions.
-  /// \param  vboID         VBO to use.
-  /// \param  iboID         IBO to use.
+  /// \param  vboName       VBO to use.
+  /// \param  iboName       IBO to use.
+  /// \param  type          Primitive type.
+  /// \param  pass          Pass name.
   /// \return Pass ID. Use this ID to assign uniforms to the pass.
   void addPassToObject(const std::string& object,
                        const std::string& program,
@@ -297,8 +289,6 @@ public:
   
   /// Associates a uniform value to the specified object's pass. If the uniform
   /// already exists, then its value will be updated if it passes a type check.
-  /// During rendering the uniform value will be returned to its default value 
-  /// once this pass has been completed.
   /// Throws an std::out_of_range exception if the object or pass is not found 
   /// in the system.
   /// Throws ShaderUniformTypeError if the types do not match what is stored
