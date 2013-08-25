@@ -102,6 +102,7 @@ GLWidget::GLWidget(const QGLFormat& format) :
     mContext(new GLContext(this))
 {
   std::vector<std::string> shaderSearchDirs;
+  shaderSearchDirs.push_back("shaders");
 
   // Create a threaded spire renderer. This should be created at the module
   // level once it has access to the context, should be passed using Transients.
