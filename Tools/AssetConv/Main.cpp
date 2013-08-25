@@ -49,11 +49,11 @@
 #include "../3rdParty/tclap/include/tclap/CmdLine.h"
 
 // assimp include files. These three are usually needed.
-#include <assimp/assimp.hpp>	//OO version Header!
-#include <assimp/aiPostProcess.h>
-#include <assimp/aiScene.h>
-#include <assimp/DefaultLogger.h>
-#include <assimp/LogStream.h>
+#include "assimp/Importer.hpp"	//OO version Header!
+#include "assimp/PostProcess.h"
+#include "assimp/Scene.h"
+#include "assimp/DefaultLogger.hpp"
+#include "assimp/LogStream.hpp"
 
 // Forward declarations
 int processFile(const std::string& inFile, const std::string& outputDirectory);
