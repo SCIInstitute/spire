@@ -49,7 +49,7 @@ endif()
 ########################################################################
 # Grab Regression Data From GitHub
 
-set(REGRESSION_DATA_DIR "${BASE_SPIRE_DIR}/Spire/Regression")
+set(REGRESSION_DATA_DIR "${BASE_SPIRE_DIR}/Tests/RegressionData")
 
 if(EXISTS "${REGRESSION_DATA_DIR}" AND IS_DIRECTORY "${REGRESSION_DATA_DIR}")
   message(STATUS "Updating regression data")
@@ -159,8 +159,8 @@ set(CommonSources
   main.cpp)
 
 file(GLOB TestSources
-  "${BASE_SPIRE_DIR}/Spire/Tests/*.cpp"
-  "${BASE_SPIRE_DIR}/Spire/Tests/*.h"
+  "${BASE_SPIRE_DIR}/Tests/*.cpp"
+  "${BASE_SPIRE_DIR}/Tests/*.h"
   )
 
 ########################################################################
