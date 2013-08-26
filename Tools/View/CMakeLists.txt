@@ -67,6 +67,12 @@ include(${QT_USE_FILE})
 add_definitions(${QT_DEFINITIONS})
 
 ########################################################################
+# Spire Extensions
+
+# Eigen include directory.
+include_directories(SYSTEM "${BASE_SPIRE_DIR}/Extensions" )
+
+########################################################################
 # Eigen
 
 # Eigen include directory.
@@ -89,8 +95,8 @@ if(USE_SCIRUN_INTERFACE)
   set(MocHeaders MainWindow.h GLWidgetSCIRun.h)
 
   file (GLOB Source_Extensions
-    "${BASE_SPIRE_DIR}/Spire/Extensions/SCIRun/*.cpp"
-    "${BASE_SPIRE_DIR}/Spire/Extensions/SCIRun/*.h"
+    "${BASE_SPIRE_DIR}/Extensions/SpireExt/SCIRun/*.cpp"
+    "${BASE_SPIRE_DIR}/Extensions/SpireExt/SCIRun/*.h"
     )
 else()
   set(View_Specific_Sources GLWidget.cpp GLWidget.h)

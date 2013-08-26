@@ -39,9 +39,9 @@
 
 #include "GLContext.h"
 #include "Spire/Interface.h"
-#include "Spire/Extensions/SCIRun/SRInterface.h"
-#include "Spire/Extensions/SCIRun/SRCommonAttributes.h"
-#include "Spire/Extensions/SCIRun/SRCommonUniforms.h"
+#include "SpireExt/SCIRun/SRInterface.h"
+#include "SpireExt/SCIRun/SRCommonAttributes.h"
+#include "SpireExt/SCIRun/SRCommonUniforms.h"
 
 namespace SCIRun {
 namespace Gui {
