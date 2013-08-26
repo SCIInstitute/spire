@@ -29,7 +29,6 @@
 /// \author James Hughes
 /// \date   February 2013
 
-#include "Interface.h"
 #include "SRInterface.h"
 #include "SciBall.h"
 #include "SRCamera.h"

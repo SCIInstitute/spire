@@ -34,7 +34,7 @@
 
 #include <queue>
 
-#include "Core/Hub.h"
+#include "Hub.h"
 
 namespace Spire
 {

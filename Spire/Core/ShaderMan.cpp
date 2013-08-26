@@ -34,9 +34,9 @@
 #include "Common.h"
 #include "ShaderMan.h"
 #include "Exceptions.h"
-#include "Core/Hub.h"
-#include "Core/Log.h"
-#include "Core/FileUtil.h"
+#include "Hub.h"
+#include "Log.h"
+#include "FileUtil.h"
 
 namespace Spire {
 

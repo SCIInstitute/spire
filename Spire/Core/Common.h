@@ -40,8 +40,48 @@
   #error Both USE_CORE_PROFILE_3 and USE_CORE_PROFILE_4 are defined. Ensure that only one is defined.
 #endif
 
+// TODO: Add webgl and emscriptem.
+
+// See: http://stackoverflow.com/questions/5919996/how-to-detect-reliably-mac-os-x-ios-linux-windows-in-c-preprocessor
+// and, http://sourceforge.net/p/predef/wiki/OperatingSystems/
+// We provide these definitions in ADDITION to cmake directives to cover 
+// extensions that need OpenGL system headers and whatnot.
+#ifdef _WIN64
+  #define SPIRE_USING_WIN
+#elif _WIN32
+  #define SPIRE_USING_WIN
+#elif __APPLE__
+  #include "TargetConditionals.h"
+  #if TARGET_IPHONE_SIMULATOR
+    #define SPIRE_USING_IOS
+    #define SPIRE_OPENGL_ES_2
+  #elif TARGET_OS_IPHONE
+    #define SPIRE_USING_IOS
+    #define SPIRE_OPENGL_ES_2
+  #elif TARGET_OS_MAC
+    #define SPIRE_USING_OSX
+  #else
+    #error Unsupported mac platform.
+  #endif
+#elif __ANDROID__
+  #define SPIRE_USING_ANDROID
+  #define SPIRE_OPENGL_ES_2
+#elif __linux
+  #define SPIRE_USING_LINUX
+#elif __unix // all unices not caught above
+  #error General unix not supported - try defining SPIRE_USING_LINUX and disabling this error.
+#elif __posix
+  #error General posix not supported - try defining SPIRE_USING_LINUX and disabling this error.
+#else
+  #error Unknown unsupported platform.
+#endif
+
 // OpenGL headers
 #if defined(SPIRE_USING_OSX)
+  #if defined(SPIRE_USING_WIN) || defined(SPIRE_USING_LINUX) || defined(SPIRE_USING_IOS) || defined(SPIRE_USING_ANDROID)
+    #error Multiple platforms defined.
+  #endif
+
   #include <OpenGL/gl.h>
   #include <OpenGL/glext.h>
   #include <OpenGL/glu.h>
@@ -51,20 +91,40 @@
     #include <OpenGL/gl3.h> 
   #endif
 #elif defined(SPIRE_USING_WIN)
+
+  #if defined(SPIRE_USING_OSX) || defined(SPIRE_USING_LINUX) || defined(SPIRE_USING_IOS) || defined(SPIRE_USING_ANDROID)
+    #error Multiple platforms defined.
+  #endif
+
   #define NOMINMAX
   #include <Windows.h>
   #include <GL/glew.h>
   #include <GL/gl.h>
 #elif defined(SPIRE_USING_LINUX)
+
+  #if defined(SPIRE_USING_OSX) || defined(SPIRE_USING_WIN) || defined(SPIRE_USING_IOS) || defined(SPIRE_USING_ANDROID)
+    #error Multiple platforms defined.
+  #endif
+
   #define GL_GLEXT_PROTOTYPES
   #include <GL/gl.h>
   #include <GL/glext.h>
   #include <GL/glu.h>
   #include <GL/glx.h>
 #elif defined(SPIRE_USING_IOS)
+
+  #if defined(SPIRE_USING_OSX) || defined(SPIRE_USING_WIN) || defined(SPIRE_USING_LINUX) || defined(SPIRE_USING_ANDROID)
+    #error Multiple platforms defined.
+  #endif
+
   #import <OpenGLES/ES2/gl.h>
   #import <OpenGLES/ES2/glext.h>
 #elif defined(SPIRE_USING_ANDROID)
+
+  #if defined(SPIRE_USING_OSX) || defined(SPIRE_USING_WIN) || defined(SPIRE_USING_LINUX) || defined(SPIRE_USING_IOS)
+    #error Multiple platforms defined.
+  #endif
+
   #include <GLES2/gl2.h>
   #include <GLES2/gl2ext.h>
 #else
@@ -74,12 +134,12 @@
 
 // Utility definitions for non-ES OpenGL implementations.
 #ifndef SPIRE_OPENGL_ES_2
-#define GL_HALF_FLOAT_OES GL_FLOAT
+  #define GL_HALF_FLOAT_OES GL_FLOAT
 #endif
 
 // Any ubiquitous header files.
-#include "Core/Math.h"
-#include "Core/Log.h"
+#include "Math.h"
+#include "Log.h"
 
 #define MAX_GL_ERROR_COUNT 10 
 

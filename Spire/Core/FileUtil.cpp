@@ -37,7 +37,7 @@
 #include <algorithm>
 
 #include "Common.h"
-#include "Core/Log.h"
+#include "Log.h"
 #include "FileUtil.h"
 
 #ifndef SPIRE_USING_WIN

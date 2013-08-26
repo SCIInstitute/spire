@@ -32,7 +32,7 @@
 #ifndef SPIRE_HIGH_LOG_H
 #define SPIRE_HIGH_LOG_H
 
-#include "Interface.h"
+#include "../Interface.h"
 #include <sstream>
 #include <fstream>
 #ifdef SPIRE_USE_STD_THREADS

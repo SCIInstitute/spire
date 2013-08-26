@@ -65,14 +65,8 @@ if(UNIX)
     find_library(CORE_FOUNDATION_FRAMEWORK CoreFoundation)
     set(OS_SPECIFIC_LIBS ${CORE_FOUNDATION_FRAMEWORK})
 
-    if(IOS)
-      add_definitions(-DSPIRE_USING_IOS)
-      add_definitions(-DSPIRE_OPENGL_ES_2)
-    else()
-      add_definitions(-DSPIRE_USING_OSX)
-    endif()
   else(APPLE)
-    add_definitions(-DSPIRE_USING_LINUX -D_GLIBCXX_USE_NANOSLEEP)
+    add_definitions(-D_GLIBCXX_USE_NANOSLEEP)
     set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC")
     set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fPIC")
   endif(APPLE)
@@ -81,7 +75,6 @@ if(UNIX)
   #set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -pedantic -Werror")
 else(UNIX)
   if(WIN32)
-    add_definitions(-DSPIRE_USING_WIN)
     # Get rid of a bunch of windows warnings.
 
     # Disables needs to have dll-interface to be used by clients warning.
