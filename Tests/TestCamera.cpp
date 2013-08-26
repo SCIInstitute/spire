@@ -31,7 +31,7 @@
 
 #include "TestCamera.h"
 #include "GlobalTestEnvironment.h"
-#include "Extensions/SCIRun/SRCommonUniforms.h"
+#include "SpireExt/SCIRun/SRCommonUniforms.h"
 
 //------------------------------------------------------------------------------
 TestCamera::TestCamera() :

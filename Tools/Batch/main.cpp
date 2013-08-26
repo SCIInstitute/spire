@@ -29,13 +29,13 @@
 #include <cstdlib>
 #include <iostream>
 
-#include "gtest/gtest.h"
-#include "Spire/3rdParty/GLEW/include/GL/glew.h"
-
-#include "BatchContext.h"
-#include "Spire/Tests/GlobalTestEnvironment.h"
 #include "Spire/Core/Common.h"
 #include "Spire/Core/Log.h"
+
+#include "gtest/gtest.h"
+
+#include "BatchContext.h"
+#include "Tests/GlobalTestEnvironment.h"
 
 // Defining cimg_display to 0 ensures CImg doesn't try to include OS specific
 // windowing header files.

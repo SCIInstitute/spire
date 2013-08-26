@@ -86,7 +86,6 @@ if (UNIX)
   if (APPLE)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libc++")
     set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -stdlib=libc++")
-    add_definitions(-DSPIRE_USING_OSX)
 
     # Find necessary apple libraries (cocoa).
     FIND_LIBRARY(COCOA_LIBRARY Cocoa)
@@ -100,9 +99,6 @@ if (UNIX)
       NSContext.h
       )
   else ()
-    # Catch all is linux for other unix platforms...
-    add_definitions(-DSPIRE_USING_LINUX)
-
     # Linux specific sources
     set (SpecificSources
       GLXContext.cpp
@@ -111,7 +107,13 @@ if (UNIX)
   endif ()
 else()
   if (WIN32)
-    add_definitions(-DSPIRE_USING_WIM)
+    # Since we are building a static library, we need to define GLEW_STATIC
+    # <url:http://glew.sourceforge.net/install.html#^define the GLEW_STATIC>
+    add_definitions(-DGLEW_STATIC)
+
+    # GLEW include directories and source.
+    include_directories(SYSTEM ${CMAKE_CURRENT_SOURCE_DIR}/3rdParty/glew/include)
+    set(Source_GLEW_for_Windows 3rdParty/glew/src/glew.c)
 
     # Windows specific sources
     set (SpecificSources
@@ -129,6 +131,12 @@ add_subdirectory(${BASE_SPIRE_DIR}/Tests/3rdParty/gtest ${BASE_SPIRE_DIR}/bin/gt
 
 # Include gtest
 include_directories(SYSTEM ${BASE_SPIRE_DIR}/Tests/3rdParty/gtest/include)
+
+########################################################################
+# Spire Extensions
+
+# GLM include directory.
+INCLUDE_DIRECTORIES(SYSTEM "${BASE_SPIRE_DIR}/Extensions" )
 
 ########################################################################
 # GLM
@@ -188,7 +196,8 @@ file(COPY ${BASE_SPIRE_DIR}/Tests/Assets/
 add_executable(spirebatch
   ${CommonSources}
   ${TestSources}
-  ${SpecificSources})
+  ${SpecificSources}
+  ${Source_GLEW_for_Windows} )
 
 add_dependencies(spirebatch Spire)
 

@@ -35,8 +35,8 @@
 #include "Core/Exceptions.h"
 #include "Core/SpireObject.h"
 #include "Core/FileUtil.h"
-#include "Extensions/SCIRun/SRCommonUniforms.h"
-#include "Extensions/SCIRun/SRCommonAttributes.h"
+#include "SpireExt/SCIRun/SRCommonUniforms.h"
+#include "SpireExt/SCIRun/SRCommonAttributes.h"
 
 #include "GlobalTestEnvironment.h"
 #include "CommonTestFixtures.h"

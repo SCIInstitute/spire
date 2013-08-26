@@ -35,7 +35,7 @@
 #include <exception>
 
 #include "gtest/gtest.h"
-#include "../Interface.h"
+#include "Spire/Interface.h"
 
 namespace Spire
 {

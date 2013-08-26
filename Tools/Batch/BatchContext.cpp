@@ -31,14 +31,18 @@
 #include <iostream>
 #include <stdexcept>
 
-#include "Spire/3rdParty/glew/include/GL/glew.h"
+#include "Spire/Core/Common.h"
 
 #include "BatchContext.h"
 
-#include "CGLContext.h"
-#include "GLXContext.h"
-#include "WGLContext.h"
-#include "NSContext.h"
+#if defined(SPIRE_USING_WIN)
+  #include "WGLContext.h"
+#elif defined(SPIRE_USING_LINUX)
+  #include "GLXContext.h"
+#elif defined(SPIRE_USING_OSX)
+  #include "CGLContext.h"
+  #include "NSContext.h"
+#endif
 
 namespace Spire
 {
@@ -68,12 +72,14 @@ BatchContext* BatchContext::Create(uint32_t width, uint32_t height,
 #endif
   bctx->makeCurrent();
 
-  GLenum glerr = glewInit();
-  if (GLEW_OK != glerr) 
+#ifdef SPIRE_USING_WIN
+  GLenum err = glewInit();
+  if (GLEW_OK != err)
   {
-    std::cerr << "Error initializing GLEW: " << glewGetErrorString(glerr) << "\n";
-    throw std::runtime_error("could not initialize GLEW.");
+    Log::error() << "GLEW init failed!" << std::endl;
+    throw GLError("GLEW failed to initialize.");
   }
+#endif
 
   return bctx;
 }
