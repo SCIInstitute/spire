@@ -125,10 +125,10 @@ endif ()
 # Google Test - must come after setting compiler flags.
 
 add_definitions(-DGTEST_USE_OWN_TR1_TUPLE=1)
-add_subdirectory(${BASE_SPIRE_DIR}/Spire/3rdParty/gtest ${BASE_SPIRE_DIR}/bin/gtest)
+add_subdirectory(${BASE_SPIRE_DIR}/Tests/3rdParty/gtest ${BASE_SPIRE_DIR}/bin/gtest)
 
 # Include gtest
-include_directories(SYSTEM ${BASE_SPIRE_DIR}/Spire/3rdParty/gtest/include)
+include_directories(SYSTEM ${BASE_SPIRE_DIR}/Tests/3rdParty/gtest/include)
 
 ########################################################################
 # GLM
@@ -167,7 +167,7 @@ file(GLOB TestSources
 # Copy shaders to the target directory
 
 # Copy shaders.
-file(COPY ${BASE_SPIRE_DIR}/Spire/Shaders/
+file(COPY ${BASE_SPIRE_DIR}/Tests/Shaders/
      DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/
      FILE_PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ WORLD_READ
      DIRECTORY_PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE
@@ -175,7 +175,7 @@ file(COPY ${BASE_SPIRE_DIR}/Spire/Shaders/
                            WORLD_READ WORLD_EXECUTE)
 
 # Exported meshes. These are used to test rendering.
-file(COPY ${BASE_SPIRE_DIR}/Spire/ExportedMeshes/
+file(COPY ${BASE_SPIRE_DIR}/Tests/Assets/
      DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/Assets
      FILE_PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ WORLD_READ
      DIRECTORY_PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE
