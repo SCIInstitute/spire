@@ -34,8 +34,8 @@
 #include "SciBall.h"
 #include "SRCamera.h"
 
-#include "Core/Hub.h"
-#include "Core/InterfaceImplementation.h"
+#include "Spire/Core/Hub.h"
+#include "Spire/Core/InterfaceImplementation.h"
 
 using namespace std::placeholders;
 

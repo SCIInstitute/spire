@@ -33,7 +33,7 @@
 #define SPIRE_APPSPECIFIC_SCIRUN_SCIBALL_H
 
 #include <cstdint>
-#include "Core/Math.h"
+#include "Spire/Core/Math.h"
 
 namespace Spire { 
 namespace SCIRun { 

@@ -30,7 +30,7 @@
 /// \date   April 2013
 
 #include "SciBall.h"
-#include "../../Core/GLMathUtil.h"
+#include "Spire/Core/GLMathUtil.h"
 
 namespace Spire {
 namespace SCIRun {

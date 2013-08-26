@@ -31,7 +31,7 @@
 
 #include "SRUtil.h"
 
-#include "Core/Common.h"
+#include "Spire/Core/Common.h"
 
 namespace Spire {
 namespace SCIRun {

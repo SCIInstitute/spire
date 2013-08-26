@@ -33,9 +33,9 @@
 #define SPIRE_APPSPECIFIC_SCIRUN_SCIRUNINTERFACE_H
 
 #include <cstdint>
-#include "../../Interface.h"
-#include "../../Core/LambdaInterface.h"
-#include "../../Core/ObjectLambda.h"
+#include "Spire/Interface.h"
+#include "Spire/Core/LambdaInterface.h"
+#include "Spire/Core/ObjectLambda.h"
 
 namespace Spire {
 namespace SCIRun {
