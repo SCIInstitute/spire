@@ -51,10 +51,9 @@ void main()
   // Remember to always negate the light direction for these lighting
   // calculations. The dot product takes on its greatest values when the angle
   // between the two vectors diminishes.
-  vec3  invLightDir = -uLightDirWorld;
   vec3  normal      = normalize(vNormal);
-  float diffuse     = max(0.0, dot(normal, invLightDir));
-  vec3  reflection  = reflect(invLightDir, normal);
+  float diffuse     = max(0.0, dot(normal, uLightDirWorld));
+  vec3  reflection  = reflect(uLightDirWorld, normal);
   float spec        = max(0.0, dot(reflection, uCamViewVec));
 
   spec              = pow(spec, uSpecularPower);
