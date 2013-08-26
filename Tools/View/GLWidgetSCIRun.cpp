@@ -38,7 +38,7 @@
 #include <QWheelEvent>
 
 #include "GLWidgetSCIRun.h"
-#include "Spire/AppSpecific/SCIRun/SRUtil.h"
+#include "Spire/Extensions/SCIRun/SRUtil.h"
 
 using namespace SCIRun::Gui;
 using namespace Spire;

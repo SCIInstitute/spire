@@ -36,7 +36,7 @@
 
 #include "gtest/gtest.h"
 #include "GlobalTestEnvironment.h"
-#include "AppSpecific/SCIRun/SRInterface.h"
+#include "Extensions/SCIRun/SRInterface.h"
 
 #include "TestCamera.h"
 

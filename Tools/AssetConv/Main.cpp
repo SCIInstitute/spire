@@ -30,7 +30,7 @@
 /// \date   April 2013
 /// \brief  Simple asset conversion from a number of different input formats
 ///         into a simple binary format that is easily loaded into the SCIRun5
-///         AppSpecific section of the code.
+///         Extensions section of the code.
 
 #include <algorithm>
 #include <string>

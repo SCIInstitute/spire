@@ -86,10 +86,15 @@ set(View_Common_Sources GLContext.cpp GLContext.h MainWindow.cpp MainWindow.h ma
 # An example where globbing isn't so good =(
 if(USE_SCIRUN_INTERFACE)
   set(View_Specific_Sources GLWidgetSCIRun.cpp GLWidgetSCIRun.h)
-  set (MocHeaders MainWindow.h GLWidgetSCIRun.h)
+  set(MocHeaders MainWindow.h GLWidgetSCIRun.h)
+
+  file (GLOB Source_Extensions
+    "${BASE_SPIRE_DIR}/Spire/Extensions/SCIRun/*.cpp"
+    "${BASE_SPIRE_DIR}/Spire/Extensions/SCIRun/*.h"
+    )
 else()
   set(View_Specific_Sources GLWidget.cpp GLWidget.h)
-  set (MocHeaders MainWindow.h GLWidget.h)
+  set(MocHeaders MainWindow.h GLWidget.h)
 endif()
 
 set (Forms MainWindow.ui) 
@@ -117,6 +122,7 @@ file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/Assets/
 # Setup executable
 
 add_executable(spireview 
+  ${Source_Extensions}
   ${View_Common_Sources}
   ${View_Specific_Sources}
   ${MocSource} 

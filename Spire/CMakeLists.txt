@@ -9,8 +9,6 @@ include(ExternalProject)
 ########################################################################
 # CMake Build Options
 
-option(USE_SCIRUN_INTERFACE "Includes custom interface to SCIRun." OFF)
-option(USE_TUVOK "Builds and includes the Tuvok volume renderer" OFF)
 if(WIN32)
   option(USE_STD_THREADS "Use standard library threads. If turned off, no threading support is available." OFF)
 else()
@@ -20,16 +18,8 @@ option(USE_GOOGLE_PERF "Use google perf tools to profile Spire." OFF)
 option(USE_CORE_PROFILE_3 "Use OpenGL core profile 3.2 (supported by most macs)." OFF)
 option(USE_CORE_PROFILE_4 "Use OpenGL core profile 4.1 (supported by mac 10.9)." OFF)
 
-if(USE_TUVOK)
-  add_definitions(-DSPIRE_USE_TUVOK)
-endif()
-
 if(USE_STD_THREADS)
   add_definitions(-DSPIRE_USE_STD_THREADS)
-endif()
-
-if(USE_SCIRUN_INTERFACE)
-  add_definitions(-DSPIRE_USE_SCIRUN_INTERFACE)
 endif()
 
 if(CMAKE_BUILD_TYPE MATCHES DEBUG)
@@ -159,14 +149,7 @@ file (GLOB Source_Core
   "Core/*.h"
   )
 
-if(USE_SCIRUN_INTERFACE)
-  file (GLOB Source_SCIRun
-    "AppSpecific/SCIRun/*.cpp"
-    "AppSpecific/SCIRun/*.h"
-    )
-endif()
-
-########################################################################
+#######################################################################
 # Library setup
 
 # Build the library.
@@ -174,10 +157,8 @@ set(SPIRE_TARGET_NAME Spire)
 add_library(${SPIRE_TARGET_NAME}
   ${Source_Root}
   ${Source_Core}
-  ${Source_SCIRun}
   ${Source_GLEW_for_Windows}
   )
-add_dependencies(${SPIRE_TARGET_NAME} ThirdParty_Tuvok)
 
 target_link_libraries(
   ${SPIRE_TARGET_NAME}
