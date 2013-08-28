@@ -523,19 +523,12 @@ public:
   /// Returns true if the pass already exists.
   bool ntsHasPass(const std::string& pass) const;
 
-
-
   /// @}
 
 protected:
 
   std::unique_ptr<Hub>      mHub;   ///< Rendering hub.
 
-private:
-
-  friend class PipeInterface;       // Technically, only PipeInterface's constructor
-                                    // needs friend status. Needed to extract hub
-                                    // reference when the pipe is created.
 };
 
 } // namespace spire
