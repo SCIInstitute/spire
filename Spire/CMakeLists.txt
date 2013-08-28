@@ -1,13 +1,13 @@
-# Builds the spire library and all of its dependencies.
-
-########################################################################
+#-----------------------------------------------------------------------
 # CMake configuration
+#-----------------------------------------------------------------------
 
 cmake_minimum_required(VERSION 2.8.11 FATAL_ERROR)
 include(ExternalProject)
 
-########################################################################
+#-----------------------------------------------------------------------
 # CMake Build Options
+#-----------------------------------------------------------------------
 
 if(WIN32)
   option(USE_STD_THREADS "Use standard library threads. If turned off, no threading support is available." OFF)
@@ -39,15 +39,17 @@ if(USE_CORE_PROFILE_4)
   add_definitions(-DUSE_CORE_PROFILE_4)
 endif()
 
-########################################################################
+#-----------------------------------------------------------------------
 # OpenGL configuration
+#-----------------------------------------------------------------------
 
 if(NOT DEFINED IOS)
   find_package(OpenGL REQUIRED)
 endif()
 
-########################################################################
+#-----------------------------------------------------------------------
 # Compiler settings
+#-----------------------------------------------------------------------
 if(UNIX)
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 
@@ -114,21 +116,24 @@ include_directories(SYSTEM
   ${CMAKE_CURRENT_SOURCE_DIR}/3rdParty
   ${OPENGL_INCLUDE_DIRS})
 
-########################################################################
+#-----------------------------------------------------------------------
 # Eigen
+#-----------------------------------------------------------------------
 
 # Eigen include directory.
 include_directories(SYSTEM "${CMAKE_CURRENT_SOURCE_DIR}/3rdParty/eigen" )
 add_definitions(-DEIGEN_INITIALIZE_MATRICES_BY_ZERO)
 
-########################################################################
+#-----------------------------------------------------------------------
 # GLM
+#-----------------------------------------------------------------------
 
 # GLM include directory.
-INCLUDE_DIRECTORIES(SYSTEM "${CMAKE_CURRENT_SOURCE_DIR}/3rdParty/glm" )
+include_directories(SYSTEM "${CMAKE_CURRENT_SOURCE_DIR}/3rdParty/glm" )
 
-########################################################################
+#-----------------------------------------------------------------------
 # Source
+#-----------------------------------------------------------------------
 
 # Globbing has some downsides, but the advantages outweigh the
 # disadvantages.
@@ -142,8 +147,9 @@ file (GLOB Source_Core
   "Core/*.h"
   )
 
-#######################################################################
+#-----------------------------------------------------------------------
 # Library setup
+#-----------------------------------------------------------------------
 
 # Build the library.
 set(SPIRE_TARGET_NAME Spire)

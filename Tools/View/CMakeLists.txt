@@ -7,7 +7,6 @@ cmake_minimum_required(VERSION 2.8 FATAL_ERROR)
 
 project(SpireViewer)
 
-
 ########################################################################
 # Configure OpenGL
 find_package(OpenGL REQUIRED)
@@ -22,6 +21,7 @@ set (BASE_SPIRE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../..)
 # Required libraries
 
 # The 'spire' library.
+# This should really be "find_package(Spire)"
 add_subdirectory(${BASE_SPIRE_DIR}/Spire ${CMAKE_CURRENT_BINARY_DIR}/spire)
 
 # Pull USE_STD_THREADS from the spire directory
