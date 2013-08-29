@@ -35,7 +35,7 @@
 #include <QDialog>
 #include <QMainWindow>
 #include <QtOpenGL/QGLWidget>
-#ifdef SPIRE_USE_SCIRUN_INTERFACE
+#ifdef USE_SCIRUN_INTERFACE
 #include "GLWidgetSCIRun.h"
 #else
 #include "GLWidget.h"
@@ -61,7 +61,7 @@ protected:
 private:
   Ui::MainWindow *ui;
   
-#ifdef SPIRE_USE_SCIRUN_INTERFACE
+#ifdef USE_SCIRUN_INTERFACE
   SCIRun::Gui::GLWidget*      mGLWidget;
 #else
   GLWidget*                   mGLWidget;

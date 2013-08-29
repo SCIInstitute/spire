@@ -2,6 +2,14 @@
 # Handles setting up Spire and all of its extensions in, hopefully, the most 
 # transparent way possible in CMake. Heavily infulenced by ExternalProject.cmake.
 # Some 
+#
+# Should have some transparent way of copying shaders and assets. Some function
+# that ends up copying all of the assets and shaders into the 'correct' output
+# directory (determining what the correct output directory is, may be a harder
+# thing to do).
+#
+# Also remember: you will probably want to use add_dependencies with the target
+# name.
 # 
 # The Spire_AddCore and Spire_AddExtension functions add the following
 # variables to the PARENT_SCOPE namespace:
@@ -21,7 +29,7 @@
 #    [BINARY_DIR dir]             # Same as ExternalProject_Add's BINARY_DIR .
 #    [GIT_TAG tag]                # Same as ExternalProject_Add's GIT_TAG
 #    [GIT_REPOSITORY repo]        # Same as ExternalProject_Add's GIT_REPOSITORY.
-#    [USE_THREADS truth]          # Set to 'ON' if you want to use spire threads.
+#    [USE_STD_THREADS truth]      # Set to 'ON' if you want to use spire threads.
 #    [USE_SHARED_LIB truth]       # Set to 'ON' if you want build a shared library.
 #    )
 #
@@ -92,6 +100,9 @@ if(_spm_func)
   set(_spm_keywords_${_spm_func} "${_spm_keywords_${_spm_func}})$")
 endif()
 
+# Include external project
+include(ExternalProject)
+
 # Function for parsing arguments and values coming into the specified function
 # name 'f'. 'name' is the target name. 'ns' (namespace) is a value prepended
 # onto the key name before being added to the target namespace. 'args' list of
@@ -128,17 +139,22 @@ function(_spm_parse_arguments f ns args)
       if(key)
         # We have a key / value pair. Set the appropriate property.
         if(NOT arg STREQUAL "")
-          set(${ns)${key} "${arg}" PARENT_SCOPE)
-          set_property(GLOBAL APPEND PROPERTY ${ns}${key} "${arg}")
+          # Set the variable in both scopes so we can test for existance
+          # and update as needed.
+          set(${ns}${key} "${arg}")
+          set(${ns}${key} "${arg}" PARENT_SCOPE)
+          message("Set ${ns}${key} to ${arg}")
         else()
-          get_property(have_key GLOBAL PROPERTY ${ns}${key} SET)
-          if(have_key)
+          if (${ns}${key})
             # If we already have a value for this key, generated a semi-colon
             # separated list.
-            get_property(value GLOBAL PROPERTY ${ns}${key})
-            set_property(GLOBAL PROPERTY ${ns}${key} "${value};${arg}")
+            set(value ${${ns}${key}})
+            set(${ns}${key} "${value};${arg}")
+            set(${ns}${key} "${value};${arg}" PARENT_SCOPE)
+            message("Set2 ${ns}${key} to ${value};${arg}")
           else()
-            set_property(GLOBAL PROPERTY ${ns}${key} "${arg}")
+            set(${ns}${key} "${arg}")
+            set(${ns}${key} "${arg}" PARENT_SCOPE)
           endif()
         endif()
       else()
@@ -197,6 +213,12 @@ function(Spire_AddCore name)
   _spm_parse_arguments(Spire_AddCore _SPM_ "${ARGN}")
 
   # Set prefix according to user, or use spire-core.
+  # Note that setting the variables this way, with two values, generates a
+  # semi colon delimited list as a string. So:
+  # set(_ep_prefix "PREFIX" "spire-core") is the same as
+  # set(_ep_prefix "PREFIX;spire-core")
+  # And behaves just as you would expect when used in the ExternalProject_Add
+  # function.
   if (_SPM_PREFIX)
     set(_ep_prefix "PREFIX" "${_SPM_PREFIX}")
   else()
@@ -205,12 +227,14 @@ function(Spire_AddCore name)
 
   if (_SPM_SOURCE_DIR)
     set(_ep_source_dir "SOURCE_DIR" "${_SPM_SOURCE_DIR}")
+  else()
+    set(_ep_source_dir "SOURCE_DIR")
   endif()
 
   if (_SPM_GIT_TAG)
     set(_ep_git_tag "GIT_TAG" ${_SPM_GIT_TAG})
   else()
-    set(_ep_git_tag "GIT_TAG" "latest")
+    set(_ep_git_tag "GIT_TAG" "master")
   endif()
 
   if (_SPM_GIT_REPOSITORY)
@@ -223,23 +247,20 @@ function(Spire_AddCore name)
     set(_ep_bin_dir "BINARY_DIR" $_SPM_BINARY_DIR)
   endif()
 
-  if (_SPM_USE_THREADS)
-    message("Using spire threads.")
-    set(_ep_spire_use_threads "-DSPIRE_USE_STD_THREADS:BOOL=${_SPM_SPIRE_USE_THREADS}")
+  if (_SPM_USE_STD_THREADS)
+    set(_ep_spire_use_threads "-DUSE_STD_THREADS:BOOL=${_SPM_USE_STD_THREADS}")
   else()
-    message("Not using spire threads.")
-    set(_ep_spire_use_threads "-DSPIRE_USE_STD_THREADS:BOOL=ON")
+    set(_ep_spire_use_threads "-DUSE_STD_THREADS:BOOL=ON")
   endif()
 
   if (_SPM_USE_SHARED_LIB)
-    message("Using spire as a shared lib")
     set(_ep_spire_use_shared "-DBUILD_SHARED_LIBS:BOOL=${_SPM_USE_SHARED_LIB}")
   else()
-    message("Using spire as a static lib")
     set(_ep_spire_use_shared "-DBUILD_SHARED_LIBS:BOOL=OFF")
   endif()
 
-  message("CMake build type from spire func: ${CMAKE_BUILD_TYPE}")
+  # All parent scope variables are copied into our scope.
+  #message("CMake build type from spire func: ${CMAKE_BUILD_TYPE}")
 
   ExternalProject_Add(${name}
     ${_ep_prefix}
@@ -247,11 +268,31 @@ function(Spire_AddCore name)
     ${_ep_git_repo}
     ${_ep_git_tag}
     ${_ep_bin_dir}
+    INSTALL_COMMAND ""
     CMAKE_ARGS
       -DCMAKE_BUILD_TYPE:STRING=${CMAKE_BUILD_TYPE}
       ${_ep_spire_use_shared}
       ${_ep_spire_use_threads}
     )
+
+  # Retrieving properties from external projects will retrieve their fully
+  # initialized values (including if any defaults were set).
+  # ExternalProject_Get_Property stores the result in our function scope,
+  # under the name GIT_REPOSITORY.
+  ExternalProject_Get_Property(${name} GIT_REPOSITORY)
+  ExternalProject_Get_Property(${name} SOURCE_DIR)
+  ExternalProject_Get_Property(${name} BINARY_DIR)
+
+  set(SPIRE_INCLUDE_DIRS ${SPIRE_INCLUDE_DIRS} "${SOURCE_DIR}")
+  set(SPIRE_INCLUDE_DIRS ${SPIRE_INCLUDE_DIRS} "${SOURCE_DIR}/Spire/3rdParty/glm")
+  set(SPIRE_INCLUDE_DIRS ${SPIRE_INCLUDE_DIRS} "${SOURCE_DIR}/Spire/3rdParty/glew/include")
+  set(SPIRE_INCLUDE_DIRS ${SPIRE_INCLUDE_DIRS} PARENT_SCOPE)
+
+  # TODO: Figure out either the install step, or the correct location to
+  # libraries.
+  set(SPIRE_LIBRARY_DIRS ${SPIRE_LIBRARY_DIRS} "${BINARY_DIR}" PARENT_SCOPE)
+
+  set(SPIRE_LIBRARIES ${SPIRE_LIBRARIES} Spire PARENT_SCOPE)
 
   # Set properties in the ${name} target. These range from the include
   # directories to the output binaries.

@@ -8,17 +8,21 @@ find_package(OpenGL REQUIRED)
 set (QT_USE_QTOPENGL TRUE)
 
 #-----------------------------------------------------------------------
-# Common Variables
+# Setup spire
 #-----------------------------------------------------------------------
 
-set (BASE_SPIRE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../..)
+set(SPIRE_OPTIONS)
 
-#-----------------------------------------------------------------------
-# Spire package setup
-#-----------------------------------------------------------------------
+# Expose threading option to the user.
+option(USE_STD_THREADS "Use standard library threads. If turned off, no threading support is available." ON)
+if (USE_STD_THREADS)
+  set(SPIRE_OPTIONS ${SPIRE_OPTIONS} "USE_STD_THREADS;ON")
+else()
+  set(SPIRE_OPTIONS ${SPIRE_OPTIONS} "USE_STD_THREADS;OFF")
+endif()
 
 # Ensure CMAKE_MODULE_PATH includes path to Spire's SpirePM.cmake.
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/../../cmake)
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/../../CMake)
 include(SpirePM)
 
 # Since we already have spire in the source chain, we won't download it.
@@ -30,17 +34,19 @@ include(SpirePM)
 # and SPIRE_LIBRARY paths. Extension may also populate SPIRE_SHADER_DIR and
 # SPIRE_ASSET_DIR so that you can copy assets and the like.
 # We use the default settings with the target name of 'Spire'.
-Spire_AddCore(Spire)
+Spire_AddCore(Spire_Module ${SPIRE_OPTIONS})
 
 ## TESTING EXTENSIONS:
 ## Add the SCIRun extension to spire while also specifying the version of
 ## spire-scirun to use. The version is pulled as a git-tag, so it should be
 ## present as a tag in the git repo.
 #Spire_AddExtension(SCIRun "https://github.com/iauns/spire-scirun" "0.1.0")
+#add_definitions(-DUSE_SCIRUN_INTERFACE)
 
 # Include spire directories that were place in our scope by the Spire_AddCore
 # and Spire_AddExtension functions.
-include_directories()
+include_directories(SYSTEM ${SPIRE_INCLUDE_DIRS})
+link_directories(${SPIRE_LIBRARY_DIRS})
 
 #-----------------------------------------------------------------------
 # Compiler settings
@@ -76,27 +82,6 @@ include(${QT_USE_FILE})
 add_definitions(${QT_DEFINITIONS})
 
 #-----------------------------------------------------------------------
-# Spire Extensions
-#-----------------------------------------------------------------------
-
-# Extensions include directory.
-include_directories(SYSTEM "${BASE_SPIRE_DIR}/Extensions" )
-
-#-----------------------------------------------------------------------
-# Eigen
-#-----------------------------------------------------------------------
-
-# Eigen include directory.
-include_directories(SYSTEM "${BASE_SPIRE_DIR}/Spire/3rdParty/eigen" )
-
-#-----------------------------------------------------------------------
-# GLM
-#-----------------------------------------------------------------------
-
-# GLM include directory.
-include_directories(SYSTEM "${BASE_SPIRE_DIR}/Spire/3rdParty/glm" )
-
-#-----------------------------------------------------------------------
 # Setup source
 #-----------------------------------------------------------------------
 
@@ -104,11 +89,6 @@ set(View_Common_Sources GLContext.cpp GLContext.h MainWindow.cpp MainWindow.h ma
 if(USE_SCIRUN_INTERFACE)
   set(View_Specific_Sources GLWidgetSCIRun.cpp GLWidgetSCIRun.h)
   set(MocHeaders MainWindow.h GLWidgetSCIRun.h)
-
-  file (GLOB Source_Extensions
-    "${BASE_SPIRE_DIR}/Extensions/SpireExt/SCIRun/*.cpp"
-    "${BASE_SPIRE_DIR}/Extensions/SpireExt/SCIRun/*.h"
-    )
 else()
   set(View_Specific_Sources GLWidget.cpp GLWidget.h)
   set(MocHeaders MainWindow.h GLWidget.h)
@@ -121,6 +101,9 @@ QT4_WRAP_UI(UISource ${Forms})
 
 #-----------------------------------------------------------------------
 # Copy shaders to the binary directory
+# NOTE: This should be done by a function defined in SpirePM.
+#       All extensions add their shader directories to a common variable
+#       so one call to that function can install all shaders and assets.
 #-----------------------------------------------------------------------
 file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/Shaders/
      DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/Shaders
@@ -149,13 +132,8 @@ add_executable(spireview
 
 add_dependencies(spireview Spire)
 
-# Example of extracting a variable from another cmake dir:
-#get_directory_property(SPIRE_EXTRA_LIBS DIRECTORY ${BASE_SPIRE_DIR}/Spire DEFINITION OS_SPECIFIC_LIBS)
-#message( Dir: ${BASE_SPIRE_DIR}/Spire)
-#message( Libs: ${SPIRE_EXTRA_LIBS})
-
 target_link_libraries(spireview 
-  Spire 
+  ${SPIRE_LIBRARIES} 
   ${QT_OPENGL_LIBRARY}
   ${OPENGL_LIBRARIES}
   ${QT_LIBRARIES})
