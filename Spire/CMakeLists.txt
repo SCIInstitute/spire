@@ -63,18 +63,12 @@ if(UNIX)
         "${CMAKE_CXX_FLAGS} -stdlib=libc++ -Wall -Wextra -Werror -Wconversion -Wshadow -Wunreachable-code")
     endif()
 
-    # We were using CoreFoundation to look up shaders in the bundle.
-    find_library(CORE_FOUNDATION_FRAMEWORK CoreFoundation)
-    set(OS_SPECIFIC_LIBS ${CORE_FOUNDATION_FRAMEWORK})
-
   else(APPLE)
     add_definitions(-D_GLIBCXX_USE_NANOSLEEP)
     set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC")
     set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fPIC")
   endif(APPLE)
 
-  # Super strict settings.
-  #set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -pedantic -Werror")
 else(UNIX)
   if(WIN32)
     # Get rid of a bunch of windows warnings.
@@ -162,6 +156,5 @@ add_library(${SPIRE_TARGET_NAME}
 target_link_libraries(
   ${SPIRE_TARGET_NAME}
   ${OPENGL_LIBRARIES}
-  ${OS_SPECIFIC_LIBS}
   )
 

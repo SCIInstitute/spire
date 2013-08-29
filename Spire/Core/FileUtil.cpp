@@ -63,16 +63,11 @@
   #define LARGE_STAT(name,buffer) _stat64(name,buffer)
 #endif
 
-#ifdef SPIRE_USING_OSX
-  #include <CoreFoundation/CoreFoundation.h>
-#endif
-
 namespace Spire {
 
 // Forward declarations.
 bool getFileStats(const std::string& strFileName, LARGE_STAT_BUFFER& stat_buf);
 std::vector<std::string> getSubDirList(const std::string& dir);
-std::string getFromResourceOnMac(const std::string& strFileName);
 std::string findFile(const std::string& file, bool subdirs);
 
 //------------------------------------------------------------------------------
@@ -107,14 +102,6 @@ std::string findFileInDirs(const std::string& file,
                            const std::vector<std::string>& strDirs,
                            bool subdirs)
 {
-#ifdef SPIRE_USING_OSX
-  if (fileExists(getFromResourceOnMac(file)))
-  {
-    std::string res = getFromResourceOnMac(file);
-    return res;
-  }
-#endif
-
   if (fileExists(file)) return file;
   for (auto it = strDirs.begin(); it != strDirs.end(); ++it)
   {
@@ -253,49 +240,6 @@ std::vector<std::string> getSubDirList(const std::string& dir)
     completeSubDirs.push_back(rootdir + subDirs[i]);
   }
   return completeSubDirs;
-}
-
-//------------------------------------------------------------------------------
-std::string getFromResourceOnMac(const std::string& strFileName)
-{
-#ifdef SPIRE_USING_OSX
-  std::string result;
-
-  CFStringRef cfFilename = CFStringCreateWithCString(
-      kCFAllocatorDefault, removeExt(getFilename(strFileName)).c_str(), 
-      CFStringGetSystemEncoding());
-  CFStringRef cfExt = CFStringCreateWithCString(
-      kCFAllocatorDefault, getExt(getFilename(strFileName)).c_str(),
-      CFStringGetSystemEncoding());
-
-  CFURLRef imageURL = CFBundleCopyResourceURL(CFBundleGetMainBundle(), 
-                                              cfFilename, cfExt, NULL);
-  if (imageURL != NULL)
-  {
-    CFStringRef macPath = CFURLCopyFileSystemPath(imageURL, kCFURLPOSIXPathStyle);
-    const char *pathPtr = CFStringGetCStringPtr(macPath, 
-                                                CFStringGetSystemEncoding());
-
-    if (macPath != 0 && pathPtr != 0)
-    {
-      result = pathPtr;
-    }
-    else
-    {
-      result = strFileName;
-    }
-
-    if (macPath)    CFRelease(macPath);
-  }
-
-  if (cfFilename) CFRelease(cfFilename);
-  if (cfExt)      CFRelease(cfExt);
-  if (imageURL)   CFRelease(imageURL);
-
-  return result;
-#else
-  return strFileName;
-#endif
 }
 
 //------------------------------------------------------------------------------
