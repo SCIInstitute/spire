@@ -25,22 +25,22 @@ endif()
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/../../CMake)
 include(SpirePM)
 
-# Since we already have spire in the source chain, we won't download it.
-#Spire_AddCore(Spire
-#  SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../..")
+# Name the external project. This is NOT the same as the target that gets built
+# with the external project's build command.
+set(SPIRE_CORE "Spire_Core_EP")
 
 # Add core spire library locally.
 # This function, alongside Spire_AddExtension, populate the SPIRE_INCLUDE_DIR
 # and SPIRE_LIBRARY paths. Extension may also populate SPIRE_SHADER_DIR and
 # SPIRE_ASSET_DIR so that you can copy assets and the like.
 # We use the default settings with the target name of 'Spire'.
-Spire_AddCore(Spire_Module ${SPIRE_OPTIONS})
+Spire_AddCore(${SPIRE_CORE} ${SPIRE_OPTIONS})
 
 ## TESTING EXTENSIONS:
 ## Add the SCIRun extension to spire while also specifying the version of
 ## spire-scirun to use. The version is pulled as a git-tag, so it should be
 ## present as a tag in the git repo.
-#Spire_AddExtension(SCIRun "https://github.com/iauns/spire-scirun" "0.1.0")
+#Spire_AddExtension(${SPIRE_CORE} SCIRun "https://github.com/iauns/spire-scirun" "0.1.0")
 #add_definitions(-DUSE_SCIRUN_INTERFACE)
 
 # Include spire directories that were place in our scope by the Spire_AddCore

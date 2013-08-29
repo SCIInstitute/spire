@@ -1,15 +1,7 @@
 # - Spire package management module
-# Handles setting up Spire and all of its extensions in, hopefully, the most 
-# transparent way possible in CMake. Heavily infulenced by ExternalProject.cmake.
-# Some 
-#
-# Should have some transparent way of copying shaders and assets. Some function
-# that ends up copying all of the assets and shaders into the 'correct' output
-# directory (determining what the correct output directory is, may be a harder
-# thing to do).
-#
-# Also remember: you will probably want to use add_dependencies with the target
-# name.
+# Handles setting up Spire and all of its extensions in hopefully the most 
+# transparent way possible. This module has been heavily infulenced by
+# ExternalProject.cmake.
 # 
 # The Spire_AddCore and Spire_AddExtension functions add the following
 # variables to the PARENT_SCOPE namespace:
@@ -31,10 +23,21 @@
 #    [GIT_REPOSITORY repo]        # Same as ExternalProject_Add's GIT_REPOSITORY.
 #    [USE_STD_THREADS truth]      # Set to 'ON' if you want to use spire threads.
 #    [USE_SHARED_LIB truth]       # Set to 'ON' if you want build a shared library.
+#    [MODULE_DIR dir]             # Module directory. Preferably outside of where cleaning happens.
+#    [SHADER_DIR dir]             # Shader directory into which shaders will be copied. If present, shaders will be copied to this directory.
+#    [ASSET_DIR dir]              # Asset directory into which assets will be copied. If present, assets will be copied to this directory.
 #    )
 #
 # Spire extensions:
 #  Spire_AddExtension(<name>      # Target name that will be constructed for this extension.
+#
+# TODO: Should have some transparent way of copying shaders and assets. Some function
+# that ends up copying all of the assets and shaders into the 'correct' output
+# directory (determining what the correct output directory is, may be a harder
+# thing to do).
+#
+# Also remember: you will probably want to use add_dependencies with the target
+# name.
 
 #-------------------------------------------------------------------------------
 # Pre-compute a regex to match documented keywords for each command.
@@ -168,6 +171,28 @@ function(_spm_parse_arguments f ns args)
   endforeach()
 endfunction()
 
+
+# See: http://stackoverflow.com/questions/7747857/in-cmake-how-do-i-work-around-the-debug-and-release-directories-visual-studio-2
+function(_spm_build_target_output_dirs parent_var_to_update output_dir)
+
+  set(output)
+  set(outputs $output "-DCMAKE_RUNTIME_OUTPUT_DIRECTORY:STRING=${output_dir}")
+  set(outputs $output "-DCMAKE_LIBRARY_OUTPUT_DIRECTORY:STRING=${output_dir}")
+  set(outputs $output "-DCMAKE_ARCHIVE_OUTPUT_DIRECTORY:STRING=${output_dir}")
+
+  # Second, for multi-config builds (e.g. msvc)
+  foreach(OUTPUTCONFIG ${CMAKE_CONFIGURATION_TYPES})
+    string(TOUPPER ${OUTPUTCONFIG} OUTPUTCONFIG)
+    set(outputs $output "-DCMAKE_RUNTIME_OUTPUT_DIRECTORY_${OUTPUTCONFIG}:STRING=${output_dir}")
+    set(outputs $output "-DCMAKE_LIBRARY_OUTPUT_DIRECTORY_${OUTPUTCONFIG}:STRING=${output_dir}")
+    set(outputs $output "-DCMAKE_ARCHIVE_OUTPUT_DIRECTORY_${OUTPUTCONFIG}:STRING=${output_dir}")
+  endforeach(OUTPUTCONFIG CMAKE_CONFIGURATION_TYPES)
+
+  set(${parent_var_to_update} ${outputs} PARENT_SCOPE)
+
+endfunction()
+
+
 # 'name' - Name of the target that will be created.
 # This function will define or add to the following variables in the parent's
 # namespace.
@@ -222,7 +247,8 @@ function(Spire_AddCore name)
   if (_SPM_PREFIX)
     set(_ep_prefix "PREFIX" "${_SPM_PREFIX}")
   else()
-    set(_ep_prefix "PREFIX" "spire-core")
+    set(_ep_prefix "PREFIX" "${CMAKE_CURRENT_BINARY_DIR}/spire-core")
+    set(_SPM_PREFIX "${CMAKE_CURRENT_BINARY_DIR}/spire-core")
   endif()
 
   if (_SPM_SOURCE_DIR)
@@ -262,6 +288,13 @@ function(Spire_AddCore name)
   # All parent scope variables are copied into our scope.
   #message("CMake build type from spire func: ${CMAKE_BUILD_TYPE}")
 
+  # All the following 2 lines do is construct a series of values that will go
+  # into the CMAKE_ARGS key in ExternalProject_Add. These are just a series
+  # binary of output directories. We want a central location for everything.
+  set(_SPM_BASE_OUTPUT_DIR "${_SPM_PREFIX}/spire_modules")
+  set(_SPM_CORE_OUTPUT_DIR "${_SPM_BASE_OUTPUT_DIR}/spire_core")
+  _spm_build_target_output_dirs(_ep_spire_output_dirs ${_SPM_CORE_OUTPUT_DIR})
+
   ExternalProject_Add(${name}
     ${_ep_prefix}
     ${_ep_source_dir}
@@ -273,7 +306,15 @@ function(Spire_AddCore name)
       -DCMAKE_BUILD_TYPE:STRING=${CMAKE_BUILD_TYPE}
       ${_ep_spire_use_shared}
       ${_ep_spire_use_threads}
+      ${_ep_spire_output_dirs}
     )
+
+  # This target property is used to place compiled modules where they belong.
+  set_target_properties(${name} PROPERTIES SPIRE_MODULE_OUTPUT_DIRECTORY "${_SPM_BASE_OUTPUT_DIR}")
+
+  # Library path for the core module.
+  set(SPIRE_LIBRARIES ${SPIRE_LIBRARIES} Spire PARENT_SCOPE)
+  set(SPIRE_LIBRARY_DIRS ${SPIRE_LIBRARY_DIRS} "${_SPM_CORE_OUTPUT_DIR}" PARENT_SCOPE)
 
   # Retrieving properties from external projects will retrieve their fully
   # initialized values (including if any defaults were set).
@@ -282,23 +323,16 @@ function(Spire_AddCore name)
   ExternalProject_Get_Property(${name} GIT_REPOSITORY)
   ExternalProject_Get_Property(${name} SOURCE_DIR)
   ExternalProject_Get_Property(${name} BINARY_DIR)
+  ExternalProject_Get_Property(${name} INSTALL_DIR)
 
   set(SPIRE_INCLUDE_DIRS ${SPIRE_INCLUDE_DIRS} "${SOURCE_DIR}")
   set(SPIRE_INCLUDE_DIRS ${SPIRE_INCLUDE_DIRS} "${SOURCE_DIR}/Spire/3rdParty/glm")
   set(SPIRE_INCLUDE_DIRS ${SPIRE_INCLUDE_DIRS} "${SOURCE_DIR}/Spire/3rdParty/glew/include")
   set(SPIRE_INCLUDE_DIRS ${SPIRE_INCLUDE_DIRS} PARENT_SCOPE)
 
-  # TODO: Figure out either the install step, or the correct location to
-  # libraries.
-  set(SPIRE_LIBRARY_DIRS ${SPIRE_LIBRARY_DIRS} "${BINARY_DIR}" PARENT_SCOPE)
-
-  set(SPIRE_LIBRARIES ${SPIRE_LIBRARIES} Spire PARENT_SCOPE)
-
-  # Set properties in the ${name} target. These range from the include
-  # directories to the output binaries.
 endfunction()
 
-function (Spire_AddExtension)
+function (Spire_AddExtension spire_core name)
 
 endfunction()
 
