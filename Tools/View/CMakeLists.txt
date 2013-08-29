@@ -1,7 +1,3 @@
-#-----------------------------------------------------------------------
-# CMake Configuration
-#-----------------------------------------------------------------------
-
 cmake_minimum_required(VERSION 2.8.11 FATAL_ERROR)
 project(SpireViewer)
 
@@ -18,23 +14,33 @@ set (QT_USE_QTOPENGL TRUE)
 set (BASE_SPIRE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../..)
 
 #-----------------------------------------------------------------------
-# Required libraries
+# Spire package setup
 #-----------------------------------------------------------------------
 
-# The 'spire' library.
-# This should really be "find_package(Spire)"
-add_subdirectory(${BASE_SPIRE_DIR}/Spire ${CMAKE_CURRENT_BINARY_DIR}/spire)
+# Ensure CMAKE_MODULE_PATH includes path to Spire's SpirePM.cmake.
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/../../cmake)
+include(SpirePM)
 
-# Pull USE_STD_THREADS from the spire directory
-get_directory_property(USE_STD_THREADS DIRECTORY ${BASE_SPIRE_DIR}/Spire DEFINITION USE_STD_THREADS)
-if(USE_STD_THREADS)
-  add_definitions(-DSPIRE_USE_STD_THREADS)
-endif()
+# Since we already have spire in the source chain, we won't download it.
+#Spire_AddCore(Spire
+#  SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../..")
 
-get_directory_property(USI_SCIRUN_INTERFACE DIRECTORY ${BASE_SPIRE_DIR}/Spire DEFINITION USE_SCIRUN_INTERFACE)
-if (USE_SCIRUN_INTERFACE)
-  add_definitions(-DSPIRE_USE_SCIRUN_INTERFACE)
-endif()
+# Add core spire library locally.
+# This function, alongside Spire_AddExtension, populate the SPIRE_INCLUDE_DIR
+# and SPIRE_LIBRARY paths. Extension may also populate SPIRE_SHADER_DIR and
+# SPIRE_ASSET_DIR so that you can copy assets and the like.
+# We use the default settings with the target name of 'Spire'.
+Spire_AddCore(Spire)
+
+## TESTING EXTENSIONS:
+## Add the SCIRun extension to spire while also specifying the version of
+## spire-scirun to use. The version is pulled as a git-tag, so it should be
+## present as a tag in the git repo.
+#Spire_AddExtension(SCIRun "https://github.com/iauns/spire-scirun" "0.1.0")
+
+# Include spire directories that were place in our scope by the Spire_AddCore
+# and Spire_AddExtension functions.
+include_directories()
 
 #-----------------------------------------------------------------------
 # Compiler settings
@@ -51,7 +57,7 @@ endif ()
 
 # Since moc and UIC happen outside of the source tree, we need to
 # add the binary directory to the include path.
-include_directories("${CMAKE_CURRENT_BINARY_DIR}" "${BASE_SPIRE_DIR}" )
+include_directories("${CMAKE_CURRENT_BINARY_DIR}")
 
 #-----------------------------------------------------------------------
 # Find and configure Qt
@@ -73,7 +79,7 @@ add_definitions(${QT_DEFINITIONS})
 # Spire Extensions
 #-----------------------------------------------------------------------
 
-# Eigen include directory.
+# Extensions include directory.
 include_directories(SYSTEM "${BASE_SPIRE_DIR}/Extensions" )
 
 #-----------------------------------------------------------------------
@@ -95,8 +101,6 @@ include_directories(SYSTEM "${BASE_SPIRE_DIR}/Spire/3rdParty/glm" )
 #-----------------------------------------------------------------------
 
 set(View_Common_Sources GLContext.cpp GLContext.h MainWindow.cpp MainWindow.h main.cpp)
-
-# An example where globbing isn't so good =(
 if(USE_SCIRUN_INTERFACE)
   set(View_Specific_Sources GLWidgetSCIRun.cpp GLWidgetSCIRun.h)
   set(MocHeaders MainWindow.h GLWidgetSCIRun.h)
