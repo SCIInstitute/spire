@@ -201,53 +201,15 @@ endfunction()
 #  SPIRE_LIBRARY         - All libraries to link against, including extensions.
 #
 function(Spire_AddCore name)
-  # Create the external project before parsing our arguments (this will create
-  # a target with ${name}).
-
-  # NOTE: If the PREFIX option is given to ExternalProject_Add, or EP_PREFIX
-  # directory property is set, then an external project is built and installed
-  # under the specified prefix:
-  #   TMP_DIR      = <prefix>/tmp
-  #   STAMP_DIR    = <prefix>/src/<name>-stamp
-  #   DOWNLOAD_DIR = <prefix>/src
-  #   SOURCE_DIR   = <prefix>/src/<name>
-  #   BINARY_DIR   = <prefix>/src/<name>-build
-  #   INSTALL_DIR  = <prefix>
-  # Otherwise, if the EP_BASE directory property is set then components
-  # of an external project are stored under the specified base:
-  #   TMP_DIR      = <base>/tmp/<name>
-  #   STAMP_DIR    = <base>/Stamp/<name>
-  #   DOWNLOAD_DIR = <base>/Download/<name>
-  #   SOURCE_DIR   = <base>/Source/<name>
-  #   BINARY_DIR   = <base>/Build/<name>
-  #   INSTALL_DIR  = <base>/Install/<name>
-  # If no PREFIX, EP_PREFIX, or EP_BASE is specified then the default
-  # is to set PREFIX to "<name>-prefix".
-  # Relative paths are interpreted with respect to the build directory
-  # corresponding to the source directory in which ExternalProject_Add is
-  # invoked.
-
-  # If SOURCE_DIR is explicitly set to an existing directory the project
-  # will be built from it.
-  # Otherwise a download step must be specified using one of the
-  # DOWNLOAD_COMMAND, CVS_*, SVN_*, or URL options.
-  # The URL option may refer locally to a directory or source tarball,
-  # or refer to a remote tarball (e.g. http://.../src.tgz).
-
-  # Parse all function arguments into GLOBAL namespace with _SPM
+  # Parse all function arguments into our namespace prepended with _SPM_.
   _spm_parse_arguments(Spire_AddCore _SPM_ "${ARGN}")
 
-  # Set prefix according to user, or use spire-core.
-  # Note that setting the variables this way, with two values, generates a
-  # semi colon delimited list as a string. So:
-  # set(_ep_prefix "PREFIX" "spire-core") is the same as
-  # set(_ep_prefix "PREFIX;spire-core")
-  # And behaves just as you would expect when used in the ExternalProject_Add
-  # function.
+  # Setup any defaults that the user provided.
   if (_SPM_PREFIX)
     set(_ep_prefix "PREFIX" "${_SPM_PREFIX}")
   else()
     set(_ep_prefix "PREFIX" "${CMAKE_CURRENT_BINARY_DIR}/spire-core")
+    # We also set the _SPM_PREFIX variable in this case since we use it below.
     set(_SPM_PREFIX "${CMAKE_CURRENT_BINARY_DIR}/spire-core")
   endif()
 
@@ -285,12 +247,10 @@ function(Spire_AddCore name)
     set(_ep_spire_use_shared "-DBUILD_SHARED_LIBS:BOOL=OFF")
   endif()
 
-  # All parent scope variables are copied into our scope.
-  #message("CMake build type from spire func: ${CMAKE_BUILD_TYPE}")
-
-  # All the following 2 lines do is construct a series of values that will go
-  # into the CMAKE_ARGS key in ExternalProject_Add. These are just a series
-  # binary of output directories. We want a central location for everything.
+  # All the following 3 lines do is construct a series of values that will go
+  # into the CMAKE_ARGS key in ExternalProject_Add. These are a series
+  # binary of output directories. We want a central location for everything
+  # so we can keep track of the binaries.
   set(_SPM_BASE_OUTPUT_DIR "${_SPM_PREFIX}/spire_modules")
   set(_SPM_CORE_OUTPUT_DIR "${_SPM_BASE_OUTPUT_DIR}/spire_core")
   _spm_build_target_output_dirs(_ep_spire_output_dirs ${_SPM_CORE_OUTPUT_DIR})
@@ -332,6 +292,10 @@ function(Spire_AddCore name)
 
 endfunction()
 
+# Extensions are build with using the provided CMakeLists.txt, but the output
+# directories of the extensions are modified such that they end up in a
+# unified area. Also, extensions are linked against the already pre-existing 
+# spire library. Either dynamically or statically.
 function (Spire_AddExtension spire_core name)
 
 endfunction()
