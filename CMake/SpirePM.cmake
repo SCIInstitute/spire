@@ -14,8 +14,11 @@
 #  SPIRE_SHADER_DIRS    - All shader asset directories.
 #  SPIRE_ASSET_DIRS     - All asset directories.
 #
+# Spire_AddExtension must be called after Spire_AddCore. AddExtension needs
+# target properties that are set in Spire core.
+#
 # Spire core:
-#  Spire_AddCore(<name>           # Target name that will be constructed for spire.
+#  Spire_AddCore(<name>           # Required - Target name that will be constructed for spire core.
 #    [PREFIX dir]                 # Same as ExternalProject_Add's PREFIX.
 #    [SOURCE_DIR dir]             # Same as ExternalProject_Add's SOURCE_DIR.
 #    [BINARY_DIR dir]             # Same as ExternalProject_Add's BINARY_DIR .
@@ -28,8 +31,14 @@
 #    [ASSET_DIR dir]              # Asset directory into which assets will be copied. If present, assets will be copied to this directory.
 #    )
 #
+# Add extension takes many parameters from the spire_core setup and compiles
+# itself underneath spire_core.
 # Spire extensions:
-#  Spire_AddExtension(<name>      # Target name that will be constructed for this extension.
+#  Spire_AddExtension(<name>      # Required - Target name that will be constructed for this extension.
+#     <spire_core>                # Required - Target name for spire_core.
+#     <extension name / repo>     # Required - Name of the package or git repo. Only git repos are supported for now.
+#     <version>                   # Required - Version of the package to be used.
+#     )
 #
 # TODO: Should have some transparent way of copying shaders and assets. Some function
 # that ends up copying all of the assets and shaders into the 'correct' output
@@ -298,7 +307,33 @@ endfunction()
 # against the already pre-existing spire_core library. Either dynamically or
 # statically. Extra link directories are passed into the CMAKE_ARGS in
 # ExternalProject_Add.
-function (Spire_AddExtension spire_core name)
+function (Spire_AddExtension target_name spire_core name_or_repo version)
+  
+  # Extract prefix from spire_core
+  ExternalProject_Get_Property(${spire_core} PREFIX)
+  set(MODULE_PREFIX "${PREFIX}/module_build/${target_name}")
 
+  # Extract desired output directory from spire_core target.
+  get_target_property(_SPM_BASE_OUTPUT_DIR ${spire_core} SPIRE_MODULE_OUTPUT_DIRECTORY)
+  _spm_build_target_output_dirs(_ep_spire_output_dirs "${_SPM_CORE_OUTPUT_DIR}/${target_name}")
+
+  ExternalProject_Add(${name}
+    ${MODULE_PREFIX}
+    ${name_or_repo}
+    ${version}
+    INSTALL_COMMAND ""
+    CMAKE_ARGS
+      -DCMAKE_BUILD_TYPE:STRING=${CMAKE_BUILD_TYPE}
+      ${_ep_spire_output_dirs}
+    )
+
+  ExternalProject_Get_Property(${name} SOURCE_DIR)
+
+  set(SPIRE_INCLUDE_DIRS ${SPIRE_INCLUDE_DIRS} "${SOURCE_DIR}")
+
+  # TODO: Look at how we are going to handle shared libraries and threads
+  #       in extensions.
+  #${_ep_spire_use_shared}
+  #${_ep_spire_use_threads}
 endfunction()
 
