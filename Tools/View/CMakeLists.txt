@@ -40,8 +40,8 @@ Spire_AddCore(${SPIRE_CORE} ${SPIRE_OPTIONS})
 ## Add the SCIRun extension to spire while also specifying the version of
 ## spire-scirun to use. The version is pulled as a git-tag, so it should be
 ## present as a tag in the git repo.
-#Spire_AddExtension(${SPIRE_CORE} SCIRun "https://github.com/iauns/spire-scirun" "0.1.0")
-#add_definitions(-DUSE_SCIRUN_INTERFACE)
+Spire_AddExtension(${SPIRE_CORE} SCIRun "https://github.com/iauns/spire-scirun" "master")
+add_definitions(-DUSE_SCIRUN_INTERFACE)
 
 # Include spire directories that were place in our scope by the Spire_AddCore
 # and Spire_AddExtension functions.

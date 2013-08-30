@@ -2,6 +2,10 @@
 # Handles setting up Spire and all of its extensions in hopefully the most 
 # transparent way possible. This module has been heavily infulenced by
 # ExternalProject.cmake.
+# The spire library must be built as an ecosystem of static libraries.
+# If you have more than one shared library in your project, only
+# link spire in one location (one shared library, or once in the executable).
+# Otherwise function lookup for OpenGL will not be consistent.
 # 
 # The Spire_AddCore and Spire_AddExtension functions add the following
 # variables to the PARENT_SCOPE namespace:
@@ -25,7 +29,6 @@
 #    [GIT_TAG tag]                # Same as ExternalProject_Add's GIT_TAG
 #    [GIT_REPOSITORY repo]        # Same as ExternalProject_Add's GIT_REPOSITORY.
 #    [USE_STD_THREADS truth]      # Set to 'ON' if you want to use spire threads.
-#    [USE_SHARED_LIB truth]       # Set to 'ON' if you want build a shared library.
 #    [MODULE_DIR dir]             # Module directory. Preferably outside of where cleaning happens.
 #    [SHADER_DIR dir]             # Shader directory into which shaders will be copied. If present, shaders will be copied to this directory.
 #    [ASSET_DIR dir]              # Asset directory into which assets will be copied. If present, assets will be copied to this directory.
@@ -250,12 +253,6 @@ function(Spire_AddCore name)
     set(_ep_spire_use_threads "-DUSE_STD_THREADS:BOOL=ON")
   endif()
 
-  if (_SPM_USE_SHARED_LIB)
-    set(_ep_spire_use_shared "-DBUILD_SHARED_LIBS:BOOL=${_SPM_USE_SHARED_LIB}")
-  else()
-    set(_ep_spire_use_shared "-DBUILD_SHARED_LIBS:BOOL=OFF")
-  endif()
-
   # All the following 3 lines do is construct a series of values that will go
   # into the CMAKE_ARGS key in ExternalProject_Add. These are a series
   # binary of output directories. We want a central location for everything
@@ -273,7 +270,6 @@ function(Spire_AddCore name)
     INSTALL_COMMAND ""
     CMAKE_ARGS
       -DCMAKE_BUILD_TYPE:STRING=${CMAKE_BUILD_TYPE}
-      ${_ep_spire_use_shared}
       ${_ep_spire_use_threads}
       ${_ep_spire_output_dirs}
     )
@@ -299,6 +295,10 @@ function(Spire_AddCore name)
   set(SPIRE_INCLUDE_DIRS ${SPIRE_INCLUDE_DIRS} "${SOURCE_DIR}/Spire/3rdParty/glew/include")
   set(SPIRE_INCLUDE_DIRS ${SPIRE_INCLUDE_DIRS} PARENT_SCOPE)
 
+  # Also set a target property containing all of the includes needed for the
+  # core spire library. This is used by extensions in order.
+  set_target_properties(${name} PROPERTIES SPIRE_CORE_INCLUDE_DIRS "${SPIRE_INCLUDE_DIRS}")
+
 endfunction()
 
 # Extensions are built using the root CMakeLists.txt but the output
@@ -307,33 +307,38 @@ endfunction()
 # against the already pre-existing spire_core library. Either dynamically or
 # statically. Extra link directories are passed into the CMAKE_ARGS in
 # ExternalProject_Add.
+# Additionally, all spire modules must accept an output name
+# (SPIRE_OUTPUT_NAME). The output name will be used to target and link against
+# the generated static library.
 function (Spire_AddExtension target_name spire_core name_or_repo version)
   
+  # The name we will link against.
+  set(MODULE_STATIC_LIB_NAME "${target_name}_spm")
+
   # Extract prefix from spire_core
   ExternalProject_Get_Property(${spire_core} PREFIX)
   set(MODULE_PREFIX "${PREFIX}/module_build/${target_name}")
 
   # Extract desired output directory from spire_core target.
   get_target_property(_SPM_BASE_OUTPUT_DIR ${spire_core} SPIRE_MODULE_OUTPUT_DIRECTORY)
-  _spm_build_target_output_dirs(_ep_spire_output_dirs "${_SPM_CORE_OUTPUT_DIR}/${target_name}")
+  set(MODULE_BIN_OUTPUT_DIR "${_SPM_BASE_OUTPUT_DIR}/${target_name}")
+  _spm_build_target_output_dirs(_ep_spire_output_dirs ${MODULE_BIN_OUTPUT_DIR})
 
   ExternalProject_Add(${name}
-    ${MODULE_PREFIX}
-    ${name_or_repo}
-    ${version}
+    PREFIX          ${MODULE_PREFIX}
+    GIT_REPOSITORY  ${name_or_repo}
+    GIT_TAG         ${version}
     INSTALL_COMMAND ""
     CMAKE_ARGS
       -DCMAKE_BUILD_TYPE:STRING=${CMAKE_BUILD_TYPE}
+      -DSPIRE_OUTPUT_MODULE_NAME:STRING=${MODULE_STATIC_LIB_NAME}
+      -DSPIRE_CORE_INCLUDE_DIR:STRING=${SPIRE_CORE_SOURCE}
       ${_ep_spire_output_dirs}
     )
 
   ExternalProject_Get_Property(${name} SOURCE_DIR)
+  set(SPIRE_INCLUDE_DIRS ${SPIRE_INCLUDE_DIRS} "${SOURCE_DIR}" PARENT_SCOPE)
+  add_dependencies(${target_name} ${spire_core})
 
-  set(SPIRE_INCLUDE_DIRS ${SPIRE_INCLUDE_DIRS} "${SOURCE_DIR}")
-
-  # TODO: Look at how we are going to handle shared libraries and threads
-  #       in extensions.
-  #${_ep_spire_use_shared}
-  #${_ep_spire_use_threads}
 endfunction()
 
