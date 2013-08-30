@@ -292,10 +292,12 @@ function(Spire_AddCore name)
 
 endfunction()
 
-# Extensions are build with using the provided CMakeLists.txt, but the output
+# Extensions are built using the root CMakeLists.txt but the output
 # directories of the extensions are modified such that they end up in a
-# unified area. Also, extensions are linked against the already pre-existing 
-# spire library. Either dynamically or statically.
+# single area (under the spire-core prefix). Also, extensions are linked
+# against the already pre-existing spire_core library. Either dynamically or
+# statically. Extra link directories are passed into the CMAKE_ARGS in
+# ExternalProject_Add.
 function (Spire_AddExtension spire_core name)
 
 endfunction()
