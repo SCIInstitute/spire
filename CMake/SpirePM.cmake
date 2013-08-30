@@ -242,7 +242,7 @@ function(Spire_AddCore name)
     set(_ep_source_dir "SOURCE_DIR" "${_SPM_SOURCE_DIR}")
     # Since a source directory has been specified, get rid of the download step
     # and kill any git_tag or git_repo.
-    set(_ep_download_command "DOWNLOAD_COMMAND")
+    set(_ep_download_command "DOWNLOAD_COMMAND" "")
     # Clear git repo or git tag, if any.
     set(_ep_git_repo)
     set(_ep_git_tag)
