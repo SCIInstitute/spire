@@ -1,5 +1,5 @@
 # - Spire package management module
-# Handles setting up Spire and all of its extensions in hopefully the most 
+# Handles setting up Spire and all of its modules in hopefully the most 
 # transparent way possible. This module has been heavily infulenced by
 # ExternalProject.cmake.
 # The spire library must be built as an ecosystem of static libraries.
@@ -7,24 +7,24 @@
 # link spire in one location (one shared library, or once in the executable).
 # Otherwise function lookup for OpenGL will not be consistent.
 # 
-# The Spire_AddCore and Spire_AddExtension functions add the following
+# The Spire_AddCore and Spire_AddModule functions add the following
 # variables to the PARENT_SCOPE namespace:
 # 
 #  SPIRE_INCLUDE_DIRS   - All the spire include directories.
 #  SPIRE_LIBRARIES      - All libraries to link against.
 #
-# And these variables are only added by Spire_AddExtension:
+# And these variables are only added by Spire_AddModule:
 #
 #  SPIRE_SHADER_DIRS    - All shader asset directories.
 #  SPIRE_ASSET_DIRS     - All asset directories.
 #
-# Spire_AddExtension must be called after Spire_AddCore. AddExtension needs
+# Spire_AddModule must be called after Spire_AddCore. AddModule needs
 # target properties that are set in Spire core.
 #
 # Spire core:
 #  Spire_AddCore(<name>           # Required - Target name that will be constructed for spire core.
 #    [PREFIX dir]                 # Same as ExternalProject_Add's PREFIX.
-#    [SOURCE_DIR dir]             # Same as ExternalProject_Add's SOURCE_DIR.
+#    [SOURCE_DIR dir]             # When specified, uses this directory as the source. If specified, spire core does not get automatically updated through git.
 #    [BINARY_DIR dir]             # Same as ExternalProject_Add's BINARY_DIR .
 #    [GIT_TAG tag]                # Same as ExternalProject_Add's GIT_TAG
 #    [GIT_REPOSITORY repo]        # Same as ExternalProject_Add's GIT_REPOSITORY.
@@ -34,13 +34,14 @@
 #    [ASSET_DIR dir]              # Asset directory into which assets will be copied. If present, assets will be copied to this directory.
 #    )
 #
-# Add extension takes many parameters from the spire_core setup and compiles
+# Add module takes many parameters from the spire_core setup and compiles
 # itself underneath spire_core.
-# Spire extensions:
-#  Spire_AddExtension(<name>      # Required - Target name that will be constructed for this extension.
+# Spire modules:
+#  Spire_AddModule(<name>         # Required - Target name that will be constructed for this module.
 #     <spire_core>                # Required - Target name for spire_core.
-#     <extension name / repo>     # Required - Name of the package or git repo. Only git repos are supported for now.
+#     <module name / repo>        # Required - Name of the package or git repo. Only git repos are supported for now.
 #     <version>                   # Required - Version of the package to be used.
+#     [SOURCE_DIR dir]            # Same as Spire_AddCore. Source directory which when specified disables git synchronization.
 #     )
 #
 # TODO: Should have some transparent way of copying shaders and assets. Some function
@@ -209,8 +210,8 @@ endfunction()
 # This function will define or add to the following variables in the parent's
 # namespace.
 # 
-#  SPIRE_INCLUDE_DIR     - All the spire include directories, including extensions.
-#  SPIRE_LIBRARY         - All libraries to link against, including extensions.
+#  SPIRE_INCLUDE_DIR     - All the spire include directories, including modules.
+#  SPIRE_LIBRARY         - All libraries to link against, including modules.
 #
 function(Spire_AddCore name)
   # Parse all function arguments into our namespace prepended with _SPM_.
@@ -225,12 +226,6 @@ function(Spire_AddCore name)
     set(_SPM_PREFIX "${CMAKE_CURRENT_BINARY_DIR}/spire-core")
   endif()
 
-  if (_SPM_SOURCE_DIR)
-    set(_ep_source_dir "SOURCE_DIR" "${_SPM_SOURCE_DIR}")
-  else()
-    set(_ep_source_dir "SOURCE_DIR")
-  endif()
-
   if (_SPM_GIT_TAG)
     set(_ep_git_tag "GIT_TAG" ${_SPM_GIT_TAG})
   else()
@@ -241,6 +236,16 @@ function(Spire_AddCore name)
     set(_ep_git_repo "GIT_REPOSITORY" ${_SPM_GIT_REPOSITORY})
   else()
     set(_ep_git_repo "GIT_REPOSITORY" "https://github.com/SCIInstitute/spire.git")
+  endif()
+
+  if (_SPM_SOURCE_DIR)
+    set(_ep_source_dir "SOURCE_DIR" "${_SPM_SOURCE_DIR}")
+    # Since a source directory has been specified, get rid of the download step
+    # and kill any git_tag or git_repo.
+    set(_ep_download_command "DOWNLOAD_COMMAND")
+    # Clear git repo or git tag, if any.
+    set(_ep_git_repo)
+    set(_ep_git_tag)
   endif()
 
   if (_SPM_BINARY_DIR)
@@ -296,21 +301,21 @@ function(Spire_AddCore name)
   set(SPIRE_INCLUDE_DIRS ${SPIRE_INCLUDE_DIRS} PARENT_SCOPE)
 
   # Also set a target property containing all of the includes needed for the
-  # core spire library. This is used by extensions in order.
+  # core spire library. This is used by modules in order.
   set_target_properties(${name} PROPERTIES SPIRE_CORE_INCLUDE_DIRS "${SPIRE_INCLUDE_DIRS}")
 
 endfunction()
 
-# Extensions are built using the root CMakeLists.txt but the output
-# directories of the extensions are modified such that they end up in a
-# single area (under the spire-core prefix). Also, extensions are linked
+# Module are built using the root CMakeLists.txt but the output
+# directories of the modules are modified such that they end up in a
+# single area (under the spire-core prefix). Also, modules are linked
 # against the already pre-existing spire_core library. Either dynamically or
 # statically. Extra link directories are passed into the CMAKE_ARGS in
 # ExternalProject_Add.
 # Additionally, all spire modules must accept an output name
 # (SPIRE_OUTPUT_NAME). The output name will be used to target and link against
 # the generated static library.
-function (Spire_AddExtension target_name spire_core name_or_repo version)
+function (Spire_AddModule target_name spire_core name_or_repo version)
   
   # The name we will link against.
   set(MODULE_STATIC_LIB_NAME "${target_name}_spm")
@@ -336,9 +341,22 @@ function (Spire_AddExtension target_name spire_core name_or_repo version)
       ${_ep_spire_output_dirs}
     )
 
-  ExternalProject_Get_Property(${name} SOURCE_DIR)
-  set(SPIRE_INCLUDE_DIRS ${SPIRE_INCLUDE_DIRS} "${SOURCE_DIR}" PARENT_SCOPE)
-  add_dependencies(${target_name} ${spire_core})
+  # Ensure the parent_scope can find our module's include files.
+  #ExternalProject_Get_Property(${name} SOURCE_DIR)
+  # We will want an include structure like: SpireExt/ModuleName/abc.h, so
+  # we don't have strict include directories for the extension headers. The
+  # public headers should be in the root of the project, similar to how
+  # Spire itself is layed out.
+  #set(SPIRE_INCLUDE_DIRS ${SPIRE_INCLUDE_DIRS} "${SOURCE_DIR}/include" PARENT_SCOPE)
+
+  # Ensure this module can be found during the linking process.
+  set(SPIRE_LIBRARIES ${SPIRE_LIBRARIES} ${MODULE_STATIC_LIB_NAME} PARENT_SCOPE)
+  set(SPIRE_LIBRARY_DIRS ${SPIRE_LIBRARY_DIRS} "${MODULE_BIN_OUTPUT_DIR}" PARENT_SCOPE)
+
+  # All modules depend on the includes in spire_core, but we don't depend on
+  # spire_core being built. So we don't add the dependency here and allow
+  # parallel builds of all modules.
+  #add_dependencies(${target_name} ${spire_core})
 
 endfunction()
 
