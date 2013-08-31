@@ -26,23 +26,24 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/../../CMa
 include(SpirePM)
 
 # Add core spire library locally.
-# This function, alongside Spire_AddExtension, populate the SPIRE_INCLUDE_DIR
-# and SPIRE_LIBRARY paths. Extension may also populate SPIRE_SHADER_DIR and
+# This function, alongside Spire_AddModule, populate the SPIRE_INCLUDE_DIR
+# and SPIRE_LIBRARY paths. Module may also populate SPIRE_SHADER_DIR and
 # SPIRE_ASSET_DIR so that you can copy assets and the like.
 # We use the default settings with the target name of 'Spire'.
 set(SPIRE_CORE "Spire_Core_EP")
 Spire_AddCore(${SPIRE_CORE} ${SPIRE_OPTIONS})
 
-# Add the SCIRun extension to spire while also specifying the version of
+# Add the SCIRun module to spire while also specifying the version of
 # spire-scirun to use. The version is pulled as a git-tag, so it should be
 # present as a tag in the git repo.
-Spire_AddExtension(${SPIRE_CORE} SCIRun "https://github.com/iauns/spire-scirun" "master")
+Spire_AddModule(${SPIRE_CORE} SCIRun "https://github.com/iauns/spire-scirun" "master")
 add_definitions(-DUSE_SCIRUN_INTERFACE)
 
-# Include / library directories placed in-scope by Spire_AddCore and Spire_AddExtension.
+# Include / library directories placed in-scope by Spire_AddCore and Spire_AddModule.
+link_directories(${SPIRE_LIBRARY_DIRS})
 include_directories(${SPIRE_INCLUDE_DIRS})
 include_directories(SYSTEM ${SPIRE_3RDPARTY_INCLUDE_DIRS})
-link_directories(${SPIRE_LIBRARY_DIRS})
+include_directories(SYSTEM ${SPIRE_MODULE_INCLUDE_DIR})
 
 #-----------------------------------------------------------------------
 # Compiler settings
@@ -98,7 +99,7 @@ QT4_WRAP_UI(UISource ${Forms})
 #-----------------------------------------------------------------------
 # Copy shaders to the binary directory
 # NOTE: This should be done by a function defined in SpirePM.
-#       All extensions add their shader directories to a common variable
+#       All modules add their shader directories to a common variable
 #       so one call to that function can install all shaders and assets.
 #-----------------------------------------------------------------------
 file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/Shaders/
@@ -120,7 +121,6 @@ file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/Assets/
 #-----------------------------------------------------------------------
 
 add_executable(spireview 
-  ${Source_Extensions}
   ${View_Common_Sources}
   ${View_Specific_Sources}
   ${MocSource} 

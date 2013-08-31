@@ -59,6 +59,10 @@
 # directory (determining what the correct output directory is, may be a harder
 # thing to do).
 #
+# TODO: Figure out how to handle modules that have dependencies on other
+#       modules. Like NPM. This will stay unresolved until there is a clear
+#       need for this.
+#
 # Also remember: you will probably want to use add_dependencies with the target
 # name.
 
@@ -128,6 +132,13 @@ endif()
 
 # Include external project
 include(ExternalProject)
+
+# Record where this list file is located. We pass this directory into our
+# modules so they can also include SpirePM.
+# We do NOT want to access CMAKE_CURRENT_LIST_DIR from a function invokation.
+# If we do, then CMAKE_CURRENT_LIST_DIR will contain the calling CMakeLists.txt
+# file. See: http://stackoverflow.com/questions/12802377/in-cmake-how-can-i-find-the-directory-of-an-included-file
+set(DIR_OF_SPIREPM ${CMAKE_CURRENT_LIST_DIR})
 
 # Function for parsing arguments and values coming into the specified function
 # name 'f'. 'name' is the target name. 'ns' (namespace) is a value prepended
@@ -213,6 +224,12 @@ function(_spm_build_target_output_dirs parent_var_to_update output_dir)
 
   set(${parent_var_to_update} ${outputs} PARENT_SCOPE)
 
+endfunction()
+
+function(Spire_BuildThirdPartyIncludes out_var source_dir)
+  set(ret_val ${ret_val} "${source_dir}/Spire/3rdParty/glm")
+  set(ret_val ${ret_val} "${source_dir}/Spire/3rdParty/glew/include")
+  set(${out_var} ${ret_val} PARENT_SCOPE)
 endfunction()
 
 
@@ -303,17 +320,21 @@ function(Spire_AddCore name)
   ExternalProject_Get_Property(${name} BINARY_DIR)
   ExternalProject_Get_Property(${name} INSTALL_DIR)
 
-  set(SPIRE_INCLUDE_DIRS ${SPIRE_INCLUDE_DIRS} "${SOURCE_DIR}")
-  set(SPIRE_INCLUDE_DIRS ${SPIRE_INCLUDE_DIRS} "${PREFIX}/module_src")
-  set(SPIRE_INCLUDE_DIRS ${SPIRE_INCLUDE_DIRS} PARENT_SCOPE)
+  set(SPIRE_INCLUDE_DIR ${SPIRE_INCLUDE_DIRS} "${SOURCE_DIR}")
+  set(SPIRE_INCLUDE_DIR ${SPIRE_INCLUDE_DIRS} PARENT_SCOPE)
 
+  set(SPIRE_MODULE_INCLUDE_DIRS ${SPIRE_MODULE_INCLUDE_DIR} "${PREFIX}/module_src")
+  set(SPIRE_MODULE_INCLUDE_DIRS ${SPIRE_MODULE_INCLUDE_DIR} PARENT_SCOPE)
+
+  Spire_BuildThirdPartyIncludes(spire_third_party_dirs ${SOURCE_DIR})
+  set(SPIRE_3RDPARTY_INCLUDE_DIRS ${spire_third_party_dirs})
   set(SPIRE_3RDPARTY_INCLUDE_DIRS ${SPIRE_3RDPARTY_INCLUDE_DIRS} "${SOURCE_DIR}/Spire/3rdParty/glm")
   set(SPIRE_3RDPARTY_INCLUDE_DIRS ${SPIRE_3RDPARTY_INCLUDE_DIRS} "${SOURCE_DIR}/Spire/3rdParty/glew/include")
   set(SPIRE_3RDPARTY_INCLUDE_DIRS ${SPIRE_3RDPARTY_INCLUDE_DIRS} PARENT_SCOPE)
 
   # Also set a target property containing all of the includes needed for the
   # core spire library. This is used by modules in order.
-  set_target_properties(${name} PROPERTIES SPIRE_CORE_INCLUDE_DIRS "${SPIRE_INCLUDE_DIRS}")
+  set_target_properties(${name} PROPERTIES SPIRE_CORE_INCLUDE_DIRS "${SPIRE_INCLUDE_DIRS};${SPIRE_3RDPARTY_INCLUDE_DIRS}")
   set_target_properties(${name} PROPERTIES SPIRE_BASE_MODULE_SRC_DIR "${PREFIX}/module_src/SpireExt")
 
 endfunction()
@@ -327,7 +348,7 @@ endfunction()
 # Additionally, all spire modules must accept an output name
 # (SPIRE_OUTPUT_NAME). The output name will be used to target and link against
 # the generated static library.
-function (Spire_AddModule target_name spire_core name_or_repo version)
+function (Spire_AddModule spire_core target_name name_or_repo version)
   
   # The name we will link against.
   set(MODULE_STATIC_LIB_NAME "${target_name}_spm")
@@ -335,8 +356,13 @@ function (Spire_AddModule target_name spire_core name_or_repo version)
   # Extract prefix and target module src directory from spire_core
   get_target_property(BASE_MODULE_SRC_DIR ${spire_core} SPIRE_BASE_MODULE_SRC_DIR)
   ExternalProject_Get_Property(${spire_core} PREFIX)
-  set(MODULE_PREFIX "${PREFIX}/module_build/${target_name}")
-  set(MODULE_SRC_DIR "${BASE_MODULE_SRC_DIR}/${target_name}")
+  ExternalProject_Get_Property(${spire_core} SOURCE_DIR)
+  set(SPIRE_CORE_PREFIX ${PREFIX})
+  set(SPIRE_CORE_SRC ${SOURCE_DIR})
+  set(PREFIX)
+  set(SOURCE_DIR)
+  set(MODULE_PREFIX "${SPIRE_CORE_PREFIX}/module_build/${target_name}/${version}")
+  set(MODULE_SRC_DIR "${MODULE_PREFIX}/SpireExt/${target_name}${BASE_MODULE_SRC_DIR}/${target_name}")
 
   # Parse all function arguments into our namespace prepended with _SPM_.
   _spm_parse_arguments(Spire_AddCore _SPM_ "${ARGN}")
@@ -363,8 +389,11 @@ function (Spire_AddModule target_name spire_core name_or_repo version)
     set(_ep_git_tag "GIT_TAG" "${version}")
   endif()
 
-  ExternalProject_Add(${name}
-    PREFIX          ${MODULE_PREFIX}
+  get_target_property(CORE_INCLUDE_DIRS ${spire_core} SPIRE_CORE_INCLUDE_DIRS)
+  message("${spire_core} include: ${CORE_INCLUDE_DIRS}")
+
+  ExternalProject_Add(${target_name}
+    "PREFIX;${MODULE_PREFIX}"
     ${_ep_git_repo}
     ${_ep_git_tag}
     ${_ep_source_dir}
@@ -372,7 +401,9 @@ function (Spire_AddModule target_name spire_core name_or_repo version)
     CMAKE_ARGS
       -DCMAKE_BUILD_TYPE:STRING=${CMAKE_BUILD_TYPE}
       -DSPIRE_OUTPUT_MODULE_NAME:STRING=${MODULE_STATIC_LIB_NAME}
-      -DSPIRE_CORE_INCLUDE_DIR:STRING=${SPIRE_CORE_SOURCE}
+      -DMOD_SPIRE_CORE_PREFIX:STRING=${CORE_INCLUDE_DIRS}
+      -DMOD_SPIRE_CORE_SRC:STRING=${SPIRE_CORE_SRC}
+      -DMOD_SPIRE_CMAKE_MODULE_PATH:STRING=${DIR_OF_SPIREPM}
       ${_ep_spire_output_dirs}
     )
 
