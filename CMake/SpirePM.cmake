@@ -304,10 +304,12 @@ function(Spire_AddCore name)
   ExternalProject_Get_Property(${name} INSTALL_DIR)
 
   set(SPIRE_INCLUDE_DIRS ${SPIRE_INCLUDE_DIRS} "${SOURCE_DIR}")
-  set(SPIRE_INCLUDE_DIRS ${SPIRE_INCLUDE_DIRS} "${SOURCE_DIR}/Spire/3rdParty/glm")
-  set(SPIRE_INCLUDE_DIRS ${SPIRE_INCLUDE_DIRS} "${SOURCE_DIR}/Spire/3rdParty/glew/include")
   set(SPIRE_INCLUDE_DIRS ${SPIRE_INCLUDE_DIRS} "${PREFIX}/module_src")
   set(SPIRE_INCLUDE_DIRS ${SPIRE_INCLUDE_DIRS} PARENT_SCOPE)
+
+  set(SPIRE_3RDPARTY_INCLUDE_DIRS ${SPIRE_3RDPARTY_INCLUDE_DIRS} "${SOURCE_DIR}/Spire/3rdParty/glm")
+  set(SPIRE_3RDPARTY_INCLUDE_DIRS ${SPIRE_3RDPARTY_INCLUDE_DIRS} "${SOURCE_DIR}/Spire/3rdParty/glew/include")
+  set(SPIRE_3RDPARTY_INCLUDE_DIRS ${SPIRE_3RDPARTY_INCLUDE_DIRS} PARENT_SCOPE)
 
   # Also set a target property containing all of the includes needed for the
   # core spire library. This is used by modules in order.
