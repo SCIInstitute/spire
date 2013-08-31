@@ -2,10 +2,11 @@
 # Handles setting up Spire and all of its modules in hopefully the most 
 # transparent way possible. This module has been heavily infulenced by
 # ExternalProject.cmake.
+#
 # The spire library must be built as an ecosystem of static libraries.
 # If you have more than one shared library in your project, only
 # link spire in one location (one shared library, or once in the executable).
-# Otherwise function lookup for OpenGL will not be consistent.
+# Otherwise function lookup for OpenGL will break when using GLEW.
 # 
 # The Spire_AddCore and Spire_AddModule functions add the following
 # variables to the PARENT_SCOPE namespace:
@@ -34,8 +35,17 @@
 #    [ASSET_DIR dir]              # Asset directory into which assets will be copied. If present, assets will be copied to this directory.
 #    )
 #
-# Add module takes many parameters from the spire_core setup and compiles
-# itself underneath spire_core.
+# Many of the ExternalProject settings are automatically generated for modules.
+# It is not recommeneded that you set SOURCE_DIR unless you are managing the
+# header locations for the source directory manually. If you set the source
+# directory, the source will not be downloaded and will not be updated using
+# git. You must manage that manually. Additionally, if you set the source
+# directory you can safely ignore the module name / repo and version function
+# parameters.
+#
+# You can find the public includes for a module in the SpireExt/<name> directory.
+# So the include path does depend on what you name the module's target.
+#
 # Spire modules:
 #  Spire_AddModule(<name>         # Required - Target name that will be constructed for this module.
 #     <spire_core>                # Required - Target name for spire_core.
@@ -240,9 +250,6 @@ function(Spire_AddCore name)
 
   if (_SPM_SOURCE_DIR)
     set(_ep_source_dir "SOURCE_DIR" "${_SPM_SOURCE_DIR}")
-    # Since a source directory has been specified, get rid of the download step
-    # and kill any git_tag or git_repo.
-    set(_ep_download_command "DOWNLOAD_COMMAND" "")
     # Clear git repo or git tag, if any.
     set(_ep_git_repo)
     set(_ep_git_tag)
@@ -262,7 +269,7 @@ function(Spire_AddCore name)
   # into the CMAKE_ARGS key in ExternalProject_Add. These are a series
   # binary of output directories. We want a central location for everything
   # so we can keep track of the binaries.
-  set(_SPM_BASE_OUTPUT_DIR "${_SPM_PREFIX}/spire_modules")
+  set(_SPM_BASE_OUTPUT_DIR "${_SPM_PREFIX}/spire_modules_bin")
   set(_SPM_CORE_OUTPUT_DIR "${_SPM_BASE_OUTPUT_DIR}/spire_core")
   _spm_build_target_output_dirs(_ep_spire_output_dirs ${_SPM_CORE_OUTPUT_DIR})
 
@@ -290,6 +297,7 @@ function(Spire_AddCore name)
   # initialized values (including if any defaults were set).
   # ExternalProject_Get_Property stores the result in our function scope,
   # under the name GIT_REPOSITORY.
+  ExternalProject_Get_Property(${name} PREFIX)
   ExternalProject_Get_Property(${name} GIT_REPOSITORY)
   ExternalProject_Get_Property(${name} SOURCE_DIR)
   ExternalProject_Get_Property(${name} BINARY_DIR)
@@ -298,11 +306,13 @@ function(Spire_AddCore name)
   set(SPIRE_INCLUDE_DIRS ${SPIRE_INCLUDE_DIRS} "${SOURCE_DIR}")
   set(SPIRE_INCLUDE_DIRS ${SPIRE_INCLUDE_DIRS} "${SOURCE_DIR}/Spire/3rdParty/glm")
   set(SPIRE_INCLUDE_DIRS ${SPIRE_INCLUDE_DIRS} "${SOURCE_DIR}/Spire/3rdParty/glew/include")
+  set(SPIRE_INCLUDE_DIRS ${SPIRE_INCLUDE_DIRS} "${PREFIX}/module_src")
   set(SPIRE_INCLUDE_DIRS ${SPIRE_INCLUDE_DIRS} PARENT_SCOPE)
 
   # Also set a target property containing all of the includes needed for the
   # core spire library. This is used by modules in order.
   set_target_properties(${name} PROPERTIES SPIRE_CORE_INCLUDE_DIRS "${SPIRE_INCLUDE_DIRS}")
+  set_target_properties(${name} PROPERTIES SPIRE_BASE_MODULE_SRC_DIR "${PREFIX}/module_src/SpireExt")
 
 endfunction()
 
@@ -320,19 +330,42 @@ function (Spire_AddModule target_name spire_core name_or_repo version)
   # The name we will link against.
   set(MODULE_STATIC_LIB_NAME "${target_name}_spm")
 
-  # Extract prefix from spire_core
+  # Extract prefix and target module src directory from spire_core
+  get_target_property(BASE_MODULE_SRC_DIR ${spire_core} SPIRE_BASE_MODULE_SRC_DIR)
   ExternalProject_Get_Property(${spire_core} PREFIX)
   set(MODULE_PREFIX "${PREFIX}/module_build/${target_name}")
+  set(MODULE_SRC_DIR "${BASE_MODULE_SRC_DIR}/${target_name}")
+
+  # Parse all function arguments into our namespace prepended with _SPM_.
+  _spm_parse_arguments(Spire_AddCore _SPM_ "${ARGN}")
 
   # Extract desired output directory from spire_core target.
   get_target_property(_SPM_BASE_OUTPUT_DIR ${spire_core} SPIRE_MODULE_OUTPUT_DIRECTORY)
   set(MODULE_BIN_OUTPUT_DIR "${_SPM_BASE_OUTPUT_DIR}/${target_name}")
   _spm_build_target_output_dirs(_ep_spire_output_dirs ${MODULE_BIN_OUTPUT_DIR})
 
+  # If the user specified the source directory then don't automatically generate
+  # it for them and wipe out all git / download info.
+  if (_SPM_SOURCE_DIR)
+    set(_ep_source_dir "SOURCE_DIR" "${_SPM_SOURCE_DIR}")
+    # Clear git repo or git tag, if any.
+    set(_ep_git_repo)
+    set(_ep_git_tag)
+  else()
+    # If they did not, place the source directory in a consistent directory
+    # hierarchy such that the user can access the project using:
+    # SpireExt/<reponame>/. It is common to store public include
+    # headers at the root of the project for spire modules.
+    set(_ep_source_dir "SOURCE_DIR" "${MODULE_SRC_DIR}")
+    set(_ep_git_repo "GIT_REPOSITORY" "${name_or_repo}")
+    set(_ep_git_tag "GIT_TAG" "${version}")
+  endif()
+
   ExternalProject_Add(${name}
     PREFIX          ${MODULE_PREFIX}
-    GIT_REPOSITORY  ${name_or_repo}
-    GIT_TAG         ${version}
+    ${_ep_git_repo}
+    ${_ep_git_tag}
+    ${_ep_source_dir}
     INSTALL_COMMAND ""
     CMAKE_ARGS
       -DCMAKE_BUILD_TYPE:STRING=${CMAKE_BUILD_TYPE}
@@ -341,13 +374,9 @@ function (Spire_AddModule target_name spire_core name_or_repo version)
       ${_ep_spire_output_dirs}
     )
 
-  # Ensure the parent_scope can find our module's include files.
-  #ExternalProject_Get_Property(${name} SOURCE_DIR)
-  # We will want an include structure like: SpireExt/ModuleName/abc.h, so
-  # we don't have strict include directories for the extension headers. The
-  # public headers should be in the root of the project, similar to how
-  # Spire itself is layed out.
-  #set(SPIRE_INCLUDE_DIRS ${SPIRE_INCLUDE_DIRS} "${SOURCE_DIR}/include" PARENT_SCOPE)
+  # We don't need to set SPIRE_INCLUDE_DIRS since it is assumed that the source
+  # for our module has been placed in the appropriate location and we can
+  # lookup the results using SpireExt/{target_name}.
 
   # Ensure this module can be found during the linking process.
   set(SPIRE_LIBRARIES ${SPIRE_LIBRARIES} ${MODULE_STATIC_LIB_NAME} PARENT_SCOPE)
