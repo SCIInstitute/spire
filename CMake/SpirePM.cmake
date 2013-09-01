@@ -415,10 +415,9 @@ function (Spire_AddModule spire_core target_name name_or_repo version)
   set(SPIRE_LIBRARIES ${SPIRE_LIBRARIES} ${MODULE_STATIC_LIB_NAME} PARENT_SCOPE)
   set(SPIRE_LIBRARY_DIRS ${SPIRE_LIBRARY_DIRS} "${MODULE_BIN_OUTPUT_DIR}" PARENT_SCOPE)
 
-  # All modules depend on the includes in spire_core, but we don't depend on
-  # spire_core being built. So we don't add the dependency here and allow
-  # parallel builds of all modules.
-  #add_dependencies(${target_name} ${spire_core})
+  # We do depend on the spire source being available before we compile our,
+  # hence the dependency.
+  add_dependencies(${target_name} ${spire_core})
 
 endfunction()
 
