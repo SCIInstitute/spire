@@ -226,7 +226,7 @@ function(_spm_build_target_output_dirs parent_var_to_update output_dir)
 
 endfunction()
 
-function(Spire_BuildThirdPartyIncludes out_var source_dir)
+function(Spire_BuildCoreThirdPartyIncludes out_var source_dir)
   set(ret_val ${ret_val} "${source_dir}/Spire/3rdParty/glm")
   set(ret_val ${ret_val} "${source_dir}/Spire/3rdParty/glew/include")
   set(${out_var} ${ret_val} PARENT_SCOPE)
@@ -326,10 +326,8 @@ function(Spire_AddCore name)
   set(SPIRE_MODULE_INCLUDE_DIRS ${SPIRE_MODULE_INCLUDE_DIR} "${PREFIX}/module_src")
   set(SPIRE_MODULE_INCLUDE_DIRS ${SPIRE_MODULE_INCLUDE_DIR} PARENT_SCOPE)
 
-  Spire_BuildThirdPartyIncludes(spire_third_party_dirs ${SOURCE_DIR})
+  Spire_BuildCoreThirdPartyIncludes(spire_third_party_dirs ${SOURCE_DIR})
   set(SPIRE_3RDPARTY_INCLUDE_DIRS ${spire_third_party_dirs})
-  set(SPIRE_3RDPARTY_INCLUDE_DIRS ${SPIRE_3RDPARTY_INCLUDE_DIRS} "${SOURCE_DIR}/Spire/3rdParty/glm")
-  set(SPIRE_3RDPARTY_INCLUDE_DIRS ${SPIRE_3RDPARTY_INCLUDE_DIRS} "${SOURCE_DIR}/Spire/3rdParty/glew/include")
   set(SPIRE_3RDPARTY_INCLUDE_DIRS ${SPIRE_3RDPARTY_INCLUDE_DIRS} PARENT_SCOPE)
 
   # Also set a target property containing all of the includes needed for the
@@ -401,9 +399,8 @@ function (Spire_AddModule spire_core target_name name_or_repo version)
     CMAKE_ARGS
       -DCMAKE_BUILD_TYPE:STRING=${CMAKE_BUILD_TYPE}
       -DSPIRE_OUTPUT_MODULE_NAME:STRING=${MODULE_STATIC_LIB_NAME}
-      -DMOD_SPIRE_CORE_PREFIX:STRING=${CORE_INCLUDE_DIRS}
-      -DMOD_SPIRE_CORE_SRC:STRING=${SPIRE_CORE_SRC}
       -DMOD_SPIRE_CMAKE_MODULE_PATH:STRING=${DIR_OF_SPIREPM}
+      -DMOD_SPIRE_CORE_SRC:STRING=${SPIRE_CORE_SRC}
       ${_ep_spire_output_dirs}
     )
 
