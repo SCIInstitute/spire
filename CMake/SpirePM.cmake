@@ -360,8 +360,6 @@ function (Spire_AddModule spire_core module_name repo version)
   set(MODULE_PREFIX "${SPIRE_CORE_PREFIX}/module_build/${module_name}/${version}")
   set(MODULE_SRC_DIR "${MODULE_PREFIX}/SpireExt/${module_name}")
 
-  set(SPIRE_MODULE_INCLUDE_DIRS ${SPIRE_MODULE_INCLUDE_DIRS} ${MODULE_PREFIX} PARENT_SCOPE)
-
   # Parse all function arguments into our namespace prepended with _SPM_.
   _spm_parse_arguments(Spire_AddCore _SPM_ "${ARGN}")
 
@@ -374,9 +372,15 @@ function (Spire_AddModule spire_core module_name repo version)
   # it for them and wipe out all git / download info.
   if (_SPM_SOURCE_DIR)
     set(_ep_source_dir "SOURCE_DIR" "${_SPM_SOURCE_DIR}")
+    message("Using source dir: ${_SPM_SOURCE_DIR}")
     # Clear git repo or git tag, if any.
     set(_ep_git_repo)
     set(_ep_git_tag)
+
+    # Attempt to set include directory intelligently. This will allow use to
+    # use SpireExt/<module name> if the directory hierarchy is setup correctly
+    # on-disk.
+    set(SPIRE_MODULE_INCLUDE_DIRS ${SPIRE_MODULE_INCLUDE_DIRS} ${_SPM_SOURCE_DIR}/../.. PARENT_SCOPE)
   else()
     # If they did not, place the source directory in a consistent directory
     # hierarchy such that the user can access the project using:
@@ -385,6 +389,9 @@ function (Spire_AddModule spire_core module_name repo version)
     set(_ep_source_dir "SOURCE_DIR" "${MODULE_SRC_DIR}")
     set(_ep_git_repo "GIT_REPOSITORY" "${repo}")
     set(_ep_git_tag "GIT_TAG" "${version}")
+
+    # Set include directories.
+    set(SPIRE_MODULE_INCLUDE_DIRS ${SPIRE_MODULE_INCLUDE_DIRS} ${MODULE_PREFIX} PARENT_SCOPE)
   endif()
 
   get_target_property(CORE_INCLUDE_DIRS ${spire_core} SPIRE_CORE_INCLUDE_DIRS)
