@@ -8,6 +8,12 @@ find_package(OpenGL REQUIRED)
 set (QT_USE_QTOPENGL TRUE)
 
 #-----------------------------------------------------------------------
+# CMake Options
+#-----------------------------------------------------------------------
+
+option(USE_SCIRUN_INTERFACE "Use the SCIRun interface module." ON)
+
+#-----------------------------------------------------------------------
 # Setup spire
 #-----------------------------------------------------------------------
 
@@ -26,24 +32,20 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/../../CMa
 include(SpirePM)
 
 # Add core spire library locally.
-# This function, alongside Spire_AddModule, populate the SPIRE_INCLUDE_DIR
-# and SPIRE_LIBRARY paths. Module may also populate SPIRE_SHADER_DIR and
-# SPIRE_ASSET_DIR so that you can copy assets and the like.
-# We use the default settings with the target name of 'Spire'.
 set(SPIRE_CORE "Spire_Core_EP")
 Spire_AddCore(${SPIRE_CORE} ${SPIRE_OPTIONS})
 
-# Add the SCIRun module to spire while also specifying the version of
-# spire-scirun to use. The version is pulled as a git-tag, so it should be
-# present as a tag in the git repo.
-Spire_AddModule(${SPIRE_CORE} SCIRun "https://github.com/iauns/spire-scirun" "master")
-add_definitions(-DUSE_SCIRUN_INTERFACE)
+# Add SCIRun interface if requested.
+if (USE_SCIRUN_INTERFACE)
+  Spire_AddModule(${SPIRE_CORE} SCIRun "https://github.com/iauns/spire-scirun" "master")
+  add_definitions(-DUSE_SCIRUN_INTERFACE)
+endif()
 
 # Include / library directories placed in-scope by Spire_AddCore and Spire_AddModule.
 link_directories(${SPIRE_LIBRARY_DIRS})
-include_directories(${SPIRE_INCLUDE_DIRS})
+include_directories(${SPIRE_INCLUDE_DIR})
+include_directories(${SPIRE_MODULE_INCLUDE_DIRS})
 include_directories(SYSTEM ${SPIRE_3RDPARTY_INCLUDE_DIRS})
-include_directories(SYSTEM ${SPIRE_MODULE_INCLUDE_DIR})
 
 #-----------------------------------------------------------------------
 # Compiler settings

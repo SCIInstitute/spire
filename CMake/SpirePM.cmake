@@ -47,9 +47,9 @@
 # So the include path does depend on what you name the module's target.
 #
 # Spire modules:
-#  Spire_AddModule(<name>         # Required - Target name that will be constructed for this module.
-#     <spire_core>                # Required - Target name for spire_core.
-#     <module name / repo>        # Required - Name of the package or git repo. Only git repos are supported for now.
+#  Spire_AddModule(<spire-core>   # Required - Target name of spire-core.
+#     <module name>               # Required - Module name; this is *not* the name of the target! Target is named: spire_spm_<module name>
+#     <repo>                      # Required - Name of the package or git repo. Only git repos are supported for now.
 #     <version>                   # Required - Version of the package to be used.
 #     [SOURCE_DIR dir]            # Same as Spire_AddCore. Source directory which when specified disables git synchronization.
 #     )
@@ -320,11 +320,10 @@ function(Spire_AddCore name)
   ExternalProject_Get_Property(${name} BINARY_DIR)
   ExternalProject_Get_Property(${name} INSTALL_DIR)
 
-  set(SPIRE_INCLUDE_DIR ${SPIRE_INCLUDE_DIRS} "${SOURCE_DIR}")
-  set(SPIRE_INCLUDE_DIR ${SPIRE_INCLUDE_DIRS} PARENT_SCOPE)
+  set(SPIRE_INCLUDE_DIR ${SPIRE_INCLUDE_DIR} "${SOURCE_DIR}")
+  set(SPIRE_INCLUDE_DIR ${SPIRE_INCLUDE_DIR} PARENT_SCOPE)
 
-  set(SPIRE_MODULE_INCLUDE_DIRS ${SPIRE_MODULE_INCLUDE_DIR} "${PREFIX}/module_src")
-  set(SPIRE_MODULE_INCLUDE_DIRS ${SPIRE_MODULE_INCLUDE_DIR} PARENT_SCOPE)
+  set(SPIRE_MODULE_INCLUDE_DIRS PARENT_SCOPE)
 
   Spire_BuildCoreThirdPartyIncludes(spire_third_party_dirs ${SOURCE_DIR})
   set(SPIRE_3RDPARTY_INCLUDE_DIRS ${spire_third_party_dirs})
@@ -346,10 +345,12 @@ endfunction()
 # Additionally, all spire modules must accept an output name
 # (SPIRE_OUTPUT_NAME). The output name will be used to target and link against
 # the generated static library.
-function (Spire_AddModule spire_core target_name name_or_repo version)
+function (Spire_AddModule spire_core module_name repo version)
   
+  set(target_name "spire_spm_${module_name}")
+
   # The name we will link against.
-  set(MODULE_STATIC_LIB_NAME "${target_name}_spm")
+  set(MODULE_STATIC_LIB_NAME "spirelib_${module_name}")
 
   # Extract prefix and target module src directory from spire_core
   get_target_property(BASE_MODULE_SRC_DIR ${spire_core} SPIRE_BASE_MODULE_SRC_DIR)
@@ -359,8 +360,10 @@ function (Spire_AddModule spire_core target_name name_or_repo version)
   set(SPIRE_CORE_SRC ${SOURCE_DIR})
   set(PREFIX)
   set(SOURCE_DIR)
-  set(MODULE_PREFIX "${SPIRE_CORE_PREFIX}/module_build/${target_name}/${version}")
-  set(MODULE_SRC_DIR "${MODULE_PREFIX}/SpireExt/${target_name}${BASE_MODULE_SRC_DIR}/${target_name}")
+  set(MODULE_PREFIX "${SPIRE_CORE_PREFIX}/module_build/${module_name}/${version}")
+  set(MODULE_SRC_DIR "${MODULE_PREFIX}/SpireExt/${module_name}")
+
+  set(SPIRE_MODULE_INCLUDE_DIRS ${SPIRE_MODULE_INCLUDE_DIRS} ${MODULE_PREFIX} PARENT_SCOPE)
 
   # Parse all function arguments into our namespace prepended with _SPM_.
   _spm_parse_arguments(Spire_AddCore _SPM_ "${ARGN}")
@@ -383,7 +386,7 @@ function (Spire_AddModule spire_core target_name name_or_repo version)
     # SpireExt/<reponame>/. It is common to store public include
     # headers at the root of the project for spire modules.
     set(_ep_source_dir "SOURCE_DIR" "${MODULE_SRC_DIR}")
-    set(_ep_git_repo "GIT_REPOSITORY" "${name_or_repo}")
+    set(_ep_git_repo "GIT_REPOSITORY" "${repo}")
     set(_ep_git_tag "GIT_TAG" "${version}")
   endif()
 
