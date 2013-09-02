@@ -312,10 +312,7 @@ function(Spire_AddCore name)
 
   # Retrieving properties from external projects will retrieve their fully
   # initialized values (including if any defaults were set).
-  # ExternalProject_Get_Property stores the result in our function scope,
-  # under the name GIT_REPOSITORY.
   ExternalProject_Get_Property(${name} PREFIX)
-  ExternalProject_Get_Property(${name} GIT_REPOSITORY)
   ExternalProject_Get_Property(${name} SOURCE_DIR)
   ExternalProject_Get_Property(${name} BINARY_DIR)
   ExternalProject_Get_Property(${name} INSTALL_DIR)

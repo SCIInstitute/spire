@@ -12,14 +12,18 @@ set (QT_USE_QTOPENGL TRUE)
 #-----------------------------------------------------------------------
 
 option(USE_SCIRUN_INTERFACE "Use the SCIRun interface module." ON)
+option(DOWNLOAD_SPIRE "Will download spire through git instead of using the local version" OFF)
 
 #-----------------------------------------------------------------------
 # Setup spire
 #-----------------------------------------------------------------------
 
-set(SPIRE_OPTIONS)
+# Ensure CMAKE_MODULE_PATH includes path to Spire's SpirePM.cmake.
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/../../CMake)
+include(SpirePM)
 
-# Expose threading option to the user.
+# Determine if we should use threading.
+set(SPIRE_OPTIONS)
 option(USE_STD_THREADS "Use standard library threads. If turned off, no threading support is available." ON)
 if (USE_STD_THREADS)
   set(SPIRE_OPTIONS ${SPIRE_OPTIONS} "USE_STD_THREADS;ON")
@@ -27,13 +31,14 @@ else()
   set(SPIRE_OPTIONS ${SPIRE_OPTIONS} "USE_STD_THREADS;OFF")
 endif()
 
-# Ensure CMAKE_MODULE_PATH includes path to Spire's SpirePM.cmake.
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/../../CMake)
-include(SpirePM)
-
-# Add core spire library locally.
+# Add core spire library. Either download it or use a local version.
 set(SPIRE_CORE "Spire_Core_EP")
-Spire_AddCore(${SPIRE_CORE} ${SPIRE_OPTIONS})
+if (DOWNLOAD_SPIRE)
+  Spire_AddCore(${SPIRE_CORE} ${SPIRE_OPTIONS})
+else()
+  Spire_AddCore(${SPIRE_CORE} ${SPIRE_OPTIONS}
+    SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../..")
+endif()
 
 # Add SCIRun interface if requested.
 if (USE_SCIRUN_INTERFACE)
