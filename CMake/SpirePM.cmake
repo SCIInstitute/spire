@@ -180,7 +180,7 @@ function(_spm_parse_arguments f ns args)
           # and update as needed.
           set(${ns}${key} "${arg}")
           set(${ns}${key} "${arg}" PARENT_SCOPE)
-          message("Set ${ns}${key} to ${arg}")
+          #message("Set ${ns}${key} to ${arg}")
         else()
           if (${ns}${key})
             # If we already have a value for this key, generated a semi-colon
@@ -188,7 +188,7 @@ function(_spm_parse_arguments f ns args)
             set(value ${${ns}${key}})
             set(${ns}${key} "${value};${arg}")
             set(${ns}${key} "${value};${arg}" PARENT_SCOPE)
-            message("Set2 ${ns}${key} to ${value};${arg}")
+            #message("Set2 ${ns}${key} to ${value};${arg}")
           else()
             set(${ns}${key} "${arg}")
             set(${ns}${key} "${arg}" PARENT_SCOPE)
@@ -372,7 +372,6 @@ function (Spire_AddModule spire_core module_name repo version)
   # it for them and wipe out all git / download info.
   if (_SPM_SOURCE_DIR)
     set(_ep_source_dir "SOURCE_DIR" "${_SPM_SOURCE_DIR}")
-    message("Using source dir: ${_SPM_SOURCE_DIR}")
     # Clear git repo or git tag, if any.
     set(_ep_git_repo)
     set(_ep_git_tag)
@@ -395,7 +394,6 @@ function (Spire_AddModule spire_core module_name repo version)
   endif()
 
   get_target_property(CORE_INCLUDE_DIRS ${spire_core} SPIRE_CORE_INCLUDE_DIRS)
-  message("${spire_core} include: ${CORE_INCLUDE_DIRS}")
 
   ExternalProject_Add(${target_name}
     "PREFIX;${MODULE_PREFIX}"

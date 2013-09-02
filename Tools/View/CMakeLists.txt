@@ -12,8 +12,8 @@ set (QT_USE_QTOPENGL TRUE)
 #-----------------------------------------------------------------------
 
 option(USE_SCIRUN_INTERFACE "Use the SCIRun interface module." ON)
-option(DOWNLOAD_SPIRE "Will download spire through git instead of using the local version." OFF)
-option(DOWNLOAD_SPIRE_SCIRUN "Will download the spire-scirun module instead of using a local version." ON)
+option(USE_LOCAL_SPIRE "Will use a local version of spire instead of downloading from its git repo." ON)
+option(USE_LOCAL_SPIRE_SCIRUN "Will use a local version of the spire-scirun module instead of downloading from its git repo." OFF)
 
 #-----------------------------------------------------------------------
 # Setup spire
@@ -34,22 +34,22 @@ endif()
 
 # Add core spire library. Either download it or use a local version.
 set(SPIRE_CORE "Spire_Core_EP")
-if (DOWNLOAD_SPIRE)
-  Spire_AddCore(${SPIRE_CORE} ${SPIRE_OPTIONS})
-else()
+if (USE_LOCAL_SPIRE)
   Spire_AddCore(${SPIRE_CORE} ${SPIRE_OPTIONS}
     SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../..")
+else()
+  Spire_AddCore(${SPIRE_CORE} ${SPIRE_OPTIONS})
 endif()
 
 # Add SCIRun interface if requested.
 if (USE_SCIRUN_INTERFACE)
   add_definitions(-DUSE_SCIRUN_INTERFACE)
 
-  if (DOWNLOAD_SPIRE_SCIRUN)
-    Spire_AddModule(${SPIRE_CORE} SCIRun "https://github.com/iauns/spire-scirun" "master")
-  else()
+  if (USE_LOCAL_SPIRE_SCIRUN)
     Spire_AddModule(${SPIRE_CORE} SCIRun "https://github.com/iauns/spire-scirun" "master"
       SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../../../SpireExt/SCIRun")
+  else()
+    Spire_AddModule(${SPIRE_CORE} SCIRun "https://github.com/iauns/spire-scirun" "master")
   endif()
 endif()
 
