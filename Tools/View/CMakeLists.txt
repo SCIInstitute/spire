@@ -5,7 +5,7 @@ project(SpireViewer)
 # Configure OpenGL
 #-----------------------------------------------------------------------
 find_package(OpenGL REQUIRED)
-set (QT_USE_QTOPENGL TRUE)
+set(QT_USE_QTOPENGL TRUE)
 
 #-----------------------------------------------------------------------
 # CMake Options

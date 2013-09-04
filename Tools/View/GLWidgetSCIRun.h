@@ -34,7 +34,6 @@
 #ifndef INTERFACE_MODULES_GLWIDGET_H
 #define INTERFACE_MODULES_GLWIDGET_H
 
-#include <QtOpenGL/QGLWidget>
 #include <QTimer>
 
 #include "GLContext.h"

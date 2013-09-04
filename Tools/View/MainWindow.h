@@ -34,7 +34,7 @@
 
 #include <QDialog>
 #include <QMainWindow>
-#include <QtOpenGL/QGLWidget>
+
 #ifdef USE_SCIRUN_INTERFACE
 #include "GLWidgetSCIRun.h"
 #else

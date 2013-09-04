@@ -26,7 +26,10 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wconversion"
 #include <QtGui/QApplication>
+#pragma clang diagnostic pop
 #include "MainWindow.h"
 #if defined(SPIRE_USING_LINUX)
 #include <X11/Xlib.h>

@@ -35,7 +35,10 @@
 // For windows...
 #define NOMINMAX
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wconversion"
 #include <QtOpenGL/QGLWidget>
+#pragma clang diagnostic pop
 
 // Include spire interface.
 #include "Spire/Interface.h"

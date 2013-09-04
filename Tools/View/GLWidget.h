@@ -34,9 +34,7 @@
 
 #define NOMINMAX
 
-#include <QtOpenGL/QGLWidget>
 #include <QTimer>
-
 #include "GLContext.h"
 
 // From spire
