@@ -1,24 +1,19 @@
-# Build the minimal Spire viewer.
+if(APPLE)
+  cmake_minimum_required(VERSION 2.8.11 FATAL_ERROR)
+else()
+  cmake_minimum_required(VERSION 2.8.7 FATAL_ERROR)
+endif()
 
-#-----------------------------------------------------------------------
-# CMake version and project name
-#-----------------------------------------------------------------------
-
-cmake_minimum_required(VERSION 2.8.11 FATAL_ERROR)
-INCLUDE(ExternalProject)
-
+include(ExternalProject)
 project(SpireBatchRenderer)
+
+# Base tests directory.
+set (BASE_TESTS_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../../Tests)
 
 #-----------------------------------------------------------------------
 # Configure OpenGL
 #-----------------------------------------------------------------------
 find_package(OpenGL REQUIRED)
-
-#-----------------------------------------------------------------------
-# Common Variables
-#-----------------------------------------------------------------------
-
-set (BASE_SPIRE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../..)
 
 #-----------------------------------------------------------------------
 # Setup spire
@@ -65,27 +60,6 @@ include_directories(${SPIRE_MODULE_INCLUDE_DIRS})
 include_directories(SYSTEM ${SPIRE_3RDPARTY_INCLUDE_DIRS})
 
 #-----------------------------------------------------------------------
-# Required libraries
-#-----------------------------------------------------------------------
-
-# The 'spire' library.
-add_subdirectory(${BASE_SPIRE_DIR}/Spire ${CMAKE_CURRENT_BINARY_DIR}/spire)
-
-# Pull USE_STD_THREADS from the spire directory
-get_directory_property(USE_STD_THREADS DIRECTORY ${BASE_SPIRE_DIR}/Spire DEFINITION USE_STD_THREADS)
-if(USE_STD_THREADS)
-  add_definitions(-DSPIRE_USE_STD_THREADS)
-endif()
-
-get_directory_property(USI_SCIRUN_INTERFACE DIRECTORY ${BASE_SPIRE_DIR}/Spire DEFINITION USE_SCIRUN_INTERFACE)
-if (USE_SCIRUN_INTERFACE)
-  add_definitions(-DSPIRE_USE_SCIRUN_INTERFACE)
-endif()
-
-# Note: The spire tests require that ${BASE_SPIRE_DIR}/Spire is in the include path.
-include_directories(${BASE_SPIRE_DIR} ${BASE_SPIRE_DIR}/Spire)
-
-#-----------------------------------------------------------------------
 # Find and configure Git
 #-----------------------------------------------------------------------
 
@@ -98,7 +72,7 @@ endif()
 # Grab Regression Data From GitHub
 #-----------------------------------------------------------------------
 
-set(REGRESSION_DATA_DIR "${BASE_SPIRE_DIR}/Tests/RegressionData")
+set(REGRESSION_DATA_DIR "${BASE_TESTS_DIR}/RegressionData")
 
 if(EXISTS "${REGRESSION_DATA_DIR}" AND IS_DIRECTORY "${REGRESSION_DATA_DIR}")
   message(STATUS "Updating regression data")
@@ -177,38 +151,20 @@ else()
 endif ()
 
 #-----------------------------------------------------------------------
-# Google Test - must come after setting compiler flags.
+# External dependencies
 #-----------------------------------------------------------------------
 
+# Gtest
 add_definitions(-DGTEST_USE_OWN_TR1_TUPLE=1)
-add_subdirectory(${BASE_SPIRE_DIR}/Tests/3rdParty/gtest ${BASE_SPIRE_DIR}/bin/gtest)
+add_subdirectory(${BASE_TESTS_DIR}/3rdParty/gtest ${CMAKE_CURRENT_BINARY_DIR}/gtest)
+include_directories(SYSTEM ${BASE_TESTS_DIR}/3rdParty/gtest/include)
 
-# Include gtest
-include_directories(SYSTEM ${BASE_SPIRE_DIR}/Tests/3rdParty/gtest/include)
-
-#-----------------------------------------------------------------------
-# Spire Extensions
-#-----------------------------------------------------------------------
-
-# GLM include directory.
-INCLUDE_DIRECTORIES(SYSTEM "${BASE_SPIRE_DIR}/Extensions" )
-
-#-----------------------------------------------------------------------
-# GLM
-#-----------------------------------------------------------------------
-
-# GLM include directory.
-INCLUDE_DIRECTORIES(SYSTEM "${BASE_SPIRE_DIR}/Spire/3rdParty/glm" )
-
-#-----------------------------------------------------------------------
 # CImg
+INCLUDE_DIRECTORIES(SYSTEM "${CMAKE_CURRENT_SOURCE_DIR}/3rdParty/CImg" )
+
 #-----------------------------------------------------------------------
-
-# GLM include directory.
-INCLUDE_DIRECTORIES(SYSTEM "${BASE_SPIRE_DIR}/Tools/Batch/3rdParty/CImg" )
-
-########################################################################
 # Setup source
+#-----------------------------------------------------------------------
 
 # Setup spire test sources. Even though this is a batch renderer, this is
 # a good test of concept.
@@ -218,15 +174,15 @@ set(CommonSources
   main.cpp)
 
 file(GLOB TestSources
-  "${BASE_SPIRE_DIR}/Tests/*.cpp"
-  "${BASE_SPIRE_DIR}/Tests/*.h"
+  "${BASE_TESTS_DIR}/*.cpp"
+  "${BASE_TESTS_DIR}/*.h"
   )
 
 ########################################################################
 # Copy shaders to the target directory
 
 # Copy shaders.
-file(COPY ${BASE_SPIRE_DIR}/Tests/Shaders/
+file(COPY ${BASE_TESTS_DIR}/Shaders/
      DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/
      FILE_PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ WORLD_READ
      DIRECTORY_PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE
@@ -234,7 +190,7 @@ file(COPY ${BASE_SPIRE_DIR}/Tests/Shaders/
                            WORLD_READ WORLD_EXECUTE)
 
 # Exported meshes. These are used to test rendering.
-file(COPY ${BASE_SPIRE_DIR}/Tests/Assets/
+file(COPY ${BASE_TESTS_DIR}/Assets/
      DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/Assets
      FILE_PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ WORLD_READ
      DIRECTORY_PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE
