@@ -32,6 +32,11 @@ else()
   set(SPIRE_OPTIONS ${SPIRE_OPTIONS} "USE_STD_THREADS;OFF")
 endif()
 
+# Add target shader and asset directories. Be careful of modules overwriting
+# your existing shaders.
+set(SPIRE_OPTIONS ${SPIRE_OPTIONS} "SHADER_OUTPUT_DIR;${CMAKE_CURRENT_BINARY_DIR}/Shaders")
+set(SPIRE_OPTIONS ${SPIRE_OPTIONS} "ASSET_OUTPUT_DIR;${CMAKE_CURRENT_BINARY_DIR}/Assets")
+
 # Add core spire library. Either download it or use a local version.
 set(SPIRE_CORE "Spire_Core_EP")
 if (USE_LOCAL_SPIRE)
@@ -112,19 +117,9 @@ QT4_WRAP_UI(UISource ${Forms})
 
 #-----------------------------------------------------------------------
 # Copy shaders to the binary directory
-# NOTE: This should be done by a function defined in SpirePM.
-#       All modules add their shader directories to a common variable
-#       so one call to that function can install all shaders and assets.
 #-----------------------------------------------------------------------
 file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/Shaders/
      DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/Shaders
-     FILE_PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ WORLD_READ
-     DIRECTORY_PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE
-                           GROUP_READ
-                           WORLD_READ WORLD_EXECUTE)
-
-file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/Assets/
-     DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/Assets
      FILE_PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ WORLD_READ
      DIRECTORY_PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE
                            GROUP_READ

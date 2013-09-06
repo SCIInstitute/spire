@@ -463,7 +463,7 @@ endfunction()
 
 function (Spire_CopyShaders src_shader_dir dest_shader_dir)
   if (NOT dest_shader_dir STREQUAL "")
-    file(COPY ${src_shader_dir} DESTINATION ${dest_shader_dir}
+    file(COPY ${src_shader_dir}/ DESTINATION ${dest_shader_dir}
       FILE_PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ WORLD_READ
       DIRECTORY_PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE
                             GROUP_READ
@@ -473,7 +473,7 @@ endfunction()
 
 function (Spire_CopyAssets src_asset_dir dest_asset_dir)
   if (NOT dest_asset_dir STREQUAL "")
-    file(COPY ${src_asset_dir} DESTINATION ${dest_asset_dir}
+    file(COPY ${src_asset_dir}/ DESTINATION ${dest_asset_dir}
       FILE_PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ WORLD_READ
       DIRECTORY_PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE
                             GROUP_READ
