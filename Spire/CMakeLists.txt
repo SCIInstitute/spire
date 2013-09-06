@@ -63,7 +63,7 @@ if(UNIX)
     endif()
 
   else(APPLE)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c11")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x")
     add_definitions(-D_GLIBCXX_USE_NANOSLEEP)
     set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC")
     set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fPIC")
