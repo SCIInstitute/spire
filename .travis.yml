@@ -3,4 +3,4 @@ compiler:
   - gcc
   - clang
 # Change this to your needs
-script: cmake -D USE_STD_THREADS=ON . && make
+script: cmake -D USE_STD_THREADS=OFF . && make

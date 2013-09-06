@@ -51,9 +51,8 @@ endif()
 # Compiler settings
 #-----------------------------------------------------------------------
 if(UNIX)
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
-
   if(APPLE)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
     if(BUILDING_IOS)
       # No Werror on iOS builds yet.
       set (CMAKE_CXX_FLAGS 
@@ -64,6 +63,7 @@ if(UNIX)
     endif()
 
   else(APPLE)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c11")
     add_definitions(-D_GLIBCXX_USE_NANOSLEEP)
     set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC")
     set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fPIC")
