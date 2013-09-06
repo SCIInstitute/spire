@@ -1,6 +1,5 @@
 language: cpp
 compiler:
-  - gcc
   - clang
 # Change this to your needs
 script: cmake -D USE_STD_THREADS=OFF . && make
