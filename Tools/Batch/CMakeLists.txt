@@ -98,6 +98,20 @@ add_definitions(-DTEST_PERCEPTUAL_COMPARE)
 add_definitions(-DTEST_PERCEPTUAL_COMPARE_BINARY="perceptualdiff")
 
 #-----------------------------------------------------------------------
+# External dependencies
+#-----------------------------------------------------------------------
+
+# Note: we need to add gtest before we set strict warnings.
+
+# Gtest
+add_definitions(-DGTEST_USE_OWN_TR1_TUPLE=1)
+add_subdirectory(${BASE_TESTS_DIR}/3rdParty/gtest ${CMAKE_CURRENT_BINARY_DIR}/gtest)
+include_directories(SYSTEM ${BASE_TESTS_DIR}/3rdParty/gtest/include)
+
+# CImg
+INCLUDE_DIRECTORIES(SYSTEM "${CMAKE_CURRENT_SOURCE_DIR}/3rdParty/CImg" )
+
+#-----------------------------------------------------------------------
 # Compiler settings
 #-----------------------------------------------------------------------
 
@@ -149,18 +163,6 @@ else()
       )
   endif(WIN32)
 endif ()
-
-#-----------------------------------------------------------------------
-# External dependencies
-#-----------------------------------------------------------------------
-
-# Gtest
-add_definitions(-DGTEST_USE_OWN_TR1_TUPLE=1)
-add_subdirectory(${BASE_TESTS_DIR}/3rdParty/gtest ${CMAKE_CURRENT_BINARY_DIR}/gtest)
-include_directories(SYSTEM ${BASE_TESTS_DIR}/3rdParty/gtest/include)
-
-# CImg
-INCLUDE_DIRECTORIES(SYSTEM "${CMAKE_CURRENT_SOURCE_DIR}/3rdParty/CImg" )
 
 #-----------------------------------------------------------------------
 # Setup source
