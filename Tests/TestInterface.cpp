@@ -31,13 +31,15 @@
 
 #include "gtest/gtest.h"
 
-#include "Core/Common.h"
-#include "Core/Exceptions.h"
-#include "Core/SpireObject.h"
-#include "Core/FileUtil.h"
-#include "SpireExt/SCIRun/SRCommonUniforms.h"
-#include "SpireExt/SCIRun/SRCommonAttributes.h"
+#include "Spire/Core/Common.h"
+#include "Spire/Core/Exceptions.h"
+#include "Spire/Core/SpireObject.h"
+#include "Spire/Core/FileUtil.h"
+#include "Spire/Core/LambdaInterface.h"
+#include "Spire/Core/ObjectLambda.h"
 
+#include "TestCommonUniforms.h"
+#include "TestCommonAttributes.h"
 #include "GlobalTestEnvironment.h"
 #include "CommonTestFixtures.h"
 
@@ -52,11 +54,11 @@ static void lambdaUniformObjTrafs(ObjectLambdaInterface& iface,
 {
   // Cache object to world transform.
   M44 objToWorld = iface.getObjectMetadata<M44>(
-      std::get<0>(SRCommonAttributes::getObjectToWorldTrafo()));
+      std::get<0>(TestCommonAttributes::getObjectToWorldTrafo()));
 
-  std::string objectTrafoName = std::get<0>(SRCommonUniforms::getObject());
-  std::string objectToViewName = std::get<0>(SRCommonUniforms::getObjectToView());
-  std::string objectToCamProjName = std::get<0>(SRCommonUniforms::getObjectToCameraToProjection());
+  std::string objectTrafoName = std::get<0>(TestCommonUniforms::getObject());
+  std::string objectToViewName = std::get<0>(TestCommonUniforms::getObjectToView());
+  std::string objectToCamProjName = std::get<0>(TestCommonUniforms::getObjectToCameraToProjection());
 
   // Loop through the unsatisfied uniforms and see if we can provide any.
   for (auto it = unsatisfiedUniforms.begin(); it != unsatisfiedUniforms.end(); /*nothing*/ )
@@ -72,7 +74,7 @@ static void lambdaUniformObjTrafs(ObjectLambdaInterface& iface,
     {
       // Grab the inverse view transform.
       M44 inverseView = glm::affineInverse(
-          iface.getGlobalUniform<M44>(std::get<0>(SRCommonUniforms::getCameraToWorld())));
+          iface.getGlobalUniform<M44>(std::get<0>(TestCommonUniforms::getCameraToWorld())));
       LambdaInterface::setUniform<M44>(it->uniformType, it->uniformName,
                                        it->shaderLocation, inverseView * objToWorld);
 
@@ -81,7 +83,7 @@ static void lambdaUniformObjTrafs(ObjectLambdaInterface& iface,
     else if (it->uniformName == objectToCamProjName)
     {
       M44 inverseViewProjection = iface.getGlobalUniform<M44>(
-          std::get<0>(SRCommonUniforms::getToCameraToProjection()));
+          std::get<0>(TestCommonUniforms::getToCameraToProjection()));
       LambdaInterface::setUniform<M44>(it->uniformType, it->uniformName,
                                        it->shaderLocation, inverseViewProjection * objToWorld);
 
@@ -754,7 +756,7 @@ TEST_F(InterfaceTestFixture, TestRenderingWithAttributes)
   M44 xform;
   xform[3] = V4(1.0f, 0.0f, 0.0f, 1.0f);
   mSpire->addObjectPassMetadata(
-      objectName, std::get<0>(SRCommonAttributes::getObjectToWorldTrafo()), xform);
+      objectName, std::get<0>(TestCommonAttributes::getObjectToWorldTrafo()), xform);
 
   // No longer need VBO and IBO (will stay resident in the passes -- when the
   // passes are destroyed, the VBO / IBOs will be destroyed).
@@ -765,7 +767,7 @@ TEST_F(InterfaceTestFixture, TestRenderingWithAttributes)
   mSpire->addGlobalUniform("uLightDirWorld", V3(1.0f, 0.0f, 0.0f));
 
   // Setup camera uniforms.
-  mCamera->setSRCommonUniforms(mSpire);
+  mCamera->setCommonUniforms(mSpire);
 
   mSpire->ntsDoFrame();
 
@@ -878,11 +880,11 @@ TEST_F(InterfaceTestFixture, TestRenderingWithOutOfOrderAttributes)
   M44 xform;
   xform[3] = V4(0.0f, 0.0f, 0.0f, 1.0f);
   mSpire->addObjectPassMetadata(
-      obj1, std::get<0>(SRCommonAttributes::getObjectToWorldTrafo()), xform);
+      obj1, std::get<0>(TestCommonAttributes::getObjectToWorldTrafo()), xform);
 
   // Setup uniforms unrelated to our object.
   mSpire->addGlobalUniform("uLightDirWorld", V3(0.0f, 0.0f, 1.0f));
-  mCamera->setSRCommonUniforms(mSpire);
+  mCamera->setCommonUniforms(mSpire);
 
   mSpire->ntsDoFrame();
 

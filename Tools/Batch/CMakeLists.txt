@@ -98,20 +98,6 @@ add_definitions(-DTEST_PERCEPTUAL_COMPARE)
 add_definitions(-DTEST_PERCEPTUAL_COMPARE_BINARY="perceptualdiff")
 
 #-----------------------------------------------------------------------
-# External dependencies
-#-----------------------------------------------------------------------
-
-# Note: we need to add gtest before we set strict warnings.
-
-# Gtest
-add_definitions(-DGTEST_USE_OWN_TR1_TUPLE=1)
-add_subdirectory(${BASE_TESTS_DIR}/3rdParty/gtest ${CMAKE_CURRENT_BINARY_DIR}/gtest)
-include_directories(SYSTEM ${BASE_TESTS_DIR}/3rdParty/gtest/include)
-
-# CImg
-INCLUDE_DIRECTORIES(SYSTEM "${CMAKE_CURRENT_SOURCE_DIR}/3rdParty/CImg" )
-
-#-----------------------------------------------------------------------
 # Compiler settings
 #-----------------------------------------------------------------------
 
@@ -125,8 +111,6 @@ if (UNIX)
   if (APPLE)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libc++")
     set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -stdlib=libc++")
-
-    set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Werror -Wconversion -Wshadow")
 
     # Find necessary apple libraries (cocoa).
     FIND_LIBRARY(COCOA_LIBRARY Cocoa)
@@ -163,6 +147,30 @@ else()
       )
   endif(WIN32)
 endif ()
+
+#-----------------------------------------------------------------------
+# External dependencies
+#-----------------------------------------------------------------------
+
+# Note: we need to add gtest before we set strict warnings, but after we define
+# C++11 settings.
+
+# Gtest
+add_definitions(-DGTEST_USE_OWN_TR1_TUPLE=1)
+add_subdirectory(${BASE_TESTS_DIR}/3rdParty/gtest ${CMAKE_CURRENT_BINARY_DIR}/gtest)
+include_directories(SYSTEM ${BASE_TESTS_DIR}/3rdParty/gtest/include)
+
+# CImg
+INCLUDE_DIRECTORIES(SYSTEM "${CMAKE_CURRENT_SOURCE_DIR}/3rdParty/CImg" )
+
+
+#-----------------------------------------------------------------------
+# Setup strict warnings and werror
+#-----------------------------------------------------------------------
+
+if(APPLE)
+  set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Werror -Wconversion -Wshadow")
+endif()
 
 #-----------------------------------------------------------------------
 # Setup source

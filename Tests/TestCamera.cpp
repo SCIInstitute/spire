@@ -31,7 +31,7 @@
 
 #include "TestCamera.h"
 #include "GlobalTestEnvironment.h"
-#include "SpireExt/SCIRun/SRCommonUniforms.h"
+#include "TestCommonUniforms.h"
 
 //------------------------------------------------------------------------------
 TestCamera::TestCamera() :
@@ -86,16 +86,17 @@ void TestCamera::setViewTransform(const Spire::M44& trafo)
 }
 
 //------------------------------------------------------------------------------
-void TestCamera::setSRCommonUniforms(std::shared_ptr<Spire::Interface> iface)
+void TestCamera::setCommonUniforms(std::shared_ptr<Spire::Interface> iface)
 {
   // Update appropriate uniforms.
-  iface->addGlobalUniform(std::get<0>(Spire::SRCommonUniforms::getToCameraToProjection()), mPIV);
-  iface->addGlobalUniform(std::get<0>(Spire::SRCommonUniforms::getToProjection()), mP);
-  iface->addGlobalUniform(std::get<0>(Spire::SRCommonUniforms::getCameraToWorld()), mV);
+  iface->addGlobalUniform(std::get<0>(TestCommonUniforms::getToCameraToProjection()), mPIV);
+  iface->addGlobalUniform(std::get<0>(TestCommonUniforms::getToProjection()), mP);
+  iface->addGlobalUniform(std::get<0>(TestCommonUniforms::getCameraToWorld()), mV);
 
   // We project down the negative Z axis. Hence the negation of the camera's
   // 'at' vector.
-  iface->addGlobalUniform(std::get<0>(Spire::SRCommonUniforms::getCameraViewVec()), -Spire::V3(mV[2].xyz()));
-  iface->addGlobalUniform(std::get<0>(Spire::SRCommonUniforms::getCameraUpVec()), Spire::V3(mV[1].xyz()));
+  iface->addGlobalUniform(std::get<0>(TestCommonUniforms::getCameraViewVec()), -Spire::V3(mV[2].xyz()));
+  iface->addGlobalUniform(std::get<0>(TestCommonUniforms::getCameraUpVec()), Spire::V3(mV[1].xyz()));
 }
+
 

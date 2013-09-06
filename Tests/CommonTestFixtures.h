@@ -36,7 +36,6 @@
 
 #include "gtest/gtest.h"
 #include "GlobalTestEnvironment.h"
-#include "SpireExt/SCIRun/SRInterface.h"
 
 #include "TestCamera.h"
 
@@ -86,46 +85,5 @@ public:
   std::unique_ptr<TestCamera>           mCamera;
 };
 
-//------------------------------------------------------------------------------
-// SCIRun test fixture.
-//------------------------------------------------------------------------------
-class SCIRunTestFixture : public testing::Test
-{
-public:
-  SCIRunTestFixture() {}
-
-  virtual void SetUp() override
-  {
-    std::vector<std::string> shaderSearchDirs;
-    shaderSearchDirs.push_back("Shaders");
-
-    // Build spire using the context from GlobalTestEnvironment.
-    std::shared_ptr<Spire::Context> ctx = Spire::GlobalTestEnvironment::instance()->getContext();
-    mSpire = std::shared_ptr<Spire::SCIRun::SRInterface>(
-        new Spire::SCIRun::SRInterface(ctx, shaderSearchDirs, false));
-
-    // Add default attributes.
-    addDefaultAttributes();
-
-    // Build camera that we will use for testing purposes.
-    mCamera = std::unique_ptr<TestCamera>(new TestCamera);
-  }
-
-  virtual void TearDown() override
-  {
-    mSpire.reset();
-  }
-
-  void addDefaultAttributes()
-  {
-    mSpire->addShaderAttribute("aPos",         3,  false,  sizeof(float) * 3,  Spire::Interface::TYPE_FLOAT);
-    mSpire->addShaderAttribute("aNormal",      3,  false,  sizeof(float) * 3,  Spire::Interface::TYPE_FLOAT);
-    mSpire->addShaderAttribute("aColorFloat",  4,  false,  sizeof(float) * 4,  Spire::Interface::TYPE_FLOAT);
-    mSpire->addShaderAttribute("aColor",       4,  true,   sizeof(char) * 4,   Spire::Interface::TYPE_UBYTE);
-  }
-
-  std::shared_ptr<Spire::SCIRun::SRInterface> mSpire;
-  std::unique_ptr<TestCamera>                 mCamera;
-};
 
 #endif 

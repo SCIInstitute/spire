@@ -27,13 +27,31 @@
 */
 
 /// \author James Hughes
-/// \date   January 2013
+/// \date   March 2013
 
-#include "Spire/Core/Common.h"
+#ifndef SPIRE_TEST_COMMONATTRIBUTES_H
+#define SPIRE_TEST_COMMONATTRIBUTES_H
 
-namespace Spire {
+#include <tuple>
 
-/// \todo Make a fake of BaseAssetMan and use it to test.
-///       We should test timings, add, remove, and find.
+#include "Spire/Core/ShaderUniformStateManTemplates.h"
 
-} // end of namespace Spire
+/// Common uniforms used by Spire.
+/// \todo Look into the ability to rename these uniforms in the future. This is
+/// so that Spire can adapt to other code bases.
+class TestCommonAttributes
+{
+public:
+  TestCommonAttributes()          {}
+  virtual ~TestCommonAttributes() {}
+  
+  //----------------------------------------------------------------------------
+  // Common transformations
+  //----------------------------------------------------------------------------
+
+  static std::tuple<const char*, Spire::UNIFORM_TYPE> getObjectToWorldTrafo()
+  {return std::make_pair("objToWorld", Spire::UNIFORM_FLOAT_MAT4);}
+
+};
+
+#endif 
