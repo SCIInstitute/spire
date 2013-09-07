@@ -32,26 +32,10 @@ else()
   set(SPIRE_OPTIONS ${SPIRE_OPTIONS} "USE_STD_THREADS;OFF")
 endif()
 
-# Add core spire library. Either download it or use a local version.
+# Use the local version of spire.
 set(SPIRE_CORE "Spire_Core_EP")
-if (USE_LOCAL_SPIRE)
-  Spire_AddCore(${SPIRE_CORE} ${SPIRE_OPTIONS}
-    SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../..")
-else()
-  Spire_AddCore(${SPIRE_CORE} ${SPIRE_OPTIONS})
-endif()
-
-# Add SCIRun interface if requested.
-if (USE_SCIRUN_INTERFACE)
-  add_definitions(-DUSE_SCIRUN_INTERFACE)
-
-  if (USE_LOCAL_SPIRE_SCIRUN)
-    Spire_AddModule(${SPIRE_CORE} SCIRun "https://github.com/iauns/spire-scirun" "master"
-      SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../../../SpireExt/SCIRun")
-  else()
-    Spire_AddModule(${SPIRE_CORE} SCIRun "https://github.com/iauns/spire-scirun" "master")
-  endif()
-endif()
+Spire_AddCore(${SPIRE_CORE} ${SPIRE_OPTIONS}
+  SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../..")
 
 # Include / library directories placed in-scope by Spire_AddCore and Spire_AddModule.
 link_directories(${SPIRE_LIBRARY_DIRS})
