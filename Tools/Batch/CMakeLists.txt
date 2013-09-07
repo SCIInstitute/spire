@@ -23,19 +23,12 @@ find_package(OpenGL REQUIRED)
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/../../CMake)
 include(SpirePM)
 
-# Determine if we should use threading.
-set(SPIRE_OPTIONS)
-option(USE_STD_THREADS "Use standard library threads. If turned off, no threading support is available." ON)
-if (USE_STD_THREADS)
-  set(SPIRE_OPTIONS ${SPIRE_OPTIONS} "USE_STD_THREADS;ON")
-else()
-  set(SPIRE_OPTIONS ${SPIRE_OPTIONS} "USE_STD_THREADS;OFF")
-endif()
+# Disabling threading for debugging and exception capture purposes.
+set (SPIRE_OPTIONS ${SPIRE_OPTIONS} "USE_STD_THREADS;OFF")
 
 # Use the local version of spire.
 set(SPIRE_CORE "Spire_Core_EP")
-Spire_AddCore(${SPIRE_CORE} ${SPIRE_OPTIONS}
-  SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../..")
+Spire_AddCore(${SPIRE_CORE} ${SPIRE_OPTIONS} SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../..")
 
 # Include / library directories placed in-scope by Spire_AddCore and Spire_AddModule.
 link_directories(${SPIRE_LIBRARY_DIRS})
