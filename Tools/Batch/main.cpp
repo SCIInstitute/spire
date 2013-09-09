@@ -29,10 +29,10 @@
 #include <cstdlib>
 #include <iostream>
 
+#include "gtest/gtest.h"
+
 #include "Spire/Core/Common.h"
 #include "Spire/Core/Log.h"
-
-#include "gtest/gtest.h"
 
 #include "BatchContext.h"
 #include "Tests/GlobalTestEnvironment.h"
