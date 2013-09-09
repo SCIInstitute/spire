@@ -29,7 +29,7 @@
 /// \author James Hughes
 /// \date   February 2013
 
-#include "gtest/gtest.h"
+#include "GlobalTestEnvironment.h"
 
 #include "Spire/Core/Common.h"
 #include "Spire/Core/Exceptions.h"
@@ -40,7 +40,6 @@
 
 #include "TestCommonUniforms.h"
 #include "TestCommonAttributes.h"
-#include "GlobalTestEnvironment.h"
 #include "CommonTestFixtures.h"
 
 using namespace Spire;
