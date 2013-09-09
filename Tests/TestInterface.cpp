@@ -310,35 +310,35 @@ TEST_F(InterfaceTestFixture, TestTriangle)
   // is already in the persistent shader list.
   mSpire->addPersistentShader(
       shader1, 
-      { {"UniformColor.vsh", Interface::VERTEX_SHADER}, 
-        {"UniformColor.fsh", Interface::FRAGMENT_SHADER},
+      { std::make_tuple("UniformColor.vsh", Interface::VERTEX_SHADER), 
+        std::make_tuple("UniformColor.fsh", Interface::FRAGMENT_SHADER),
       });
 
   // Test various cases of shader failure after adding a prior shader.
   EXPECT_THROW(mSpire->addPersistentShader(
       shader1, 
-      { {"UniformColor.vsh", Interface::FRAGMENT_SHADER}, 
-        {"UniformColor.fsh", Interface::VERTEX_SHADER},
+      { std::make_tuple("UniformColor.vsh", Interface::FRAGMENT_SHADER), 
+        std::make_tuple("UniformColor.fsh", Interface::VERTEX_SHADER),
       }), std::invalid_argument);
 
   EXPECT_THROW(mSpire->addPersistentShader(
       shader1, 
-      { {"UniformColor2.vsh", Interface::VERTEX_SHADER}, 
-        {"UniformColor.fsh", Interface::FRAGMENT_SHADER},
+      { std::make_tuple("UniformColor2.vsh", Interface::VERTEX_SHADER), 
+        std::make_tuple("UniformColor.fsh", Interface::FRAGMENT_SHADER),
       }), std::invalid_argument);
 
   EXPECT_THROW(mSpire->addPersistentShader(
       shader1, 
-      { {"UniformColor.vsh", Interface::VERTEX_SHADER}, 
-        {"UniformColor2.fsh", Interface::FRAGMENT_SHADER},
+      { std::make_tuple("UniformColor.vsh", Interface::VERTEX_SHADER), 
+        std::make_tuple("UniformColor2.fsh", Interface::FRAGMENT_SHADER),
       }), std::invalid_argument);
 
   // This final exception is throw directly from the addPersistentShader
   // function. The 3 prior exception were all thrown from the ShaderProgramMan.
   EXPECT_THROW(mSpire->addPersistentShader(
       shader1, 
-      { {"UniformColor.vsh", Interface::VERTEX_SHADER}, 
-        {"UniformColor.fsh", Interface::FRAGMENT_SHADER},
+      { std::make_tuple("UniformColor.vsh", Interface::VERTEX_SHADER), 
+        std::make_tuple("UniformColor.fsh", Interface::FRAGMENT_SHADER),
       }), Duplicate);
 
   // Now construct passes (taking into account VBO attributes).
@@ -522,8 +522,8 @@ TEST_F(InterfaceTestFixture, TestObjectsStructure)
   // is already in the persistent shader list.
   mSpire->addPersistentShader(
       shader1, 
-      { {"UniformColor.vsh", Interface::VERTEX_SHADER}, 
-        {"UniformColor.fsh", Interface::FRAGMENT_SHADER},
+      { std::make_tuple("UniformColor.vsh", Interface::VERTEX_SHADER), 
+        std::make_tuple("UniformColor.fsh", Interface::FRAGMENT_SHADER),
       });
 
   // Build the default pass.
@@ -647,8 +647,8 @@ TEST_F(InterfaceTestFixture, TestRenderingWithSR5Object)
   std::string shaderName = "UniformColor";
   mSpire->addPersistentShader(
       shaderName, 
-      { {"UniformColor.vsh", Interface::VERTEX_SHADER}, 
-        {"UniformColor.fsh", Interface::FRAGMENT_SHADER},
+      { std::make_tuple("UniformColor.vsh", Interface::VERTEX_SHADER), 
+        std::make_tuple("UniformColor.fsh", Interface::FRAGMENT_SHADER),
       });
 
   // Add object
@@ -734,8 +734,8 @@ TEST_F(InterfaceTestFixture, TestRenderingWithAttributes)
   std::string shaderName = "DirGouraud";
   mSpire->addPersistentShader(
       shaderName, 
-      { {"DirGouraud.vsh", Interface::VERTEX_SHADER}, 
-        {"DirGouraud.fsh", Interface::FRAGMENT_SHADER},
+      { std::make_tuple("DirGouraud.vsh", Interface::VERTEX_SHADER), 
+        std::make_tuple("DirGouraud.fsh", Interface::FRAGMENT_SHADER),
       });
 
   // Add object
