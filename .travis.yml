@@ -12,7 +12,7 @@ before_install:
 # For QT support:
 # sudo apt-get install libqt4-dev qt4-qmake
 
-script: mkdir bin && cd bin && cmake ../Tools/Batch && make && spirebatch
+script: mkdir bin && cd bin && cmake ../Tools/Batch && make && ./spirebatch
 branches:
   only:
     - master
