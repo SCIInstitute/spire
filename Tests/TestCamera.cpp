@@ -29,8 +29,8 @@
 /// \author James Hughes
 /// \date   March 2013
 
-#include "TestCamera.h"
 #include "GlobalTestEnvironment.h"
+#include "TestCamera.h"
 #include "TestCommonUniforms.h"
 
 //------------------------------------------------------------------------------
