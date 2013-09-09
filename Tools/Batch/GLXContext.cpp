@@ -27,6 +27,7 @@
 */
 
 #include <stdexcept>
+#include <cassert>
 #include <GL/glxew.h>
 
 #include "GLXContext.h"
@@ -79,13 +80,13 @@ bool GLXBatchContext::isValid() const
   return this->xi->display != NULL && this->xi->ctx != NULL;
 }
 
-bool GLXBatchContext::makeCurrent()
+void GLXBatchContext::makeCurrent()
 {
   if(glXMakeCurrent(this->xi->display, this->xi->win, this->xi->ctx) != True)
     throw std::runtime_error("Unable make context current.");
 }
 
-bool GLXBatchContext::swapBuffers()
+void GLXBatchContext::swapBuffers()
 {
   // SwapBuffers generates an X error if it fails.
   glXSwapBuffers(this->xi->display, this->xi->win);
