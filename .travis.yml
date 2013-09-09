@@ -12,7 +12,7 @@ before_install:
 # For QT support:
 # sudo apt-get install libqt4-dev qt4-qmake
 
-script: cmake -D USE_STD_THREADS=OFF . && make
+script: cmake Tools/Batch && make && spirebatch
 branches:
   only:
     - master
