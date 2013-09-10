@@ -792,7 +792,7 @@ TEST_F(InterfaceTestFixture, TestRenderingWithAttributes)
   // Test using perceptula comparison program that the user has provided
   // (hopefully).
   std::string command = TEST_PERCEPTUAL_COMPARE_BINARY;
-  command += " -threshold 50 ";
+  command += " -threshold 2000 "; // 0.7% of a 640 x 480 image.
   command += targetImage + " " + compImage;
 
   // Usually the return code of std::system is implementation specific. But the
