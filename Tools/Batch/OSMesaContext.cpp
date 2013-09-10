@@ -65,7 +65,7 @@ OSMesaBatchContext::OSMesaBatchContext(uint32_t width, uint32_t height, uint8_t,
 
 OSMesaBatchContext::~OSMesaBatchContext()
 {
-  free(mContext->frameBuffer)
+  free(mContext->frameBuffer);
   OSMesaDestroyContext(mContext->ctx);
 }
 
