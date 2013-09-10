@@ -44,7 +44,7 @@ struct MesaContext
   uint32_t      height;
 };
 
-GLXBatchContext::GLXBatchContext(uint32_t width, uint32_t height, uint8_t,
+OSMesaBatchContext::OSMesaBatchContext(uint32_t width, uint32_t height, uint8_t,
                                  uint8_t depthBits, uint8_t stencilBits,
                                  bool double_buffer,
                                  bool visible) :
@@ -64,25 +64,25 @@ GLXBatchContext::GLXBatchContext(uint32_t width, uint32_t height, uint8_t,
   this->makeCurrent();
 }
 
-GLXBatchContext::~GLXBatchContext()
+OSMesaBatchContext::~OSMesaBatchContext()
 {
   free(mContext->frameBuffer)
   OSMesaDestroyContext(mContext->ctx);
 }
 
-bool GLXBatchContext::isValid() const
+bool OSMesaBatchContext::isValid() const
 {
   return mContext->frameBuffer != NULL;
 }
 
-void GLXBatchContext::makeCurrent()
+void OSMesaBatchContext::makeCurrent()
 {
   if ( !OSMesaMakeCurrent( mContext->ctx, mContext->frameBuffer, GL_UNSIGNED_BYTE,
                            mContext->width, mContext->height) )
     throw std::runtime_error("Unable make context current.");
 }
 
-void GLXBatchContext::swapBuffers()
+void OSMesaBatchContext::swapBuffers()
 {
   // We just need to make sure the gl commands are finished.
   glFinish();
