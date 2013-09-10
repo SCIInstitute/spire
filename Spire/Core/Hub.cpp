@@ -72,9 +72,9 @@ Hub::Hub(std::shared_ptr<Context> context,
     mPixScreenHeight(480)
 {
   // Add default relative shader directory.
-  std::string workingDay = getCurrentWorkingDir();
-  workingDay += "/Shaders";
-  mShaderDirs.push_back(workingDay);
+  std::string workingDir = getCurrentWorkingDir();
+  workingDir += "/Shaders";
+  mShaderDirs.push_back(workingDir);
 
   if (useThread)
   {
