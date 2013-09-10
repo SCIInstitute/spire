@@ -39,7 +39,7 @@ struct MesaContext
   MesaContext() :frameBuffer(nullptr) {}
 
   OSMesaContext ctx;  
-  uint8_t*      frameBuffer;
+  void*         frameBuffer;
   uint32_t      width;
   uint32_t      height;
 };
