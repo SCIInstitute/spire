@@ -62,7 +62,7 @@ BatchContext* BatchContext::Create(uint32_t width, uint32_t height,
 {
   BatchContext* bctx;
 #if defined(USE_OS_MESA)
-  bctx = new OSMesaContext(width, height, color_bits, depth_bits, stencil_bits,
+  bctx = new OSMesaBatchContext(width, height, color_bits, depth_bits, stencil_bits,
                            double_buffer, visible);
 #else
   #ifdef SPIRE_USING_WIN
