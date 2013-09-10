@@ -32,6 +32,7 @@
 #ifndef SPIRE_HIGH_BASEASSETMAN_H
 #define SPIRE_HIGH_BASEASSETMAN_H
 
+#include "Common.h"
 #include <string>
 #include <vector>
 #include <list>

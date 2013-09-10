@@ -100,7 +100,7 @@ PassUniformStateMan::PassUniforms& PassUniformStateMan::getOrCreatePass(const st
 
 //------------------------------------------------------------------------------
 bool PassUniformStateMan::tryApplyUniform(const std::string& pass, 
-                                       const std::string& name, int location)
+                                          const std::string& name, int location)
 {
   // We use mState.at instead of the [] operator because at throws an
   // exception if the key is not found in the container.
