@@ -35,13 +35,17 @@
 
 #include "BatchContext.h"
 
-#if defined(SPIRE_USING_WIN)
-  #include "WGLContext.h"
-#elif defined(SPIRE_USING_LINUX)
-  #include "GLXContext.h"
-#elif defined(SPIRE_USING_OSX)
-  #include "CGLContext.h"
-  #include "NSContext.h"
+#if defined(USE_OS_MESA)
+  #include "OSMesaContext.h"
+#else
+  #if defined(SPIRE_USING_WIN)
+    #include "WGLContext.h"
+  #elif defined(SPIRE_USING_LINUX)
+    #include "GLXContext.h"
+  #elif defined(SPIRE_USING_OSX)
+    #include "CGLContext.h"
+    #include "NSContext.h"
+  #endif
 #endif
 
 namespace Spire
@@ -57,18 +61,23 @@ BatchContext* BatchContext::Create(uint32_t width, uint32_t height,
                                    bool visible)
 {
   BatchContext* bctx;
-#ifdef SPIRE_USING_WIN
+#if defined(USE_OS_MESA)
+  btcx = new OSMesaContext(width, height, color_bits, depth_bits, stencil_bits,
+                           double_buffer, visible);
+#else
+  #ifdef SPIRE_USING_WIN
   bctx = new WGLContext(width, height, color_bits, depth_bits, stencil_bits,
                        double_buffer, visible);
-#elif defined(SPIRE_USING_OSX) && defined(USE_CGL)
+  #elif defined(SPIRE_USING_OSX) && defined(USE_CGL)
   bctx = new CGLContext(width, height, color_bits, depth_bits, stencil_bits,
                        double_buffer, visible);
-#elif defined(SPIRE_USING_OSX)
+  #elif defined(SPIRE_USING_OSX)
   bctx = new NSContext(width, height, color_bits, depth_bits, stencil_bits,
                       double_buffer, visible);
-#else
+  #else
   bctx = new GLXBatchContext(width, height, color_bits, depth_bits, stencil_bits,
                              double_buffer, visible);
+  #endif
 #endif
   bctx->makeCurrent();
 

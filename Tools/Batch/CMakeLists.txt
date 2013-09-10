@@ -10,6 +10,11 @@ project(SpireBatchRenderer)
 # Base tests directory.
 set (BASE_TESTS_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../../Tests)
 
+option(USE_OS_MESA "Use an OS mesa context." OFF)
+if (USE_OS_MESA)
+  add_definitions(USE_OS_MESA)
+endif()
+
 #-----------------------------------------------------------------------
 # Configure OpenGL
 #-----------------------------------------------------------------------
