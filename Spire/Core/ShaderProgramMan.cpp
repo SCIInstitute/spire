@@ -88,14 +88,22 @@ ShaderProgramAsset::ShaderProgramAsset(
   mUniforms = std::unique_ptr<ShaderUniformCollection>(
       new ShaderUniformCollection(mHub.getShaderUniformManager(), program));
 
-  // Load and attach all shaders.
-  for (auto it = shaders.begin(); it != shaders.end(); ++it)
+  try
   {
-    // Attempt to find shader.
-    std::shared_ptr<ShaderAsset> shader = 
-        mHub.getShaderManager().loadShader(std::get<0>(*it), std::get<1>(*it));
+    // Load and attach all shaders.
+    for (auto it = shaders.begin(); it != shaders.end(); ++it)
+    {
+      // Attempt to find shader.
+      std::shared_ptr<ShaderAsset> shader = 
+          mHub.getShaderManager().loadShader(std::get<0>(*it), std::get<1>(*it));
 
-    GL(glAttachShader(program, shader->getShaderID()));
+      GL(glAttachShader(program, shader->getShaderID()));
+    }
+  }
+  catch (...)
+  {
+		GL(glDeleteProgram(program));
+    throw;
   }
 
   // Link the program

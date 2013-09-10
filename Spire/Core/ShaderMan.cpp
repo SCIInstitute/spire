@@ -137,7 +137,6 @@ ShaderAsset::ShaderAsset(Hub& hub, const std::string& filename,
     }
 
     GL(glDeleteShader(shader));
-
     throw GLError("Failed to compile shader.");
   }
 
