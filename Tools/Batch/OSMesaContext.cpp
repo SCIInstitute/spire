@@ -45,9 +45,8 @@ struct MesaContext
 };
 
 OSMesaBatchContext::OSMesaBatchContext(uint32_t width, uint32_t height, uint8_t,
-                                 uint8_t depthBits, uint8_t stencilBits,
-                                 bool double_buffer,
-                                 bool visible) :
+                                       uint8_t depthBits, uint8_t stencilBits,
+                                       bool double_buffer, bool visible) :
   mContext(new MesaContext())
 {
   mContext->ctx = OSMesaCreateContextExt( OSMESA_RGBA, depthBits, stencilBits,

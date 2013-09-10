@@ -107,10 +107,17 @@ if (UNIX)
       )
   else ()
     # Linux specific sources
-    set (SpecificSources
-      GLXContext.cpp
-      GLXContext.h
-      )
+    if (USE_OS_MESA)
+      set (SpecificSources
+        OSMesaContext.cpp
+        OSMesaContext.h
+        )
+    else()
+      set (SpecificSources
+        GLXContext.cpp
+        GLXContext.h
+        )
+    endif()
   endif ()
 else()
   if (WIN32)
