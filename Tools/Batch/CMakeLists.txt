@@ -13,6 +13,7 @@ set (BASE_TESTS_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../../Tests)
 option(USE_OS_MESA "Use an OS mesa context." OFF)
 if (USE_OS_MESA)
   add_definitions(-DUSE_OS_MESA)
+  set(MESA_LIBRARIES "OSMesa32")
 endif()
 
 #-----------------------------------------------------------------------
@@ -210,6 +211,7 @@ add_dependencies(spirebatch Spire)
 target_link_libraries(spirebatch 
   Spire
   gtest
+  ${MESA_LIBRARIES}
   ${OPENGL_LIBRARIES}
   ${OS_SPECIFIC_LIBS})
 
