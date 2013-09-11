@@ -208,9 +208,10 @@ add_executable(spirebatch
 
 add_dependencies(spirebatch Spire)
 
+message("Spire libraries: ${SPIRE_LIBRARIES}")
 target_link_libraries(spirebatch 
-  Spire
   gtest
+  ${SPIRE_LIBRARIES}
   ${MESA_LIBRARIES}
   ${OPENGL_LIBRARIES}
   ${OS_SPECIFIC_LIBS})
