@@ -477,10 +477,10 @@ void ShaderUniformMan::applyUniformGLState(std::shared_ptr<AbstractUniformStateI
     break;
 
   case UNIFORM_FLOAT_MAT2:
-    break;
+    throw UnsupportedException("Uniform not supported.");
 
   case UNIFORM_FLOAT_MAT3:
-    break;
+    throw UnsupportedException("Uniform not supported.");
 
   case UNIFORM_FLOAT_MAT4:
     GL(glUniformMatrix4fv(static_cast<GLint>(location), 1, false,
@@ -488,7 +488,7 @@ void ShaderUniformMan::applyUniformGLState(std::shared_ptr<AbstractUniformStateI
     break;
 
   default:
-    break;
+    throw UnsupportedException("Uniform not supported.");
   }
 }
 
