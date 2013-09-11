@@ -330,10 +330,6 @@ function(Spire_AddCore name)
   add_library(${spire_library_target_name} STATIC IMPORTED GLOBAL)
   add_dependencies(${spire_library_target_name} ${name})
   set_property(TARGET ${spire_library_target_name} PROPERTY IMPORTED_LOCATION "${spire_library_path}")
-  #set_target_properties(${spire_library_target_name}
-  #  PROPERTIES 
-  #    IMPORTED_LOCATION "${spire_library_path}"
-  #)
 
   # Library path for the core module.
   set(SPIRE_LIBRARIES ${SPIRE_LIBRARIES} "${spire_library_target_name}" PARENT_SCOPE)
@@ -491,10 +487,6 @@ function (Spire_AddModule spire_core module_name repo version)
   add_library(${spire_library_target_name} STATIC IMPORTED GLOBAL)
   add_dependencies(${spire_library_target_name} ${target_name})
   set_property(TARGET ${spire_library_target_name} PROPERTY IMPORTED_LOCATION "${spire_library_path}")
-  #set_target_properties(${spire_library_target_name}
-  #  PROPERTIES 
-  #    IMPORTED_LOCATION "${spire_library_path}"
-  #)
 
   # Ensure this module can be found during the linking process.
   set(SPIRE_LIBRARIES ${SPIRE_LIBRARIES} "${MODULE_STATIC_LIB_NAME}" PARENT_SCOPE)
