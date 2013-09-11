@@ -74,8 +74,8 @@ ShaderProgramMan::loadProgram(
 ShaderProgramAsset::ShaderProgramAsset(
       Hub& hub, const std::string& name,
       const std::list<std::tuple<std::string, GLenum>>& shaders) :
-    mHasValidProgram(false),
     BaseAsset(name),
+    mHasValidProgram(false),
     mHub(hub),
     mAttributes(mHub.getShaderAttributeManager())
 {
