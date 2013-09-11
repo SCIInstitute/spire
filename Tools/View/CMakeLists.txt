@@ -135,7 +135,7 @@ add_executable(spireview
   ${MocSource} 
   ${UISource})
 
-add_dependencies(spireview Spire)
+add_dependencies(spireview ${SPIRE_LIBRARIES})
 
 target_link_libraries(spireview 
   ${SPIRE_LIBRARIES} 

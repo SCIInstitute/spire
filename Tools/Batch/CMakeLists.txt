@@ -206,7 +206,7 @@ add_executable(spirebatch
   ${SpecificSources}
   ${Source_GLEW_for_Windows} )
 
-add_dependencies(spirebatch Spire)
+add_dependencies(spirebatch ${SPIRE_LIBRARIES})
 
 message("Spire libraries: ${SPIRE_LIBRARIES}")
 target_link_libraries(spirebatch 
