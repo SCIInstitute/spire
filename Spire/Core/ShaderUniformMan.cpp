@@ -445,4 +445,51 @@ GLenum ShaderUniformMan::uniformTypeToGL(UNIFORM_TYPE type)
   return GL_FLOAT;
 }
 
+//------------------------------------------------------------------------------
+void ShaderUniformMan::applyUniformGLState(std::shared_ptr<AbstractUniformStateItem> item,
+                                           int location)
+{
+  switch (item->getGLType())
+  {
+  case UNIFORM_FLOAT:
+    GL(glUniform1f(static_cast<GLint>(location), item->getData<float>()));
+    break;
+
+  case UNIFORM_FLOAT_VEC2:
+    {
+      V2 data = item->getData<V2>();
+      GL(glUniform2f(static_cast<GLint>(location), data.x, data.y));
+    }
+    break;
+
+  case UNIFORM_FLOAT_VEC3:
+    {
+      V3 data = item->getData<V3>();
+      GL(glUniform3f(static_cast<GLint>(location), data.x, data.y, data.z));
+    }
+    break;
+
+  case UNIFORM_FLOAT_VEC4:
+    {
+      V4 data = item->getData<V4>();
+      GL(glUniform4f(static_cast<GLint>(location), data.x, data.y, data.z, data.w));
+    }
+    break;
+
+  case UNIFORM_FLOAT_MAT2:
+    break;
+
+  case UNIFORM_FLOAT_MAT3:
+    break;
+
+  case UNIFORM_FLOAT_MAT4:
+    GL(glUniformMatrix4fv(static_cast<GLint>(location), 1, false,
+                          static_cast<const GLfloat*>(item->getRawData())));
+    break;
+
+  default:
+    break;
+  }
+}
+
 } // end of namespace Spire

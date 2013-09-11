@@ -44,11 +44,6 @@ PassUniformStateMan::PassUniformStateMan(Hub& hub) :
 }
 
 //------------------------------------------------------------------------------
-//PassUniformStateMan::~PassUniformStateMan()
-//{
-//}
-
-//------------------------------------------------------------------------------
 PassUniformStateMan::PassUniforms* PassUniformStateMan::getPass(const std::string& pass)
 {
   // Not very efficient -- but still more efficient than other methods when the
@@ -112,7 +107,7 @@ bool PassUniformStateMan::tryApplyUniform(const std::string& pass,
     std::shared_ptr<AbstractUniformStateItem> ptr = passStruct->uniforms[name];
     if (ptr != nullptr)
     {
-      ptr->applyUniform(location);
+      ShaderUniformMan::applyUniformGLState(ptr, location);
       return true;
     }
   }

@@ -142,6 +142,10 @@ public:
   // expose the GLenum type to an interface.
   static GLenum uniformTypeToGL(UNIFORM_TYPE type);
 
+  /// Given the uniform, applies the raw uniform state.
+  static void applyUniformGLState(std::shared_ptr<AbstractUniformStateItem> item,
+                                  int location);
+
 private:
 
   /// Array of available uniforms.

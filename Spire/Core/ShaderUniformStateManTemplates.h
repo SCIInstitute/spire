@@ -160,9 +160,6 @@ public:
   AbstractUniformStateItem()            {}
   virtual ~AbstractUniformStateItem()   {}
 
-  /// Applies uniform value.
-  virtual void applyUniform(int location) const = 0;
-
   /// Returns appropriate OpenGL type
   virtual UNIFORM_TYPE getGLType() const = 0;
 
@@ -227,17 +224,17 @@ public:
     return *getRawData();
   }
 
-  /// Series of static utility functions to avoid exposing OpenGL functions
-  /// to classes outside of spire.
-  ///@{
-  static void uniform1f(int location, float v0);
-  static void uniform2f(int location, float v0, float v1);
-  static void uniform3f(int location, float v0, float v1, float v2);
-  static void uniform4f(int location, float v0, float v1, float v2, float v3);
-  static void uniformMatrix4fv(int location, size_t count, bool transpose,
-                               const float*  value);
-  static void uniform3fv(int location, size_t count, const float* value);
-  ///@}
+  ///// Series of static utility functions to avoid exposing OpenGL functions
+  ///// to classes outside of spire.
+  /////@{
+  //static void uniform1f(int location, float v0);
+  //static void uniform2f(int location, float v0, float v1);
+  //static void uniform3f(int location, float v0, float v1, float v2);
+  //static void uniform4f(int location, float v0, float v1, float v2, float v3);
+  //static void uniformMatrix4fv(int location, size_t count, bool transpose,
+  //                             const float*  value);
+  //static void uniform3fv(int location, size_t count, const float* value);
+  /////@}
 
 };
 
@@ -268,11 +265,6 @@ public:
   typedef V3 Type;
 
   UniformStateItem(const Type& in) : mData(in) {}
-
-  void applyUniform(int location) const override
-  {
-    uniform3f(location, mData.x, mData.y, mData.z);
-  }
 
   UNIFORM_TYPE getGLType() const override
   {
@@ -309,13 +301,13 @@ public:
   UniformStateItem(const std::vector<V3>& in) : mData(in)             {}
   UniformStateItem(std::vector<V3>&& in)      : mData(std::move(in))  {}
   
-  void applyUniform(int location) const override
-  {
-    // The standard makes it very clear that vectors will be stored in
-    // contiguous memory. This is a *very* dangerous cast that will ONLY work if
-    // vectors are tightly packed.
-    uniform3fv(location, mData.size(), reinterpret_cast<const float*>(&mData[0]));
-  }
+  //void applyUniform(int location) const override
+  //{
+  //  // The standard makes it very clear that vectors will be stored in
+  //  // contiguous memory. This is a *very* dangerous cast that will ONLY work if
+  //  // vectors are tightly packed.
+  //  uniform3fv(location, mData.size(), reinterpret_cast<const float*>(&mData[0]));
+  //}
 
   UNIFORM_TYPE getGLType() const override
   {
@@ -348,11 +340,6 @@ public:
 
   UniformStateItem(const Type& in) : mData(in) {}
 
-  void applyUniform(int location) const override
-  {
-    uniform4f(location, mData.x, mData.y, mData.z, mData.w);
-  }
-
   UNIFORM_TYPE getGLType() const override
   {
     return UNIFORM_FLOAT_VEC4;
@@ -383,11 +370,6 @@ public:
 
   UniformStateItem(const Type& in) : mData(in) {}
 
-  void applyUniform(int location) const override
-  {
-    uniform2f(location, mData.x, mData.y);
-  }
-
   UNIFORM_TYPE getGLType() const override
   {
     return UNIFORM_FLOAT_VEC2;
@@ -417,11 +399,6 @@ public:
   typedef float Type;
 
   UniformStateItem(const Type& in) : mData(in) {}
-
-  void applyUniform(int location) const override
-  {
-    uniform1f(location, mData);
-  }
 
   UNIFORM_TYPE getGLType() const override
   {
@@ -458,11 +435,6 @@ public:
     // Perform conversion process to float array before applyUniform is ever
     // called.
     M44toArray16(in, glMatrix);
-  }
-
-  void applyUniform(int location) const override
-  {
-    uniformMatrix4fv(location, 1, false, &glMatrix[0]);
   }
 
   UNIFORM_TYPE getGLType() const override

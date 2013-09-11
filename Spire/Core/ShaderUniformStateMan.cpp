@@ -59,7 +59,7 @@ bool ShaderUniformStateMan::applyUniform(const std::string& name, int location)
   if (it != mGlobalState.end())
   {
     std::shared_ptr<AbstractUniformStateItem>& ptr = it->second;
-    ptr->applyUniform(location);
+    ShaderUniformMan::applyUniformGLState(ptr, location);
     return true;
   }
   else

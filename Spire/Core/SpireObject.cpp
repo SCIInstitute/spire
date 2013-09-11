@@ -109,7 +109,7 @@ void ObjectPass::renderPass(ObjectLambdaInterface& lambdaInterface)
   // Assign pass local uniforms.
   for (auto it = mUniforms.begin(); it != mUniforms.end(); ++it)
   {
-    it->item->applyUniform(it->shaderLocation);
+    ShaderUniformMan::applyUniformGLState(it->item, it->shaderLocation);
   }
 
   // Assign global uniforms, searches through 3 levels in an attempt to find the

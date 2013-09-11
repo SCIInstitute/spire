@@ -73,12 +73,14 @@ public:
     unsigned int glType = uniformToGLType(UNIFORM_FLOAT_MAT4);
     if (uniformType != glType)
       throw std::runtime_error("Mismatched uniform types! Did not expect M44.");
-    AbstractUniformStateItem::uniformMatrix4fv(location, 1, false, glm::value_ptr(val));
+    uniformMatrix4fv(location, 1, false, glm::value_ptr(val));
   }
 
 protected:
 
   static unsigned int uniformToGLType(UNIFORM_TYPE type);
+  static void uniformMatrix4fv(int location, size_t count, bool transpose,
+                               const float*  value);
 
   Hub&          mHub;
   std::string   mPass;

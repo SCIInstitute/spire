@@ -41,6 +41,15 @@ unsigned int LambdaInterface::uniformToGLType(UNIFORM_TYPE type)
   return ShaderUniformMan::uniformTypeToGL(type);
 }
 
+//------------------------------------------------------------------------------
+void LambdaInterface::uniformMatrix4fv(int location, size_t count, bool transpose,
+                                       const float*  value)
+{
+  GL(glUniformMatrix4fv(static_cast<GLint>(location), static_cast<GLsizei>(count),
+                        transpose, static_cast<const GLfloat*>(value)));
+}
+
+
 }
 
 
