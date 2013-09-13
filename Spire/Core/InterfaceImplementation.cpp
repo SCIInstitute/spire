@@ -387,9 +387,9 @@ void InterfaceImplementation::addShaderAttribute(InterfaceImplementation& self, 
 
 //------------------------------------------------------------------------------
 void InterfaceImplementation::addObjectGlobalMetadataConcrete(InterfaceImplementation& self,
-                                                                    std::string objectName,
-                                                                    std::string attributeName,
-                                                                    std::shared_ptr<AbstractUniformStateItem> item)
+                                                              std::string objectName,
+                                                              std::string attributeName,
+                                                              std::shared_ptr<AbstractUniformStateItem> item)
 {
   std::shared_ptr<SpireObject> obj = self.mNameToObject.at(objectName);
   obj->addObjectGlobalMetadata(attributeName, item);
@@ -397,9 +397,9 @@ void InterfaceImplementation::addObjectGlobalMetadataConcrete(InterfaceImplement
 
 //------------------------------------------------------------------------------
 void InterfaceImplementation::addObjectPassMetadataConcrete(InterfaceImplementation& self, std::string objectName,
-                                                                  std::string attributeName,
-                                                                  std::shared_ptr<AbstractUniformStateItem> item,
-                                                                  std::string passName)
+                                                            std::string attributeName,
+                                                            std::shared_ptr<AbstractUniformStateItem> item,
+                                                            std::string passName)
 {
   std::shared_ptr<SpireObject> obj = self.mNameToObject.at(objectName);
   obj->addObjectPassMetadata(passName, attributeName, item);
