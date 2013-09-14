@@ -51,10 +51,10 @@ if (USE_SCIRUN_INTERFACE)
   add_definitions(-DUSE_SCIRUN_INTERFACE)
 
   if (USE_LOCAL_SPIRE_SCIRUN)
-    Spire_AddModule(${SPIRE_CORE} SCIRun "https://github.com/iauns/spire-scirun" "master"
+    Spire_AddModule(${SPIRE_CORE} SCIRun "https://github.com/iauns/spire-scirun" "origin/master"
       SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../../../SpireExt/SCIRun")
   else()
-    Spire_AddModule(${SPIRE_CORE} SCIRun "https://github.com/iauns/spire-scirun" "master")
+    Spire_AddModule(${SPIRE_CORE} SCIRun "https://github.com/iauns/spire-scirun" "origin/master")
   endif()
 endif()
 
