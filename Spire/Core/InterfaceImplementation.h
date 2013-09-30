@@ -64,7 +64,7 @@ class IBOObject;
 class InterfaceImplementation
 {
 public:
-  InterfaceImplementation(Hub& hub);
+  InterfaceImplementation(Hub& hub, bool threaded);
   virtual ~InterfaceImplementation()  {}
   
   /// SHOULD ONLY be called by the thread associated with Queue.
