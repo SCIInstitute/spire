@@ -190,8 +190,8 @@ public:
   ///       This would be the 'unsatisfied uniforms callback'.
   /// \todo Implement
   void renderObject(const std::string& objectName,
-                    const std::string& pass = SPIRE_DEFAULT_PASS,
-                    UnsatisfiedUniformCB cb = nullptr);
+                    UnsatisfiedUniformCB cb = nullptr,
+                    const std::string& pass = SPIRE_DEFAULT_PASS);
 
 
   /// Adds a VBO. This VBO can be re-used by adding passes to the object.
