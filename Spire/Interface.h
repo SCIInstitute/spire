@@ -211,41 +211,31 @@ public:
                     UnsatisfiedUniformCB cb = nullptr,
                     const std::string& pass = SPIRE_DEFAULT_PASS);
 
-
-  /// Adds a VBO. This VBO can be re-used by adding passes to the object.
-  /// Throws an std::out_of_range exception if the object is not found in the 
-  /// system.
+  /// Adds a VBO. This VBO can be re-used by any objects in the system.
   /// \param  name          Name of the VBO. See addIBOToObject for a full
   ///                       description of why you are required to name your
   ///                       VBO.
-  /// \param  vboData       VBO data. This pointer will NOT be stored inside of
-  ///                       spire. Unless there is a reference to it out side
-  ///                       of spire, it will be destroyed.
+  /// \param  vboData       VBO data. This pointer will NOT be stored in spire.
+  /// \prama  vboSize       VBO data size.
   /// \param  attribNames   List of attribute names. This is used as a sanity
   ///                       check to ensure that the shader program's expected
   ///                       attributes match up with what you have provided in
   ///                       in the VBO. This only checked when a call to
   ///                       addPassToObject is made.
-  /// \todo Implement
-  void addVBO(const std::string& name, const uint8_t* vboData,
-              const std::vector<std::string>& atttribNames);
+  void addVBO(const std::string& name,
+              const uint8_t* vboData, size_t vboSize,
+              const std::vector<std::string>& attribNames);
 
-  /// Adds an IBO. Throws an std::out_of_range exception if the object is not
-  /// found in the system.
-  /// \param  name          Name of the IBO. You might find it odd that you are
-  ///                       naming an IBO, and in certain terms you are right.
-  ///                       IBOs are named here to avoid returning an identifier
-  ///                       to the IBO. This would require a mutex lock (at
-  ///                       the very least) *and* code would need to be run on
-  ///                       the rendering thread since that is where the OpenGL
-  ///                       context is current.
-  /// \param  iboData       IBO data. This pointer will NOT be stored inside of
-  ///                       spire. Unless there is a reference to it out side
-  ///                       of spire, it will be destroyed.
+  /// Adds an IBO.
+  /// \param  name          Name of the IBO.
+  /// \param  iboData       IBO data. This pointer will NOT be stored in spire.
+  ///                       No software backing of this pointer is made. The
+  ///                       contents of this pointer are placed directly in an
+  ///                       OpenGL buffer.
+  /// \prama  iboSize       Size of iboData in bytes.
   /// \param  type          Specifies what kind of IBO iboData represents.
-  /// \todo Implement
-  void addIBO(const std::string& name, const uint8_t* iboData, IBO_TYPE type);
-
+  void addIBO(const std::string& name, const uint8_t* iboData, size_t iboSize,
+              IBO_TYPE type);
 
   /// Retrieve shader OpenGL ID's for custom rendering.
 

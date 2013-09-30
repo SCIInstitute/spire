@@ -284,6 +284,27 @@ void InterfaceImplementation::addVBO(InterfaceImplementation& self, std::string 
 }
 
 //------------------------------------------------------------------------------
+void InterfaceImplementation::addConcurrentVBO(
+    const std::string& vboName, const uint8_t* vboData, size_t vboSize,
+    const std::vector<std::string>& attribNames)
+{
+  if (mThreaded == true)
+  {
+    Log::error() << "You cannot call the raw version of addIBO or addVBO "
+                 << "when spire is running in its own thread." << std::endl;
+    throw std::runtime_error("addVBO: Invalid threaded function call. See Log.");
+  }
+
+  if (mVBOMap.find(vboName) != mVBOMap.end())
+    throw Duplicate("Attempting to add duplicate VBO to object.");
+
+  mVBOMap.insert(std::make_pair(
+          vboName, std::shared_ptr<VBOObject>(
+              new VBOObject(vboData, vboSize, attribNames, 
+                            mHub.getShaderAttributeManager()))));
+}
+
+//------------------------------------------------------------------------------
 void InterfaceImplementation::removeVBO(InterfaceImplementation& self,
                                         std::string vboName)
 {
@@ -302,6 +323,25 @@ void InterfaceImplementation::addIBO(InterfaceImplementation& self, std::string 
 
   self.mIBOMap.insert(std::make_pair(
           iboName, std::shared_ptr<IBOObject>(new IBOObject(iboData, type))));
+}
+
+//------------------------------------------------------------------------------
+void InterfaceImplementation::addConcurrentIBO(
+    const std::string& iboName, const uint8_t* iboData, size_t iboSize,
+    Interface::IBO_TYPE type)
+{
+  if (mThreaded == true)
+  {
+    Log::error() << "You cannot call the raw version of addIBO or addVBO "
+                 << "when spire is running in its own thread." << std::endl;
+    throw std::runtime_error("addIBO: Invalid threaded function call. See Log.");
+  }
+
+  if (mIBOMap.find(iboName) != mIBOMap.end())
+    throw Duplicate("Attempting to add duplicate IBO to object.");
+
+  mIBOMap.insert(std::make_pair(
+          iboName, std::shared_ptr<IBOObject>(new IBOObject(iboData, iboSize, type))));
 }
 
 //------------------------------------------------------------------------------

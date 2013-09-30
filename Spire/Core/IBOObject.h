@@ -46,8 +46,12 @@ namespace Spire
 class IBOObject
 {
 public:
+  // This constructor delegates to the raw version below.
   IBOObject(std::shared_ptr<std::vector<uint8_t>> iboData,
-            Interface::IBO_TYPE type);
+            Interface::IBO_TYPE type)
+      : IBOObject(&(*iboData)[0], iboData->size(), type) {}
+
+  IBOObject(const uint8_t* iboData, size_t iboDataSize, Interface::IBO_TYPE type);
   ~IBOObject();
 
   GLuint getGLIndex() const               {return mGLIndex;}

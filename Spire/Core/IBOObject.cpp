@@ -33,29 +33,29 @@
 
 namespace Spire {
 
-IBOObject::IBOObject(std::shared_ptr<std::vector<uint8_t>> iboData,
+IBOObject::IBOObject(const uint8_t* iboData, size_t iboDataSize,
                      Interface::IBO_TYPE type)
 {
   GL(glGenBuffers(1, &mGLIndex));
   GL(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mGLIndex));
-  GL(glBufferData(GL_ELEMENT_ARRAY_BUFFER, static_cast<GLsizeiptr>(iboData->size()),
-                  &(*iboData)[0], GL_STATIC_DRAW));
+  GL(glBufferData(GL_ELEMENT_ARRAY_BUFFER, static_cast<GLsizeiptr>(iboDataSize),
+                  iboData, GL_STATIC_DRAW));
 
   // Calculate number of elements based on the IBO type.
   switch (type)
   {
     case Interface::IBO_8BIT:
-      mNumElements = static_cast<GLuint>(iboData->size() / sizeof(uint8_t));
+      mNumElements = static_cast<GLuint>(iboDataSize / sizeof(uint8_t));
       mType = GL_UNSIGNED_BYTE;
       break;
 
     case Interface::IBO_16BIT:
-      mNumElements = static_cast<GLuint>(iboData->size() / sizeof(uint16_t));
+      mNumElements = static_cast<GLuint>(iboDataSize / sizeof(uint16_t));
       mType = GL_UNSIGNED_SHORT;
       break;
 
     case Interface::IBO_32BIT:
-      mNumElements = static_cast<GLuint>(iboData->size() / sizeof(uint32_t));
+      mNumElements = static_cast<GLuint>(iboDataSize / sizeof(uint32_t));
       mType = GL_UNSIGNED_INT;
       break;
 

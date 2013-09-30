@@ -108,6 +108,18 @@ public:
   static GLenum getGLType(Interface::DATA_TYPES type);
 
   //============================================================================
+  // CONCURRENT IMPLEMENTATION
+  //============================================================================
+
+  void addConcurrentVBO(const std::string& vboName,
+                        const uint8_t* vboData, size_t vboSize,
+                        const std::vector<std::string>& attribNames);
+
+  void addConcurrentIBO(const std::string& iboName,
+                        const uint8_t* iboData, size_t iboSize,
+                        Interface::IBO_TYPE type);
+
+  //============================================================================
   // CALLBACK IMPLEMENTATION -- Called from interface or a derived class.
   //============================================================================
   // All of the functions below constitute the implementation of the interface
@@ -137,8 +149,8 @@ public:
   static void removeObject(InterfaceImplementation& self, std::string objectName);
   static void removeAllObjects(InterfaceImplementation& self);
   static void addVBO(InterfaceImplementation& self, std::string vboName,
-                              std::shared_ptr<std::vector<uint8_t>> vboData,
-                              std::vector<std::string> attribNames);
+                     std::shared_ptr<std::vector<uint8_t>> vboData,
+                     std::vector<std::string> attribNames);
   static void removeVBO(InterfaceImplementation& self, std::string vboName);
   static void addIBO(InterfaceImplementation& self, std::string iboName,
                      std::shared_ptr<std::vector<uint8_t>> iboData,

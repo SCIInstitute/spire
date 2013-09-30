@@ -119,6 +119,21 @@ void Interface::endFrame()
   mHub->endFrame();
 }
 
+//------------------------------------------------------------------------------
+void Interface::addVBO(const std::string& name,
+                       const uint8_t* vboData, size_t vboSize,
+                       const std::vector<std::string>& attribNames)
+{
+  mHub->getInterfaceImpl()->addConcurrentVBO(name, vboData, vboSize, attribNames);
+}
+
+//------------------------------------------------------------------------------
+void Interface::addIBO(const std::string& name,
+                       const uint8_t* iboData, size_t iboSize, IBO_TYPE type)
+{
+  mHub->getInterfaceImpl()->addConcurrentIBO(name, iboData, iboSize, type);
+}
+
 //============================================================================
 // THREAD-SAFE INTERFACE
 //============================================================================
