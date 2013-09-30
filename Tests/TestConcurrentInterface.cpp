@@ -114,38 +114,14 @@ TEST_F(InterfaceTestFixture, TestConcurrentQuad)
   };
   Interface::IBO_TYPE iboType = Interface::IBO_16BIT;
 
-  // This is pretty contorted interface due to the marshalling between
-  // std::vector<float> and std::vector<uint8_t>. In practice, you would want
-  // to calculate the size of your VBO using one std::vector<uint8_t> and
-  // reserve the necessary space in it. Then cast it's contents to floats or
-  // uint16_t as necessary (attributes can have a wide array of types, including
-  // half floats).
-  uint8_t*  rawBegin;
-  size_t    rawSize;
-
-  // Copy vboData into vector of uint8_t. Using std::copy.
-  std::shared_ptr<std::vector<uint8_t>> rawVBO(new std::vector<uint8_t>());
-  rawSize = vboData.size() * (sizeof(float) / sizeof(uint8_t));
-  rawVBO->reserve(rawSize);
-  rawBegin = reinterpret_cast<uint8_t*>(&vboData[0]); // Remember, standard guarantees that vectors are contiguous in memory.
-  rawVBO->assign(rawBegin, rawBegin + rawSize);
-
-  // Copy iboData into vector of uint8_t. Using std::vector::assign.
-  std::shared_ptr<std::vector<uint8_t>> rawIBO(new std::vector<uint8_t>());
-  rawSize = iboData.size() * (sizeof(uint16_t) / sizeof(uint8_t));
-  rawIBO->reserve(rawSize);
-  rawBegin = reinterpret_cast<uint8_t*>(&iboData[0]); // Remember, standard guarantees that vectors are contiguous in memory.
-  rawIBO->assign(rawBegin, rawBegin + rawSize);
-
-  // Add necessary VBO's and IBO's
   std::string vbo1 = "vbo1";
   std::string ibo1 = "ibo1";
-  mSpire->addVBO(vbo1, rawVBO, attribNames);
-  mSpire->addIBO(ibo1, rawIBO, iboType);
+  mSpire->addVBO(vbo1, reinterpret_cast<uint8_t*>(&vboData[0]), vboData.size(), attribNames);
+  mSpire->addIBO(ibo1, reinterpret_cast<uint8_t*>(&iboData[0]), iboData.size(), iboType);
 
   // Attempt to add duplicate VBOs and IBOs
-  EXPECT_THROW(mSpire->addVBO(vbo1, rawVBO, attribNames), Duplicate);
-  EXPECT_THROW(mSpire->addIBO(ibo1, rawIBO, iboType), Duplicate);
+  EXPECT_THROW(mSpire->addVBO(vbo1, reinterpret_cast<uint8_t*>(&vboData[0]), vboData.size(), attribNames), Duplicate);
+  EXPECT_THROW(mSpire->addIBO(ibo1, reinterpret_cast<uint8_t*>(&iboData[0]), iboData.size(), iboType), Duplicate);
 
   std::string obj1 = "obj1";
   mSpire->addObject(obj1);
@@ -160,77 +136,16 @@ TEST_F(InterfaceTestFixture, TestConcurrentQuad)
         std::make_tuple("UniformColor.fsh", Interface::FRAGMENT_SHADER),
       });
 
-  // Test various cases of shader failure after adding a prior shader.
-  EXPECT_THROW(mSpire->addPersistentShader(
-      shader1, 
-      { std::make_tuple("UniformColor.vsh", Interface::FRAGMENT_SHADER), 
-        std::make_tuple("UniformColor.fsh", Interface::VERTEX_SHADER),
-      }), std::invalid_argument);
-
-  EXPECT_THROW(mSpire->addPersistentShader(
-      shader1, 
-      { std::make_tuple("UniformColor2.vsh", Interface::VERTEX_SHADER), 
-        std::make_tuple("UniformColor.fsh", Interface::FRAGMENT_SHADER),
-      }), std::invalid_argument);
-
-  EXPECT_THROW(mSpire->addPersistentShader(
-      shader1, 
-      { std::make_tuple("UniformColor.vsh", Interface::VERTEX_SHADER), 
-        std::make_tuple("UniformColor2.fsh", Interface::FRAGMENT_SHADER),
-      }), std::invalid_argument);
-
-  // This final exception is throw directly from the addPersistentShader
-  // function. The 3 prior exception were all thrown from the ShaderProgramMan.
-  EXPECT_THROW(mSpire->addPersistentShader(
-      shader1, 
-      { std::make_tuple("UniformColor.vsh", Interface::VERTEX_SHADER), 
-        std::make_tuple("UniformColor.fsh", Interface::FRAGMENT_SHADER),
-      }), Duplicate);
-
-  // Now construct passes (taking into account VBO attributes).
-
-  // There exists no 'test obj'.
-  EXPECT_THROW(mSpire->addPassToObject(
-          "test obj", "UniformColor", "vbo", "ibo",
-          Interface::TRIANGLES),
-      std::out_of_range);
-
-  // Not a valid shader.
-  EXPECT_THROW(mSpire->addPassToObject(
-          obj1, "Bad Shader", "vbo", "ibo",
-          Interface::TRIANGLES),
-      std::out_of_range);
-
-  // Non-existant vbo.
-  EXPECT_THROW(mSpire->addPassToObject(
-          obj1, "UniformColor", "Bad vbo", "ibo",
-          Interface::TRIANGLES),
-      std::out_of_range);
-
-  // Non-existant ibo.
-  EXPECT_THROW(mSpire->addPassToObject(
-          obj1, "UniformColor", vbo1, "bad ibo",
-          Interface::TRIANGLES),
-      std::out_of_range);
-
-  // Build a good pass.
+  // Build a pass to use. Strictly don't need to do this, as we could just use
+  // the default pass. But we are here to test!
   std::string pass1 = "pass1";
-
-  // Attempt to add a pass to the object without the pass being present in the
-  // system.
-  EXPECT_THROW(mSpire->addPassToObject(obj1, shader1, vbo1, ibo1, Interface::TRIANGLE_STRIP, pass1),
-               std::runtime_error);
-
-  // Add the pass to the system.
   mSpire->addPassToBack(pass1);
 
+  /// \todo We need to test front / back geom pass, not this add pass to
+  ///       object business.
   // Now add the object pass. This automatically adds the object to the pass for
   // us. But the ordering within the pass is still arbitrary.
   mSpire->addPassToObject(obj1, shader1, vbo1, ibo1, Interface::TRIANGLE_STRIP, pass1);
-
-  // Attempt to re-add the good pass.
-  EXPECT_THROW(mSpire->addPassToObject(obj1, shader1, vbo1, ibo1, Interface::TRIANGLE_STRIP, pass1),
-               Duplicate);
 
   // No longer need VBO and IBO (will stay resident in the passes -- when the
   // passes are destroyed, the VBO / IBOs will be destroyed).
@@ -243,19 +158,17 @@ TEST_F(InterfaceTestFixture, TestConcurrentQuad)
   // Setup camera so that it can be passed to the Uniform Color shader.
   // Camera has been setup in the test fixture.
   mSpire->addGlobalUniform("uProjIVObject", mCamera->getWorldToProjection());
-  EXPECT_THROW(mSpire->addGlobalUniform("uProjIVObject", V3(0.0f, 0.0f, 0.0f)), ShaderUniformTypeError);
-
-  // Add color to the pass (which will lookup the type via the shader).
-  EXPECT_THROW(mSpire->addObjectPassUniform(obj1, "uColor", V3(0.0f, 0.0f, 0.0f), pass1), ShaderUniformTypeError);
-  EXPECT_THROW(mSpire->addObjectPassUniform(obj1, "uColor", M44(), pass1), ShaderUniformTypeError);
   mSpire->addObjectPassUniform(obj1, "uColor", V4(1.0f, 0.0f, 0.0f, 1.0f), pass1);
 
-  mSpire->ntsDoFrame();
+  // Perform the rendering of JUST the object that we created.
+  // Need to test adding various different objects to the scene and attempting
+  // to render them.
+  mSpire->beginFrame(false);
+  mSpire->renderObject(obj1, nullptr, pass1);  
+  mSpire->endFrame();
 
   // Write the resultant png to a temporary directory and compare against
   // the golden image results.
-  /// \todo Look into using boost filesystem (but it isn't header-only). 
-
 #ifdef TEST_OUTPUT_IMAGES
   std::string imageName = "stuTriangle.png";
 
@@ -287,24 +200,6 @@ TEST_F(InterfaceTestFixture, TestConcurrentQuad)
 #endif
 
 #endif
-
-  // Attempt to set global uniform value that is at odds with information found
-  // in the uniform manager (should induce a type error).
-
-  /// \todo Test adding a uniform to the global state which does not have a
-  ///       corresponding entry in the UniformManager.
-
-  /// \todo Test uniforms.
-  ///       1 - No uniforms set: should attempt to access global uniform state
-  ///           manager and extract the uniform resulting in a std::out_of_range.
-  ///       2 - Partial uniforms. Result same as #1.
-  ///       3 - Uniform type checking. Ensure the types pulled from OpenGL
-  ///           compiler matches our expected types.
-
-
-  // Create an image of appropriate dimensions.
-
-  /// \todo Test pass order using hasPassRenderingOrder on the object.
 }
 
 //------------------------------------------------------------------------------

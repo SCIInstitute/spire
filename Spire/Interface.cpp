@@ -83,7 +83,8 @@ size_t Interface::ntsGetNumObjects() const
 }
 
 //------------------------------------------------------------------------------
-std::shared_ptr<const SpireObject> Interface::ntsGetObjectWithName(const std::string& name) const
+std::shared_ptr<const SpireObject>
+Interface::ntsGetObjectWithName(const std::string& name) const
 {
   return mHub->getInterfaceImpl()->getObjectWithName(name);
 }
@@ -132,6 +133,14 @@ void Interface::addIBO(const std::string& name,
                        const uint8_t* iboData, size_t iboSize, IBO_TYPE type)
 {
   mHub->getInterfaceImpl()->addConcurrentIBO(name, iboData, iboSize, type);
+}
+
+//------------------------------------------------------------------------------
+void Interface::renderObject(const std::string& /*objectName*/,
+                             const UnsatisfiedUniformCB& /*cb*/,
+                             const std::string& /*pass*/)
+{
+  
 }
 
 //============================================================================

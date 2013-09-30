@@ -353,10 +353,10 @@ void InterfaceImplementation::removeIBO(InterfaceImplementation& self, std::stri
 }
 
 //------------------------------------------------------------------------------
-void InterfaceImplementation::addPassToObject(InterfaceImplementation& self, std::string object,
-                                              std::string program, std::string vboName, std::string iboName,
-                                              Interface::PRIMITIVE_TYPES type,
-                                              std::string pass, std::string parentPass)
+void InterfaceImplementation::addPassToObject(
+    InterfaceImplementation& self, std::string object,
+    std::string program, std::string vboName, std::string iboName,
+    Interface::PRIMITIVE_TYPES type, std::string pass, std::string parentPass)
 {
   std::shared_ptr<SpireObject> obj = self.mNameToObject.at(object);
   std::shared_ptr<VBOObject> vbo = self.mVBOMap.at(vboName);

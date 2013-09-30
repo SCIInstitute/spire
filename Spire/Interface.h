@@ -208,12 +208,12 @@ public:
   ///       This would be the 'unsatisfied uniforms callback'.
   /// \todo Implement
   void renderObject(const std::string& objectName,
-                    UnsatisfiedUniformCB cb = nullptr,
+                    const UnsatisfiedUniformCB& cb = nullptr,
                     const std::string& pass = SPIRE_DEFAULT_PASS);
 
   /// Adds a VBO. This VBO can be re-used by any objects in the system.
   /// \param  name          Name of the VBO. See addIBOToObject for a full
-  ///                       description of why you are required to name your
+  ///                       description of why you are required to name your;t
   ///                       VBO.
   /// \param  vboData       VBO data. This pointer will NOT be stored in spire.
   /// \prama  vboSize       VBO data size.
