@@ -163,9 +163,35 @@ public:
   // it is unlikely that they ever will be. In most scenarios, you should use
   // this concurrent interface instead of the threaded interface.
 
+  struct UnsatisfiedUniform
+  {
+    UnsatisfiedUniform(const std::string& name, int location, unsigned int type) :
+        uniformName(name),
+        uniformType(type),
+        shaderLocation(location)
+    {}
+
+    std::string                         uniformName;
+    unsigned int                        uniformType;    // Should be: GLenum
+    int                                 shaderLocation; // Should be: GLint
+  };
+
+  /// Callback issued when an object has unsatisfied uniforms. This is an
+  /// oportunity for the calling function to 
+  typedef std::function<void (std::list<UnsatisfiedUniform>&)> UnsatisfiedUniformCB;
+
   /// Renders an object given a specific pass.
+  /// \todo Should we allow extra uniforms to be passed in, or should we stick
+  ///       with the callback function for finding uniforms? Possibly add
+  ///       the callback to this render call so it is clear what is happening
+  ///       with regards to the world transformation. We had to set state with
+  ///       lambdas when we were using the threaded interface, but we don't
+  ///       need to do that here.
+  ///       This would be the 'unsatisfied uniforms callback'.
+  /// \todo Implement
   void renderObject(const std::string& objectName,
-                    const std::string& pass = SPIRE_DEFAULT_PASS);
+                    const std::string& pass = SPIRE_DEFAULT_PASS,
+                    UnsatisfiedUniformCB cb = nullptr);
 
 
   /// Adds a VBO. This VBO can be re-used by adding passes to the object.
@@ -182,8 +208,25 @@ public:
   ///                       attributes match up with what you have provided in
   ///                       in the VBO. This only checked when a call to
   ///                       addPassToObject is made.
+  /// \todo Implement
   void addVBO(const std::string& name, const uint8_t* vboData,
               const std::vector<std::string>& atttribNames);
+
+  /// Adds an IBO. Throws an std::out_of_range exception if the object is not
+  /// found in the system.
+  /// \param  name          Name of the IBO. You might find it odd that you are
+  ///                       naming an IBO, and in certain terms you are right.
+  ///                       IBOs are named here to avoid returning an identifier
+  ///                       to the IBO. This would require a mutex lock (at
+  ///                       the very least) *and* code would need to be run on
+  ///                       the rendering thread since that is where the OpenGL
+  ///                       context is current.
+  /// \param  iboData       IBO data. This pointer will NOT be stored inside of
+  ///                       spire. Unless there is a reference to it out side
+  ///                       of spire, it will be destroyed.
+  /// \param  type          Specifies what kind of IBO iboData represents.
+  /// \todo Implement
+  void addIBO(const std::string& name, const uint8_t* iboData, IBO_TYPE type);
 
 
   /// Retrieve shader OpenGL ID's for custom rendering.
@@ -343,6 +386,7 @@ public:
   /// \param type           The type of the primitives to be rendered.
   /// \param pass           Name of the pass to place this stage under.
   /// \param stage          Optional name for the stage. Can be left empty.
+  /// \todo Implement
   void addObjectGeomPassToFront(const std::string& object,
                                 const std::string& program,
                                 const std::string& vboName,
@@ -362,6 +406,7 @@ public:
   /// \param type           The type of the primitives to be rendered.
   /// \param pass           Name of the pass to place this stage under.
   /// \param stage          Optional name for the stage. Can be left empty.
+  /// \todo Implement
   void addObjectGeomPassToBack(const std::string& object,
                                const std::string& program,
                                const std::string& vboName,
@@ -546,22 +591,12 @@ public:
   // Lambdas
   //---------
 
+  // The complication in this lambda interface is due to threading.
+  // If at all possible, use the concurrent interface.
+
   /// \note All lambdas use the push_back semantic. So if you are adding
   /// rendering lambdas, the first lambda you register will be the first one
   /// called when rendering.
-
-  struct UnsatisfiedUniform
-  {
-    UnsatisfiedUniform(const std::string& name, int location, unsigned int type) :
-        uniformName(name),
-        uniformType(type),
-        shaderLocation(location)
-    {}
-
-    std::string                         uniformName;
-    unsigned int                        uniformType;    // Should be: GLenum
-    int                                 shaderLocation; // Should be: GLint
-  };
 
   // Two types of lambdas to use. One with objects, and one with passes.
   // The name ObjectLambdaFunction is a little deceptive.
