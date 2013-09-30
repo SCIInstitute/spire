@@ -167,15 +167,73 @@ public:
   void renderObject(const std::string& objectName,
                     const std::string& pass = SPIRE_DEFAULT_PASS);
 
-  // Retrieve shader OpenGL ID's for custom rendering.
 
-  // Retrieve VBO and IBO ID's for custom rendering.
+  /// Adds a VBO. This VBO can be re-used by adding passes to the object.
+  /// Throws an std::out_of_range exception if the object is not found in the 
+  /// system.
+  /// \param  name          Name of the VBO. See addIBOToObject for a full
+  ///                       description of why you are required to name your
+  ///                       VBO.
+  /// \param  vboData       VBO data. This pointer will NOT be stored inside of
+  ///                       spire. Unless there is a reference to it out side
+  ///                       of spire, it will be destroyed.
+  /// \param  attribNames   List of attribute names. This is used as a sanity
+  ///                       check to ensure that the shader program's expected
+  ///                       attributes match up with what you have provided in
+  ///                       in the VBO. This only checked when a call to
+  ///                       addPassToObject is made.
+  void addVBO(const std::string& name, const uint8_t* vboData,
+              const std::vector<std::string>& atttribNames);
 
-  // Uniform retrieval.
+
+  /// Retrieve shader OpenGL ID's for custom rendering.
+
+  /// Retrieve VBO and IBO ID's for custom rendering.
+
+  /// Uniform retrieval.
+
+  /// \todo Remove 'nts' from the names of the functions in the concurrent
+  ///       interface.
+  /// This call will render *only* the SPIRE_DEFAULT_PASS and nothing else.
+  /// It is a barebones and minimal renderer.
+  /// 
+  /// You can call this function every time you want a new frame to be rendered
+  /// unless you are using the threaded renderer. The threaded renderer will 
+  /// call doFrame automatically.
+  /// \note You must call doFrame on the same thread where makeCurrent was issued.
+  ///       If this is not the same thread where Interface was created, ensure
+  ///       a call to context->makeCurrent() is issued before invoking doFrame
+  ///       for the first time.
+  void ntsDoFrame();
+
+  /// Obtain the current number of objects.
+  /// \todo This function nedes to go to the implementation.
+  size_t ntsGetNumObjects() const;
+
+  /// Obtain the object associated with 'name'.
+  /// throws std::range_error if the object is not found.
+  std::shared_ptr<const SpireObject> ntsGetObjectWithName(const std::string& name) const;
+
+  /// Cleans up all GL resources.
+  /// Should ONLY be called from the rendering thread.
+  /// In our case, this amounts to disposing of all of our objects and VBO/IBOs
+  /// and persistent shader objects.
+  void ntsClearGLResources();
+
+  /// Returns true if the specified object is in the pass.
+  bool ntsIsObjectInPass(const std::string& object, const std::string& pass) const;
+
+  /// Returns true if the pass already exists.
+  bool ntsHasPass(const std::string& pass) const;
 
   //============================================================================
   // THREAD SAFE - Remember, the same thread should always be calling spire.
   //============================================================================
+
+  // All thread safe functions can be called from the concurrent interface.
+  // Additionally, when compiled without threading support, these functions
+  // will be executed immediately 
+
 
   /// Terminates spire. If running 'threaded' then this will join with the 
   /// spire thread before returning. This should be called before the OpenGL
@@ -189,6 +247,9 @@ public:
   //--------
 
   // The default pass (SPIRE_DEFAULT_PASS) is always present.
+
+  /// \todo Consider removal of manual passes from the system. There will be
+  ///       no way of rendering these passes in the 'threaded' environment.
 
   /// Adds a pass to the front of the pass list. Passes at the front of the list
   /// are rendered first.
@@ -215,9 +276,9 @@ public:
   void removeAllObjects();
 
 
-  /// Adds a VBO. This VBO can be re-used by adding passes to the object.
-  /// Throws an std::out_of_range exception if the object is not found in the 
-  /// system.
+  /// Same as addVBO in the concurrent interface, but using vectors and
+  /// shared_ptrs to ensure the data survives its trip into the rendering
+  /// thread.
   /// \param  name          Name of the VBO. See addIBOToObject for a full
   ///                       description of why you are required to name your
   ///                       VBO.
@@ -271,23 +332,43 @@ public:
                                             std::vector<uint8_t>& vbo,
                                             std::vector<uint8_t>& ibo);
 
-  // Adding pass stages with identifiers to the rendering order for an object.
-  // Stage name is optional.
+  /// Adds a geometry stage to the front of the rendering order of the given
+  /// pass on the object (mouthful!). If no other stage is added to the front
+  /// of the object's pass, then this stage will be rendered before any other
+  /// stage when this object is rendered.
+  /// \param object         Name of the object to modify.
+  /// \param program        The program to be executed during this substage.
+  /// \param vboName        The VBO to use for rendering.
+  /// \prama iboName        The IBO to use for rendering.
+  /// \param type           The type of the primitives to be rendered.
+  /// \param pass           Name of the pass to place this stage under.
+  /// \param stage          Optional name for the stage. Can be left empty.
   void addObjectGeomPassToFront(const std::string& object,
                                 const std::string& program,
                                 const std::string& vboName,
                                 const std::string& iboName,
                                 PRIMITIVE_TYPES type,
                                 const std::string& pass = SPIRE_DEFAULT_PASS,
-                                const std::string& stageName = "");
+                                const std::string& stage = "");
 
+  /// Adds a geometry stage to the back of the rendering order of the given
+  /// pass on the object (mouthful!). If no other stage is added to the back
+  /// of the object's pass, then this stage will be rendered after every other
+  /// stage when the object is rendered.
+  /// \param object         Name of the object to modify.
+  /// \param program        The program to be executed during this substage.
+  /// \param vboName        The VBO to use for rendering.
+  /// \prama iboName        The IBO to use for rendering.
+  /// \param type           The type of the primitives to be rendered.
+  /// \param pass           Name of the pass to place this stage under.
+  /// \param stage          Optional name for the stage. Can be left empty.
   void addObjectGeomPassToBack(const std::string& object,
                                const std::string& program,
                                const std::string& vboName,
                                const std::string& iboName,
                                PRIMITIVE_TYPES type,
                                const std::string& pass = SPIRE_DEFAULT_PASS,
-                               const std::string& stageName = "");
+                               const std::string& stage = "");
 
   /// Adds a geometry pass to an object given by the identifier 'object'.
   /// Throws an std::out_of_range exception if the object is not found in the 
@@ -524,43 +605,6 @@ public:
   // NOT THREAD SAFE
   //============================================================================
 
-  /// The following functions are *not* thread safe.
-  /// Use these functions only when the renderer is not threaded.
-  /// @{
-  
-  /// If anything in the scene has changed, then calling this will render
-  /// a new frame and swap the buffers. If the scene was not modified, then this
-  /// function does nothing.
-  /// You must call this function every time you want a new frame to be rendered
-  /// unless you are using the threaded renderer. The threaded renderer will 
-  /// call doFrame automatically.
-  /// \note You must call doFrame on the same thread where makeCurrent was issued.
-  ///       If this is not the same thread where Interface was created, ensure
-  ///       a call to context->makeCurrent() is issued before invoking doFrame
-  ///       for the first time.
-  void ntsDoFrame();
-
-  /// Obtain the current number of objects.
-  /// \todo This function nedes to go to the implementation.
-  size_t ntsGetNumObjects() const;
-
-  /// Obtain the object associated with 'name'.
-  /// throws std::range_error if the object is not found.
-  std::shared_ptr<const SpireObject> ntsGetObjectWithName(const std::string& name) const;
-
-  /// Cleans up all GL resources.
-  /// Should ONLY be called from the rendering thread.
-  /// In our case, this amounts to disposing of all of our objects and VBO/IBOs
-  /// and persistent shader objects.
-  void ntsClearGLResources();
-
-  /// Returns true if the specified object is in the pass.
-  bool ntsIsObjectInPass(const std::string& object, const std::string& pass) const;
-
-  /// Returns true if the pass already exists.
-  bool ntsHasPass(const std::string& pass) const;
-
-  /// @}
 
 protected:
 

@@ -82,6 +82,9 @@ public:
   /// Returns true if the rendering thread is currently running.
   bool isRendererThreadRunning() const;
 
+  /// Returns true if we are using the threaded version of spire.
+  bool isThreaded() const                         {return mThreaded;}
+
   /// If anything in the scene has changed, then calling this will render
   /// a new frame and swap the buffers. If the scene was not modified, then this
   /// function does nothing.
@@ -117,6 +120,7 @@ public:
   /// Retrieve list of directories in which to search for shaders.
   const std::vector<std::string>& getShaderDirs() const {return mShaderDirs;}
 
+  /// Retrieves the interface implementation.
   std::shared_ptr<InterfaceImplementation> getInterfaceImpl() {return mInterfaceImpl;}
 
   /// Terminates the rendering thread. After this call, you will be able to
@@ -162,6 +166,8 @@ private:
   /// Rendering thread
   void rendererThread();
 #endif
+
+  bool                    mThreaded;        ///< Threaded rendering.
 
   size_t                  mPixScreenWidth;  ///< Actual screen width in pxels.
   size_t                  mPixScreenHeight; ///< Actual screen height in pixels.

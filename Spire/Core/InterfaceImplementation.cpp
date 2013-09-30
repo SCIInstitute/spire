@@ -44,8 +44,9 @@ namespace Spire {
 GLenum getGLPrimitive(Interface::PRIMITIVE_TYPES type);
 
 //------------------------------------------------------------------------------
-InterfaceImplementation::InterfaceImplementation(Hub& hub) :
-    mHub(hub)
+InterfaceImplementation::InterfaceImplementation(Hub& hub, bool threaded) :
+    mHub(hub),
+    mThreaded(threaded)
 {
   addPassToBack(*this, SPIRE_DEFAULT_PASS);
 }
@@ -54,7 +55,16 @@ InterfaceImplementation::InterfaceImplementation(Hub& hub) :
 bool InterfaceImplementation::addFunctionToQueue(const Hub::RemoteFunction& fun)
 {
 #ifdef SPIRE_USE_STD_THREADS
-  return mQueue.push(ThreadMessage(fun));
+  if (mThreaded)
+  {
+    return mQueue.push(ThreadMessage(fun));
+  }
+  else
+  {
+    // Same as the #else clause below.
+    fun(*this);
+    return true;
+  }
 #else
   // Call the function immediately. This case (without std threads) will be 
   // used as our synchronized test harness.
@@ -67,18 +77,21 @@ bool InterfaceImplementation::addFunctionToQueue(const Hub::RemoteFunction& fun)
 void InterfaceImplementation::executeQueue()
 {
 #ifdef SPIRE_USE_STD_THREADS
-  ThreadMessage msg;
-  while (mQueue.pop(msg))
+  if (mThreaded)
   {
-    try
+    ThreadMessage msg;
+    while (mQueue.pop(msg))
     {
-      msg.execute(*this);
+      try
+      {
+        msg.execute(*this);
+      }
+      catch (std::exception& e)
+      {
+        Log::error() << "Spire exception thrown: " << e.what() << std::endl;
+      }
+      msg.clear();
     }
-    catch (std::exception& e)
-    {
-      Log::error() << "Spire exception thrown: " << e.what() << std::endl;
-    }
-    msg.clear();
   }
 #else
   // The functions were already executed.

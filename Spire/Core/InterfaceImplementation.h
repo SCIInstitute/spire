@@ -254,6 +254,7 @@ private:
 #endif
 
   Hub&            mHub;
+  bool            mThreaded;
 };
 
 } // namespace Spire

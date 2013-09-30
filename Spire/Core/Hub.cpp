@@ -63,11 +63,12 @@ Hub::Hub(std::shared_ptr<Context> context,
     mShaderUniformStateMan(new ShaderUniformStateMan(*this)),
     mPassUniformStateMan(new PassUniformStateMan(*this)),
     mShaderDirs(shaderDirs),
-    mInterfaceImpl(new InterfaceImplementation(*this)),
+    mInterfaceImpl(new InterfaceImplementation(*this, useThread)),
 #ifdef SPIRE_USE_STD_THREADS
     mThreadKill(false),
     mThreadRunning(false),
 #endif
+    mThreaded(useThread),
     mPixScreenWidth(640),
     mPixScreenHeight(480)
 {
