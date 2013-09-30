@@ -180,6 +180,14 @@ public:
   /// oportunity for the calling function to 
   typedef std::function<void (std::list<UnsatisfiedUniform>&)> UnsatisfiedUniformCB;
 
+  /// Typical OpenGL startup for initiating rendering.
+  /// \todo Implement
+  void beginRendering(bool makeContextCurrent = true);
+
+  /// Typical finalization code for ending rendering.
+  /// \todo Implement
+  void endRendering();
+
   /// Renders an object given a specific pass.
   /// \todo Should we allow extra uniforms to be passed in, or should we stick
   ///       with the callback function for finding uniforms? Possibly add
