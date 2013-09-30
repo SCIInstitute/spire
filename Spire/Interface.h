@@ -198,12 +198,6 @@ public:
   /// appropriate for your needs.
   void endFrame();
 
-
-  /// Utility function that clears the screen and sets up a default GL state.
-  /// Feel free to skip calling this function. It is only here for reference
-  /// and general utility purposes.
-  void initOpenGLFrame();
-
   /// Renders an object given a specific pass.
   /// \todo Should we allow extra uniforms to be passed in, or should we stick
   ///       with the callback function for finding uniforms? Possibly add
