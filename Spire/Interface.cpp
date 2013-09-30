@@ -106,6 +106,19 @@ bool Interface::ntsHasPass(const std::string& pass) const
   return mHub->getInterfaceImpl()->hasPass(pass);
 }
 
+
+//------------------------------------------------------------------------------
+bool Interface::beginFrame(bool makeContextCurrent)
+{
+  return mHub->beginFrame(makeContextCurrent);
+}
+
+//------------------------------------------------------------------------------
+void Interface::endFrame()
+{
+  mHub->endFrame();
+}
+
 //============================================================================
 // THREAD-SAFE INTERFACE
 //============================================================================

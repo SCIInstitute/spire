@@ -133,6 +133,15 @@ public:
   /// Adds a function to the cross-thread message queue.
   bool addFunctionToThreadQueue(const RemoteFunction& fun);
 
+  //----------------------------------------------------------------------------
+  // Concurrent helper functions
+  //----------------------------------------------------------------------------
+  // Some of these functions may need to be moved into interface implementation.
+  // At least those that don't require access to the context (both begin and
+  // end frame require access to the graphics context).
+  bool beginFrame(bool makeContextCurrent);
+  void endFrame();
+
 private:
 
   Interface::LogFunction              mLogFun;          ///< Log function.

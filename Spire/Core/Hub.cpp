@@ -196,6 +196,39 @@ void Hub::doFrame()
 }
 
 //------------------------------------------------------------------------------
+bool Hub::beginFrame(bool makeContextCurrent)
+{
+  if (makeContextCurrent == true)
+    mContext->makeCurrent();
+
+  // Bail if the frame buffer is not complete. One instance where this is a
+  // *valid* state is when a window containing the OpenGL scene is hidden.
+  // The framebuffer will be invalid in this instance, but we can still render
+  // later once the window is unhidden.
+  if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+    return false;
+
+  /// \todo Move this outside of the interface!
+  GL(glClearColor(0.0f, 0.0f, 0.0f, 1.0f));
+  GL(glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT));
+
+  ///// \todo Make line width a part of the GPU state.
+  //glLineWidth(2.0f);
+  ////glEnable(GL_LINE_SMOOTH);
+
+  GPUState defaultGPUState;
+  getGPUStateManager().apply(defaultGPUState, true); // true = force application of state.
+
+  return true;
+}
+
+//------------------------------------------------------------------------------
+void Hub::endFrame()
+{
+  mContext->swapBuffers();
+}
+
+//------------------------------------------------------------------------------
 bool Hub::isRendererThreadRunning() const
 {
 #ifdef SPIRE_USE_STD_THREADS
