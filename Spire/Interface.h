@@ -155,6 +155,23 @@ public:
     TYPE_DOUBLE,    ///< GLdouble - 64-bit floating,        C-Type (double),        Suffix (d)
   };
 
+  //============================================================================
+  // CONCURRENT INTERFACE
+  //============================================================================
+
+  // Functions contained in the concurrent interface are not thread safe and
+  // it is unlikely that they ever will be. In most scenarios, you should use
+  // this concurrent interface instead of the threaded interface.
+
+  /// Renders an object given a specific pass.
+  void renderObject(const std::string& objectName,
+                    const std::string& pass = SPIRE_DEFAULT_PASS);
+
+  // Retrieve shader OpenGL ID's for custom rendering.
+
+  // Retrieve VBO and IBO ID's for custom rendering.
+
+  // Uniform retrieval.
 
   //============================================================================
   // THREAD SAFE - Remember, the same thread should always be calling spire.
@@ -216,9 +233,9 @@ public:
               std::shared_ptr<std::vector<uint8_t>> vboData,
               const std::vector<std::string>& attribNames);
 
-  /// Removes specified vbo from the object. It is safe to issue this call even
-  /// though some of your passes may still be referencing the VBOs/IBOs. When
-  /// the passes are destroyed, their associated VBOs/IBOs will be destroyed.
+  // Removes the specified vbo. It is safe to issue this call even though some
+  // of your passes may still be referencing the VBOs/IBOs. When the passes are
+  // destroyed, their associated VBOs/IBOs will be destroyed.
   void removeVBO(const std::string& vboName);
 
   /// Adds an IBO. Throws an std::out_of_range exception if the object is not
@@ -253,6 +270,24 @@ public:
   static size_t loadProprietarySR5AssetFile(std::istream& stream,
                                             std::vector<uint8_t>& vbo,
                                             std::vector<uint8_t>& ibo);
+
+  // Adding pass stages with identifiers to the rendering order for an object.
+  // Stage name is optional.
+  void addObjectGeomPassToFront(const std::string& object,
+                                const std::string& program,
+                                const std::string& vboName,
+                                const std::string& iboName,
+                                PRIMITIVE_TYPES type,
+                                const std::string& pass = SPIRE_DEFAULT_PASS,
+                                const std::string& stageName = "");
+
+  void addObjectGeomPassToBack(const std::string& object,
+                               const std::string& program,
+                               const std::string& vboName,
+                               const std::string& iboName,
+                               PRIMITIVE_TYPES type,
+                               const std::string& pass = SPIRE_DEFAULT_PASS,
+                               const std::string& stageName = "");
 
   /// Adds a geometry pass to an object given by the identifier 'object'.
   /// Throws an std::out_of_range exception if the object is not found in the 
@@ -461,6 +496,8 @@ public:
   typedef std::function<void (ObjectLambdaInterface&, std::list<UnsatisfiedUniform>&)> 
       ObjectUniformLambdaFunction;
 
+  /// \todo Remove these functions. They were necessary only for the threaded
+  ///       version of spire.
   /// The following functions add hooks into the rendering infrastructure.
   /// @{
   void addLambdaBeginAllPasses(const PassLambdaFunction& fp);
