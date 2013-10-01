@@ -60,6 +60,7 @@ bool ShaderUniformStateMan::applyUniform(const std::string& name, int location)
   {
     std::shared_ptr<AbstractUniformStateItem>& ptr = it->second;
     ShaderUniformMan::applyUniformGLState(ptr, location);
+    //std::cout << name << ": " << ptr->asString() << std::endl;
     return true;
   }
   else

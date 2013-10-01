@@ -116,8 +116,8 @@ TEST_F(InterfaceTestFixture, TestConcurrentQuad)
 
   std::string vbo1 = "vbo1";
   std::string ibo1 = "ibo1";
-  mSpire->addVBO(vbo1, reinterpret_cast<uint8_t*>(&vboData[0]), vboData.size(), attribNames);
-  mSpire->addIBO(ibo1, reinterpret_cast<uint8_t*>(&iboData[0]), iboData.size(), iboType);
+  mSpire->addVBO(vbo1, reinterpret_cast<uint8_t*>(&vboData[0]), vboData.size() * sizeof(float), attribNames);
+  mSpire->addIBO(ibo1, reinterpret_cast<uint8_t*>(&iboData[0]), iboData.size() * sizeof(uint16_t), iboType);
 
   // Attempt to add duplicate VBOs and IBOs
   EXPECT_THROW(mSpire->addVBO(vbo1, reinterpret_cast<uint8_t*>(&vboData[0]), vboData.size(), attribNames), Duplicate);
@@ -163,17 +163,18 @@ TEST_F(InterfaceTestFixture, TestConcurrentQuad)
   // Perform the rendering of JUST the object that we created.
   // Need to test adding various different objects to the scene and attempting
   // to render them.
-  mSpire->beginFrame(false);
+  mSpire->beginFrame(true);
   mSpire->renderObject(obj1, nullptr, pass1);  
   mSpire->endFrame();
 
   // Write the resultant png to a temporary directory and compare against
   // the golden image results.
 #ifdef TEST_OUTPUT_IMAGES
-  std::string imageName = "stuTriangle.png";
+  std::string thisImage       = "concurrentQuad.png";
+  std::string comparisonImage = "stuTriangle.png";
 
   std::string targetImage = TEST_IMAGE_OUTPUT_DIR;
-  targetImage += "/" + imageName;
+  targetImage += "/" + thisImage;
   Spire::GlobalTestEnvironment::instance()->writeFBO(targetImage);
 
   EXPECT_TRUE(Spire::fileExists(targetImage)) << "Failed to write output image! " << targetImage;
@@ -181,7 +182,7 @@ TEST_F(InterfaceTestFixture, TestConcurrentQuad)
 #ifdef TEST_PERCEPTUAL_COMPARE
   // Perform the perceptual comparison using the given regression directory.
   std::string compImage = TEST_IMAGE_COMPARE_DIR;
-  compImage += "/" + imageName;
+  compImage += "/" + comparisonImage;
 
   ASSERT_TRUE(Spire::fileExists(compImage)) << "Failed to find comparison image! " << compImage;
   // Test using perceptula comparison program that the user has provided
@@ -195,7 +196,7 @@ TEST_F(InterfaceTestFixture, TestConcurrentQuad)
   if (std::system(command.c_str()) != 0)
   {
     // The images are NOT the same. Alert the user.
-    FAIL() << "Perceptual compare of " << imageName << " failed.";
+    FAIL() << "Perceptual compare of " << thisImage << " failed.";
   }
 #endif
 

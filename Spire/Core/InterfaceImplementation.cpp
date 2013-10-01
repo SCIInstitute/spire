@@ -174,7 +174,8 @@ bool InterfaceImplementation::hasPass(const std::string& pass) const
 }
 
 //------------------------------------------------------------------------------
-std::shared_ptr<const SpireObject> InterfaceImplementation::getObjectWithName(const std::string& name) const
+std::shared_ptr<SpireObject>
+InterfaceImplementation::getObjectWithName(const std::string& name) const
 {
   return mNameToObject.at(name);
 }

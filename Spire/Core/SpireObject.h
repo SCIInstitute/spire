@@ -59,7 +59,8 @@ public:
       std::shared_ptr<VBOObject> vbo, std::shared_ptr<IBOObject> ibo, GLenum primitiveType);
   virtual ~ObjectPass();
   
-  void renderPass(ObjectLambdaInterface& lambdaInterface);
+  void renderPass(ObjectLambdaInterface& lambdaInterface,
+                  const Interface::UnsatisfiedUniformCB& cb);
 
   const std::string& getName() const    {return mName;}
   GLenum getPrimitiveType() const       {return mPrimitiveType;}
@@ -250,6 +251,9 @@ public:
 
   /// \todo Ability to render a single named pass. See github issue #15.
   void renderPass(const std::string& pass);
+
+  /// Render pass with associated unsatisfied uniform callback.
+  void renderPass(const std::string& pass, const Interface::UnsatisfiedUniformCB& cb);
 
   /// Returns the associated pass. Otherwise an empty shared_ptr is returned.
   std::shared_ptr<const ObjectPass> getObjectPassParams(const std::string& passName) const;

@@ -35,6 +35,7 @@
 #include "Core/Hub.h"
 #include "Core/Log.h"
 #include "Core/InterfaceImplementation.h"
+#include "Core/SpireObject.h"
 
 using namespace std::placeholders;
 
@@ -83,7 +84,7 @@ size_t Interface::ntsGetNumObjects() const
 }
 
 //------------------------------------------------------------------------------
-std::shared_ptr<const SpireObject>
+std::shared_ptr<SpireObject>
 Interface::ntsGetObjectWithName(const std::string& name) const
 {
   return mHub->getInterfaceImpl()->getObjectWithName(name);
@@ -136,11 +137,12 @@ void Interface::addIBO(const std::string& name,
 }
 
 //------------------------------------------------------------------------------
-void Interface::renderObject(const std::string& /*objectName*/,
-                             const UnsatisfiedUniformCB& /*cb*/,
-                             const std::string& /*pass*/)
+void Interface::renderObject(const std::string& objectName,
+                             const UnsatisfiedUniformCB& cb,
+                             const std::string& pass)
 {
-  
+  std::shared_ptr<SpireObject> obj = ntsGetObjectWithName(objectName);
+  obj->renderPass(pass, cb);
 }
 
 //============================================================================

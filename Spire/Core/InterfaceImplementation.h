@@ -96,7 +96,7 @@ public:
   bool hasPass(const std::string& pass) const;
 
   /// Retrieves the object with the specified name.
-  std::shared_ptr<const SpireObject> getObjectWithName(const std::string& name) const;
+  std::shared_ptr<SpireObject> getObjectWithName(const std::string& name) const;
 
   /// Returns true if the object is in the given pass.
   bool isObjectInPass(const std::string& object, const std::string& pass) const;

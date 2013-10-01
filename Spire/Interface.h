@@ -177,7 +177,9 @@ public:
   };
 
   /// Callback issued when an object has unsatisfied uniforms. This is an
-  /// oportunity for the calling function to 
+  /// oportunity for the function to remove items from the unsatisfied uniforms
+  /// list. Once you have satisfied a particular uniform in the list, you
+  /// should remove it. Otherwise, the rendering will bail on you.
   typedef std::function<void (std::list<UnsatisfiedUniform>&)> UnsatisfiedUniformCB;
 
   /// Calling this function is not necessary but may make your life.
@@ -263,7 +265,7 @@ public:
 
   /// Obtain the object associated with 'name'.
   /// throws std::range_error if the object is not found.
-  std::shared_ptr<const SpireObject> ntsGetObjectWithName(const std::string& name) const;
+  std::shared_ptr<SpireObject> ntsGetObjectWithName(const std::string& name) const;
 
   /// Cleans up all GL resources.
   /// Should ONLY be called from the rendering thread.

@@ -88,7 +88,8 @@ ObjectPass::~ObjectPass()
 }
 
 //------------------------------------------------------------------------------
-void ObjectPass::renderPass(ObjectLambdaInterface& lambdaInterface)
+void ObjectPass::renderPass(ObjectLambdaInterface& lambdaInterface,
+                            const Interface::UnsatisfiedUniformCB& cb)
 {
   GL(glUseProgram(mShader->getProgramID()));
 
@@ -110,6 +111,7 @@ void ObjectPass::renderPass(ObjectLambdaInterface& lambdaInterface)
   for (auto it = mUniforms.begin(); it != mUniforms.end(); ++it)
   {
     ShaderUniformMan::applyUniformGLState(it->item, it->shaderLocation);
+    //std::cout << it->uniformName << ": " << it->item->asString() << std::endl;
   }
 
   // Assign global uniforms, searches through 3 levels in an attempt to find the
@@ -135,7 +137,16 @@ void ObjectPass::renderPass(ObjectLambdaInterface& lambdaInterface)
     }
 
     if (unsatisfiedGlobalUniforms.size() > 0)
-      throw ShaderUniformNotFound("Could not initialize uniform: " + unsatisfiedGlobalUniforms.front().uniformName);
+    {
+      if (cb)
+      {
+        cb(unsatisfiedGlobalUniforms);
+      }
+    }
+
+    if (unsatisfiedGlobalUniforms.size() > 0)
+      throw ShaderUniformNotFound("Could not initialize uniform: " 
+                                  + unsatisfiedGlobalUniforms.front().uniformName);
   }
   
 
@@ -558,13 +569,21 @@ bool SpireObject::hasGlobalUniform(const std::string& uniformName) const
 //------------------------------------------------------------------------------
 void SpireObject::renderPass(const std::string& passName)
 {
+  renderPass(passName, nullptr);
+}
+
+//------------------------------------------------------------------------------
+void SpireObject::renderPass(const std::string& passName,
+                             const Interface::UnsatisfiedUniformCB& cb)
+{
+  /// \todo Possibly get rid of lambda interfaces.
   ObjectLambdaInterface lambdaInterface(mHub, passName, *this);
   ObjectPassInternal& internalObjectPass = mPasses[passName];
   std::shared_ptr<ObjectPass> pass = internalObjectPass.objectPass;
 
   // Render the pass
   if (pass != nullptr)
-    pass->renderPass(lambdaInterface);
+    pass->renderPass(lambdaInterface, cb);
 
   // Now render any associated subpasses.
   if (internalObjectPass.objectSubPasses != nullptr)
@@ -573,7 +592,7 @@ void SpireObject::renderPass(const std::string& passName)
          it != internalObjectPass.objectSubPasses->end(); ++it)
     {
       ObjectLambdaInterface subLambdaInterface(mHub, (*it)->getName(), *this);
-      (*it)->renderPass(subLambdaInterface);
+      (*it)->renderPass(subLambdaInterface, cb);
     }
   }
 }
