@@ -33,6 +33,7 @@
 #    [MODULE_DIR dir]             # Module directory. Preferably outside of where cleaning happens.
 #    [SHADER_OUTPUT_DIR dir]      # Shader directory into which shaders will be copied. If present, shaders will be copied to this directory.
 #    [ASSET_OUTPUT_DIR dir]       # Asset directory into which assets will be copied. If present, assets will be copied to this directory.
+#    [NO_UPDATE true]             # If specified, neither spire nor its modules will be updated.
 #    )
 #
 # Many of the ExternalProject settings are automatically generated for modules.
@@ -276,7 +277,13 @@ function(Spire_AddCore name)
     # Clear git repo or git tag, if any.
     set(_ep_git_repo)
     set(_ep_git_tag)
-    set(_ep_update_command "UPDATE_COMMAND" "cmake .")
+    #set(_ep_update_command "UPDATE_COMMAND" "cmake .")
+  else()
+    if (DEFINED _SPM_NO_UPDATE)
+      if (_SPM_NO_UPDATE)
+        set(_ep_update_command "UPDATE_COMMAND" "")
+      endif()
+    endif()
   endif()
 
   if (DEFINED _SPM_BINARY_DIR)
@@ -303,6 +310,7 @@ function(Spire_AddCore name)
     ${_ep_git_repo}
     ${_ep_git_tag}
     ${_ep_bin_dir}
+    ${_ep_update_command}
     INSTALL_COMMAND ""
     CMAKE_ARGS
       -DCMAKE_BUILD_TYPE:STRING=${CMAKE_BUILD_TYPE}
@@ -355,6 +363,13 @@ function(Spire_AddCore name)
   # core spire library. This is used by modules in order.
   set_target_properties(${name} PROPERTIES SPIRE_CORE_INCLUDE_DIRS "${SPIRE_INCLUDE_DIRS};${SPIRE_3RDPARTY_INCLUDE_DIRS}")
   set_target_properties(${name} PROPERTIES SPIRE_BASE_MODULE_SRC_DIR "${PREFIX}/module_src/SpireExt")
+  set_target_properties(${name} PROPERTIES SPIRE_NO_UPDATE "false")
+
+  if (DEFINED _SPM_NO_UPDATE)
+    if (_SPM_NO_UPDATE)
+      set_target_properties(${name} PROPERTIES SPIRE_NO_UPDATE "true")
+    endif()
+  endif()
 
   # Set output directory for assets if the user passed the variable in.
   if (DEFINED _SPM_ASSET_OUTPUT_DIR)
@@ -439,6 +454,11 @@ function (Spire_AddModule spire_core module_name repo version)
   endif()
 
   get_target_property(CORE_INCLUDE_DIRS ${spire_core} SPIRE_CORE_INCLUDE_DIRS)
+  get_target_property(SPIRE_NO_UPDATE ${spire_core} SPIRE_NO_UPDATE )
+
+  if (SPIRE_NO_UPDATE)
+    set(_ep_update_command "UPDATE_COMMAND" "")
+  endif()
 
   get_target_property(OUTPUT_SHADER_DIR ${spire_core} SHADER_OUTPUT_DIR)
   if(OUTPUT_SHADER_DIR STREQUAL "NOTFOUND")
@@ -455,6 +475,7 @@ function (Spire_AddModule spire_core module_name repo version)
     ${_ep_git_repo}
     ${_ep_git_tag}
     ${_ep_source_dir}
+    ${_ep_update_command}
     INSTALL_COMMAND ""
     CMAKE_ARGS
       -DCMAKE_BUILD_TYPE:STRING=${CMAKE_BUILD_TYPE}
