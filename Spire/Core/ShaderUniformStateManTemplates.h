@@ -39,6 +39,7 @@
 #include "WinDLLExport.h"
 #include "Math.h"
 #include "GLMathUtil.h"
+#include "GLInclude.h"
 
 namespace Spire {
 
@@ -153,6 +154,42 @@ enum UNIFORM_TYPE
   UNIFORM_UNSIGNED_INT_ATOMIC_COUNTER
 };
 
+class SpireSampler1D_NoRAII
+{
+public:
+  /// Samplers take control of the buffer.
+  /// The sampler will automatically delete the buffer when the last reference
+  /// to the sampler is removed.
+  SpireSampler1D_NoRAII(GLuint bufferID) :
+      samplerBuffer(bufferID) {}
+
+  GLuint samplerBuffer;
+};
+
+class SpireSampler2D_NoRAII
+{
+public:
+  /// Samplers take control of the buffer.
+  /// The sampler will automatically delete the buffer when the last reference
+  /// to the sampler is removed.
+  SpireSampler2D_NoRAII(GLuint bufferID) :
+      samplerBuffer(bufferID) {}
+
+  GLuint samplerBuffer;
+};
+
+class SpireSampler3D_NoRAII
+{
+public:
+  /// Samplers take control of the buffer.
+  /// The sampler will automatically delete the buffer when the last reference
+  /// to the sampler is removed.
+  SpireSampler3D_NoRAII(GLuint bufferID) :
+      samplerBuffer(bufferID) {}
+
+  GLuint samplerBuffer;
+};
+
 /// Abstract base class interface for a single uinform state item.
 class WIN_DLL AbstractUniformStateItem
 {
@@ -168,7 +205,7 @@ public:
 
   /// Retrieve raw pointer data. Not safe. Use one of the templated versions of
   /// the code below.
-  virtual const float* getRawData() const = 0;
+  virtual const void* getRawData() const = 0;
 
   /// Retrieve M44
   template <class T>
@@ -176,7 +213,7 @@ public:
   {
     if (getGLType() != UNIFORM_FLOAT_MAT4)
       throw std::runtime_error("Mismatched types! Expected uniform to be of type M44.");
-    return glm::make_mat4x4(getRawData());
+    return glm::make_mat4x4(reinterpret_cast<const float*>(getRawData()));
   }
 
   /// Retrieve M33
@@ -185,7 +222,7 @@ public:
   {
     if (getGLType() != UNIFORM_FLOAT_MAT3)
       throw std::runtime_error("Mismatched types! Expected uniform to be of type M33.");
-    return glm::make_mat3(getRawData());
+    return glm::make_mat3(reinterpret_cast<const float*>(getRawData()));
   }
 
   /// Retrieve V4
@@ -194,7 +231,7 @@ public:
   {
     if (getGLType() != UNIFORM_FLOAT_VEC4)
       throw std::runtime_error("Mismatched types! Expected uniform to be of type V4.");
-    return glm::make_vec4(getRawData());
+    return glm::make_vec4(reinterpret_cast<const float*>(getRawData()));
   }
 
   /// Retrieve V3
@@ -203,7 +240,7 @@ public:
   {
     if (getGLType() != UNIFORM_FLOAT_VEC3)
       throw std::runtime_error("Mismatched types! Expected uniform to be of type V3.");
-    return glm::make_vec3(getRawData());
+    return glm::make_vec3(reinterpret_cast<const float*>(getRawData()));
   }
 
   /// Retrieve V3
@@ -212,7 +249,7 @@ public:
   {
     if (getGLType() != UNIFORM_FLOAT_VEC2)
       throw std::runtime_error("Mismatched types! Expected uniform to be of type V2.");
-    return glm::make_vec2(getRawData());
+    return glm::make_vec2(reinterpret_cast<const float*>(getRawData()));
   }
 
   /// Retrieve float
@@ -221,7 +258,34 @@ public:
   {
     if (getGLType() != UNIFORM_FLOAT)
       throw std::runtime_error("Mismatched types! Expected uniform to be of type float.");
-    return *getRawData();
+    return *reinterpret_cast<const float*>(getRawData());
+  }
+
+  /// Retrieve sampler 1D
+  template <class T>
+  typename std::enable_if<std::is_same<T, SpireSampler1D_NoRAII>::value, T>::type getData() const
+  {
+    if (getGLType() != UNIFORM_SAMPLER_1D)
+      throw std::runtime_error("Mismatched types! Expected uniform to be of type 1D sampler.");
+    return *reinterpret_cast<const GLuint*>(getRawData());
+  }
+
+  /// Retrieve sampler 2D
+  template <class T>
+  typename std::enable_if<std::is_same<T, SpireSampler2D_NoRAII>::value, T>::type getData() const
+  {
+    if (getGLType() != UNIFORM_SAMPLER_2D)
+      throw std::runtime_error("Mismatched types! Expected uniform to be of type 2D sampler.");
+    return *reinterpret_cast<const GLuint*>(getRawData());
+  }
+
+  /// Retrieve sampler 3D
+  template <class T>
+  typename std::enable_if<std::is_same<T, SpireSampler3D_NoRAII>::value, T>::type getData() const
+  {
+    if (getGLType() != UNIFORM_SAMPLER_3D)
+      throw std::runtime_error("Mismatched types! Expected uniform to be of type 3D sampler.");
+    return *reinterpret_cast<const GLuint*>(getRawData());
   }
 
   ///// Series of static utility functions to avoid exposing OpenGL functions
@@ -254,6 +318,95 @@ public:
                       "UniformStateItem for your type. See ShaderUniformStateMan.h.");
 };
 
+//------------------------------------------------------------------------------
+// Samplers
+//------------------------------------------------------------------------------
+template <>
+class UniformStateItem<SpireSampler1D_NoRAII> : public AbstractUniformStateItem
+{
+public:
+  typedef GLuint Type;
+
+  UniformStateItem(const Type& in) : mData(in) {}
+
+  UNIFORM_TYPE getGLType() const override
+  {
+    return UNIFORM_SAMPLER_1D;
+  }
+
+  std::string asString() const override
+  {
+    std::stringstream stream;
+    stream << "1D Sampler ID - (" << mData << ")";
+    return stream.str();
+  }
+
+  const void* getRawData() const override
+  {
+    return &mData;
+  }
+
+private:
+  Type mData;
+};
+
+template <>
+class UniformStateItem<SpireSampler2D_NoRAII> : public AbstractUniformStateItem
+{
+public:
+  typedef GLuint Type;
+
+  UniformStateItem(const Type& in) : mData(in) {}
+
+  UNIFORM_TYPE getGLType() const override
+  {
+    return UNIFORM_SAMPLER_2D;
+  }
+
+  std::string asString() const override
+  {
+    std::stringstream stream;
+    stream << "2D Sampler ID - (" << mData << ")";
+    return stream.str();
+  }
+
+  const void* getRawData() const override
+  {
+    return &mData;
+  }
+
+private:
+  Type mData;
+};
+
+template <>
+class UniformStateItem<SpireSampler3D_NoRAII> : public AbstractUniformStateItem
+{
+public:
+  typedef GLuint Type;
+
+  UniformStateItem(const Type& in) : mData(in) {}
+
+  UNIFORM_TYPE getGLType() const override
+  {
+    return UNIFORM_SAMPLER_3D;
+  }
+
+  std::string asString() const override
+  {
+    std::stringstream stream;
+    stream << "3D Sampler ID - (" << mData << ")";
+    return stream.str();
+  }
+
+  const void* getRawData() const override
+  {
+    return &mData;
+  }
+
+private:
+  Type mData;
+};
 
 //------------------------------------------------------------------------------
 // V3
@@ -278,7 +431,7 @@ public:
     return stream.str();
   }
 
-  const float* getRawData() const override
+  const void* getRawData() const override
   {
     return glm::value_ptr(mData);
   }
@@ -321,7 +474,7 @@ public:
     return stream.str();
   }
 
-  const float* getRawData() const override
+  const void* getRawData() const override
   {
     // There is no safe way of returning this data.
     return nullptr;
@@ -353,7 +506,7 @@ public:
     return stream.str();
   }
 
-  const float* getRawData() const override
+  const void* getRawData() const override
   {
     return glm::value_ptr(mData);
   }
@@ -382,7 +535,7 @@ public:
     return stream.str();
   }
 
-  const float* getRawData() const override
+  const void* getRawData() const override
   {
     return glm::value_ptr(mData);
   }
@@ -412,7 +565,7 @@ public:
     return stream.str();
   }
 
-  const float* getRawData() const override
+  const void* getRawData() const override
   {
     return &mData;
   }
@@ -455,7 +608,7 @@ public:
     return stream.str();
   }
 
-  const float* getRawData() const override
+  const void* getRawData() const override
   {
     return glMatrix;
   }
