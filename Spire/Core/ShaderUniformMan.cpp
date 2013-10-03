@@ -487,6 +487,18 @@ void ShaderUniformMan::applyUniformGLState(std::shared_ptr<AbstractUniformStateI
                           static_cast<const GLfloat*>(item->getRawData())));
     break;
 
+  case UNIFORM_SAMPLER_1D:
+    GL(glUniform1i(static_cast<GLint>(location), 0));  // For testing we always bind to unit 0.
+    break;
+
+  case UNIFORM_SAMPLER_2D:
+    GL(glUniform1i(static_cast<GLint>(location), 0));  // For testing we always bind to unit 0.
+    break;
+
+  case UNIFORM_SAMPLER_3D:
+    GL(glUniform1i(static_cast<GLint>(location), 0));  // For testing we always bind to unit 0.
+    break;
+
   default:
     throw UnsupportedException("Uniform not supported.");
   }
