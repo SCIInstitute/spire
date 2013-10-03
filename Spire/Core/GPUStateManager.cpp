@@ -204,6 +204,7 @@ void GPUStateManager::apply(const GPUState& state, bool force)
   setLineWidth(state.mLineWidth, force);
   setLineSmoothingEnable(state.mLineSmoothing, force);
 
+  /*
   // Do this by hand to avoid the redundant glActiveTexture calls
   /// \todo Grab the maximum number of texture units and use that instead...
   for (size_t i = 0; i < getMaxTextureUnits();  i++) 
@@ -255,6 +256,7 @@ void GPUStateManager::apply(const GPUState& state, bool force)
   }
   mInternalState.mTexActiveUnit = state.mTexActiveUnit;
   glActiveTexture(GLenum(GL_TEXTURE0 + mInternalState.mTexActiveUnit));
+  */
 
   setDepthMask(state.mDepthMask, force);
   setColorMask(state.mColorMask, force);
