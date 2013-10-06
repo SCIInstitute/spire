@@ -48,8 +48,7 @@ class IBOObject
 public:
   // This constructor delegates to the raw version below.
   IBOObject(std::shared_ptr<std::vector<uint8_t>> iboData,
-            Interface::IBO_TYPE type)
-      : IBOObject(&(*iboData)[0], iboData->size(), type) {}
+            Interface::IBO_TYPE type);
 
   IBOObject(const uint8_t* iboData, size_t iboDataSize, Interface::IBO_TYPE type);
   ~IBOObject();
@@ -59,6 +58,10 @@ public:
   GLenum getType() const                  {return mType;}
 
 private:
+
+  void buildIBOObject(const uint8_t* iboData, size_t iboDataSize,
+                      Interface::IBO_TYPE type);
+
   GLuint                    mGLIndex;    ///< Corresponds to the map index but obtained from OpenGL.
   GLuint                    mNumElements;///< Number of elements in the IBO.
   GLenum                    mType;       ///< Type of index buffer.

@@ -33,8 +33,26 @@
 
 namespace Spire {
 
+IBOObject::IBOObject(std::shared_ptr<std::vector<uint8_t>> iboData,
+                     Interface::IBO_TYPE type)
+{
+  buildIBOObject(&(*iboData)[0], iboData->size(), type);
+}
+
 IBOObject::IBOObject(const uint8_t* iboData, size_t iboDataSize,
                      Interface::IBO_TYPE type)
+{
+  buildIBOObject(iboData, iboDataSize, type);
+}
+
+IBOObject::~IBOObject()
+{
+  GL(glDeleteBuffers(1, &mGLIndex));
+}
+
+
+void IBOObject::buildIBOObject(const uint8_t* iboData, size_t iboDataSize,
+                               Interface::IBO_TYPE type)
 {
   GL(glGenBuffers(1, &mGLIndex));
   GL(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mGLIndex));
@@ -68,11 +86,5 @@ IBOObject::IBOObject(const uint8_t* iboData, size_t iboDataSize,
 
   }
 }
-
-IBOObject::~IBOObject()
-{
-  GL(glDeleteBuffers(1, &mGLIndex));
-}
-
 
 }
