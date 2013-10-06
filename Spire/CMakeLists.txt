@@ -87,7 +87,7 @@ else(UNIX)
 
     # Need this definition for Visual Studio to compile std::bind with more
     # than 4 arguments.
-    add_definitions("_VARIADIC_MAX=10")
+    add_definitions("-D_VARIADIC_MAX=10")
 
     # GLEW
     # GLEW is required on windows since Microsoft has not updated the OpenGL
