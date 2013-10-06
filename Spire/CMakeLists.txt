@@ -85,6 +85,10 @@ else(UNIX)
     # doing cross platform work.
     add_definitions("/wd4068")
 
+    # Need this definition for Visual Studio to compile std::bind with more
+    # than 4 arguments.
+    add_definitions("_VARIADIC_MAX=10")
+
     # GLEW
     # GLEW is required on windows since Microsoft has not updated the OpenGL
     # headers since OpenGL 1.1.
