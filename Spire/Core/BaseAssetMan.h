@@ -42,11 +42,15 @@
 #ifndef SPIRE_USING_WIN
 #include <chrono>
 #else
-namespace std {
-namespace chrono {
-  // Temporary hack until a switch to VS 2012
-  typedef uint64_t milliseconds;
-} }
+  #if (_MSC_VER >= 1700)
+    #include <chrono>
+  #else
+    namespace std {
+    namespace chrono {
+      // Temporary hack until a switch to VS 2012
+      typedef uint64_t milliseconds;
+    } }
+  #endif
 #endif
 
 namespace Spire {

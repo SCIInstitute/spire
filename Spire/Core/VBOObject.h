@@ -52,8 +52,7 @@ public:
   // This constructor delegates to the raw version below.
   VBOObject(std::shared_ptr<std::vector<uint8_t>> vboData,
             const std::vector<std::string>& attributes,
-            const ShaderAttributeMan& man)
-      : VBOObject(&(*vboData)[0], vboData->size(), attributes, man) {}
+            const ShaderAttributeMan& man);
 
   VBOObject(const uint8_t* vboData, const size_t vboLength,
             const std::vector<std::string>& attributes,
@@ -66,6 +65,10 @@ public:
   const ShaderAttributeCollection& getAttributeCollection() const {return mAttributeCollection;}
 
 private:
+
+  void buildVBO(const uint8_t* vboData, const size_t vboLength,
+                const std::vector<std::string>& attributes);
+                
 
   GLuint                    mGLIndex;    ///< Corresponds to the map index but obtained from OpenGL.
   std::vector<std::string>  mAttributes; ///< Attributes for shader verification.

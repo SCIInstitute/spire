@@ -34,11 +34,33 @@
 namespace Spire {
 
 //------------------------------------------------------------------------------
+VBOObject::VBOObject(std::shared_ptr<std::vector<uint8_t>> vboData,
+                     const std::vector<std::string>& attributes,
+                     const ShaderAttributeMan& man)
+    : mAttributeCollection(man)
+{
+  buildVBO(&(*vboData)[0], vboData->size(), attributes);
+}
+
+//------------------------------------------------------------------------------
 VBOObject::VBOObject(
     const uint8_t* vboData, const size_t vboLength,
     const std::vector<std::string>& attributes,
     const ShaderAttributeMan& man)
     : mAttributeCollection(man)
+{
+  buildVBO(vboData, vboLength, attributes);
+}
+
+//------------------------------------------------------------------------------
+VBOObject::~VBOObject()
+{
+  GL(glDeleteBuffers(1, &mGLIndex));
+}
+
+//------------------------------------------------------------------------------
+void VBOObject::buildVBO(const uint8_t* vboData, const size_t vboLength,
+                         const std::vector<std::string>& attributes)
 {
   GL(glGenBuffers(1, &mGLIndex));
   GL(glBindBuffer(GL_ARRAY_BUFFER, mGLIndex));
@@ -50,12 +72,5 @@ VBOObject::VBOObject(
     mAttributeCollection.addAttribute(*it);
   }
 }
-
-//------------------------------------------------------------------------------
-VBOObject::~VBOObject()
-{
-  GL(glDeleteBuffers(1, &mGLIndex));
-}
-
 
 } // end of namespace Spire
