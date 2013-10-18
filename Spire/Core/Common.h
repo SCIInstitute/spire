@@ -38,6 +38,7 @@
 #include "GLInclude.h"
 
 #include "../Interface.h"
+#include "CPM.h"
 #include "Math.h"
 #include "Log.h"
 
@@ -79,9 +80,11 @@
 # define GL_CHECK() 
 #endif
 
+CPM_BEGIN_NAMESPACE
 namespace Spire
 {
 
 } // namespace Spire
+CPM_END_NAMESPACE
 
 #endif

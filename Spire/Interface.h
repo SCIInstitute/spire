@@ -43,6 +43,7 @@
 
 #include "Context.h"
 
+#include "core/CPM.h"
 #include "Core/WinDLLExport.h"
 #include "Core/Math.h"  // Necessary in order to communicate vector types.
 #include "Core/ShaderUniformStateManTemplates.h"
@@ -52,6 +53,7 @@
 /// when we upgrade to VS 2012, we should also upgrade this.
 #define SPIRE_DEFAULT_PASS "spire_default"
 
+CPM_BEGIN_NAMESPACE
 namespace Spire {
 
 class Hub;
@@ -658,5 +660,6 @@ protected:
 };
 
 } // namespace spire
+CPM_END_NAMESPACE
 
 #endif // SPIRE_INTERFACE_H
