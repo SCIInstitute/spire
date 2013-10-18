@@ -29,6 +29,9 @@
 #ifndef SPIRE_HIGH_FRAMEMANAGER_H
 #define SPIRE_HIGH_FRAMEMANAGER_H
 
+#include "CPM.h"
+
+CPM_NAMESPACE
 namespace Spire {
 
 /// Manages the current frame.
@@ -44,5 +47,6 @@ private:
 };
 
 } // namespace spire
+CPM_NAMESPACE
 
 #endif // SPIRE_HIGH_FRAMEMANAGER_H

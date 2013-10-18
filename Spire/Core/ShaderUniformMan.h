@@ -39,6 +39,7 @@
 
 #include "ShaderUniformStateManTemplates.h"
 
+CPM_NAMESPACE
 namespace Spire {
 
 class ShaderUniformMan;
@@ -154,6 +155,7 @@ private:
 };
 
 } // namespace Spire
+CPM_NAMESPACE
 
 #endif 
 

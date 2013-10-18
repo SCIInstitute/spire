@@ -38,6 +38,7 @@
 #include "Log.h"
 #include "FileUtil.h"
 
+CPM_NAMESPACE
 namespace Spire {
 
 //------------------------------------------------------------------------------
@@ -155,3 +156,4 @@ ShaderAsset::~ShaderAsset()
 }
 
 } 
+CPM_NAMESPACE

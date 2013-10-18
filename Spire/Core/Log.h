@@ -45,7 +45,7 @@
 #include <map>
 #endif
 
-
+CPM_NAMESPACE
 namespace Spire {
 
 /// Simple interface for stream logging.
@@ -154,5 +154,6 @@ private:
 };
 
 } // namespace Spire 
+CPM_NAMESPACE
 
 #endif 

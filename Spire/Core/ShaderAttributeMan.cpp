@@ -39,6 +39,7 @@
 #include "ShaderAttributeMan.h"
 #include "ShaderProgramMan.h"
 
+CPM_NAMESPACE
 namespace Spire {
 
 //------------------------------------------------------------------------------
@@ -283,4 +284,5 @@ bool ShaderAttributeCollection::hasIndex(size_t targetIndex) const
 }
 
 }
+CPM_NAMESPACE
 

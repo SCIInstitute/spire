@@ -38,8 +38,8 @@
 #include "Common.h"
 #include "ShaderAttributeMan.h"
 
-namespace Spire
-{
+CPM_NAMESPACE
+namespace Spire {
 
 //------------------------------------------------------------------------------
 // VBO object
@@ -76,5 +76,6 @@ private:
 };
 
 } // namespace Spire
+CPM_NAMESPACE
 
 #endif 

@@ -36,8 +36,8 @@
 
 #include "Hub.h"
 
-namespace Spire
-{
+CPM_NAMESPACE
+namespace Spire {
 
 class InterfaceImplementation;
 
@@ -71,5 +71,6 @@ private:
 };
 
 } // namespace Spire
+CPM_NAMESPACE
 
 #endif 

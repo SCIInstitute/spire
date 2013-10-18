@@ -48,6 +48,7 @@
   #pragma warning(disable:4355)
 #endif
 
+CPM_NAMESPACE
 namespace Spire {
 
 //------------------------------------------------------------------------------
@@ -312,4 +313,5 @@ bool Hub::addFunctionToThreadQueue(const RemoteFunction& fun)
   return mInterfaceImpl->addFunctionToQueue(fun);
 }
 
-}
+} // end of namespace Spire
+CPM_NAMESPACE

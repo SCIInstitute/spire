@@ -33,9 +33,8 @@
 #define SPIRE_CPM_H
 
 // Check CPM namespaces. If CPM is being used, these will be defined.
-#ifndef CPM_BEGIN_NAMESPACE
-#define CPM_BEGIN_NAMESPACE
-#define CPM_END_NAMESPACE
+#ifndef CPM_NAMESPACE
+#define CPM_NAMESPACE
 #endif
 
 #endif

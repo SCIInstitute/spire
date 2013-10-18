@@ -33,7 +33,9 @@
 #define SPIRE_HIGH_GPUSTATEMANAGER_H
 
 #include <cstddef>
+#include "CPM.h"
 
+CPM_NAMESPACE
 namespace Spire {
 
 #define MAX_TEXTURE_UNITS 12
@@ -198,5 +200,6 @@ protected:
 };
 
 } // namespace Spire
+CPM_NAMESPACE
 
 #endif 

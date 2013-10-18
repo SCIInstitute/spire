@@ -37,8 +37,8 @@
 #include "ShaderUniformStateManTemplates.h"
 #include "Hub.h"
 
-namespace Spire
-{
+CPM_NAMESPACE
+namespace Spire {
 
 /// Class that encapsulates all functionality that an anonymous function passed
 /// into an interface would need access to in order to do meaningful work.
@@ -86,6 +86,7 @@ protected:
   std::string   mPass;
 };
 
-} // namespace 
+} // namespace Spire
+CPM_NAMESPACE
 
 #endif 

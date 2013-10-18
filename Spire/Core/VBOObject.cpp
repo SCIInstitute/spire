@@ -31,6 +31,7 @@
 
 #include "VBOObject.h"
 
+CPM_NAMESPACE
 namespace Spire {
 
 //------------------------------------------------------------------------------
@@ -74,3 +75,5 @@ void VBOObject::buildVBO(const uint8_t* vboData, const size_t vboLength,
 }
 
 } // end of namespace Spire
+CPM_NAMESPACE
+

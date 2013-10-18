@@ -35,6 +35,7 @@
 #include "Common.h"
 #include "BaseAssetMan.h"
 
+CPM_NAMESPACE
 namespace Spire {
 
 /// Shader asset.
@@ -83,5 +84,6 @@ private:
 };
 
 } // namespace Spire
+CPM_NAMESPACE
 
 #endif 

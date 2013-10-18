@@ -41,6 +41,7 @@
 #include "GLMathUtil.h"
 #include "GLInclude.h"
 
+CPM_NAMESPACE
 namespace Spire {
 
 // A good list of these types are here:
@@ -618,5 +619,6 @@ private:
 };
 
 } // namespace Spire 
+CPM_NAMESPACE
 
 #endif 

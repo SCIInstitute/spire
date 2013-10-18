@@ -36,6 +36,7 @@
 #include "ShaderAttributeMan.h"
 #include "ShaderUniformMan.h"
 
+CPM_NAMESPACE
 namespace Spire {
 
 class ShaderProgramAsset : public BaseAsset
@@ -95,5 +96,6 @@ private:
 };
 
 } // namespace Spire
+CPM_NAMESPACE
 
 #endif 

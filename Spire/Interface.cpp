@@ -39,6 +39,7 @@
 
 using namespace std::placeholders;
 
+CPM_NAMESPACE
 namespace Spire {
 
 //------------------------------------------------------------------------------
@@ -531,4 +532,5 @@ size_t Interface::loadProprietarySR5AssetFile(std::istream& stream,
 
 
 } // end of namespace Renderer
+CPM_NAMESPACE
 

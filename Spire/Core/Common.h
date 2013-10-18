@@ -80,11 +80,11 @@
 # define GL_CHECK() 
 #endif
 
-CPM_BEGIN_NAMESPACE
+CPM_NAMESPACE
 namespace Spire
 {
 
 } // namespace Spire
-CPM_END_NAMESPACE
+CPM_NAMESPACE
 
 #endif

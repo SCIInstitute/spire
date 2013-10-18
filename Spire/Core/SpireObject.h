@@ -43,6 +43,7 @@
 #include "VBOObject.h"
 #include "IBOObject.h"
 
+CPM_NAMESPACE
 namespace Spire {
 
 //------------------------------------------------------------------------------
@@ -322,5 +323,6 @@ protected:
 
 
 } // namespace Spire 
+CPM_NAMESPACE
 
 #endif 

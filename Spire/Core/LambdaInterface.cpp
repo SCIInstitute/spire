@@ -33,6 +33,7 @@
 #include "ShaderUniformMan.h"
 #include "LambdaInterface.h"
 
+CPM_NAMESPACE
 namespace Spire {
 
 //------------------------------------------------------------------------------
@@ -51,9 +52,5 @@ void LambdaInterface::uniformMatrix4fv(int location, size_t count, bool transpos
 
 
 }
-
-
-
-
-
+CPM_NAMESPACE
 

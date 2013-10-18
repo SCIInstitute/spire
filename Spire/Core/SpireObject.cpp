@@ -39,7 +39,7 @@
 #include "LambdaInterface.h"
 #include "ObjectLambda.h"
 
-
+CPM_NAMESPACE
 namespace Spire {
 
 //------------------------------------------------------------------------------
@@ -609,4 +609,5 @@ void SpireObject::addPassUniformLambda(const std::string& pass, const Interface:
   getPassByName(pass)->addUniformLambda(fp);
 }
 
-} // end of namespace Spire
+} // namespace Spire
+CPM_NAMESPACE

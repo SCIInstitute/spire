@@ -35,8 +35,8 @@
 #include "WinDLLExport.h"
 #include "LambdaInterface.h"
 
-namespace Spire 
-{
+CPM_NAMESPACE
+namespace Spire {
 
 class SpireObject;
 
@@ -74,6 +74,7 @@ private:
   const SpireObject&   mObject;
 };
 
-} // namespace 
+} // namespace Spire
+CPM_NAMESPACE
 
 #endif 

@@ -46,6 +46,7 @@
 #include "ShaderUniformStateMan.h"  // We want the interface to see this (to retrieve global uniforms).
 #include "PassUniformStateMan.h"
 
+CPM_NAMESPACE
 namespace Spire {
 
 class Log;
@@ -184,6 +185,7 @@ private:
 };
 
 } // namespace Spire
+CPM_NAMESPACE
 
 #endif // SPIRE_HIGH_HUB_H
 

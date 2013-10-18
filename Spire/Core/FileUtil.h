@@ -39,9 +39,10 @@
 
 #include <string>
 #include <vector>
+#include "CPM.h"
 
-namespace Spire
-{
+CPM_NAMESPACE
+namespace Spire {
 
 std::string findFileInDirs(const std::string& file,
                            const std::vector<std::string>& strDirs,
@@ -52,5 +53,6 @@ std::string getCurrentWorkingDir();
 bool getTempDirectory(std::string& path);
 
 } // namespace Spire
+CPM_NAMESPACE
 
 #endif 

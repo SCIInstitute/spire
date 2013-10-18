@@ -50,8 +50,8 @@
 #include "CircFIFOSeqCons.hpp"
 #endif
 
-namespace Spire
-{
+CPM_NAMESPACE
+namespace Spire {
 
 class Hub;
 class SpireObject;
@@ -270,5 +270,6 @@ private:
 };
 
 } // namespace Spire
+CPM_NAMESPACE
 
 #endif 

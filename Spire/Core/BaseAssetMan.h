@@ -53,6 +53,7 @@
   #endif
 #endif
 
+CPM_NAMESPACE
 namespace Spire {
 
 /// Derive all of your assets from this class.
@@ -136,5 +137,6 @@ private:
 };
 
 } // namespace Spire
+CPM_NAMESPACE
 
 #endif 

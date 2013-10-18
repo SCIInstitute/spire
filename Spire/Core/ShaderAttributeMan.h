@@ -37,6 +37,7 @@
 #include <string>
 #include <tuple>
 
+CPM_NAMESPACE
 namespace Spire {
 
 class ShaderAttributeMan;
@@ -176,5 +177,6 @@ private:
 };
 
 } // namespace Spire
+CPM_NAMESPACE
 
 #endif 

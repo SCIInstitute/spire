@@ -33,6 +33,7 @@
 
 #include "BaseAssetMan.h"
 
+CPM_NAMESPACE
 namespace Spire {
 
 //------------------------------------------------------------------------------
@@ -144,3 +145,5 @@ size_t BaseAsset::hashString(const std::string& str)
 }
 
 } // end of namespace Spire
+CPM_NAMESPACE
+

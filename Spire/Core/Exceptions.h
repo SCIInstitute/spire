@@ -35,7 +35,9 @@
 
 #include <string>
 #include <stdexcept>
+#include "CPM.h"
 
+CPM_NAMESPACE
 namespace Spire {
 
 class Exception : public std::runtime_error
@@ -93,5 +95,6 @@ public:
 };
 
 } // namespace Spire
+CPM_NAMESPACE
 
 #endif // SPIRE_EXCEPTIONS_H

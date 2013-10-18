@@ -33,7 +33,9 @@
 #define SPIRE_CONTEXT_H
 
 #include "Core/WinDLLExport.h"
+#include "Core/CPM.h"
 
+CPM_NAMESPACE
 namespace Spire {
 
 /// Generalized OpenGL context.
@@ -62,5 +64,6 @@ private:
 };
 
 } // namespace spire
+CPM_NAMESPACE
 
 #endif // SPIRE_CONTEXT_H

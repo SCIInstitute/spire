@@ -63,6 +63,7 @@
   #define LARGE_STAT(name,buffer) _stat64(name,buffer)
 #endif
 
+CPM_NAMESPACE
 namespace Spire {
 
 // Forward declarations.
@@ -296,4 +297,5 @@ bool getTempDirectory(std::string& path)
 #endif
 }
 
-} // end of names
+} // end of Spire namespace
+CPM_NAMESPACE

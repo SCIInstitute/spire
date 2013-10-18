@@ -53,7 +53,7 @@
 /// when we upgrade to VS 2012, we should also upgrade this.
 #define SPIRE_DEFAULT_PASS "spire_default"
 
-CPM_BEGIN_NAMESPACE
+CPM_NAMESPACE
 namespace Spire {
 
 class Hub;
@@ -660,6 +660,6 @@ protected:
 };
 
 } // namespace spire
-CPM_END_NAMESPACE
+CPM_NAMESPACE
 
 #endif // SPIRE_INTERFACE_H

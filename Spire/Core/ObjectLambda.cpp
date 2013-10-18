@@ -32,6 +32,7 @@
 #include "ObjectLambda.h"
 #include "SpireObject.h"
 
+CPM_NAMESPACE
 namespace Spire {
 
 std::shared_ptr<const AbstractUniformStateItem>
@@ -47,4 +48,6 @@ ObjectLambdaInterface::getObjectMetadata(const std::string& attribName)
     return attrib;
 }
 
-}
+} // namespace Spire
+CPM_NAMESPACE
+

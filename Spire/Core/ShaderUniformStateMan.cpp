@@ -35,6 +35,7 @@
 #include "Hub.h"
 #include "Exceptions.h"
 
+CPM_NAMESPACE
 namespace Spire {
 
 //------------------------------------------------------------------------------
@@ -110,4 +111,6 @@ std::string ShaderUniformStateMan::uniformAsString(const std::string& name) cons
 }
 
 
-} // end of namespace Spire
+} // namespace Spire
+CPM_NAMESPACE
+

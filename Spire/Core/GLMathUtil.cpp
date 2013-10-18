@@ -34,6 +34,7 @@
 #include "Common.h"
 #include "GLMathUtil.h"
 
+CPM_NAMESPACE
 namespace Spire {
 
 // print out matrix by rows
@@ -125,4 +126,5 @@ void V4toArray4(const V4& in, float* out)
 }
 
 } // end of namespace Spire
+CPM_NAMESPACE
 

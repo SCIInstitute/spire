@@ -37,6 +37,7 @@
 #include "WinDLLExport.h"
 #include "ShaderUniformStateManTemplates.h"
 
+CPM_NAMESPACE
 namespace Spire {
 
 class Hub;
@@ -112,5 +113,6 @@ private:
 
 
 } // namespace Spire 
+CPM_NAMESPACE
 
 #endif 
