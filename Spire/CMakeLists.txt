@@ -6,6 +6,33 @@ cmake_minimum_required(VERSION 2.8.7 FATAL_ERROR)
 include(ExternalProject)
 
 #-----------------------------------------------------------------------
+# CPM configuration
+#-----------------------------------------------------------------------
+# To build this project you don't need to use CPM. This section is only
+# for those who wish to use CPM to configure and build Spire.
+
+if ((DEFINED CPM_DIR) and (DEFINED CPM_UNIQUE_ID))
+  # We are being built as a sub project. Use the primary project's CPM
+  # so that we can take advantage of possible duplicate module versions.
+  set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CPM_DIR})
+  include(CPM)
+
+  # TODO: Build a CPM function to setup include directory settings,
+  #       libraries, and other goodies such as definitions.
+
+  # Define CPM_NAMESPACE to modify namespaces using unique ID.
+  add_definitions("-DCPM_NAMESPACE=${CPM_UNIQUE_ID}")
+
+  include_directories(${CPM_INCLUDE_DIRS})
+else()
+  # Clone CPM (if we need it to build modules) here.
+  # See: http://github.com/iauns/cpm
+endif()
+
+# Normally we would add CPM modules here. But we aren't using CPM to package
+# any external modules. We are just a bare CPM module with 0 CPM dependencies.
+
+#-----------------------------------------------------------------------
 # CMake Build Options
 #-----------------------------------------------------------------------
 
@@ -160,5 +187,6 @@ add_library(${SPIRE_TARGET_NAME}
 target_link_libraries(
   ${SPIRE_TARGET_NAME}
   ${OPENGL_LIBRARIES}
+  ${CPM_LIBRARIES}
   )
 
