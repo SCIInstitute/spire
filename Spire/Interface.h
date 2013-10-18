@@ -43,7 +43,7 @@
 
 #include "Context.h"
 
-#include "core/CPM.h"
+#include "Core/CPM.h"
 #include "Core/WinDLLExport.h"
 #include "Core/Math.h"  // Necessary in order to communicate vector types.
 #include "Core/ShaderUniformStateManTemplates.h"
