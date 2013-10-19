@@ -8,10 +8,12 @@ include(ExternalProject)
 #-----------------------------------------------------------------------
 # CPM configuration
 #-----------------------------------------------------------------------
+set(LIB_TARGET_NAME Spire)
+
 # To build this project you don't need to use CPM. This section is only
 # for those who wish to use CPM to configure and build Spire.
 
-if ((DEFINED CPM_DIR) and (DEFINED CPM_UNIQUE_ID))
+if ((DEFINED CPM_DIR) and (DEFINED CPM_UNIQUE_ID) and (DEFINED CPM_OUTPUT_LIB_NAME))
   # We are being built as a sub project. Use the primary project's CPM
   # so that we can take advantage of possible duplicate module versions.
   set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CPM_DIR})
@@ -24,6 +26,9 @@ if ((DEFINED CPM_DIR) and (DEFINED CPM_UNIQUE_ID))
   add_definitions("-DCPM_NAMESPACE=${CPM_UNIQUE_ID}")
 
   include_directories(${CPM_INCLUDE_DIRS})
+
+  # Set the target 
+  set(LIB_TARGET_NAME ${CPM_OUTPUT_LIB_NAME})
 else()
   # Clone CPM (if we need it to build modules) here.
   # See: http://github.com/iauns/cpm
@@ -177,15 +182,15 @@ file (GLOB Source_Core
 #-----------------------------------------------------------------------
 
 # Build the library.
-set(SPIRE_TARGET_NAME Spire)
-add_library(${SPIRE_TARGET_NAME}
+add_library(${LIB_TARGET_NAME}
   ${Source_Root}
   ${Source_Core}
   ${Source_GLEW_for_Windows}
   )
 
+# These libraries likely have no effect in the final build.
 target_link_libraries(
-  ${SPIRE_TARGET_NAME}
+  ${LIB_TARGET_NAME}
   ${OPENGL_LIBRARIES}
   ${CPM_LIBRARIES}
   )
