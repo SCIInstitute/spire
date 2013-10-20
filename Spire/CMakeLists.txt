@@ -16,7 +16,6 @@ set(LIB_TARGET_NAME Spire)
 if ((DEFINED CPM_DIR) AND (DEFINED CPM_UNIQUE_ID) AND (DEFINED CPM_OUTPUT_LIB_NAME))
   # We are being built as a sub project. Use the primary project's CPM
   # so that we can take advantage of possible duplicate module versions.
-  message("Spire CPM dir: ${CPM_DIR}")
   set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CPM_DIR})
   include(CPM)
 
