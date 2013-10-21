@@ -33,8 +33,8 @@
 #ifndef SPIRE_HIGH_GLMATHUTIL_H
 #define SPIRE_HIGH_GLMATHUTIL_H
 
+#include "cpm/cpm.h"
 #include "WinDLLExport.h"
-#include "CPM.h"
 #include "Math.h"
 
 CPM_NAMESPACE

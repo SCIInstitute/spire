@@ -39,7 +39,7 @@
 
 #include <string>
 #include <vector>
-#include "CPM.h"
+#include "cpm/cpm.h"
 
 CPM_NAMESPACE
 namespace Spire {

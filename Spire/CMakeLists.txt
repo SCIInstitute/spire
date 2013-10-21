@@ -43,7 +43,12 @@ else()
   include(${CPM_DIR}/CPM.cmake)
 endif()
 
+# Include CPM modules here.
+
+# Do the following only if we include spire...
+# do this AFTER we have included all other modules.
 include_directories(${CPM_INCLUDE_DIRS})
+CPM_INIT_MODULE("spire")
 
 # Normally we would add CPM modules here. But we aren't using CPM to package
 # any external modules. We are just a bare CPM module with 0 CPM dependencies.

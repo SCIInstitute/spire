@@ -35,7 +35,7 @@
 
 #include <string>
 #include <stdexcept>
-#include "CPM.h"
+#include "cpm/cpm.h"
 
 CPM_NAMESPACE
 namespace Spire {

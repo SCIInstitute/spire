@@ -33,7 +33,7 @@
 #define SPIRE_HIGH_GPUSTATEMANAGER_H
 
 #include <cstddef>
-#include "CPM.h"
+#include "cpm/cpm.h"
 
 CPM_NAMESPACE
 namespace Spire {
