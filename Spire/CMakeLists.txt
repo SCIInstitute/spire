@@ -23,7 +23,7 @@ if ((DEFINED CPM_DIR) AND (DEFINED CPM_UNIQUE_ID) AND (DEFINED CPM_OUTPUT_LIB_NA
   #       libraries, and other goodies such as definitions.
 
   # Define CPM_NAMESPACE to modify namespaces using unique ID.
-  add_definitions("-DCPM_NAMESPACE=${CPM_UNIQUE_ID}")
+  add_definitions("-DCPM_NAMESPACE=#ifndef ${CPM_UNIQUE_ID}\nnamespace ${CPM_UNIQUE_ID} {\n#else\n}\n#endif")
 
   include_directories(${CPM_INCLUDE_DIRS})
 
