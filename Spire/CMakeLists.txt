@@ -19,20 +19,31 @@ if ((DEFINED CPM_DIR) AND (DEFINED CPM_UNIQUE_ID) AND (DEFINED CPM_OUTPUT_LIB_NA
   set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CPM_DIR})
   include(CPM)
 
-  # TODO: Build a CPM function to setup include directory settings,
-  #       libraries, and other goodies such as definitions.
-
-  # Define CPM_NAMESPACE to modify namespaces using unique ID.
-  add_definitions("-DCPM_NAMESPACE=#ifndef ${CPM_UNIQUE_ID}\nnamespace ${CPM_UNIQUE_ID} {\n#else\n}\n#endif")
-
-  include_directories(${CPM_INCLUDE_DIRS})
-
-  # Set the target 
+  # Set the target based on the output library name.
   set(LIB_TARGET_NAME ${CPM_OUTPUT_LIB_NAME})
+  add_definitions("-DCPM_NAMESPACE_NAME=${CPM_UNIQUE_ID}")
 else()
-  # Clone CPM (if we need it to build modules) here.
-  # See: http://github.com/iauns/cpm
+  # Clone CPM.
+  set (CPM_DIR "${CMAKE_CURRENT_BINARY_DIR}/cpm-packages" CACHE TYPE STRING)
+
+  find_package(Git)
+  if(NOT GIT_FOUND)
+    message(FATAL_ERROR "CPM requires Git.")
+  endif()
+  if (NOT EXISTS ${CPM_DIR}/CPM.cmake)
+    execute_process(
+      COMMAND "${GIT_EXECUTABLE}" clone https://github.com/iauns/cpm ${CPM_DIR}
+      RESULT_VARIABLE error_code
+      OUTPUT_VARIABLE head_sha
+      )
+    if(error_code)
+      message(FATAL_ERROR "CPM failed to get the hash for HEAD")
+    endif()
+  endif()
+  include(${CPM_DIR}/CPM.cmake)
 endif()
+
+include_directories(${CPM_INCLUDE_DIRS})
 
 # Normally we would add CPM modules here. But we aren't using CPM to package
 # any external modules. We are just a bare CPM module with 0 CPM dependencies.

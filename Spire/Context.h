@@ -33,7 +33,7 @@
 #define SPIRE_CONTEXT_H
 
 #include "Core/WinDLLExport.h"
-#include "Core/CPM.h"
+#include "cpm/cpm.h"
 
 CPM_NAMESPACE
 namespace Spire {

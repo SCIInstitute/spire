@@ -37,8 +37,8 @@
 // Any ubiquitous header files.
 #include "GLInclude.h"
 
+#include "cpm/cpm.h"
 #include "../Interface.h"
-#include "CPM.h"
 #include "Math.h"
 #include "Log.h"
 
