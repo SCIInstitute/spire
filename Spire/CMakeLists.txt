@@ -8,7 +8,8 @@ include(ExternalProject)
 #-----------------------------------------------------------------------
 # CPM configuration
 #-----------------------------------------------------------------------
-set(LIB_TARGET_NAME Spire)
+set(CPM_MODULE_NAME "spire")
+set(LIB_TARGET_NAME ${CPM_MODULE_NAME})
 
 # To build this project you don't need to use CPM. This section is only
 # for those who wish to use CPM to configure and build Spire.
@@ -25,7 +26,6 @@ if ((DEFINED CPM_DIR) AND (DEFINED CPM_UNIQUE_ID) AND (DEFINED CPM_OUTPUT_LIB_NA
 else()
   # Clone CPM.
   set (CPM_DIR "${CMAKE_CURRENT_BINARY_DIR}/cpm-packages" CACHE TYPE STRING)
-
   find_package(Git)
   if(NOT GIT_FOUND)
     message(FATAL_ERROR "CPM requires Git.")
@@ -42,16 +42,16 @@ else()
   endif()
   include(${CPM_DIR}/CPM.cmake)
 endif()
+set(CPM_LAST_MODULE_NAME ${CPM_MODULE_NAME} PARENT_SCOPE)
 
-# Include CPM modules here.
+# Include CPM modules here. Must come before CPM_InitModule.
+#CPM_AddModule(GIT_REPOSITORY  "github repo"
+#              GIT_TAG         "origin/master")
 
 # Do the following only if we include spire...
 # do this AFTER we have included all other modules.
+CPM_InitModule(${CPM_MODULE_NAME})
 include_directories(${CPM_INCLUDE_DIRS})
-CPM_INIT_MODULE("spire")
-
-# Normally we would add CPM modules here. But we aren't using CPM to package
-# any external modules. We are just a bare CPM module with 0 CPM dependencies.
 
 #-----------------------------------------------------------------------
 # CMake Build Options

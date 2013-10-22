@@ -53,7 +53,7 @@
 #define SPIRE_DEFAULT_PASS "spire_default"
 
 #include "spire/cpm.h"
-CPM_NAMESPACE
+namespace CPM_NAMESPACE {
 namespace Spire {
 
 class Hub;
@@ -660,6 +660,6 @@ protected:
 };
 
 } // namespace spire
-CPM_NAMESPACE
+} // namespace CPM_NAMESPACE
 
 #endif // SPIRE_INTERFACE_H
