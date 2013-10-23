@@ -15,14 +15,12 @@ set(LIB_TARGET_NAME ${CPM_MODULE_NAME})
 # for those who wish to use CPM to configure and build Spire.
 
 if ((DEFINED CPM_DIR) AND (DEFINED CPM_UNIQUE_ID) AND (DEFINED CPM_OUTPUT_LIB_NAME))
+  set(LIB_TARGET_NAME ${CPM_OUTPUT_LIB_NAME})
+
   # We are being built as a sub project. Use the primary project's CPM
   # so that we can take advantage of possible duplicate module versions.
   set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CPM_DIR})
   include(CPM)
-
-  # Set the target based on the output library name.
-  set(LIB_TARGET_NAME ${CPM_OUTPUT_LIB_NAME})
-  add_definitions("-DCPM_NAMESPACE_NAME=${CPM_UNIQUE_ID}")
 else()
   # Clone CPM.
   set (CPM_DIR "${CMAKE_CURRENT_BINARY_DIR}/cpm-packages" CACHE TYPE STRING)
@@ -47,12 +45,9 @@ endif()
 #CPM_AddModule(GIT_REPOSITORY  "github repo"
 #              GIT_TAG         "origin/master")
 
-# Do the following only if we include spire...
-# do this AFTER we have included all other modules.
+# This call will ensure all include directories and definitions are present
+# in the target. These correspond to the modules that we added above.
 CPM_InitModule(${CPM_MODULE_NAME})
-message("CPM module: ${CPM_LAST_MODULE_NAME}")
-set(CPM_LAST_MODULE_NAME ${CPM_MODULE_NAME} PARENT_SCOPE)
-include_directories(${CPM_INCLUDE_DIRS})
 
 #-----------------------------------------------------------------------
 # CMake Build Options
