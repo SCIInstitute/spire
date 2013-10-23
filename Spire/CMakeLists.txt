@@ -50,6 +50,7 @@ endif()
 # Do the following only if we include spire...
 # do this AFTER we have included all other modules.
 CPM_InitModule(${CPM_MODULE_NAME})
+message("CPM module: ${CPM_LAST_MODULE_NAME}")
 include_directories(${CPM_INCLUDE_DIRS})
 
 #-----------------------------------------------------------------------
