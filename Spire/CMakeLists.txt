@@ -51,6 +51,7 @@ endif()
 # do this AFTER we have included all other modules.
 CPM_InitModule(${CPM_MODULE_NAME})
 message("CPM module: ${CPM_LAST_MODULE_NAME}")
+set(CPM_LAST_MODULE_NAME ${CPM_MODULE_NAME} PARENT_SCOPE)
 include_directories(${CPM_INCLUDE_DIRS})
 
 #-----------------------------------------------------------------------
