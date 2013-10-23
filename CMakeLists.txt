@@ -1,4 +1,0 @@
-# This only builds the spire library.
-CMAKE_MINIMUM_REQUIRED(VERSION 2.8 FATAL_ERROR)
-
-ADD_SUBDIRECTORY(Spire)
