@@ -42,7 +42,6 @@ else()
   endif()
   include(${CPM_DIR}/CPM.cmake)
 endif()
-set(CPM_LAST_MODULE_NAME ${CPM_MODULE_NAME} PARENT_SCOPE)
 
 # Include CPM modules here. Must come before CPM_InitModule.
 #CPM_AddModule(GIT_REPOSITORY  "github repo"
