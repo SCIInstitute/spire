@@ -185,13 +185,13 @@ include_directories(SYSTEM "${CMAKE_CURRENT_SOURCE_DIR}/3rdParty/glm" )
 # Globbing has some downsides, but the advantages outweigh the
 # disadvantages.
 file (GLOB Source_Root
-  "*.cpp"
-  "*.h"
+  "spire/*.cpp"
+  "spire/*.h"
   )
 
 file (GLOB Source_Core
-  "src/*.cpp"
-  "src/*.h"
+  "spire/src/*.cpp"
+  "spire/src/*.h"
   )
 
 #-----------------------------------------------------------------------
