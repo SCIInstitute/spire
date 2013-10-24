@@ -36,8 +36,8 @@
 #include "ShaderAttributeMan.h"
 #include "ShaderUniformMan.h"
 
-CPM_NAMESPACE
-namespace Spire {
+namespace CPM_SPIRE_NS {
+namespace spire {
 
 class ShaderProgramAsset : public BaseAsset
 {
@@ -95,7 +95,7 @@ private:
   Hub&      mHub;
 };
 
-} // namespace Spire
-CPM_NAMESPACE
+} // namespace spire
+} // namespace CPM_SPIRE_NS
 
 #endif 

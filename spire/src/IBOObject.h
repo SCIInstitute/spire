@@ -38,8 +38,8 @@
 #include "Common.h"
 #include "../Interface.h"
 
-CPM_NAMESPACE
-namespace Spire {
+namespace CPM_SPIRE_NS {
+namespace spire {
 
 /// Object that encapsulates an OpenGL index buffer. The buffer will be
 /// automatically deleted by IBOObject's destructor.
@@ -67,7 +67,7 @@ private:
   GLenum                    mType;       ///< Type of index buffer.
 };
 
-} // namespace Spire
-CPM_NAMESPACE
+} // namespace spire
+} // namespace CPM_SPIRE_NS
 
 #endif 

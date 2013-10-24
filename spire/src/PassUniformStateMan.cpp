@@ -35,8 +35,8 @@
 #include "Hub.h"
 #include "Exceptions.h"
 
-CPM_NAMESPACE
-namespace Spire {
+namespace CPM_SPIRE_NS {
+namespace spire {
 
 //------------------------------------------------------------------------------
 PassUniformStateMan::PassUniformStateMan(Hub& hub) :
@@ -179,6 +179,6 @@ std::string PassUniformStateMan::uniformAsString(const std::string& pass, const 
 }
 
 
-} // end of namespace Spire
-CPM_NAMESPACE
+} // namespace spire
+} // namespace CPM_SPIRE_NS
 

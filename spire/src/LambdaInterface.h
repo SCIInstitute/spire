@@ -33,12 +33,11 @@
 #define SPIRE_LAMBDA_INTERFACE_H
 
 #include <string>
-#include "WinDLLExport.h"
 #include "ShaderUniformStateManTemplates.h"
 #include "Hub.h"
 
-CPM_NAMESPACE
-namespace Spire {
+namespace CPM_SPIRE_NS {
+namespace spire {
 
 /// Class that encapsulates all functionality that an anonymous function passed
 /// into an interface would need access to in order to do meaningful work.
@@ -86,7 +85,7 @@ protected:
   std::string   mPass;
 };
 
-} // namespace Spire
-CPM_NAMESPACE
+} // namespace spire
+} // namespace CPM_SPIRE_NS
 
 #endif 

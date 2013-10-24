@@ -36,8 +36,8 @@
 
 #include "Hub.h"
 
-CPM_NAMESPACE
-namespace Spire {
+namespace CPM_SPIRE_NS {
+namespace spire {
 
 class InterfaceImplementation;
 
@@ -70,7 +70,7 @@ private:
   Hub::RemoteFunction mToCall;
 };
 
-} // namespace Spire
-CPM_NAMESPACE
+} // namespace spire
+} // namespace CPM_SPIRE_NS
 
 #endif 

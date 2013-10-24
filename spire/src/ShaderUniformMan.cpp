@@ -34,8 +34,8 @@
 
 #include "ShaderUniformMan.h"
 
-CPM_NAMESPACE
-namespace Spire {
+namespace CPM_SPIRE_NS {
+namespace spire {
 
 //------------------------------------------------------------------------------
 ShaderUniformMan::ShaderUniformMan()
@@ -505,6 +505,6 @@ void ShaderUniformMan::applyUniformGLState(std::shared_ptr<AbstractUniformStateI
   }
 }
 
-} // end of namespace Spire
-CPM_NAMESPACE
+} // namespace Spire
+} // namespace CPM_SPIRE_NS
 

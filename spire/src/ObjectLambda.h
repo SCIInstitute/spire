@@ -32,11 +32,10 @@
 #ifndef SPIRE_STUINTERFACE_LAMBDA_H
 #define SPIRE_STUINTERFACE_LAMBDA_H
 
-#include "WinDLLExport.h"
 #include "LambdaInterface.h"
 
-CPM_NAMESPACE
-namespace Spire {
+namespace CPM_SPIRE_NS {
+namespace spire {
 
 class SpireObject;
 
@@ -74,7 +73,7 @@ private:
   const SpireObject&   mObject;
 };
 
-} // namespace Spire
-CPM_NAMESPACE
+} // namespace spire
+} // namespace CPM_SPIRE_NS
 
 #endif 

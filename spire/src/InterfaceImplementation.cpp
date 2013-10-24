@@ -36,8 +36,8 @@
 #include "LambdaInterface.h"
 #include "ObjectLambda.h"
 
-CPM_NAMESPACE
-namespace Spire {
+namespace CPM_SPIRE_NS {
+namespace spire {
 
 // Simple static function to convert from PRIMITIVE_TYPES to GL types.
 // Not part of the class due to the return type (interface class should have
@@ -638,6 +638,6 @@ GLenum InterfaceImplementation::getGLType(Interface::DATA_TYPES type)
   return GL_FLOAT;
 }
 
-} // end of namespace Spire
-CPM_NAMESPACE
+} // namespace spire
+} // namespace CPM_SPIRE_NS
 

@@ -48,8 +48,8 @@
   #pragma warning(disable:4355)
 #endif
 
-CPM_NAMESPACE
-namespace Spire {
+namespace CPM_SPIRE_NS {
+namespace spire {
 
 //------------------------------------------------------------------------------
 Hub::Hub(std::shared_ptr<Context> context,
@@ -313,5 +313,6 @@ bool Hub::addFunctionToThreadQueue(const RemoteFunction& fun)
   return mInterfaceImpl->addFunctionToQueue(fun);
 }
 
-} // end of namespace Spire
-CPM_NAMESPACE
+} // namespace spire
+} // namespace CPM_SPIRE_NS
+

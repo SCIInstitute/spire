@@ -36,13 +36,12 @@
 #include <sstream>
 #include <vector>
 #include <stdexcept>
-#include "WinDLLExport.h"
 #include "Math.h"
 #include "GLMathUtil.h"
 #include "GLInclude.h"
 
-CPM_NAMESPACE
-namespace Spire {
+namespace CPM_SPIRE_NS {
+namespace spire {
 
 // A good list of these types are here:
 // http://www.opengl.org/sdk/docs/man/xhtml/glGetActiveUniform.xml .
@@ -192,7 +191,7 @@ public:
 };
 
 /// Abstract base class interface for a single uinform state item.
-class WIN_DLL AbstractUniformStateItem
+class AbstractUniformStateItem
 {
 public:
   AbstractUniformStateItem()            {}
@@ -618,7 +617,7 @@ private:
   float glMatrix[16];
 };
 
-} // namespace Spire 
-CPM_NAMESPACE
+} // namespace spire 
+} // namespace CPM_SPIRE_NS
 
 #endif 

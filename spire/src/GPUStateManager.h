@@ -33,10 +33,9 @@
 #define SPIRE_HIGH_GPUSTATEMANAGER_H
 
 #include <cstddef>
-#include "cpm/cpm.h"
 
-CPM_NAMESPACE
-namespace Spire {
+namespace CPM_SPIRE_NS {
+namespace spire {
 
 #define MAX_TEXTURE_UNITS 12
 #define MIN_TEXTURE_UNITS 4
@@ -199,7 +198,7 @@ protected:
   GPUState mInternalState;
 };
 
-} // namespace Spire
-CPM_NAMESPACE
+} // namespace spire
+} // namespace CPM_SPIRE_NS
 
 #endif 

@@ -54,7 +54,7 @@
 #endif
 
 namespace CPM_SPIRE_NS {
-namespace Spire {
+namespace spire {
 
 /// Derive all of your assets from this class.
 class BaseAsset
@@ -136,7 +136,7 @@ private:
 
 };
 
-} // namespace Spire
+} // namespace spire
 } // namespace CPM_SPIRE_NS
 
 #endif 

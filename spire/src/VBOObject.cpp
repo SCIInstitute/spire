@@ -31,8 +31,8 @@
 
 #include "VBOObject.h"
 
-CPM_NAMESPACE
-namespace Spire {
+namespace CPM_SPIRE_NS {
+namespace spire {
 
 //------------------------------------------------------------------------------
 VBOObject::VBOObject(std::shared_ptr<std::vector<uint8_t>> vboData,
@@ -74,6 +74,6 @@ void VBOObject::buildVBO(const uint8_t* vboData, const size_t vboLength,
   }
 }
 
-} // end of namespace Spire
-CPM_NAMESPACE
+} // namespace spire
+} // namespace CPM_SPIRE_NS
 

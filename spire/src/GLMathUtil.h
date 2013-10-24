@@ -33,12 +33,10 @@
 #ifndef SPIRE_HIGH_GLMATHUTIL_H
 #define SPIRE_HIGH_GLMATHUTIL_H
 
-#include "cpm/cpm.h"
-#include "WinDLLExport.h"
 #include "Math.h"
 
-CPM_NAMESPACE
-namespace Spire {
+namespace CPM_SPIRE_NS {
+namespace spire {
 
 void printM44(const M44& mat);
 
@@ -55,7 +53,7 @@ void WIN_DLL V4toArray3(const V4& in, float* out);
 void WIN_DLL V4toArray4(const V4& in, float* out);
 
 
-} // namespace Spire 
-CPM_NAMESPACE
+} // namespace spire 
+} // namespace CPM_SPIRE_NS
 
 #endif 

@@ -38,8 +38,8 @@
 #include "Common.h"
 #include "ShaderAttributeMan.h"
 
-CPM_NAMESPACE
-namespace Spire {
+namespace CPM_SPIRE_NS {
+namespace spire {
 
 //------------------------------------------------------------------------------
 // VBO object
@@ -75,7 +75,7 @@ private:
   ShaderAttributeCollection mAttributeCollection;
 };
 
-} // namespace Spire
-CPM_NAMESPACE
+} // namespace spire
+} // namespace CPM_SPIRE_NS
 
 #endif 

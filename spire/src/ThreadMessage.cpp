@@ -32,7 +32,8 @@
 #include "Hub.h"
 #include "ThreadMessage.h"
 
-namespace Spire {
+namespace CPM_SPIRE_NS {
+namespace spire {
 
 //------------------------------------------------------------------------------
 ThreadMessage::ThreadMessage()
@@ -63,4 +64,6 @@ void ThreadMessage::clear()
   mToCall = nullptr;
 }
 
-} // end of namespace Spire
+} // namespace spire
+} // namespace CPM_SPIRE_NS
+

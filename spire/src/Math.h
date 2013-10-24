@@ -69,8 +69,8 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include "cpm/cpm.h"
 
-CPM_NAMESPACE
-namespace Spire {
+namespace CPM_SPIRE_NS {
+namespace spire {
 
 //constexpr double pi() { return std::atan(1)*4; }
 /// \TODO: Change const back to constexpr
@@ -94,6 +94,6 @@ typedef glm::mat4            M44;
 typedef glm::quat            Quat;
 
 } // namespace spire
-CPM_NAMESPACE
+} // namespace CPM_SPIRE_NS
 
 #endif 

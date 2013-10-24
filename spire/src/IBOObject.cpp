@@ -31,8 +31,8 @@
 
 #include "IBOObject.h"
 
-CPM_NAMESPACE
-namespace Spire {
+namespace CPM_SPIRE_NS {
+namespace spire {
 
 IBOObject::IBOObject(std::shared_ptr<std::vector<uint8_t>> iboData,
                      Interface::IBO_TYPE type)
@@ -88,5 +88,6 @@ void IBOObject::buildIBOObject(const uint8_t* iboData, size_t iboDataSize,
   }
 }
 
-} // End of namespace spire
-CPM_NAMESPACE
+} // namespace spire
+} // namespace CPM_SPIRE_NS
+

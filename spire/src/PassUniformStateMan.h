@@ -37,14 +37,14 @@
 #include "WinDLLExport.h"
 #include "ShaderUniformStateManTemplates.h"
 
-CPM_NAMESPACE
-namespace Spire {
+namespace CPM_SPIRE_NS {
+namespace spire {
 
 class Hub;
 
 /// Unform state management. The currently available uniform state can be
 /// set and queried from this interface.
-class WIN_DLL PassUniformStateMan
+class PassUniformStateMan
 {
 public:
   PassUniformStateMan(Hub& hub);
@@ -112,7 +112,7 @@ private:
 };
 
 
-} // namespace Spire 
-CPM_NAMESPACE
+} // namespace spire 
+} // namespace CPM_SPIRE_NS
 
 #endif 

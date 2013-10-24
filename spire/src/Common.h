@@ -37,7 +37,6 @@
 // Any ubiquitous header files.
 #include "GLInclude.h"
 
-#include "cpm/cpm.h"
 #include "../Interface.h"
 #include "Math.h"
 #include "Log.h"
@@ -80,11 +79,10 @@
 # define GL_CHECK() 
 #endif
 
-CPM_NAMESPACE
-namespace Spire
-{
+namespace CPM_SPIRE_NS {
+namespace spire {
 
 } // namespace Spire
-CPM_NAMESPACE
+} // namespace CPM_SPIRE_NS
 
 #endif

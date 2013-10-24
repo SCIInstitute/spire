@@ -34,7 +34,7 @@
 #include "BaseAssetMan.h"
 
 namespace CPM_SPIRE_NS {
-namespace Spire {
+namespace spire {
 
 //------------------------------------------------------------------------------
 BaseAssetMan::BaseAssetMan()
@@ -144,6 +144,6 @@ size_t BaseAsset::hashString(const std::string& str)
   return std::hash<std::string>()(str);
 }
 
-} // namespace Spire
+} // namespace spire
 } // namespace CPM_SPIRE_NS
 

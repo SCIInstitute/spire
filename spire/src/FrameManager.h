@@ -29,10 +29,8 @@
 #ifndef SPIRE_HIGH_FRAMEMANAGER_H
 #define SPIRE_HIGH_FRAMEMANAGER_H
 
-#include "CPM.h"
-
-CPM_NAMESPACE
-namespace Spire {
+namespace CPM_SPIRE_NS {
+namespace spire {
 
 /// Manages the current frame.
 /// Attempts to intelligently tune scenes so that they run in real-time treating
@@ -47,6 +45,6 @@ private:
 };
 
 } // namespace spire
-CPM_NAMESPACE
+} // namespace CPM_SPIRE_NS
 
 #endif // SPIRE_HIGH_FRAMEMANAGER_H

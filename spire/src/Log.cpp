@@ -32,8 +32,8 @@
 #include "Log.h"
 #include "Exceptions.h"
 
-CPM_NAMESPACE
-namespace Spire {
+namespace CPM_SPIRE_NS {
+namespace spire {
 
 #ifdef SPIRE_USE_STD_THREADS
 std::mutex                      Log::mLogLookupLock;
@@ -254,6 +254,6 @@ void Log::logFunction(const std::string& msg, Interface::LOG_LEVEL level)
   mOutputFile.flush();
 }
 
-} // namespace Spire
-CPM_NAMESPACE
+} // namespace spire
+} // namespace CPM_SPIRE_NS
 

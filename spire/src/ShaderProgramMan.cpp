@@ -36,8 +36,8 @@
 #include "ShaderProgramMan.h"
 #include "ShaderMan.h"
 
-CPM_NAMESPACE
-namespace Spire {
+namespace CPM_SPIRE_NS {
+namespace spire {
 
 //------------------------------------------------------------------------------
 std::shared_ptr<ShaderProgramAsset>
@@ -254,6 +254,6 @@ std::shared_ptr<ShaderProgramAsset> ShaderProgramMan::findProgram(
 }
 
 
-} // namespace Spire
-CPM_NAMESPACE
+} // namespace spire
+} // namespace CPM_SPIRE_NS
 

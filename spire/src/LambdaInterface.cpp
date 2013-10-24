@@ -33,8 +33,8 @@
 #include "ShaderUniformMan.h"
 #include "LambdaInterface.h"
 
-CPM_NAMESPACE
-namespace Spire {
+namespace CPM_SPIRE_NS {
+namespace spire {
 
 //------------------------------------------------------------------------------
 unsigned int LambdaInterface::uniformToGLType(UNIFORM_TYPE type)
@@ -51,6 +51,6 @@ void LambdaInterface::uniformMatrix4fv(int location, size_t count, bool transpos
 }
 
 
-}
-CPM_NAMESPACE
+} // namespace spire
+} // namespace CPM_SPIRE_NS
 

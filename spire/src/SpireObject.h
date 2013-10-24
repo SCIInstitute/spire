@@ -43,8 +43,8 @@
 #include "VBOObject.h"
 #include "IBOObject.h"
 
-CPM_NAMESPACE
-namespace Spire {
+namespace CPM_SPIRE_NS {
+namespace spire {
 
 //------------------------------------------------------------------------------
 // ObjectPassobject
@@ -322,7 +322,7 @@ protected:
 };
 
 
-} // namespace Spire 
-CPM_NAMESPACE
+} // namespace spire 
+} // namespace CPM_SPIRE_NS
 
 #endif 
