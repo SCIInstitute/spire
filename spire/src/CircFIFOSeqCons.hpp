@@ -21,7 +21,7 @@
 #include <atomic>
 #include <cstddef>
 
-CPM_NAMESPACE
+namespace CPM_SPIRE_NS {
 namespace Spire {
 
 template<typename Element, size_t Size> 
@@ -114,7 +114,7 @@ size_t CircularFifo<Element, Size>::increment(size_t idx) const
 }
 
 
-} // Spire
-CPM_NAMESPACE
+} // namespace Spire
+} // namespace CPM_SPIRE_NS
 
 #endif /* CIRCULARFIFO_SEQUENTIAL_H_ */

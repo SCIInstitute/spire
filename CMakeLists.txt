@@ -9,13 +9,13 @@ include(ExternalProject)
 # CPM configuration
 #-----------------------------------------------------------------------
 set(CPM_MODULE_NAME "spire")
-set(LIB_TARGET_NAME ${CPM_MODULE_NAME})
+set(CPM_LIB_TARGET_NAME ${CPM_MODULE_NAME})
 
 # To build this project you don't need to use CPM. This section is only
 # for those who wish to use CPM to configure and build Spire.
 
 if ((DEFINED CPM_DIR) AND (DEFINED CPM_UNIQUE_ID) AND (DEFINED CPM_OUTPUT_LIB_NAME))
-  set(LIB_TARGET_NAME ${CPM_OUTPUT_LIB_NAME})
+  set(CPM_LIB_TARGET_NAME ${CPM_OUTPUT_LIB_NAME})
 
   # We are being built as a sub project. Use the primary project's CPM
   # so that we can take advantage of possible duplicate module versions.
@@ -199,7 +199,7 @@ file (GLOB Source_Core
 #-----------------------------------------------------------------------
 
 # Build the library.
-add_library(${LIB_TARGET_NAME}
+add_library(${CPM_LIB_TARGET_NAME}
   ${Source_Root}
   ${Source_Core}
   ${Source_GLEW_for_Windows}
@@ -207,7 +207,7 @@ add_library(${LIB_TARGET_NAME}
 
 # These libraries likely have no effect in the final build.
 target_link_libraries(
-  ${LIB_TARGET_NAME}
+  ${CPM_LIB_TARGET_NAME}
   ${OPENGL_LIBRARIES}
   ${CPM_LIBRARIES}
   )

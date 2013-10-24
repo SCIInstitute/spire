@@ -31,16 +31,16 @@
 
 #include <sstream>
 #include "Interface.h"
-#include "Core/Exceptions.h"
-#include "Core/Hub.h"
-#include "Core/Log.h"
-#include "Core/InterfaceImplementation.h"
-#include "Core/SpireObject.h"
+#include "src/Exceptions.h"
+#include "src/Hub.h"
+#include "src/Log.h"
+#include "src/InterfaceImplementation.h"
+#include "src/SpireObject.h"
 
 using namespace std::placeholders;
 
 CPM_NAMESPACE
-namespace Spire {
+namespace spire {
 
 //------------------------------------------------------------------------------
 Interface::Interface(std::shared_ptr<Context> context,
