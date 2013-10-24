@@ -32,10 +32,7 @@
 #ifndef SPIRE_CONTEXT_H
 #define SPIRE_CONTEXT_H
 
-#include "Core/WinDLLExport.h"
-#include "spire/cpm.h"
-
-CPM_NAMESPACE
+namespace CPM_SPIRE_NS {
 namespace Spire {
 
 /// Generalized OpenGL context.
@@ -44,7 +41,7 @@ namespace Spire {
 /// windows (better driver support).
 /// All functions contained herein must be thread safe as they will be executed
 /// from the Spire's thread.
-class WIN_DLL Context
+class Context
 {
 public:
   Context()             {}
@@ -64,6 +61,6 @@ private:
 };
 
 } // namespace spire
-CPM_NAMESPACE
+} // namespace CPM_SPIRE_NS
 
 #endif // SPIRE_CONTEXT_H

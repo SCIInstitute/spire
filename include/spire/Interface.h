@@ -43,17 +43,15 @@
 
 #include "Context.h"
 
-#include "Core/WinDLLExport.h"
-#include "Core/Math.h"  // Necessary in order to communicate vector types.
-#include "Core/ShaderUniformStateManTemplates.h"
-#include "Core/GPUStateManager.h"
+#include "../../src/Math.h"  // Necessary in order to communicate vector types.
+#include "../../src/ShaderUniformStateManTemplates.h"
+#include "../../src/GPUStateManager.h"
 
 /// \todo The following *really* wants to be a constexpr inside of StuInterface,
 /// when we upgrade to VS 2012, we should also upgrade this.
 #define SPIRE_DEFAULT_PASS "spire_default"
 
-#include "spire/cpm.h"
-namespace CPM_NAMESPACE {
+namespace CPM_SPIRE_NS {
 namespace Spire {
 
 class Hub;
@@ -660,6 +658,6 @@ protected:
 };
 
 } // namespace spire
-} // namespace CPM_NAMESPACE
+} // namespace CPM_SPIRE_NS
 
 #endif // SPIRE_INTERFACE_H
