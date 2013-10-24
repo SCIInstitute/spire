@@ -45,6 +45,11 @@ endif()
 #CPM_AddModule(GIT_REPOSITORY  "github repo"
 #              GIT_TAG         "origin/master")
 
+# Necessary Externals (to be added as CPM externals)
+# TODO: Auto-download GLM (https://github.com/g-truc/glm.git)
+# TODO: Auto-download GLEW on windows only since the other platforms don't need it.
+#       (https://github.com/nigels-com/glew.git)
+
 # This call will ensure all include directories and definitions are present
 # in the target. These correspond to the modules that we added above.
 CPM_InitModule(${CPM_MODULE_NAME})
