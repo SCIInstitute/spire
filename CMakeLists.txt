@@ -185,8 +185,8 @@ file (GLOB Source_Root
   )
 
 file (GLOB Source_Core
-  "Core/*.cpp"
-  "Core/*.h"
+  "src/*.cpp"
+  "src/*.h"
   )
 
 #-----------------------------------------------------------------------
