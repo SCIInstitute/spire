@@ -3,7 +3,6 @@
 #-----------------------------------------------------------------------
 
 cmake_minimum_required(VERSION 2.8.7 FATAL_ERROR)
-include(ExternalProject)
 
 #-----------------------------------------------------------------------
 # CPM configuration
@@ -29,6 +28,7 @@ else()
     message(FATAL_ERROR "CPM requires Git.")
   endif()
   if (NOT EXISTS ${CPM_DIR}/CPM.cmake)
+    message("Cloning CPM")
     execute_process(
       COMMAND "${GIT_EXECUTABLE}" clone https://github.com/iauns/cpm ${CPM_DIR}
       RESULT_VARIABLE error_code

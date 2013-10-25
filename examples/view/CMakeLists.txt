@@ -49,7 +49,7 @@ include(${CPM_DIR}/CPM.cmake)
 option(USE_STD_THREADS "Use standard library threads. If turned off, no threading support is available." ON)
 CPM_AddModule("spire"
   GIT_REPOSITORY "https://github.com/SCIInstitute/spire"
-  GIT_TAG "origin/master"
+  GIT_TAG "origin/concurrent"
   )
 
 # ++ MODULE: Spire SCIRun interface
@@ -139,8 +139,6 @@ add_executable(spireview
   ${View_Specific_Sources}
   ${MocSource} 
   ${UISource})
-
-add_dependencies(spireview ${CPM_LIBRARIES})
 
 target_link_libraries(spireview 
   ${CPM_LIBRARIES} 
