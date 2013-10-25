@@ -36,7 +36,6 @@
 #include <unordered_map>
 #include "ShaderUniformStateManTemplates.h"
 
-CPM_NAMESPACE
 namespace CPM_SPIRE_NS {
 namespace spire {
 

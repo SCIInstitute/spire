@@ -34,7 +34,6 @@
 
 #include <map>
 #include <unordered_map>
-#include "WinDLLExport.h"
 #include "ShaderUniformStateManTemplates.h"
 
 namespace CPM_SPIRE_NS {
