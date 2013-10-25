@@ -44,7 +44,7 @@ class Hub;
 
 /// Unform state management. The currently available uniform state can be
 /// set and queried from this interface.
-class WIN_DLL ShaderUniformStateMan
+class ShaderUniformStateMan
 {
 public:
   ShaderUniformStateMan(Hub& hub);

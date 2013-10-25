@@ -147,8 +147,8 @@ else(UNIX)
     add_definitions(-DGLEW_STATIC)
 
     # GLEW include directories and source.
-    include_directories(SYSTEM ${CMAKE_CURRENT_SOURCE_DIR}/3rdParty/glew/include)
-    set(Source_GLEW_for_Windows 3rdParty/glew/src/glew.c)
+    include_directories(SYSTEM ${CMAKE_CURRENT_SOURCE_DIR}/spire/3rdParty/glew/include)
+    set(Source_GLEW_for_Windows spire/3rdParty/glew/src/glew.c)
 
   endif(WIN32)
 endif(UNIX)
@@ -160,7 +160,7 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 # which I do not manage.
 # See: http://clang.llvm.org/docs/UsersManual.html#controlling-errors-and-warnings
 include_directories(SYSTEM
-  ${CMAKE_CURRENT_SOURCE_DIR}/3rdParty
+  ${CMAKE_CURRENT_SOURCE_DIR}/spire/3rdParty
   ${OPENGL_INCLUDE_DIRS})
 
 #-----------------------------------------------------------------------
@@ -168,7 +168,7 @@ include_directories(SYSTEM
 #-----------------------------------------------------------------------
 
 # Eigen include directory.
-include_directories(SYSTEM "${CMAKE_CURRENT_SOURCE_DIR}/3rdParty/eigen" )
+include_directories(SYSTEM "${CMAKE_CURRENT_SOURCE_DIR}/spire/3rdParty/eigen" )
 add_definitions(-DEIGEN_INITIALIZE_MATRICES_BY_ZERO)
 
 #-----------------------------------------------------------------------
@@ -176,7 +176,7 @@ add_definitions(-DEIGEN_INITIALIZE_MATRICES_BY_ZERO)
 #-----------------------------------------------------------------------
 
 # GLM include directory.
-include_directories(SYSTEM "${CMAKE_CURRENT_SOURCE_DIR}/3rdParty/glm" )
+include_directories(SYSTEM "${CMAKE_CURRENT_SOURCE_DIR}/spire/3rdParty/glm" )
 
 #-----------------------------------------------------------------------
 # Source

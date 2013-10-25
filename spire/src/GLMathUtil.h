@@ -45,12 +45,12 @@ void printM44(const M44& mat);
 // Internal format conversion to GL representation.
 // 
 //----------------------------------------------------------------------------------------
-void WIN_DLL M44toArray16(const M44& in, float* out);
-void WIN_DLL M33toArray9(const M33& in, float* out);
-void WIN_DLL V3toArray3(const V3& in, float* out);
-void WIN_DLL V3toArray4(const V3& in, float* out);
-void WIN_DLL V4toArray3(const V4& in, float* out);
-void WIN_DLL V4toArray4(const V4& in, float* out);
+void M44toArray16(const M44& in, float* out);
+void M33toArray9(const M33& in, float* out);
+void V3toArray3(const V3& in, float* out);
+void V3toArray4(const V3& in, float* out);
+void V4toArray3(const V4& in, float* out);
+void V4toArray4(const V4& in, float* out);
 
 
 } // namespace spire 

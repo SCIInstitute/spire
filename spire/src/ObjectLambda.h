@@ -40,7 +40,7 @@ namespace spire {
 class SpireObject;
 
 /// StuPipe interface lambda.
-class WIN_DLL ObjectLambdaInterface : public LambdaInterface
+class ObjectLambdaInterface : public LambdaInterface
 {
 public:
   ObjectLambdaInterface(Hub& hub, const std::string& pass, const SpireObject& object) :

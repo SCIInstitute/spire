@@ -41,7 +41,7 @@ namespace spire {
 
 /// Class that encapsulates all functionality that an anonymous function passed
 /// into an interface would need access to in order to do meaningful work.
-class WIN_DLL LambdaInterface
+class LambdaInterface
 {
 public:
   LambdaInterface(Hub& hub, const std::string& pass) :
