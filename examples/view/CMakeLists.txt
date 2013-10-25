@@ -15,54 +15,59 @@ option(USE_SCIRUN_INTERFACE "Use the SCIRun interface module." ON)
 option(USE_LOCAL_SPIRE "Will use a local version of spire instead of downloading from its git repo." ON)
 option(USE_LOCAL_SPIRE_SCIRUN "Will use a local version of the spire-scirun module instead of downloading from its git repo." OFF)
 
-#-----------------------------------------------------------------------
-# Setup spire
-#-----------------------------------------------------------------------
+#------------------------------------------------------------------------------
+# Required CPM Setup - See: http://github.com/iauns/cpm
+#------------------------------------------------------------------------------
+set (CPM_DIR "${CMAKE_CURRENT_BINARY_DIR}/cpm-packages" CACHE TYPE STRING)
+if (${CPM_DIR} MATCHES "${CMAKE_CURRENT_BINARY_DIR}")
+  message("NOTE: Placing CPM in the binary directory is not recommended.")
+  message("      Place CPM alongside the binary directory so that you don't need to")
+  message("      recompile your modules everytime you clean your project.")
+  message("      Use the CPM_DIR variable to set the CPM directory.")
+endif ()
 
-# Ensure CMAKE_MODULE_PATH includes path to Spire's SpirePM.cmake.
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/../../CMake)
-include(SpirePM)
-
-# Determine if we should use threading.
-set(SPIRE_OPTIONS)
-option(USE_STD_THREADS "Use standard library threads. If turned off, no threading support is available." ON)
-if (USE_STD_THREADS)
-  set(SPIRE_OPTIONS ${SPIRE_OPTIONS} "USE_STD_THREADS;ON")
-else()
-  set(SPIRE_OPTIONS ${SPIRE_OPTIONS} "USE_STD_THREADS;OFF")
+find_package(Git)
+if(NOT GIT_FOUND)
+  message(FATAL_ERROR "CPM requires Git.")
 endif()
-
-# Add target shader and asset directories. Be careful of modules overwriting
-# your existing shaders.
-set(SPIRE_OPTIONS ${SPIRE_OPTIONS} "SHADER_OUTPUT_DIR;${CMAKE_CURRENT_BINARY_DIR}/Shaders")
-set(SPIRE_OPTIONS ${SPIRE_OPTIONS} "ASSET_OUTPUT_DIR;${CMAKE_CURRENT_BINARY_DIR}/Assets")
-
-# Add core spire library. Either download it or use a local version.
-set(SPIRE_CORE "Spire_Core_EP")
-if (USE_LOCAL_SPIRE)
-  Spire_AddCore(${SPIRE_CORE} ${SPIRE_OPTIONS}
-    SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../..")
-else()
-  Spire_AddCore(${SPIRE_CORE} ${SPIRE_OPTIONS})
-endif()
-
-# Add SCIRun interface if requested.
-if (USE_SCIRUN_INTERFACE)
-  add_definitions(-DUSE_SCIRUN_INTERFACE)
-
-  if (USE_LOCAL_SPIRE_SCIRUN)
-    Spire_AddModule(${SPIRE_CORE} SCIRun "https://github.com/iauns/spire-scirun" "origin/master"
-      SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../../../SpireExt/SCIRun")
-  else()
-    Spire_AddModule(${SPIRE_CORE} SCIRun "https://github.com/iauns/spire-scirun" "origin/master")
+if (NOT EXISTS ${CPM_DIR}/CPM.cmake)
+  execute_process(
+    COMMAND "${GIT_EXECUTABLE}" clone https://github.com/iauns/cpm ${CPM_DIR}
+    RESULT_VARIABLE error_code
+    OUTPUT_VARIABLE head_sha
+    )
+  if(error_code)
+    message(FATAL_ERROR "CPM failed to get the hash for HEAD")
   endif()
 endif()
+include(${CPM_DIR}/CPM.cmake)
 
-# Include / library directories placed in-scope by Spire_AddCore and Spire_AddModule.
-link_directories(${SPIRE_LIBRARY_DIRS})
-include_directories(${SPIRE_INCLUDE_DIR})
-include_directories(${SPIRE_MODULE_INCLUDE_DIRS})
-include_directories(SYSTEM ${SPIRE_3RDPARTY_INCLUDE_DIRS})
+# ++ MODULE: Spire
+# Include spire first, then the scirun interface. USE_STD_THREADS will be
+# exposed to spire. Threads will be removed from spire in the near future,
+# so this option will go away.
+option(USE_STD_THREADS "Use standard library threads. If turned off, no threading support is available." ON)
+CPM_AddModule("spire"
+  GIT_REPOSITORY "https://github.com/SCIInstitute/spire"
+  GIT_TAG "origin/master"
+  )
+
+# ++ MODULE: Spire SCIRun interface
+if (USE_SCIRUN_INTERFACE)
+  add_definitions(-DUSE_SCIRUN_INTERFACE)
+  # Set various options for spire-scirun. In this case, the shader and
+  # asset directories.
+  set(SHADER_OUTPUT_DIR ${CMAKE_CURRENT_BINARY_DIR}/Shaders)
+  set(ASSET_OUTPUT_DIR ${CMAKE_CURRENT_BINARY_DIR}/Assets)
+  CPM_AddModule("spire_scirun"
+    GIT_REPOSITORY "https://github.com/iauns/spire-scirun"
+    GIT_TAG "origin/master"
+    )
+  set(SHADER_OUTPUT_DIR)
+  set(ASSET_OUTPUT_DIR)
+endif()
+
+CPM_Finish()
 
 #-----------------------------------------------------------------------
 # Compiler settings
@@ -135,10 +140,10 @@ add_executable(spireview
   ${MocSource} 
   ${UISource})
 
-add_dependencies(spireview ${SPIRE_LIBRARIES})
+add_dependencies(spireview ${CPM_LIBRARIES})
 
 target_link_libraries(spireview 
-  ${SPIRE_LIBRARIES} 
+  ${CPM_LIBRARIES} 
   ${QT_OPENGL_LIBRARY}
   ${OPENGL_LIBRARIES}
   ${QT_LIBRARIES})
