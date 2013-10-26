@@ -39,7 +39,7 @@
 #include <boost/filesystem.hpp>
 
 // Include vector library.
-#include "../../Spire/Core/Math.h"
+#include "../../spire/src/Math.h"
 
 // Devil image library.
 #include <IL/il.h>
