@@ -14,7 +14,7 @@ before_install:
 # For QT support:
 # sudo apt-get install libqt4-dev qt4-qmake
 
-script: mkdir bin && cd bin && cmake -DUSE_OS_MESA=ON ../examples/batch && make && ./spirebatch
+script: mkdir bin && cd bin && cmake -DUSE_OS_MESA=ON ../test/batch && make && ./spirebatch
 branches:
   only:
     - master
