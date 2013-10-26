@@ -199,7 +199,6 @@ file (GLOB Source_Core
 #-----------------------------------------------------------------------
 
 # Build the library.
-message("SPIRE Target name: ${CPM_LIB_TARGET_NAME}")
 add_library(${CPM_LIB_TARGET_NAME}
   ${Source_Root}
   ${Source_Core}
