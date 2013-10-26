@@ -44,8 +44,8 @@ TestCamera::TestCamera() :
   setAsPerspective();
 
   // Camera looking down positive Z axis, located at -5.0f z.
-  Spire::M44 cam;
-  cam[3] = Spire::V4(0.0f, 0.0f, 5.0f, 1.0f);
+  spire::M44 cam;
+  cam[3] = spire::V4(0.0f, 0.0f, 5.0f, 1.0f);
 
   setViewTransform(cam);
 }
@@ -60,8 +60,8 @@ void TestCamera::setAsPerspective()
 {
   mPerspective = true;
 
-  float aspect = static_cast<float>(Spire::GlobalTestEnvironment::instance()->getScreenWidth()) / 
-                 static_cast<float>(Spire::GlobalTestEnvironment::instance()->getScreenHeight());
+  float aspect = static_cast<float>(spire::GlobalTestEnvironment::instance()->getScreenWidth()) / 
+                 static_cast<float>(spire::GlobalTestEnvironment::instance()->getScreenHeight());
   mP = glm::perspective(mFOV, aspect, mZNear, mZFar);
 }
 
@@ -76,7 +76,7 @@ void TestCamera::setAsOrthographic(float halfWidth, float halfHeight)
 }
 
 //------------------------------------------------------------------------------
-void TestCamera::setViewTransform(const Spire::M44& trafo)
+void TestCamera::setViewTransform(const spire::M44& trafo)
 {
   ++mTrafoSeq;
 
@@ -86,7 +86,7 @@ void TestCamera::setViewTransform(const Spire::M44& trafo)
 }
 
 //------------------------------------------------------------------------------
-void TestCamera::setCommonUniforms(std::shared_ptr<Spire::Interface> iface)
+void TestCamera::setCommonUniforms(std::shared_ptr<spire::Interface> iface)
 {
   // Update appropriate uniforms.
   iface->addGlobalUniform(std::get<0>(TestCommonUniforms::getToCameraToProjection()), mPIV);
@@ -95,8 +95,8 @@ void TestCamera::setCommonUniforms(std::shared_ptr<Spire::Interface> iface)
 
   // We project down the negative Z axis. Hence the negation of the camera's
   // 'at' vector.
-  iface->addGlobalUniform(std::get<0>(TestCommonUniforms::getCameraViewVec()), -Spire::V3(mV[2].xyz()));
-  iface->addGlobalUniform(std::get<0>(TestCommonUniforms::getCameraUpVec()), Spire::V3(mV[1].xyz()));
+  iface->addGlobalUniform(std::get<0>(TestCommonUniforms::getCameraViewVec()), -spire::V3(mV[2].xyz()));
+  iface->addGlobalUniform(std::get<0>(TestCommonUniforms::getCameraUpVec()), spire::V3(mV[1].xyz()));
 }
 
 

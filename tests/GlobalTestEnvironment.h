@@ -34,11 +34,9 @@
 
 #include <exception>
 
+#include "namespaces.h"
 #include "gtest/gtest.h"
 #include "Spire/Interface.h"
-
-namespace Spire
-{
 
 /// Abstract class expected to be initialized and placed in the google testing
 /// environment.
@@ -53,7 +51,7 @@ public:
     return mInstance;
   }
 
-  virtual std::shared_ptr<Spire::Context>   getContext() const = 0;
+  virtual std::shared_ptr<spire::Context>   getContext() const = 0;
 
   // Writes the current FBO to the designated file. Should be a valid image file.
   virtual void writeFBO(const std::string& file) = 0;
@@ -72,7 +70,5 @@ protected:
   
   static GlobalTestEnvironment* mInstance;
 };
-
-} // namespace Spire
 
 #endif 

@@ -34,7 +34,8 @@
 
 #include <tuple>
 
-#include "Spire/Core/ShaderUniformStateManTemplates.h"
+#include "namespaces.h"
+#include "spire/src/ShaderUniformStateManTemplates.h"
 
 /// Common uniforms used by Spire.
 /// \todo Look into the ability to rename these uniforms in the future. This is
@@ -49,8 +50,8 @@ public:
   // Common transformations
   //----------------------------------------------------------------------------
 
-  static std::tuple<const char*, Spire::UNIFORM_TYPE> getObjectToWorldTrafo()
-  {return std::make_pair("objToWorld", Spire::UNIFORM_FLOAT_MAT4);}
+  static std::tuple<const char*, spire::UNIFORM_TYPE> getObjectToWorldTrafo()
+  {return std::make_pair("objToWorld", spire::UNIFORM_FLOAT_MAT4);}
 
 };
 

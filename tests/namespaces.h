@@ -27,9 +27,16 @@
 */
 
 /// \author James Hughes
-/// \date   February 2013
+/// \date   October 2013
 
-#include "GlobalTestEnvironment.h"
+#ifndef NAMESPACES_H
+#define NAMESPACES_H
 
-GlobalTestEnvironment* GlobalTestEnvironment::mInstance = nullptr;
+// 'Forward declaration' of namespaces.
+namespace CPM_SPIRE_NS {}
+
+// Renaming namespaces in our top level.
+namespace spire = CPM_SPIRE_NS;
+
+#endif 
 

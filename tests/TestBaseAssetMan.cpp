@@ -29,11 +29,5 @@
 /// \author James Hughes
 /// \date   January 2013
 
-#include "Spire/Core/Common.h"
+#include "spire/src/Common.h"
 
-namespace Spire {
-
-/// \todo Make a fake of BaseAssetMan and use it to test.
-///       We should test timings, add, remove, and find.
-
-} // end of namespace Spire

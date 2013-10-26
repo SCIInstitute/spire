@@ -33,9 +33,10 @@
 #define SPIRE_TESTS_TESTCAMERA_H
 
 // Include spire interface so that we have access to the mathematical types.
-#include "Spire/Core/Common.h"
+#include "namespaces.h"
+#include "spire/src/Common.h"
 
-namespace Spire {
+namespace spire {
 class StuInterface;
 }
 
@@ -49,9 +50,9 @@ public:
   // IV = Inverse view matrix
   // P  = Projection matrix
   // m  = multiplication
-  const Spire::M44& getWorldToProjection() const     {return mPIV;}      // P * IV
-  const Spire::M44& getWorldToView() const           {return mIV;}       // IV
-  const Spire::M44& getViewToProjection() const      {return mP;}        // P
+  const spire::M44& getWorldToProjection() const     {return mPIV;}      // P * IV
+  const spire::M44& getWorldToView() const           {return mIV;}       // IV
+  const spire::M44& getViewToProjection() const      {return mP;}        // P
 
   /// Sets this camera to use a perspective projection transformation.
   void setAsPerspective();
@@ -60,23 +61,23 @@ public:
   void setAsOrthographic(float halfWidth, float halfHeight);
 
   /// Sets the current view transform (view to world space).
-  void setViewTransform(const Spire::M44& view);
+  void setViewTransform(const spire::M44& view);
 
   /// Default camera settings
   /// @{
-  static float getDefaultFOVY()   {return 32.0f * (Spire::PI / 180.0f);}
+  static float getDefaultFOVY()   {return 32.0f * (spire::PI / 180.0f);}
   static float getDefaultZNear()  {return 0.1f;}
   static float getDefaultZFar()   {return 1350.0f;}
   /// @}
 
-  void setCommonUniforms(std::shared_ptr<Spire::Interface> iface);
+  void setCommonUniforms(std::shared_ptr<spire::Interface> iface);
 
 private:
 
-  Spire::M44            mPIV;         ///< Projection * Inverse View transformation.
-  Spire::M44            mIV;          ///< Inverse view transformation.
-  Spire::M44            mV;           ///< View matrix.
-  Spire::M44            mP;           ///< Projection transformation.
+  spire::M44            mPIV;         ///< Projection * Inverse View transformation.
+  spire::M44            mIV;          ///< Inverse view transformation.
+  spire::M44            mV;           ///< View matrix.
+  spire::M44            mP;           ///< Projection transformation.
   size_t                mTrafoSeq;    ///< Current sequence of the view transform.
                                       ///< Helps us determine when a camera is 'dirty'.
 
@@ -88,3 +89,4 @@ private:
 };
 
 #endif // SPIRE_HIGH_CAMERA_H
+

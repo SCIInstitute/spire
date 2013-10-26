@@ -1,3 +1,4 @@
+
 if(APPLE)
   cmake_minimum_required(VERSION 2.8.11 FATAL_ERROR)
 else()
@@ -8,7 +9,7 @@ include(ExternalProject)
 project(SpireBatchRenderer)
 
 # Base tests directory.
-set (BASE_TESTS_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../../Tests)
+set (BASE_TESTS_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../../tests)
 
 option(USE_OS_MESA "Use an OS mesa context." OFF)
 if (USE_OS_MESA)
@@ -16,40 +17,46 @@ if (USE_OS_MESA)
   set(MESA_LIBRARIES "OSMesa32")
 endif()
 
+#------------------------------------------------------------------------------
+# Required CPM Setup - See: http://github.com/iauns/cpm
+#------------------------------------------------------------------------------
+set(CPM_DIR "${CMAKE_CURRENT_BINARY_DIR}/cpm-packages" CACHE TYPE STRING)
+if(${CPM_DIR} MATCHES "${CMAKE_CURRENT_BINARY_DIR}")
+  message("NOTE: Placing CPM in the binary directory is not recommended.")
+  message("      Place CPM alongside the binary directory so that you don't need to")
+  message("      recompile your modules everytime you clean your project.")
+  message("      Use the CPM_DIR variable to set the CPM directory.")
+endif()
+
+find_package(Git)
+if(NOT GIT_FOUND)
+  message(FATAL_ERROR "CPM requires Git.")
+endif()
+if (NOT EXISTS ${CPM_DIR}/CPM.cmake)
+  execute_process(
+    COMMAND "${GIT_EXECUTABLE}" clone https://github.com/iauns/cpm ${CPM_DIR}
+    RESULT_VARIABLE error_code
+    OUTPUT_VARIABLE head_sha
+    )
+  if(error_code)
+    message(FATAL_ERROR "CPM failed to get the hash for HEAD")
+  endif()
+endif()
+include(${CPM_DIR}/CPM.cmake)
+
+set(USE_STD_THREADS OFF)
+CPM_AddModule("spire"
+  GIT_REPOSITORY "https://github.com/SCIInstitute/spire"
+  GIT_TAG "origin/concurrent"
+  )
+set(USE_STD_THREADS)
+
+CPM_Finish()
+
 #-----------------------------------------------------------------------
 # Configure OpenGL
 #-----------------------------------------------------------------------
 find_package(OpenGL REQUIRED)
-
-#-----------------------------------------------------------------------
-# Setup spire
-#-----------------------------------------------------------------------
-
-# Ensure CMAKE_MODULE_PATH includes path to Spire's SpirePM.cmake.
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/../../CMake)
-include(SpirePM)
-
-# Disabling threading for debugging and exception capture purposes.
-set (SPIRE_OPTIONS ${SPIRE_OPTIONS} "USE_STD_THREADS;OFF")
-
-# Use the local version of spire.
-set(SPIRE_CORE "Spire_Core_EP")
-Spire_AddCore(${SPIRE_CORE} ${SPIRE_OPTIONS} SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../..")
-
-# Include / library directories placed in-scope by Spire_AddCore and Spire_AddModule.
-link_directories(${SPIRE_LIBRARY_DIRS})
-include_directories(${SPIRE_INCLUDE_DIR})
-include_directories(${SPIRE_MODULE_INCLUDE_DIRS})
-include_directories(SYSTEM ${SPIRE_3RDPARTY_INCLUDE_DIRS})
-
-#-----------------------------------------------------------------------
-# Find and configure Git
-#-----------------------------------------------------------------------
-
-find_package(Git)
-if(NOT GIT_FOUND)
-  message(FATAL_ERROR "Git not found.")
-endif()
 
 #-----------------------------------------------------------------------
 # Grab Regression Data From GitHub
@@ -153,7 +160,6 @@ include_directories(SYSTEM ${BASE_TESTS_DIR}/3rdParty/gtest/include)
 # CImg
 INCLUDE_DIRECTORIES(SYSTEM "${CMAKE_CURRENT_SOURCE_DIR}/3rdParty/CImg" )
 
-
 #-----------------------------------------------------------------------
 # Setup strict warnings and werror
 #-----------------------------------------------------------------------
@@ -204,14 +210,13 @@ add_executable(spirebatch
   ${CommonSources}
   ${TestSources}
   ${SpecificSources}
-  ${Source_GLEW_for_Windows} )
+  ${Source_GLEW_for_Windows})
 
-add_dependencies(spirebatch ${SPIRE_LIBRARIES})
+add_dependencies(spirebatch ${CPM_LIBRARIES})
 
-message("Spire libraries: ${SPIRE_LIBRARIES}")
 target_link_libraries(spirebatch 
   gtest
-  ${SPIRE_LIBRARIES}
+  ${CPM_LIBRARIES}
   ${MESA_LIBRARIES}
   ${OPENGL_LIBRARIES}
   ${OS_SPECIFIC_LIBS})

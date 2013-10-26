@@ -30,19 +30,20 @@
 /// \date   February 2013
 
 #include "GlobalTestEnvironment.h"
+#include "namespaces.h"
 
-#include "Spire/Core/Common.h"
-#include "Spire/Core/Exceptions.h"
-#include "Spire/Core/SpireObject.h"
-#include "Spire/Core/FileUtil.h"
-#include "Spire/Core/LambdaInterface.h"
-#include "Spire/Core/ObjectLambda.h"
+#include "spire/src/Common.h"
+#include "spire/src/Exceptions.h"
+#include "spire/src/SpireObject.h"
+#include "spire/src/FileUtil.h"
+#include "spire/src/LambdaInterface.h"
+#include "spire/src/ObjectLambda.h"
 
 #include "TestCommonUniforms.h"
 #include "TestCommonAttributes.h"
 #include "CommonTestFixtures.h"
 
-using namespace Spire;
+using namespace spire;
 
 namespace {
 
@@ -415,16 +416,16 @@ TEST_F(InterfaceTestFixture, TestTriangle)
 
   std::string targetImage = TEST_IMAGE_OUTPUT_DIR;
   targetImage += "/" + imageName;
-  Spire::GlobalTestEnvironment::instance()->writeFBO(targetImage);
+  spire::GlobalTestEnvironment::instance()->writeFBO(targetImage);
 
-  EXPECT_TRUE(Spire::fileExists(targetImage)) << "Failed to write output image! " << targetImage;
+  EXPECT_TRUE(spire::fileExists(targetImage)) << "Failed to write output image! " << targetImage;
 
 #ifdef TEST_PERCEPTUAL_COMPARE
   // Perform the perceptual comparison using the given regression directory.
   std::string compImage = TEST_IMAGE_COMPARE_DIR;
   compImage += "/" + imageName;
 
-  ASSERT_TRUE(Spire::fileExists(compImage)) << "Failed to find comparison image! " << compImage;
+  ASSERT_TRUE(spire::fileExists(compImage)) << "Failed to find comparison image! " << compImage;
   // Test using perceptula comparison program that the user has provided
   // (hopefully).
   std::string command = TEST_PERCEPTUAL_COMPARE_BINARY;
@@ -678,16 +679,16 @@ TEST_F(InterfaceTestFixture, TestRenderingWithSR5Object)
 
   std::string targetImage = TEST_IMAGE_OUTPUT_DIR;
   targetImage += "/" + imageName;
-  Spire::GlobalTestEnvironment::instance()->writeFBO(targetImage);
+  spire::GlobalTestEnvironment::instance()->writeFBO(targetImage);
 
-  EXPECT_TRUE(Spire::fileExists(targetImage)) << "Failed to write output image! " << targetImage;
+  EXPECT_TRUE(spire::fileExists(targetImage)) << "Failed to write output image! " << targetImage;
 
 #ifdef TEST_PERCEPTUAL_COMPARE
   // Perform the perceptual comparison using the given regression directory.
   std::string compImage = TEST_IMAGE_COMPARE_DIR;
   compImage += "/" + imageName;
 
-  ASSERT_TRUE(Spire::fileExists(compImage)) << "Failed to find comparison image! " << compImage;
+  ASSERT_TRUE(spire::fileExists(compImage)) << "Failed to find comparison image! " << compImage;
   // Test using perceptula comparison program that the user has provided
   // (hopefully).
   std::string command = TEST_PERCEPTUAL_COMPARE_BINARY;
@@ -779,16 +780,16 @@ TEST_F(InterfaceTestFixture, TestRenderingWithAttributes)
 
   std::string targetImage = TEST_IMAGE_OUTPUT_DIR;
   targetImage += "/" + imageName;
-  Spire::GlobalTestEnvironment::instance()->writeFBO(targetImage);
+  spire::GlobalTestEnvironment::instance()->writeFBO(targetImage);
 
-  EXPECT_TRUE(Spire::fileExists(targetImage)) << "Failed to write output image! " << targetImage;
+  EXPECT_TRUE(spire::fileExists(targetImage)) << "Failed to write output image! " << targetImage;
 
 #ifdef TEST_PERCEPTUAL_COMPARE
   // Perform the perceptual comparison using the given regression directory.
   std::string compImage = TEST_IMAGE_COMPARE_DIR;
   compImage += "/" + imageName;
 
-  ASSERT_TRUE(Spire::fileExists(compImage)) << "Failed to find comparison image! " << compImage;
+  ASSERT_TRUE(spire::fileExists(compImage)) << "Failed to find comparison image! " << compImage;
   // Test using perceptula comparison program that the user has provided
   // (hopefully).
   std::string command = TEST_PERCEPTUAL_COMPARE_BINARY;
@@ -819,8 +820,8 @@ TEST_F(InterfaceTestFixture, TestRenderingWithOutOfOrderAttributes)
   std::string shader1 = "DirPhong";
   mSpire->addPersistentShader(
       shader1, 
-      { std::make_tuple("DirPhong.vsh", Spire::Interface::VERTEX_SHADER), 
-        std::make_tuple("DirPhong.fsh", Spire::Interface::FRAGMENT_SHADER),
+      { std::make_tuple("DirPhong.vsh", spire::Interface::VERTEX_SHADER), 
+        std::make_tuple("DirPhong.fsh", spire::Interface::FRAGMENT_SHADER),
       });
 
   // Setup VBO / IBO.
@@ -894,16 +895,16 @@ TEST_F(InterfaceTestFixture, TestRenderingWithOutOfOrderAttributes)
 #ifdef TEST_OUTPUT_IMAGES
   std::string targetImage = TEST_IMAGE_OUTPUT_DIR;
   targetImage += "/" + testFileName ;
-  Spire::GlobalTestEnvironment::instance()->writeFBO(targetImage);
+  spire::GlobalTestEnvironment::instance()->writeFBO(targetImage);
 
-  EXPECT_TRUE(Spire::fileExists(targetImage)) << "Failed to write output image! " << targetImage;
+  EXPECT_TRUE(spire::fileExists(targetImage)) << "Failed to write output image! " << targetImage;
 
 #ifdef TEST_PERCEPTUAL_COMPARE
   // Perform the perceptual comparison using the given regression directory.
   std::string compImage = TEST_IMAGE_COMPARE_DIR;
   compImage += "/" + testFileName ;
 
-  ASSERT_TRUE(Spire::fileExists(compImage)) << "Failed to find comparison image! " << compImage;
+  ASSERT_TRUE(spire::fileExists(compImage)) << "Failed to find comparison image! " << compImage;
   // Test using perceptula comparison program that the user has provided
   // (hopefully).
   std::string command = TEST_PERCEPTUAL_COMPARE_BINARY;

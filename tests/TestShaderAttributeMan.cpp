@@ -30,11 +30,12 @@
 /// \date   December 2012
 
 #include <gtest/gtest.h>
-#include "Spire/Core/Common.h"
-#include "Spire/Core/Exceptions.h"
-#include "Spire/Core/ShaderAttributeMan.h"
+#include "namespaces.h"
+#include "spire/src/Common.h"
+#include "spire/src/Exceptions.h"
+#include "spire/src/ShaderAttributeMan.h"
 
-using namespace Spire;
+using namespace spire;
 
 namespace {
 
@@ -94,10 +95,10 @@ protected:
 
   void addDefaultAttributes()
   {
-    mAttribMan.addAttribute("aPos",         3,  false,  sizeof(float) * 3,  Spire::Interface::TYPE_FLOAT);
-    mAttribMan.addAttribute("aNormal",      3,  false,  sizeof(float) * 3,  Spire::Interface::TYPE_FLOAT);
-    mAttribMan.addAttribute("aColorFloat",  4,  false,  sizeof(float) * 4,  Spire::Interface::TYPE_FLOAT);
-    mAttribMan.addAttribute("aColor",       4,  true,   sizeof(char) * 4,   Spire::Interface::TYPE_UBYTE);
+    mAttribMan.addAttribute("aPos",         3,  false,  sizeof(float) * 3,  spire::Interface::TYPE_FLOAT);
+    mAttribMan.addAttribute("aNormal",      3,  false,  sizeof(float) * 3,  spire::Interface::TYPE_FLOAT);
+    mAttribMan.addAttribute("aColorFloat",  4,  false,  sizeof(float) * 4,  spire::Interface::TYPE_FLOAT);
+    mAttribMan.addAttribute("aColor",       4,  true,   sizeof(char) * 4,   spire::Interface::TYPE_UBYTE);
   }
 
   ShaderAttributeMan  mAttribMan;
@@ -182,10 +183,10 @@ protected:
 
   void addDefaultAttributes()
   {
-    mAttribMan.addAttribute("aPos",         3,  false,  sizeof(float) * 3,  Spire::Interface::TYPE_FLOAT);
-    mAttribMan.addAttribute("aNormal",      3,  false,  sizeof(float) * 3,  Spire::Interface::TYPE_FLOAT);
-    mAttribMan.addAttribute("aColorFloat",  4,  false,  sizeof(float) * 4,  Spire::Interface::TYPE_FLOAT);
-    mAttribMan.addAttribute("aColor",       4,  true,   sizeof(char) * 4,   Spire::Interface::TYPE_UBYTE);
+    mAttribMan.addAttribute("aPos",         3,  false,  sizeof(float) * 3,  spire::Interface::TYPE_FLOAT);
+    mAttribMan.addAttribute("aNormal",      3,  false,  sizeof(float) * 3,  spire::Interface::TYPE_FLOAT);
+    mAttribMan.addAttribute("aColorFloat",  4,  false,  sizeof(float) * 4,  spire::Interface::TYPE_FLOAT);
+    mAttribMan.addAttribute("aColor",       4,  true,   sizeof(char) * 4,   spire::Interface::TYPE_UBYTE);
   }
 
   ShaderAttributeMan          mAttribMan;

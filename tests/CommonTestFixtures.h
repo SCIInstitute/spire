@@ -34,6 +34,8 @@
 #ifndef SPIRE_TESTS_COMMONTESTFIXTURES_H
 #define SPIRE_TESTS_COMMONTESTFIXTURES_H
 
+#include "namespaces.h"
+
 #include "gtest/gtest.h"
 #include "GlobalTestEnvironment.h"
 
@@ -53,9 +55,9 @@ public:
     shaderSearchDirs.push_back("Shaders");
 
     // Build spire using the context from GlobalTestEnvironment.
-    std::shared_ptr<Spire::Context> ctx = Spire::GlobalTestEnvironment::instance()->getContext();
+    std::shared_ptr<spire::Context> ctx = spire::GlobalTestEnvironment::instance()->getContext();
     ctx->makeCurrent();
-    mSpire = std::shared_ptr<Spire::Interface>(new Spire::Interface(
+    mSpire = std::shared_ptr<spire::Interface>(new spire::Interface(
         ctx, shaderSearchDirs, false));
 
     // Add default attributes.
@@ -72,16 +74,16 @@ public:
 
   void addDefaultAttributes()
   {
-    mSpire->addShaderAttribute("aPos",         3,  false,  sizeof(float) * 3,  Spire::Interface::TYPE_FLOAT);
-    mSpire->addShaderAttribute("aNormal",      3,  false,  sizeof(float) * 3,  Spire::Interface::TYPE_FLOAT);
-    mSpire->addShaderAttribute("aColorFloat",  4,  false,  sizeof(float) * 4,  Spire::Interface::TYPE_FLOAT);
-    mSpire->addShaderAttribute("aColor",       4,  true,   sizeof(char) * 4,   Spire::Interface::TYPE_UBYTE);
+    mSpire->addShaderAttribute("aPos",         3,  false,  sizeof(float) * 3,  spire::Interface::TYPE_FLOAT);
+    mSpire->addShaderAttribute("aNormal",      3,  false,  sizeof(float) * 3,  spire::Interface::TYPE_FLOAT);
+    mSpire->addShaderAttribute("aColorFloat",  4,  false,  sizeof(float) * 4,  spire::Interface::TYPE_FLOAT);
+    mSpire->addShaderAttribute("aColor",       4,  true,   sizeof(char) * 4,   spire::Interface::TYPE_UBYTE);
 
     // Used to test attribute mis-alignment.
-    mSpire->addShaderAttribute("aFieldData",   1,  false,  sizeof(float) * 1,  Spire::Interface::TYPE_FLOAT);
+    mSpire->addShaderAttribute("aFieldData",   1,  false,  sizeof(float) * 1,  spire::Interface::TYPE_FLOAT);
   }
 
-  std::shared_ptr<Spire::Interface>     mSpire;
+  std::shared_ptr<spire::Interface>     mSpire;
   std::unique_ptr<TestCamera>           mCamera;
 };
 
