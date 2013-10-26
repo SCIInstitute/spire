@@ -10,9 +10,6 @@ cmake_minimum_required(VERSION 2.8.7 FATAL_ERROR)
 set(CPM_MODULE_NAME "spire")
 set(CPM_LIB_TARGET_NAME ${CPM_MODULE_NAME})
 
-# To build this project you don't need to use CPM. This section is only
-# for those who wish to use CPM to configure and build Spire.
-
 if ((DEFINED CPM_DIR) AND (DEFINED CPM_UNIQUE_ID) AND (DEFINED CPM_TARGET_NAME))
   set(CPM_LIB_TARGET_NAME ${CPM_TARGET_NAME})
 
@@ -40,10 +37,6 @@ else()
   endif()
   include(${CPM_DIR}/CPM.cmake)
 endif()
-
-# Include CPM modules here. Must come before CPM_InitModule.
-#CPM_AddModule(GIT_REPOSITORY  "github repo"
-#              GIT_TAG         "origin/master")
 
 # Necessary Externals (to be added as CPM externals)
 # TODO: Auto-download GLM (https://github.com/g-truc/glm.git)
