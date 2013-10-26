@@ -31,14 +31,12 @@
 
 #include <cstdint>
 #include <exception>
-#include "Spire/Context.h"
-
-namespace Spire
-{
+#include "spire/Context.h"
+#include "../../tests/namespaces.h"
 
 // Abstract interface ontop of the pre-existing Spire context.
 // Used to add additional methods on-top of Spire's stripped down context.
-class BatchContext : public Spire::Context
+class BatchContext : public spire::Context
 {
 public:
   /// This virtual constructor will create the appropriate context based
@@ -66,7 +64,5 @@ class NoAvailableContext : public std::exception
       return "No context was available to utilize.";
     }
 };
-
-}
 
 #endif // BATCH_RENDERER_CONTEXT_H

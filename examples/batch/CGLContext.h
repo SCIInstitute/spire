@@ -32,8 +32,6 @@
 #include <memory>
 #include "BatchContext.h"
 
-namespace Spire {
-
 struct CGLContextInfo;
 
 class CGLContext : public BatchContext
@@ -51,7 +49,5 @@ class CGLContext : public BatchContext
   private:
     std::shared_ptr<struct CGLContextInfo> ci;
 };
-
-}
 
 #endif /* SPIRE_CGL_CONTEXT_H */

@@ -32,9 +32,6 @@
 #include <memory>
 #include "BatchContext.h"
 
-namespace Spire
-{
-
 struct xinfo;
 
 class GLXBatchContext: public BatchContext
@@ -53,7 +50,5 @@ public:
 private:
   std::shared_ptr<struct xinfo> xi;
 };
-
-}
 
 #endif /* SPIRE_GLX_CONTEXT_H */

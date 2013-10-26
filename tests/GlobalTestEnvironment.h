@@ -36,7 +36,7 @@
 
 #include "namespaces.h"
 #include "gtest/gtest.h"
-#include "Spire/Interface.h"
+#include "spire/Interface.h"
 
 /// Abstract class expected to be initialized and placed in the google testing
 /// environment.

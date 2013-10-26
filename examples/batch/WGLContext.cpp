@@ -41,8 +41,6 @@
 #include "WGLContext.h"
 #include <sstream>
 
-namespace Spire {
-
 struct winfo
 {
   HDC deviceContext;
@@ -241,4 +239,3 @@ bool WGLContext::swapBuffers()
   return true;
 }
 
-} // spire namespace

@@ -35,9 +35,6 @@
 #include <OpenGL/gl.h>
 #include "CGLContext.h"
 
-namespace Spire
-{
-
 struct CGLContextInfo
 {
   CGLContextObj ctx;
@@ -104,4 +101,3 @@ void CGLContext::swapBuffers()
     throw std::runtime_error("Unable to flush drawable objects.");
 }
 
-}

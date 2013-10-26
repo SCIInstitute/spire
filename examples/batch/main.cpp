@@ -31,11 +31,12 @@
 
 #include "gtest/gtest.h"
 
-#include "Spire/Core/Common.h"
-#include "Spire/Core/Log.h"
+#include "spire/src/Common.h"
+#include "spire/src/Log.h"
 
 #include "BatchContext.h"
-#include "Tests/GlobalTestEnvironment.h"
+#include "tests/GlobalTestEnvironment.h"
+#include "tests/namespaces.h"
 
 // Defining cimg_display to 0 ensures CImg doesn't try to include OS specific
 // windowing header files.
@@ -44,7 +45,7 @@
 using namespace cimg_library;
 
 // Lots of yucky code in the test-environment.
-class TestEnvironment : public Spire::GlobalTestEnvironment
+class TestEnvironment : public spire::GlobalTestEnvironment
 {
 public:
   TestEnvironment(uint32_t width, uint32_t height, 
@@ -99,10 +100,10 @@ public:
 
   /// Creates a context if one hasn't already been created and returns it.
   /// Otherwise, it returns the currently active context.
-  std::shared_ptr<Spire::Context> getContext() const override
+  std::shared_ptr<spire::Context> getContext() const override
   {
     GL(glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, mGLFrameBuffer));
-    return std::dynamic_pointer_cast<Spire::Context>(mContext);
+    return std::dynamic_pointer_cast<spire::Context>(mContext);
   }
 
   void writeFBO(const std::string& file) override
@@ -164,13 +165,13 @@ public:
   /// @}
 
 private:
-  static std::shared_ptr<Spire::BatchContext> createContext(
+  static std::shared_ptr<spire::BatchContext> createContext(
       uint32_t width, uint32_t height,
       int32_t colorBits, int32_t depthBits, int32_t stencilBits,
       bool doubleBuffer, bool visible)
   {
-    std::shared_ptr<Spire::BatchContext> ctx(
-        Spire::BatchContext::Create(width,height,
+    std::shared_ptr<spire::BatchContext> ctx(
+        spire::BatchContext::Create(width,height,
                                     static_cast<uint8_t>(colorBits),
                                     static_cast<uint8_t>(depthBits),
                                     static_cast<uint8_t>(stencilBits),
@@ -185,7 +186,7 @@ private:
     return ctx;
   }
 
-  std::shared_ptr<Spire::BatchContext> mContext;
+  std::shared_ptr<spire::BatchContext> mContext;
 
   /// Pre-allocated rawImage of what we will pull from OpenGL.
   std::vector<uint8_t> mRawImage;

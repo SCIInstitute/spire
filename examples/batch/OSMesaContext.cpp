@@ -32,8 +32,6 @@
 
 #include "OSMesaContext.h"
 
-namespace Spire {
-
 struct MesaContext
 {
   MesaContext() :frameBuffer(nullptr) {}
@@ -87,4 +85,3 @@ void OSMesaBatchContext::swapBuffers()
   glFinish();
 }
 
-}

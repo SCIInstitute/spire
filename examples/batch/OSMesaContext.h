@@ -32,9 +32,6 @@
 #include <memory>
 #include "BatchContext.h"
 
-namespace Spire
-{
-
 struct MesaContext;
 
 class OSMesaBatchContext: public BatchContext
@@ -52,7 +49,5 @@ public:
 private:
   std::shared_ptr<MesaContext> mContext;
 };
-
-}
 
 #endif /* SPIRE_GLX_CONTEXT_H */

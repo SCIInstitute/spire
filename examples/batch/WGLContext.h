@@ -40,8 +40,6 @@
 #include <memory>
 #include "BatchContext.h"
 
-namespace Spire {
-
 struct winfo;
 
 class WGLContext : public BatchContext
@@ -59,7 +57,5 @@ class WGLContext : public BatchContext
   private:
     std::shared_ptr<struct winfo> wi;
 };
-
-}
 
 #endif /* SPIRE_WGL_CONTEXT_H */

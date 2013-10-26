@@ -31,7 +31,7 @@
 #include <iostream>
 #include <stdexcept>
 
-#include "Spire/Core/Common.h"
+#include "spire/src/Common.h"
 
 #include "BatchContext.h"
 
@@ -47,9 +47,6 @@
     #include "NSContext.h"
   #endif
 #endif
-
-namespace Spire
-{
 
 BatchContext::BatchContext()
 {
@@ -93,4 +90,3 @@ BatchContext* BatchContext::Create(uint32_t width, uint32_t height,
   return bctx;
 }
 
-}

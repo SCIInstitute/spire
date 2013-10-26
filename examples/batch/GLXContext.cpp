@@ -32,8 +32,6 @@
 
 #include "GLXContext.h"
 
-namespace Spire {
-
 struct xinfo {
   Display *display;
   XVisualInfo *visual;
@@ -178,4 +176,3 @@ find_visual(Display *d, bool double_buffered)
     return ret_v;
 }
 
-} // namespace Spire

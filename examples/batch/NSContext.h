@@ -35,9 +35,6 @@
 #include <memory>
 #include "BatchContext.h"
 
-namespace Spire
-{
-
 struct NSContextInfo;
 
 /// Uses Objective-C to obtain a context.
@@ -57,7 +54,5 @@ private:
 
   std::shared_ptr<NSContextInfo>  mCI;
 };
-
-} // namespace Spire
 
 #endif 

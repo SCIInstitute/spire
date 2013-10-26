@@ -35,8 +35,6 @@
 #import <OpenGL/OpenGL.h>
 #import <AppKit/AppKit.h>
 
-namespace Spire {
-
 // Simple error reporting macros
 #define REPORTGLERROR(task) { GLenum tGLErr = glGetError(); if (tGLErr != GL_NO_ERROR) { std::cout << "OpenGL error " << tGLErr << " while " << task << "\n"; } }
 #define REPORT_ERROR_AND_EXIT(desc) { std::cout << desc << "\n"; return; }
@@ -112,4 +110,3 @@ void NSContext::swapBuffers()
   [mCI->openGLContext flushBuffer];
 }
 
-} // end namespace tuvok
