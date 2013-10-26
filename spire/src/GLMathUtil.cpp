@@ -35,7 +35,6 @@
 #include "GLMathUtil.h"
 
 namespace CPM_SPIRE_NS {
-namespace spire {
 
 // print out matrix by rows
 void printM44(const M44& mat)
@@ -125,6 +124,5 @@ void V4toArray4(const V4& in, float* out)
 	out[3] = in.w;
 }
 
-} // namespace spire
 } // namespace CPM_SPIRE_NS
 

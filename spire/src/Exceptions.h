@@ -37,7 +37,6 @@
 #include <stdexcept>
 
 namespace CPM_SPIRE_NS {
-namespace spire {
 
 class Exception : public std::runtime_error
 {
@@ -93,7 +92,6 @@ public:
   Duplicate(std::string e) : Exception(e) {}
 };
 
-} // namespace spire
 } // namespace CPM_SPIRE_NS
 
 #endif // SPIRE_EXCEPTIONS_H

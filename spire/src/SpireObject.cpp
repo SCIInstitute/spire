@@ -40,7 +40,6 @@
 #include "ObjectLambda.h"
 
 namespace CPM_SPIRE_NS {
-namespace spire {
 
 //------------------------------------------------------------------------------
 // ObjectPass
@@ -609,6 +608,5 @@ void SpireObject::addPassUniformLambda(const std::string& pass, const Interface:
   getPassByName(pass)->addUniformLambda(fp);
 }
 
-} // namespace spire
 } // namespace CPM_SPIRE_NS
 

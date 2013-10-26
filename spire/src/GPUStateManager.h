@@ -35,7 +35,6 @@
 #include <cstddef>
 
 namespace CPM_SPIRE_NS {
-namespace spire {
 
 #define MAX_TEXTURE_UNITS 12
 #define MIN_TEXTURE_UNITS 4
@@ -198,7 +197,6 @@ protected:
   GPUState mInternalState;
 };
 
-} // namespace spire
 } // namespace CPM_SPIRE_NS
 
 #endif 

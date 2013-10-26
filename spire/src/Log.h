@@ -46,7 +46,6 @@
 #endif
 
 namespace CPM_SPIRE_NS {
-namespace spire {
 
 /// Simple interface for stream logging.
 /// We override std::stringbuf in order to capture the virtual 'sync' call
@@ -153,7 +152,6 @@ private:
 #endif
 };
 
-} // namespace spire 
 } // namespace CPM_SPIRE_NS
 
 #endif 

@@ -37,7 +37,6 @@
 #include "Hub.h"
 
 namespace CPM_SPIRE_NS {
-namespace spire {
 
 /// Class that encapsulates all functionality that an anonymous function passed
 /// into an interface would need access to in order to do meaningful work.
@@ -85,7 +84,6 @@ protected:
   std::string   mPass;
 };
 
-} // namespace spire
 } // namespace CPM_SPIRE_NS
 
 #endif 

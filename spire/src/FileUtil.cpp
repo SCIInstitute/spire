@@ -64,7 +64,6 @@
 #endif
 
 namespace CPM_SPIRE_NS {
-namespace spire {
 
 // Forward declarations.
 bool getFileStats(const std::string& strFileName, LARGE_STAT_BUFFER& stat_buf);
@@ -297,6 +296,5 @@ bool getTempDirectory(std::string& path)
 #endif
 }
 
-} // namespace spire
 } // namespace CPM_SPIRE_NS
 

@@ -33,7 +33,6 @@
 #include "ThreadMessage.h"
 
 namespace CPM_SPIRE_NS {
-namespace spire {
 
 //------------------------------------------------------------------------------
 ThreadMessage::ThreadMessage()
@@ -64,6 +63,5 @@ void ThreadMessage::clear()
   mToCall = nullptr;
 }
 
-} // namespace spire
 } // namespace CPM_SPIRE_NS
 

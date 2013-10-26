@@ -41,7 +41,6 @@
 #include <vector>
 
 namespace CPM_SPIRE_NS {
-namespace spire {
 
 std::string findFileInDirs(const std::string& file,
                            const std::vector<std::string>& strDirs,
@@ -51,7 +50,6 @@ std::vector<std::string> getSubDirList(const std::string& dir);
 std::string getCurrentWorkingDir();
 bool getTempDirectory(std::string& path);
 
-} // namespace spire
 } // namespace CPM_SPIRE_NS
 
 #endif 

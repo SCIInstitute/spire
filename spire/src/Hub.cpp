@@ -49,7 +49,6 @@
 #endif
 
 namespace CPM_SPIRE_NS {
-namespace spire {
 
 //------------------------------------------------------------------------------
 Hub::Hub(std::shared_ptr<Context> context,
@@ -313,6 +312,5 @@ bool Hub::addFunctionToThreadQueue(const RemoteFunction& fun)
   return mInterfaceImpl->addFunctionToQueue(fun);
 }
 
-} // namespace spire
 } // namespace CPM_SPIRE_NS
 

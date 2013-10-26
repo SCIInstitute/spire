@@ -51,7 +51,6 @@
 #endif
 
 namespace CPM_SPIRE_NS {
-namespace spire {
 
 class Hub;
 class SpireObject;
@@ -269,7 +268,6 @@ private:
   bool            mThreaded;
 };
 
-} // namespace spire
 } // namespace CPM_SPIRE_NS
 
 #endif 

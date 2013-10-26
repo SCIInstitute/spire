@@ -40,7 +40,6 @@
 using namespace std::placeholders;
 
 namespace CPM_SPIRE_NS {
-namespace spire {
 
 //------------------------------------------------------------------------------
 Interface::Interface(std::shared_ptr<Context> context,
@@ -531,6 +530,5 @@ size_t Interface::loadProprietarySR5AssetFile(std::istream& stream,
 }
 
 
-} // namespace spire
 } // namespace CPM_SPIRE_NS 
 

@@ -41,7 +41,6 @@
 #include "GLInclude.h"
 
 namespace CPM_SPIRE_NS {
-namespace spire {
 
 // A good list of these types are here:
 // http://www.opengl.org/sdk/docs/man/xhtml/glGetActiveUniform.xml .
@@ -617,7 +616,6 @@ private:
   float glMatrix[16];
 };
 
-} // namespace spire 
 } // namespace CPM_SPIRE_NS
 
 #endif 

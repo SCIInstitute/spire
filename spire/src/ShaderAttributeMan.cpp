@@ -40,7 +40,6 @@
 #include "ShaderProgramMan.h"
 
 namespace CPM_SPIRE_NS {
-namespace spire {
 
 //------------------------------------------------------------------------------
 ShaderAttributeMan::ShaderAttributeMan()
@@ -283,6 +282,5 @@ bool ShaderAttributeCollection::hasIndex(size_t targetIndex) const
   return false;
 }
 
-} // namespace spire
 } // namespace CPM_SPIRE_NS
 

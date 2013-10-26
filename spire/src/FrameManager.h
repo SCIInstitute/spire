@@ -30,7 +30,6 @@
 #define SPIRE_HIGH_FRAMEMANAGER_H
 
 namespace CPM_SPIRE_NS {
-namespace spire {
 
 /// Manages the current frame.
 /// Attempts to intelligently tune scenes so that they run in real-time treating
@@ -44,7 +43,6 @@ public:
 private:
 };
 
-} // namespace spire
 } // namespace CPM_SPIRE_NS
 
 #endif // SPIRE_HIGH_FRAMEMANAGER_H

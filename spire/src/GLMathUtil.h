@@ -36,7 +36,6 @@
 #include "Math.h"
 
 namespace CPM_SPIRE_NS {
-namespace spire {
 
 void printM44(const M44& mat);
 
@@ -53,7 +52,6 @@ void V4toArray3(const V4& in, float* out);
 void V4toArray4(const V4& in, float* out);
 
 
-} // namespace spire 
 } // namespace CPM_SPIRE_NS
 
 #endif 

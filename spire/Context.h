@@ -33,7 +33,6 @@
 #define SPIRE_CONTEXT_H
 
 namespace CPM_SPIRE_NS {
-namespace spire {
 
 /// Generalized OpenGL context.
 /// With the existence of wrappers like http://code.google.com/p/angleproject/,
@@ -60,7 +59,6 @@ public:
 private:
 };
 
-} // namespace spire
 } // namespace CPM_SPIRE_NS
 
 #endif // SPIRE_CONTEXT_H

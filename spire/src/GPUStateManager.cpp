@@ -33,7 +33,6 @@
 #include "GPUStateManager.h"
 
 namespace CPM_SPIRE_NS {
-namespace spire {
 
 // All of these functions can be made into a 2D array (mimicing a 1-1 function).
 
@@ -507,6 +506,5 @@ void GPUStateManager::setLineSmoothingEnable(bool value, bool force)
   }
 }
 
-} // namespace spire
 } // namespace CPM_SPIRE_NS
 

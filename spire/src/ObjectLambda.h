@@ -35,7 +35,6 @@
 #include "LambdaInterface.h"
 
 namespace CPM_SPIRE_NS {
-namespace spire {
 
 class SpireObject;
 
@@ -73,7 +72,6 @@ private:
   const SpireObject&   mObject;
 };
 
-} // namespace spire
 } // namespace CPM_SPIRE_NS
 
 #endif 

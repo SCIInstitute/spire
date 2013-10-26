@@ -39,7 +39,6 @@
 #include "FileUtil.h"
 
 namespace CPM_SPIRE_NS {
-namespace spire {
 
 //------------------------------------------------------------------------------
 std::shared_ptr<ShaderAsset> ShaderMan::loadShader(const std::string& shaderFile,
@@ -155,6 +154,5 @@ ShaderAsset::~ShaderAsset()
   }
 }
 
-} // namespace spire 
 } // namespace CPM_SPIRE_NS
 

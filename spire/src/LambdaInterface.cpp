@@ -34,7 +34,6 @@
 #include "LambdaInterface.h"
 
 namespace CPM_SPIRE_NS {
-namespace spire {
 
 //------------------------------------------------------------------------------
 unsigned int LambdaInterface::uniformToGLType(UNIFORM_TYPE type)
@@ -51,6 +50,5 @@ void LambdaInterface::uniformMatrix4fv(int location, size_t count, bool transpos
 }
 
 
-} // namespace spire
 } // namespace CPM_SPIRE_NS
 

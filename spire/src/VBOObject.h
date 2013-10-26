@@ -39,7 +39,6 @@
 #include "ShaderAttributeMan.h"
 
 namespace CPM_SPIRE_NS {
-namespace spire {
 
 //------------------------------------------------------------------------------
 // VBO object
@@ -75,7 +74,6 @@ private:
   ShaderAttributeCollection mAttributeCollection;
 };
 
-} // namespace spire
 } // namespace CPM_SPIRE_NS
 
 #endif 

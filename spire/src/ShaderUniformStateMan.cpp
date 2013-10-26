@@ -36,7 +36,6 @@
 #include "Exceptions.h"
 
 namespace CPM_SPIRE_NS {
-namespace spire {
 
 //------------------------------------------------------------------------------
 ShaderUniformStateMan::ShaderUniformStateMan(Hub& hub) :
@@ -111,6 +110,5 @@ std::string ShaderUniformStateMan::uniformAsString(const std::string& name) cons
 }
 
 
-} // namespace spire
 } // namespace CPM_SPIRE_NS
 

@@ -52,7 +52,6 @@
 #define SPIRE_DEFAULT_PASS "spire_default"
 
 namespace CPM_SPIRE_NS {
-namespace spire {
 
 class Hub;
 class HubThread;
@@ -657,7 +656,6 @@ protected:
 
 };
 
-} // namespace spire
 } // namespace CPM_SPIRE_NS
 
 #endif // SPIRE_INTERFACE_H

@@ -33,7 +33,6 @@
 #include "SpireObject.h"
 
 namespace CPM_SPIRE_NS {
-namespace spire {
 
 std::shared_ptr<const AbstractUniformStateItem>
 ObjectLambdaInterface::getObjectMetadata(const std::string& attribName)
@@ -48,6 +47,5 @@ ObjectLambdaInterface::getObjectMetadata(const std::string& attribName)
     return attrib;
 }
 
-} // namespace spire
 } // namespace CPM_SPIRE_NS
 

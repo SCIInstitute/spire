@@ -22,7 +22,6 @@
 #include <cstddef>
 
 namespace CPM_SPIRE_NS {
-namespace spire {
 
 template<typename Element, size_t Size> 
 class CircularFifo{
@@ -114,7 +113,6 @@ size_t CircularFifo<Element, Size>::increment(size_t idx) const
 }
 
 
-} // namespace spire
 } // namespace CPM_SPIRE_NS
 
 #endif /* CIRCULARFIFO_SEQUENTIAL_H_ */

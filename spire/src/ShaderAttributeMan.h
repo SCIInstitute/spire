@@ -38,7 +38,6 @@
 #include <tuple>
 
 namespace CPM_SPIRE_NS {
-namespace spire {
 
 class ShaderAttributeMan;
 class ShaderProgramAsset;
@@ -176,7 +175,6 @@ private:
   std::vector<AttribState>    mAttributes;
 };
 
-} // namespace spire
 } // namespace CPM_SPIRE_NS
 
 #endif 

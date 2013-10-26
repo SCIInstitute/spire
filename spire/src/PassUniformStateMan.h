@@ -37,7 +37,6 @@
 #include "ShaderUniformStateManTemplates.h"
 
 namespace CPM_SPIRE_NS {
-namespace spire {
 
 class Hub;
 
@@ -111,7 +110,6 @@ private:
 };
 
 
-} // namespace spire 
 } // namespace CPM_SPIRE_NS
 
 #endif 

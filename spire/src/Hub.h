@@ -47,7 +47,6 @@
 #include "PassUniformStateMan.h"
 
 namespace CPM_SPIRE_NS {
-namespace spire {
 
 class Log;
 class PipeDriver;
@@ -184,7 +183,6 @@ private:
   
 };
 
-} // namespace spire
 } // namespace CPM_SPIRE_NS
 
 #endif // SPIRE_HIGH_HUB_H

@@ -32,7 +32,6 @@
 #include "VBOObject.h"
 
 namespace CPM_SPIRE_NS {
-namespace spire {
 
 //------------------------------------------------------------------------------
 VBOObject::VBOObject(std::shared_ptr<std::vector<uint8_t>> vboData,
@@ -74,6 +73,5 @@ void VBOObject::buildVBO(const uint8_t* vboData, const size_t vboLength,
   }
 }
 
-} // namespace spire
 } // namespace CPM_SPIRE_NS
 

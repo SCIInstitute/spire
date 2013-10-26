@@ -44,7 +44,6 @@
 #include "IBOObject.h"
 
 namespace CPM_SPIRE_NS {
-namespace spire {
 
 //------------------------------------------------------------------------------
 // ObjectPassobject
@@ -322,7 +321,6 @@ protected:
 };
 
 
-} // namespace spire 
 } // namespace CPM_SPIRE_NS
 
 #endif 
