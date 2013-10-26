@@ -37,15 +37,17 @@
 #include <QMouseEvent>
 #include <QWheelEvent>
 
+#include "namespaces.h"
 #include "GLWidgetSCIRun.h"
-#include "SpireExt/SCIRun/SRUtil.h"
+
+#include "spire_scirun/SRUtil.h"
 
 using namespace SCIRun::Gui;
-using namespace Spire;
-using Spire::V4;
-using Spire::V3;
-using Spire::V2;
-using Spire::M44;
+using namespace spire;
+using spire::V4;
+using spire::V3;
+using spire::V2;
+using spire::M44;
 
 // Simple function to handle object transformations so that the GPU does not
 // need to do the same calculation for each vertex.
@@ -54,11 +56,11 @@ static void lambdaUniformObjTrafs(ObjectLambdaInterface& iface,
 {
   // Cache object to world transform.
   M44 objToWorld = iface.getObjectMetadata<M44>(
-      std::get<0>(SRCommonAttributes::getObjectToWorldTrafo()));
+      std::get<0>(spire_sr::SRCommonAttributes::getObjectToWorldTrafo()));
 
-  std::string objectTrafoName = std::get<0>(SRCommonUniforms::getObject());
-  std::string objectToViewName = std::get<0>(SRCommonUniforms::getObjectToView());
-  std::string objectToCamProjName = std::get<0>(SRCommonUniforms::getObjectToCameraToProjection());
+  std::string objectTrafoName = std::get<0>(spire_sr::SRCommonUniforms::getObject());
+  std::string objectToViewName = std::get<0>(spire_sr::SRCommonUniforms::getObjectToView());
+  std::string objectToCamProjName = std::get<0>(spire_sr::SRCommonUniforms::getObjectToCameraToProjection());
 
   // Loop through the unsatisfied uniforms and see if we can provide any.
   for (auto it = unsatisfiedUniforms.begin(); it != unsatisfiedUniforms.end(); /*nothing*/ )
@@ -74,7 +76,7 @@ static void lambdaUniformObjTrafs(ObjectLambdaInterface& iface,
     {
       // Grab the inverse view transform.
       M44 inverseView = glm::affineInverse(
-          iface.getGlobalUniform<M44>(std::get<0>(SRCommonUniforms::getCameraToWorld())));
+          iface.getGlobalUniform<M44>(std::get<0>(spire_sr::SRCommonUniforms::getCameraToWorld())));
       LambdaInterface::setUniform<M44>(it->uniformType, it->uniformName,
                                        it->shaderLocation, inverseView * objToWorld);
 
@@ -83,7 +85,7 @@ static void lambdaUniformObjTrafs(ObjectLambdaInterface& iface,
     else if (it->uniformName == objectToCamProjName)
     {
       M44 inverseViewProjection = iface.getGlobalUniform<M44>(
-          std::get<0>(SRCommonUniforms::getToCameraToProjection()));
+          std::get<0>(spire_sr::SRCommonUniforms::getToCameraToProjection()));
       LambdaInterface::setUniform<M44>(it->uniformType, it->uniformName,
                                        it->shaderLocation, inverseViewProjection * objToWorld);
 
@@ -107,14 +109,14 @@ GLWidget::GLWidget(const QGLFormat& format) :
   // Create a threaded spire renderer. This should be created at the module
   // level once it has access to the context, should be passed using Transients.
 #ifdef SPIRE_USE_STD_THREADS
-  mSpire = std::shared_ptr<Spire::SCIRun::SRInterface>(
-      new Spire::SCIRun::SRInterface(
-          std::dynamic_pointer_cast<Spire::Context>(mContext),
+  mSpire = std::shared_ptr<spire_sr::SRInterface>(
+      new spire_sr::SRInterface(
+          std::dynamic_pointer_cast<spire::Context>(mContext),
           shaderSearchDirs, true));
 #else
-  mSpire = std::shared_ptr<Spire::SCIRun::SRInterface>(
-      new Spire::SCIRun::SRInterface(
-          std::dynamic_pointer_cast<Spire::Context>(mContext),
+  mSpire = std::shared_ptr<spire_sr::SRInterface>(
+      new spire_sr::SRInterface(
+          std::dynamic_pointer_cast<spire::Context>(mContext),
           shaderSearchDirs, false));
   mTimer = new QTimer(this);
   connect(mTimer, SIGNAL(timeout()), this, SLOT(updateRenderer()));
@@ -133,41 +135,41 @@ void GLWidget::buildScene()
   bool buildNormals = true;
 
   // Add shader attributes that we will be using.
-  mSpire->addShaderAttribute("aPos",         3,  false,  sizeof(float) * 3,  Spire::Interface::TYPE_FLOAT);
-  mSpire->addShaderAttribute("aNormal",      3,  false,  sizeof(float) * 3,  Spire::Interface::TYPE_FLOAT);
-  mSpire->addShaderAttribute("aColorFloat",  4,  false,  sizeof(float) * 4,  Spire::Interface::TYPE_FLOAT);
-  mSpire->addShaderAttribute("aColor",       4,  true,   sizeof(char) * 4,   Spire::Interface::TYPE_UBYTE);
+  mSpire->addShaderAttribute("aPos",         3,  false,  sizeof(float) * 3,  spire::Interface::TYPE_FLOAT);
+  mSpire->addShaderAttribute("aNormal",      3,  false,  sizeof(float) * 3,  spire::Interface::TYPE_FLOAT);
+  mSpire->addShaderAttribute("aColorFloat",  4,  false,  sizeof(float) * 4,  spire::Interface::TYPE_FLOAT);
+  mSpire->addShaderAttribute("aColor",       4,  true,   sizeof(char) * 4,   spire::Interface::TYPE_UBYTE);
 
   // Uniform color shader (nothing that interesting).
   std::string uniformColorShader = "UniformColor";
   mSpire->addPersistentShader(
       uniformColorShader, 
-      { std::make_tuple("UniformColor.vsh", Spire::Interface::VERTEX_SHADER), 
-        std::make_tuple("UniformColor.fsh", Spire::Interface::FRAGMENT_SHADER),
+      { std::make_tuple("UniformColor.vsh", spire::Interface::VERTEX_SHADER), 
+        std::make_tuple("UniformColor.fsh", spire::Interface::FRAGMENT_SHADER),
       });
 
   // Directional gouraud shading.
   std::string dirGouraudShader = "DirGouraud";
   mSpire->addPersistentShader(
       dirGouraudShader, 
-      { std::make_tuple("DirGouraud.vsh", Spire::Interface::VERTEX_SHADER), 
-        std::make_tuple("DirGouraud.fsh", Spire::Interface::FRAGMENT_SHADER),
+      { std::make_tuple("DirGouraud.vsh", spire::Interface::VERTEX_SHADER), 
+        std::make_tuple("DirGouraud.fsh", spire::Interface::FRAGMENT_SHADER),
       });
 
   // Directional phong shading.
   std::string dirPhongSphere = "DirPhong";
   mSpire->addPersistentShader(
       dirPhongSphere , 
-      { std::make_tuple("DirPhong.vsh", Spire::Interface::VERTEX_SHADER), 
-        std::make_tuple("DirPhong.fsh", Spire::Interface::FRAGMENT_SHADER),
+      { std::make_tuple("DirPhong.vsh", spire::Interface::VERTEX_SHADER), 
+        std::make_tuple("DirPhong.fsh", spire::Interface::FRAGMENT_SHADER),
       });
 
   // Varying color shader
   std::string attribColorShader = "AttribColor";
   mSpire->addPersistentShader(
       attribColorShader, 
-      { std::make_tuple("Color.vsh", Spire::Interface::VERTEX_SHADER), 
-        std::make_tuple("Color.fsh", Spire::Interface::FRAGMENT_SHADER),
+      { std::make_tuple("Color.vsh", spire::Interface::VERTEX_SHADER), 
+        std::make_tuple("Color.fsh", spire::Interface::FRAGMENT_SHADER),
       });
 
   // This load asset function operates only on the default pass, since optional
@@ -185,13 +187,13 @@ void GLWidget::buildScene()
     if (fstream.fail())
       throw std::runtime_error("Unable to open resource file: " + assetFileName);
     // The number of triangles is returned from loadProprietarySR5AssetFile.
-    Spire::Interface::loadProprietarySR5AssetFile(fstream, *vbo, *ibo);
+    spire::Interface::loadProprietarySR5AssetFile(fstream, *vbo, *ibo);
     fstream.close();
 
     // loadProprietarySR5AssetFile always produces positions and normals in the
     // vbo and 16bit index buffers.
     std::vector<std::string> attribNames = {"aPos", "aNormal"};
-    Spire::Interface::IBO_TYPE iboType = Spire::Interface::IBO_16BIT;
+    spire::Interface::IBO_TYPE iboType = spire::Interface::IBO_16BIT;
 
     // Add necessary VBO's and IBO's
     std::string vbo1 = objectName + "vbo1";
@@ -200,12 +202,12 @@ void GLWidget::buildScene()
     mSpire->addIBO(ibo1, ibo, iboType);
 
     mSpire->addObject(objectName);
-    mSpire->addPassToObject(objectName, shader, vbo1, ibo1, Spire::Interface::TRIANGLES);
+    mSpire->addPassToObject(objectName, shader, vbo1, ibo1, spire::Interface::TRIANGLES);
     mSpire->addLambdaObjectUniforms(objectName, lambdaUniformObjTrafs);
 
     // Apply world transformation.
     mSpire->addObjectPassMetadata(
-        objectName, std::get<0>(SRCommonAttributes::getObjectToWorldTrafo()), xform);
+        objectName, std::get<0>(spire_sr::SRCommonAttributes::getObjectToWorldTrafo()), xform);
 
     if (buildNormals)
     {
@@ -213,7 +215,7 @@ void GLWidget::buildScene()
       // associated with the object.
       std::shared_ptr<std::vector<uint8_t>> vboNormals(new std::vector<uint8_t>());
       std::shared_ptr<std::vector<uint8_t>> iboNormals(new std::vector<uint8_t>());
-      Spire::SCIRun::buildNormalRenderingForVBO(vbo, 6 * sizeof(float), 0.5f, *vboNormals,
+      spire_sr::buildNormalRenderingForVBO(vbo, 6 * sizeof(float), 0.5f, *vboNormals,
                                                 *iboNormals, 0, 3 * sizeof(float));
 
       std::string normalsPassName= "normals pass";
@@ -223,13 +225,13 @@ void GLWidget::buildScene()
       mSpire->addVBO(normalVBO1, vboNormals, normalAttribNames);
       mSpire->addIBO(normalIBO1, iboNormals, iboType);
       mSpire->addPassToObject(objectName, uniformColorShader, normalVBO1, normalIBO1, 
-                              Spire::Interface::LINES, normalsPassName, SPIRE_DEFAULT_PASS);
+                              spire::Interface::LINES, normalsPassName, SPIRE_DEFAULT_PASS);
       mSpire->addLambdaObjectUniforms(objectName, lambdaUniformObjTrafs, normalsPassName);
 
       mSpire->addObjectPassUniform(objectName, "uColor", V4(0.74f, 0.0f, 0.0f, 1.0f), 
                                    normalsPassName);
       mSpire->addObjectPassMetadata(
-          objectName, std::get<0>(SRCommonAttributes::getObjectToWorldTrafo()),
+          objectName, std::get<0>(spire_sr::SRCommonAttributes::getObjectToWorldTrafo()),
           xform, normalsPassName);
     }
   };
@@ -331,7 +333,7 @@ void GLWidget::buildScene()
     std::string objName = "xAxis";
 
     // Rotate by positive 90 degrees about y axis to get arrow pointing down xAxis.
-    M44 xform = glm::rotate(M44(), Spire::PI / 2.0f, V3(0.0, 1.0, 0.0));
+    M44 xform = glm::rotate(M44(), spire::PI / 2.0f, V3(0.0, 1.0, 0.0));
     xform[3] = V4(coordinateAxesCenter, 1.0f);
 
     loadAsset("Assets/UnitArrow.sp", dirPhongSphere, objName, xform);
@@ -347,7 +349,7 @@ void GLWidget::buildScene()
     std::string objName = "yAxis";
 
     // Rotate by positive 90 about x axis to get arrow pointing down yAxis.
-    M44 xform = glm::rotate(M44(), -Spire::PI / 2.0f, V3(1.0, 0.0, 0.0));
+    M44 xform = glm::rotate(M44(), -spire::PI / 2.0f, V3(1.0, 0.0, 0.0));
     xform[3] = V4(coordinateAxesCenter, 1.0f);
 
     loadAsset("Assets/UnitArrow.sp", dirPhongSphere, objName, xform);
@@ -446,7 +448,7 @@ void GLWidget::buildScene()
     M44 xform;
     xform[3] = V4(coordinateAxesCenter, 1.0f);
     mSpire->addObjectPassMetadata(
-        objName, std::get<0>(SRCommonAttributes::getObjectToWorldTrafo()), xform);
+        objName, std::get<0>(spire_sr::SRCommonAttributes::getObjectToWorldTrafo()), xform);
   }
 
   // Another version of the coordinate axes...
@@ -468,15 +470,15 @@ void GLWidget::initializeGL()
 }
 
 //------------------------------------------------------------------------------
-Spire::SCIRun::SRInterface::MouseButton GLWidget::getSpireButton(QMouseEvent* event)
+spire_sr::SRInterface::MouseButton GLWidget::getSpireButton(QMouseEvent* event)
 {
-  Spire::SCIRun::SRInterface::MouseButton btn = Spire::SCIRun::SRInterface::MOUSE_NONE;
+  spire_sr::SRInterface::MouseButton btn = spire_sr::SRInterface::MOUSE_NONE;
   if (event->buttons() & Qt::LeftButton)
-    btn = Spire::SCIRun::SRInterface::MOUSE_LEFT;
+    btn = spire_sr::SRInterface::MOUSE_LEFT;
   else if (event->buttons() & Qt::RightButton)
-    btn = Spire::SCIRun::SRInterface::MOUSE_RIGHT;
+    btn = spire_sr::SRInterface::MOUSE_RIGHT;
   else if (event->buttons() & Qt::MidButton)
-    btn = Spire::SCIRun::SRInterface::MOUSE_MIDDLE;
+    btn = spire_sr::SRInterface::MOUSE_MIDDLE;
   
   return btn;
 }
@@ -485,21 +487,21 @@ Spire::SCIRun::SRInterface::MouseButton GLWidget::getSpireButton(QMouseEvent* ev
 void GLWidget::mouseMoveEvent(QMouseEvent* event)
 {
   // Extract appropriate key.
-  Spire::SCIRun::SRInterface::MouseButton btn = getSpireButton(event);
+  spire_sr::SRInterface::MouseButton btn = getSpireButton(event);
   mSpire->inputMouseMove(glm::ivec2(event->x(), event->y()), btn);
 }
 
 //------------------------------------------------------------------------------
 void GLWidget::mousePressEvent(QMouseEvent* event)
 {
-  Spire::SCIRun::SRInterface::MouseButton btn = getSpireButton(event);
+  spire_sr::SRInterface::MouseButton btn = getSpireButton(event);
   mSpire->inputMouseDown(glm::ivec2(event->x(), event->y()), btn);
 }
 
 //------------------------------------------------------------------------------
 void GLWidget::mouseReleaseEvent(QMouseEvent* event)
 {
-  Spire::SCIRun::SRInterface::MouseButton btn = getSpireButton(event);
+  spire_sr::SRInterface::MouseButton btn = getSpireButton(event);
   mSpire->inputMouseUp(glm::ivec2(event->x(), event->y()), btn);
 }
 

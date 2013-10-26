@@ -36,11 +36,12 @@
 
 #include <QTimer>
 
+#include "namespaces.h"
 #include "GLContext.h"
-#include "Spire/Interface.h"
-#include "SpireExt/SCIRun/SRInterface.h"
-#include "SpireExt/SCIRun/SRCommonAttributes.h"
-#include "SpireExt/SCIRun/SRCommonUniforms.h"
+#include "spire/Interface.h"
+#include "spire_scirun/SRInterface.h"
+#include "spire_scirun/SRCommonAttributes.h"
+#include "spire_scirun/SRCommonUniforms.h"
 
 namespace SCIRun {
 namespace Gui {
@@ -53,8 +54,8 @@ public:
   GLWidget(const QGLFormat& format);
   ~GLWidget();
 
-  std::shared_ptr<Spire::SCIRun::SRInterface> getSpire() const      {return mSpire;}
-  std::shared_ptr<GLContext>                  getContext() const    {return mContext;}
+  std::shared_ptr<spire_sr::SRInterface>  getSpire() const      {return mSpire;}
+  std::shared_ptr<GLContext>              getContext() const    {return mContext;}
 
 protected:
   virtual void closeEvent(QCloseEvent *evt);
@@ -74,10 +75,10 @@ protected slots:
 private:
 
   /// Retrieve SRInterface mouse button from mouse event.
-  Spire::SCIRun::SRInterface::MouseButton getSpireButton(QMouseEvent* event);
+  spire_sr::SRInterface::MouseButton getSpireButton(QMouseEvent* event);
 
-  std::shared_ptr<GLContext>                  mContext;       ///< Graphics context.
-  std::shared_ptr<Spire::SCIRun::SRInterface> mSpire;         ///< Interface to spire.
+  std::shared_ptr<GLContext>              mContext;       ///< Graphics context.
+  std::shared_ptr<spire_sr::SRInterface>  mSpire;         ///< Interface to spire.
 
 #ifndef SPIRE_USE_STD_THREADS
   QTimer*                                     mTimer;

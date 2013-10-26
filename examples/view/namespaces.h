@@ -3,10 +3,10 @@
 
    The MIT License
 
-   Copyright (c) 2012 Scientific Computing and Imaging Institute,
+   Copyright (c) 2013 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -27,36 +27,18 @@
 */
 
 /// \author James Hughes
-/// \date   December 2012
+/// \date   October 2013
 
-#ifndef TOOLS_VIEW_GLCONTEXT_H
-#define TOOLS_VIEW_GLCONTEXT_H
+#ifndef NAMESPACES_H
+#define NAMESPACES_H
 
-// For windows...
-#define NOMINMAX
+// 'Forward declaration' of namespaces.
+namespace CPM_SPIRE_NS {}
+namespace CPM_SPIRE_SCIRUN_NS {}
 
-#include <QtOpenGL/QGLWidget>
-
-// Include spire interface.
-#include "namespaces.h"
-#include "spire/Interface.h"
-
-/// Context that will be sent to spire.
-class GLContext : public spire::Context
-{
-public:
-  GLContext(QGLWidget* glWidget);
-  virtual ~GLContext();
-
-  /// Mandatory override from Context.
-  virtual void makeCurrent();
-  
-  /// Mandatory override from Context.
-  virtual void swapBuffers();
-
-private:
-
-  QGLWidget* mGLWidget;
-};
+// Renaming namespaces in our top level.
+namespace spire = CPM_SPIRE_NS;
+namespace spire_sr = CPM_SPIRE_SCIRUN_NS;
 
 #endif 
+
