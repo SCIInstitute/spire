@@ -13,8 +13,8 @@ set(CPM_LIB_TARGET_NAME ${CPM_MODULE_NAME})
 # To build this project you don't need to use CPM. This section is only
 # for those who wish to use CPM to configure and build Spire.
 
-if ((DEFINED CPM_DIR) AND (DEFINED CPM_UNIQUE_ID) AND (DEFINED CPM_OUTPUT_LIB_NAME))
-  set(CPM_LIB_TARGET_NAME ${CPM_OUTPUT_LIB_NAME})
+if ((DEFINED CPM_DIR) AND (DEFINED CPM_UNIQUE_ID) AND (DEFINED CPM_TARGET_NAME))
+  set(CPM_LIB_TARGET_NAME ${CPM_TARGET_NAME})
 
   # We are being built as a sub project. Use the primary project's CPM
   # so that we can take advantage of possible duplicate module versions.
