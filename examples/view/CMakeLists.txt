@@ -140,7 +140,6 @@ add_executable(spireview
   ${MocSource} 
   ${UISource})
 
-message("Dependencies: ${CPM_LIBRARIES}")
 add_dependencies(spireview ${CPM_LIBRARIES})
 
 target_link_libraries(spireview 
