@@ -35,8 +35,9 @@
 #include "spire/src/Log.h"
 
 #include "BatchContext.h"
-#include "tests/GlobalTestEnvironment.h"
-#include "tests/namespaces.h"
+#include "../../tests/namespaces.h"
+#include "../../tests/GlobalTestEnvironment.h"
+#include "../../tests/namespaces.h"
 
 // Defining cimg_display to 0 ensures CImg doesn't try to include OS specific
 // windowing header files.
@@ -45,7 +46,7 @@
 using namespace cimg_library;
 
 // Lots of yucky code in the test-environment.
-class TestEnvironment : public spire::GlobalTestEnvironment
+class TestEnvironment : public GlobalTestEnvironment
 {
 public:
   TestEnvironment(uint32_t width, uint32_t height, 
@@ -165,13 +166,13 @@ public:
   /// @}
 
 private:
-  static std::shared_ptr<spire::BatchContext> createContext(
+  static std::shared_ptr<BatchContext> createContext(
       uint32_t width, uint32_t height,
       int32_t colorBits, int32_t depthBits, int32_t stencilBits,
       bool doubleBuffer, bool visible)
   {
-    std::shared_ptr<spire::BatchContext> ctx(
-        spire::BatchContext::Create(width,height,
+    std::shared_ptr<BatchContext> ctx(
+        BatchContext::Create(width,height,
                                     static_cast<uint8_t>(colorBits),
                                     static_cast<uint8_t>(depthBits),
                                     static_cast<uint8_t>(stencilBits),
@@ -186,7 +187,7 @@ private:
     return ctx;
   }
 
-  std::shared_ptr<spire::BatchContext> mContext;
+  std::shared_ptr<BatchContext> mContext;
 
   /// Pre-allocated rawImage of what we will pull from OpenGL.
   std::vector<uint8_t> mRawImage;

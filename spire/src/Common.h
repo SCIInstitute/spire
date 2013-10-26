@@ -49,14 +49,14 @@
     GLenum glerr;                                                      \
     unsigned int iCounter = 0;                                         \
     while((glerr = glGetError()) != GL_NO_ERROR) {                     \
-      Log::error() << "GL error calling" << #stmt << " before line " << __LINE__ << " (" << __FILE__ << "): " << gluErrorString(glerr) << " (" << static_cast<unsigned>(glerr) << ")" << std::endl; \
+      CPM_SPIRE_NS::Log::error() << "GL error calling" << #stmt << " before line " << __LINE__ << " (" << __FILE__ << "): " << gluErrorString(glerr) << " (" << static_cast<unsigned>(glerr) << ")" << std::endl; \
       iCounter++;                                                      \
       if (iCounter > MAX_GL_ERROR_COUNT) break;                        \
     }                                                                  \
     stmt;                                                              \
     iCounter = 0;                                                      \
     while((glerr = glGetError()) != GL_NO_ERROR) {                     \
-      Log::error() << "'" << #stmt << "' on line " << __LINE__ << " (" << __FILE__ << ") caused GL error: " << gluErrorString(glerr) << " (" << static_cast<unsigned>(glerr) << ")" << std::endl; \
+      CPM_SPIRE_NS::Log::error() << "'" << #stmt << "' on line " << __LINE__ << " (" << __FILE__ << ") caused GL error: " << gluErrorString(glerr) << " (" << static_cast<unsigned>(glerr) << ")" << std::endl; \
       iCounter++;                                                      \
       if (iCounter > MAX_GL_ERROR_COUNT) break;                        \
     }                                                                  \
@@ -67,7 +67,7 @@
     GLenum glerr;                                                         \
     unsigned int iCounter = 0;                                            \
     while((glerr = glGetError()) != GL_NO_ERROR) {                        \
-      Log::error() << "GL error before line " << __LINE__ << "("   \
+      CPM_SPIRE_NS::Log::error() << "GL error before line " << __LINE__ << "("   \
                    << __FILE__ << "): " << glerr << " ("                  \
                    << gluErrorString(glerr) << ")" << std::endl;          \
       iCounter++;                                                         \

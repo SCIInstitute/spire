@@ -36,10 +36,6 @@
 #include "namespaces.h"
 #include "spire/src/Common.h"
 
-namespace spire {
-class StuInterface;
-}
-
 class TestCamera
 {
 public:
