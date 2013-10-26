@@ -57,14 +57,14 @@ if (USE_SCIRUN_INTERFACE)
   add_definitions(-DUSE_SCIRUN_INTERFACE)
   # Set various options for spire-scirun. In this case, the shader and
   # asset directories.
-  set(SHADER_OUTPUT_DIR ${CMAKE_CURRENT_BINARY_DIR}/Shaders)
-  set(ASSET_OUTPUT_DIR ${CMAKE_CURRENT_BINARY_DIR}/Assets)
+  set(OUTPUT_SHADER_DIR ${CMAKE_CURRENT_BINARY_DIR}/Shaders)
+  set(OUTPUT_ASSET_DIR ${CMAKE_CURRENT_BINARY_DIR}/Assets)
   CPM_AddModule("spire_scirun"
     GIT_REPOSITORY "https://github.com/iauns/spire-scirun"
     GIT_TAG "origin/master"
     )
-  set(SHADER_OUTPUT_DIR)
-  set(ASSET_OUTPUT_DIR)
+  set(OUTPUT_SHADER_DIR)
+  set(OUTPUT_ASSET_DIR)
 endif()
 
 CPM_Finish()
