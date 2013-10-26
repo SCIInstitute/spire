@@ -44,12 +44,11 @@ if (NOT EXISTS ${CPM_DIR}/CPM.cmake)
 endif()
 include(${CPM_DIR}/CPM.cmake)
 
-set(USE_STD_THREADS OFF)
+option(USE_STD_THREADS "Always leave off. Will remove in the future once spire is concurrent." OFF)
 CPM_AddModule("spire"
   GIT_REPOSITORY "https://github.com/SCIInstitute/spire"
   GIT_TAG "origin/concurrent"
   )
-set(USE_STD_THREADS)
 
 CPM_Finish()
 
