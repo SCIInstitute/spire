@@ -416,7 +416,7 @@ TEST_F(InterfaceTestFixture, TestTriangle)
 
   std::string targetImage = TEST_IMAGE_OUTPUT_DIR;
   targetImage += "/" + imageName;
-  spire::GlobalTestEnvironment::instance()->writeFBO(targetImage);
+  GlobalTestEnvironment::instance()->writeFBO(targetImage);
 
   EXPECT_TRUE(spire::fileExists(targetImage)) << "Failed to write output image! " << targetImage;
 
@@ -679,7 +679,7 @@ TEST_F(InterfaceTestFixture, TestRenderingWithSR5Object)
 
   std::string targetImage = TEST_IMAGE_OUTPUT_DIR;
   targetImage += "/" + imageName;
-  spire::GlobalTestEnvironment::instance()->writeFBO(targetImage);
+  GlobalTestEnvironment::instance()->writeFBO(targetImage);
 
   EXPECT_TRUE(spire::fileExists(targetImage)) << "Failed to write output image! " << targetImage;
 
@@ -780,7 +780,7 @@ TEST_F(InterfaceTestFixture, TestRenderingWithAttributes)
 
   std::string targetImage = TEST_IMAGE_OUTPUT_DIR;
   targetImage += "/" + imageName;
-  spire::GlobalTestEnvironment::instance()->writeFBO(targetImage);
+  GlobalTestEnvironment::instance()->writeFBO(targetImage);
 
   EXPECT_TRUE(spire::fileExists(targetImage)) << "Failed to write output image! " << targetImage;
 
@@ -895,7 +895,7 @@ TEST_F(InterfaceTestFixture, TestRenderingWithOutOfOrderAttributes)
 #ifdef TEST_OUTPUT_IMAGES
   std::string targetImage = TEST_IMAGE_OUTPUT_DIR;
   targetImage += "/" + testFileName ;
-  spire::GlobalTestEnvironment::instance()->writeFBO(targetImage);
+  GlobalTestEnvironment::instance()->writeFBO(targetImage);
 
   EXPECT_TRUE(spire::fileExists(targetImage)) << "Failed to write output image! " << targetImage;
 

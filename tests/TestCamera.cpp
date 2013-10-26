@@ -60,8 +60,8 @@ void TestCamera::setAsPerspective()
 {
   mPerspective = true;
 
-  float aspect = static_cast<float>(spire::GlobalTestEnvironment::instance()->getScreenWidth()) / 
-                 static_cast<float>(spire::GlobalTestEnvironment::instance()->getScreenHeight());
+  float aspect = static_cast<float>(GlobalTestEnvironment::instance()->getScreenWidth()) / 
+                 static_cast<float>(GlobalTestEnvironment::instance()->getScreenHeight());
   mP = glm::perspective(mFOV, aspect, mZNear, mZFar);
 }
 

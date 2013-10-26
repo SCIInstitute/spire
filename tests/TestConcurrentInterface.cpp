@@ -176,7 +176,7 @@ TEST_F(InterfaceTestFixture, TestConcurrentQuad)
 
   std::string targetImage = TEST_IMAGE_OUTPUT_DIR;
   targetImage += "/" + thisImage;
-  spire::GlobalTestEnvironment::instance()->writeFBO(targetImage);
+  GlobalTestEnvironment::instance()->writeFBO(targetImage);
 
   EXPECT_TRUE(spire::fileExists(targetImage)) << "Failed to write output image! " << targetImage;
 

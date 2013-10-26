@@ -55,7 +55,7 @@ public:
     shaderSearchDirs.push_back("Shaders");
 
     // Build spire using the context from GlobalTestEnvironment.
-    std::shared_ptr<spire::Context> ctx = spire::GlobalTestEnvironment::instance()->getContext();
+    std::shared_ptr<spire::Context> ctx = GlobalTestEnvironment::instance()->getContext();
     ctx->makeCurrent();
     mSpire = std::shared_ptr<spire::Interface>(new spire::Interface(
         ctx, shaderSearchDirs, false));
