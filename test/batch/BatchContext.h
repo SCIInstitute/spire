@@ -32,7 +32,7 @@
 #include <cstdint>
 #include <exception>
 #include "spire/Context.h"
-#include "../../tests/namespaces.h"
+#include "../tests/namespaces.h"
 
 // Abstract interface ontop of the pre-existing Spire context.
 // Used to add additional methods on-top of Spire's stripped down context.

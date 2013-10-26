@@ -9,7 +9,7 @@ include(ExternalProject)
 project(SpireBatchRenderer)
 
 # Base tests directory.
-set (BASE_TESTS_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../../tests)
+set (BASE_TESTS_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../tests)
 
 option(USE_OS_MESA "Use an OS mesa context." OFF)
 if (USE_OS_MESA)

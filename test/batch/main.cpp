@@ -35,9 +35,9 @@
 #include "spire/src/Log.h"
 
 #include "BatchContext.h"
-#include "../../tests/namespaces.h"
-#include "../../tests/GlobalTestEnvironment.h"
-#include "../../tests/namespaces.h"
+#include "../tests/namespaces.h"
+#include "../tests/GlobalTestEnvironment.h"
+#include "../tests/namespaces.h"
 
 // Defining cimg_display to 0 ensures CImg doesn't try to include OS specific
 // windowing header files.
