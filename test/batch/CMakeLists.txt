@@ -21,13 +21,6 @@ endif()
 # Required CPM Setup - See: http://github.com/iauns/cpm
 #------------------------------------------------------------------------------
 set(CPM_DIR "${CMAKE_CURRENT_BINARY_DIR}/cpm-packages" CACHE TYPE STRING)
-if(${CPM_DIR} MATCHES "${CMAKE_CURRENT_BINARY_DIR}")
-  message("NOTE: Placing CPM in the binary directory is not recommended.")
-  message("      Place CPM alongside the binary directory so that you don't need to")
-  message("      recompile your modules everytime you clean your project.")
-  message("      Use the CPM_DIR variable to set the CPM directory.")
-endif()
-
 find_package(Git)
 if(NOT GIT_FOUND)
   message(FATAL_ERROR "CPM requires Git.")
@@ -45,10 +38,7 @@ endif()
 include(${CPM_DIR}/CPM.cmake)
 
 option(USE_STD_THREADS "Always leave off. Will remove in the future once spire is concurrent." OFF)
-CPM_AddModule("spire"
-  GIT_REPOSITORY "https://github.com/SCIInstitute/spire"
-  GIT_TAG "origin/concurrent"
-  )
+CPM_AddModule("spire" SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../..")
 
 CPM_Finish()
 
