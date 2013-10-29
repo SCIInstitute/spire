@@ -91,7 +91,7 @@
 
   #define NOMINMAX
   #include <Windows.h>
-  #include <GL/glew.h>
+  #include <glew/include/GL/glew.h>
   #include <GL/gl.h>
 #elif defined(SPIRE_USING_LINUX)
 
