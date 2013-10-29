@@ -140,8 +140,8 @@ else(UNIX)
     add_definitions(-DGLEW_STATIC)
 
     # GLEW include directories and source.
-    include_directories(SYSTEM ${CMAKE_CURRENT_SOURCE_DIR}/spire/3rdParty/glew/include)
-    set(Source_GLEW_for_Windows spire/3rdParty/glew/src/glew.c)
+    include_directories(SYSTEM ${CMAKE_CURRENT_SOURCE_DIR}/3rdParty/glew/include)
+    set(Source_GLEW_for_Windows 3rdParty/glew/src/glew.c)
 
   endif(WIN32)
 endif(UNIX)
