@@ -278,6 +278,10 @@ public:
   /// Returns true if the pass already exists.
   bool ntsHasPass(const std::string& pass) const;
 
+  /// Makes the rendering context that was passed into spire current on
+  /// the thread.
+  void makeCurrent();
+
   //============================================================================
   // THREAD SAFE - Remember, the same thread should always be calling spire.
   //============================================================================

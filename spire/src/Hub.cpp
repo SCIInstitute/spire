@@ -199,7 +199,7 @@ void Hub::doFrame()
 bool Hub::beginFrame(bool makeContextCurrent)
 {
   if (makeContextCurrent == true)
-    mContext->makeCurrent();
+    makeCurrent();
 
   // Bail if the frame buffer is not complete. One instance where this is a
   // *valid* state is when a window containing the OpenGL scene is hidden.
@@ -220,6 +220,12 @@ bool Hub::beginFrame(bool makeContextCurrent)
   getGPUStateManager().apply(defaultGPUState, true); // true = force application of state.
 
   return true;
+}
+
+//------------------------------------------------------------------------------
+void Hub::makeCurrent()
+{
+  mContext->makeCurrent();
 }
 
 //------------------------------------------------------------------------------

@@ -145,6 +145,12 @@ void Interface::renderObject(const std::string& objectName,
   obj->renderPass(pass, cb);
 }
 
+//------------------------------------------------------------------------------
+void Interface::makeCurrent()
+{
+  mHub->makeCurrent();
+}
+
 //============================================================================
 // THREAD-SAFE INTERFACE
 //============================================================================

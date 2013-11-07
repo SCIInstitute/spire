@@ -142,6 +142,9 @@ public:
   bool beginFrame(bool makeContextCurrent);
   void endFrame();
 
+  /// Make our context current on the thread.
+  void makeCurrent();
+
 private:
 
   Interface::LogFunction              mLogFun;          ///< Log function.
