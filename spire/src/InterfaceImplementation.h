@@ -46,10 +46,6 @@
 #include "ObjectLambda.h"
 #include "ThreadMessage.h"
 
-#ifdef SPIRE_USE_STD_THREADS
-#include "CircFIFOSeqCons.hpp"
-#endif
-
 namespace CPM_SPIRE_NS {
 
 class Hub;
