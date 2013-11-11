@@ -220,26 +220,26 @@ TEST_F(InterfaceTestFixture, TestPublicInterface)
   // We have a fresh instance of spire.
   mSpire->addObject(obj1);
   EXPECT_THROW(mSpire->addObject(obj1), Duplicate);
-  EXPECT_EQ(1, mSpire->ntsGetNumObjects());
+  EXPECT_EQ(1, mSpire->getNumObjects());
 
   // Add a new obj2.
   mSpire->addObject(obj2);
   EXPECT_THROW(mSpire->addObject(obj1), Duplicate);
   EXPECT_THROW(mSpire->addObject(obj2), Duplicate);
-  EXPECT_EQ(2, mSpire->ntsGetNumObjects());
+  EXPECT_EQ(2, mSpire->getNumObjects());
 
   // Remove and re-add object 1.
   mSpire->removeObject(obj1);
-  EXPECT_EQ(1, mSpire->ntsGetNumObjects());
+  EXPECT_EQ(1, mSpire->getNumObjects());
   mSpire->addObject(obj1);
-  EXPECT_EQ(2, mSpire->ntsGetNumObjects());
+  EXPECT_EQ(2, mSpire->getNumObjects());
 
   // Add a new obj3.
   mSpire->addObject(obj3);
   EXPECT_THROW(mSpire->addObject(obj1), Duplicate);
   EXPECT_THROW(mSpire->addObject(obj2), Duplicate);
   EXPECT_THROW(mSpire->addObject(obj3), Duplicate);
-  EXPECT_EQ(3, mSpire->ntsGetNumObjects());
+  EXPECT_EQ(3, mSpire->getNumObjects());
 }
 
 //------------------------------------------------------------------------------
@@ -405,7 +405,7 @@ TEST_F(InterfaceTestFixture, TestTriangle)
   EXPECT_THROW(mSpire->addObjectPassUniform(obj1, "uColor", M44(), pass1), ShaderUniformTypeError);
   mSpire->addObjectPassUniform(obj1, "uColor", V4(1.0f, 0.0f, 0.0f, 1.0f), pass1);
 
-  mSpire->ntsDoFrame();
+  mSpire->doFrame();
 
   // Write the resultant png to a temporary directory and compare against
   // the golden image results.
@@ -547,15 +547,15 @@ TEST_F(InterfaceTestFixture, TestObjectsStructure)
   //----------------------------------------------------------------------------
   // Test Interface structures
   //----------------------------------------------------------------------------
-  EXPECT_EQ(true, mSpire->ntsHasPass(pass1));
-  EXPECT_EQ(true, mSpire->ntsHasPass(SPIRE_DEFAULT_PASS));
-  EXPECT_EQ(false, mSpire->ntsHasPass("nonexistant"));
+  EXPECT_EQ(true, mSpire->hasPass(pass1));
+  EXPECT_EQ(true, mSpire->hasPass(SPIRE_DEFAULT_PASS));
+  EXPECT_EQ(false, mSpire->hasPass("nonexistant"));
 
-  EXPECT_EQ(true, mSpire->ntsIsObjectInPass(obj1, pass1));
-  EXPECT_EQ(true, mSpire->ntsIsObjectInPass(obj1, SPIRE_DEFAULT_PASS));
-  EXPECT_EQ(false, mSpire->ntsIsObjectInPass(obj1, "nonexistant"));
-  EXPECT_EQ(false, mSpire->ntsIsObjectInPass("nonexistant", pass1));
-  EXPECT_EQ(false, mSpire->ntsIsObjectInPass("nonexistant", SPIRE_DEFAULT_PASS));
+  EXPECT_EQ(true, mSpire->isObjectInPass(obj1, pass1));
+  EXPECT_EQ(true, mSpire->isObjectInPass(obj1, SPIRE_DEFAULT_PASS));
+  EXPECT_EQ(false, mSpire->isObjectInPass(obj1, "nonexistant"));
+  EXPECT_EQ(false, mSpire->isObjectInPass("nonexistant", pass1));
+  EXPECT_EQ(false, mSpire->isObjectInPass("nonexistant", SPIRE_DEFAULT_PASS));
 
   // Add pass uniforms for each pass.
   mSpire->addObjectPassUniform(obj1, "uColor", V4(1.0f, 0.0f, 0.0f, 1.0f));    // default pass
@@ -564,7 +564,7 @@ TEST_F(InterfaceTestFixture, TestObjectsStructure)
   //----------------------------------------------------------------------------
   // Test SpireObject structures
   //----------------------------------------------------------------------------
-  std::shared_ptr<const SpireObject> object1 = mSpire->ntsGetObjectWithName(obj1);
+  std::shared_ptr<const SpireObject> object1 = mSpire->getObjectWithName(obj1);
   std::shared_ptr<const ObjectPass> object1Pass1 = object1->getObjectPassParams(pass1);
   std::shared_ptr<const ObjectPass> object1PassDefault = object1->getObjectPassParams(SPIRE_DEFAULT_PASS);
 
@@ -619,7 +619,7 @@ TEST_F(InterfaceTestFixture, TestObjectsStructure)
 
   // Perform the frame. If there are any missing shaders we'll know about it
   // here.
-  mSpire->ntsDoFrame();
+  mSpire->doFrame();
 }
 
 //------------------------------------------------------------------------------
@@ -668,7 +668,7 @@ TEST_F(InterfaceTestFixture, TestRenderingWithSR5Object)
   mSpire->removeIBO(iboName);
   mSpire->removeVBO(vboName);
 
-  mSpire->ntsDoFrame();
+  mSpire->doFrame();
 
   // Write the resultant png to a temporary directory and compare against
   // the golden image results.
@@ -769,7 +769,7 @@ TEST_F(InterfaceTestFixture, TestRenderingWithAttributes)
   // Setup camera uniforms.
   mCamera->setCommonUniforms(mSpire);
 
-  mSpire->ntsDoFrame();
+  mSpire->doFrame();
 
   // Write the resultant png to a temporary directory and compare against
   // the golden image results.
@@ -886,7 +886,7 @@ TEST_F(InterfaceTestFixture, TestRenderingWithOutOfOrderAttributes)
   mSpire->addGlobalUniform("uLightDirWorld", V3(0.0f, 0.0f, 1.0f));
   mCamera->setCommonUniforms(mSpire);
 
-  mSpire->ntsDoFrame();
+  mSpire->doFrame();
 
   // Write the resultant png to a temporary directory and compare against
   // the golden image results.

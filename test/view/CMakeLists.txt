@@ -34,10 +34,6 @@ endif()
 include(${CPM_DIR}/CPM.cmake)
 
 # ++ MODULE: Spire
-# Include spire first, then the scirun interface. USE_STD_THREADS will be
-# exposed to spire. Threads will be removed from spire in the near future,
-# so this option will go away.
-option(USE_STD_THREADS "Use standard library threads. If turned off, no threading support is available." ON)
 CPM_AddModule("spire"
   GIT_REPOSITORY "https://github.com/SCIInstitute/spire"
   GIT_TAG "origin/dev"

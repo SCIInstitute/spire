@@ -51,18 +51,9 @@ CPM_InitModule(${CPM_MODULE_NAME})
 # CMake Build Options
 #-----------------------------------------------------------------------
 
-if(WIN32)
-  option(USE_STD_THREADS "Use standard library threads. If turned off, no threading support is available." OFF)
-else()
-  option(USE_STD_THREADS "Use standard library threads. If turned off, no threading support is available." ON)
-endif()
 option(USE_GOOGLE_PERF "Use google perf tools to profile Spire." OFF)
 option(USE_CORE_PROFILE_3 "Use OpenGL core profile 3.2 (supported by most macs)." OFF)
 option(USE_CORE_PROFILE_4 "Use OpenGL core profile 4.1 (supported by mac 10.9)." OFF)
-
-if(USE_STD_THREADS)
-  add_definitions(-DSPIRE_USE_STD_THREADS)
-endif()
 
 if(CMAKE_BUILD_TYPE MATCHES DEBUG)
   add_definitions(-DSPIRE_DEBUG)

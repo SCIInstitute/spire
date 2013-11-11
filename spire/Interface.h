@@ -57,6 +57,7 @@ class Hub;
 class HubThread;
 class LambdaInterface;
 class ObjectLambdaInterface;
+class InterfaceImplementation;
 class SpireObject;
 
 /// Interface to the renderer.
@@ -93,7 +94,7 @@ public:
   //          LogFunction logFP = LogFunction());
   Interface(std::shared_ptr<Context> context, 
             const std::vector<std::string>& shaderDirs,
-            bool createThread, LogFunction logFP = LogFunction());
+            LogFunction logFP = LogFunction());
   virtual ~Interface();
 
 
@@ -153,10 +154,6 @@ public:
     TYPE_HALFFLOAT, ///< GLfloat  - 16-bit floating,        C-Type (?),             Suffix (?)
     TYPE_DOUBLE,    ///< GLdouble - 64-bit floating,        C-Type (double),        Suffix (d)
   };
-
-  //============================================================================
-  // CONCURRENT INTERFACE
-  //============================================================================
 
   // Functions contained in the concurrent interface are not thread safe and
   // it is unlikely that they ever will be. In most scenarios, you should use
@@ -256,56 +253,39 @@ public:
   ///       If this is not the same thread where Interface was created, ensure
   ///       a call to context->makeCurrent() is issued before invoking doFrame
   ///       for the first time.
-  void ntsDoFrame();
+  void doFrame();
 
   /// Obtain the current number of objects.
   /// \todo This function nedes to go to the implementation.
-  size_t ntsGetNumObjects() const;
+  size_t getNumObjects() const;
 
   /// Obtain the object associated with 'name'.
   /// throws std::range_error if the object is not found.
-  std::shared_ptr<SpireObject> ntsGetObjectWithName(const std::string& name) const;
+  std::shared_ptr<SpireObject> getObjectWithName(const std::string& name) const;
 
   /// Cleans up all GL resources.
   /// Should ONLY be called from the rendering thread.
   /// In our case, this amounts to disposing of all of our objects and VBO/IBOs
   /// and persistent shader objects.
-  void ntsClearGLResources();
+  void clearGLResources();
 
   /// Returns true if the specified object is in the pass.
-  bool ntsIsObjectInPass(const std::string& object, const std::string& pass) const;
+  bool isObjectInPass(const std::string& object, const std::string& pass) const;
 
   /// Returns true if the pass already exists.
-  bool ntsHasPass(const std::string& pass) const;
+  bool hasPass(const std::string& pass) const;
 
   /// Makes the rendering context that was passed into spire current on
   /// the thread.
   void makeCurrent();
 
-  //============================================================================
-  // THREAD SAFE - Remember, the same thread should always be calling spire.
-  //============================================================================
-
-  // All thread safe functions can be called from the concurrent interface.
-  // Additionally, when compiled without threading support, these functions
-  // will be executed immediately 
-
-
-  /// Terminates spire. If running 'threaded' then this will join with the 
-  /// spire thread before returning. This should be called before the OpenGL
-  /// context is destroyed.
-  /// There is no mutex lock in this function, it should only be called by one
-  /// thread.
+  // Terminates spire. This should be called before the OpenGL context is
+  // destroyed.
   void terminate();
 
   //--------
   // Passes
   //--------
-
-  // The default pass (SPIRE_DEFAULT_PASS) is always present.
-
-  /// \todo Consider removal of manual passes from the system. There will be
-  ///       no way of rendering these passes in the 'threaded' environment.
 
   /// Adds a pass to the front of the pass list. Passes at the front of the list
   /// are rendered first.
@@ -656,7 +636,8 @@ public:
 
 protected:
 
-  std::unique_ptr<Hub>      mHub;   ///< Rendering hub.
+  std::unique_ptr<Hub>                      mHub;
+  std::shared_ptr<InterfaceImplementation>  mImpl;
 
 };
 

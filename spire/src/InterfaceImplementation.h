@@ -63,19 +63,9 @@ class IBOObject;
 class InterfaceImplementation
 {
 public:
-  InterfaceImplementation(Hub& hub, bool threaded);
+  InterfaceImplementation(Hub& hub);
   virtual ~InterfaceImplementation()  {}
   
-  /// SHOULD ONLY be called by the thread associated with Queue.
-  /// Will add 'fun' to the queue associated with 'thread'.
-  /// \return false if we failed to add the function to the specified queue.
-  ///         queue is likely to be full.
-  bool addFunctionToQueue(const Hub::RemoteFunction& fun);
-
-  /// SHOULD ONLY be called by the spire thread!
-  /// Will execute all commands the the queue associated with Interface::THREAD.
-  void executeQueue();
-
   //============================================================================
   // IMPLEMENTATION
   //============================================================================
@@ -106,10 +96,6 @@ public:
   /// Retrieve gl type from Interface::DATA_TYPES.
   static GLenum getGLType(Interface::DATA_TYPES type);
 
-  //============================================================================
-  // CONCURRENT IMPLEMENTATION
-  //============================================================================
-
   void addConcurrentVBO(const std::string& vboName,
                         const uint8_t* vboData, size_t vboSize,
                         const std::vector<std::string>& attribNames);
@@ -121,99 +107,84 @@ public:
   //============================================================================
   // CALLBACK IMPLEMENTATION -- Called from interface or a derived class.
   //============================================================================
-  // All of the functions below constitute the implementation of the interface
-  // to spire. 
-  // NOTE: None of the functions below should not take references or raw
-  // pointers with the exception of the self reference. We don't want to worry
-  // about the lifetime of the objects during cross-thread communication.
-
-  //-------------------
-  // Window Management
-  //-------------------
-  /// Called in the event of a resize. This calls glViewport with 0, 0, width, height.
-  static void resize(InterfaceImplementation& self, size_t width, size_t height);
 
   //--------
   // Passes
   //--------
 
-  static void addPassToFront(InterfaceImplementation& self, std::string passName);
-  static void addPassToBack(InterfaceImplementation& self, std::string passName);
+  void addPassToFront(std::string passName);
+  void addPassToBack(std::string passName);
 
   //---------
   // Objects
   //---------
 
-  static void addObject(InterfaceImplementation& self, std::string objectName);
-  static void removeObject(InterfaceImplementation& self, std::string objectName);
-  static void removeAllObjects(InterfaceImplementation& self);
-  static void addVBO(InterfaceImplementation& self, std::string vboName,
-                     std::shared_ptr<std::vector<uint8_t>> vboData,
-                     std::vector<std::string> attribNames);
-  static void removeVBO(InterfaceImplementation& self, std::string vboName);
-  static void addIBO(InterfaceImplementation& self, std::string iboName,
+  void addObject(std::string objectName);
+  void removeObject(std::string objectName);
+  void removeAllObjects();
+  void addVBO(std::string vboName,
+              std::shared_ptr<std::vector<uint8_t>> vboData,
+              std::vector<std::string> attribNames);
+  void removeVBO(std::string vboName);
+  void addIBO(std::string iboName,
                      std::shared_ptr<std::vector<uint8_t>> iboData,
                      Interface::IBO_TYPE type);
-  static void removeIBO(InterfaceImplementation& self, std::string iboName);
-  static void addPassToObject(InterfaceImplementation& self, std::string object,
+  void removeIBO(std::string iboName);
+  void addPassToObject(std::string object,
                               std::string program, std::string vboName, 
                               std::string iboName, Interface::PRIMITIVE_TYPES type,
                               std::string pass, std::string parentPass);
-  static void removePassFromObject(InterfaceImplementation& self, std::string object,
+  void removePassFromObject(std::string object,
                                    std::string pass);
 
   //----------
   // Uniforms
   //----------
-  static void addObjectPassUniformConcrete(InterfaceImplementation& self, 
-                                           std::string object, std::string uniformName,
-                                           std::shared_ptr<AbstractUniformStateItem> item,
-                                           std::string pass);
-  static void addObjectGlobalUniformConcrete(InterfaceImplementation& self, std::string object,
-                                             std::string uniformName,
-                                             std::shared_ptr<AbstractUniformStateItem> item);
-  static void addGlobalUniformConcrete(InterfaceImplementation& self,
-                                       std::string uniformName,
-                                       std::shared_ptr<AbstractUniformStateItem> item);
-  static void addObjectPassGPUState(InterfaceImplementation& self, std::string object,
-                                    GPUState state, std::string pass);
+  void addObjectPassUniformConcrete(std::string object, std::string uniformName,
+                                    std::shared_ptr<AbstractUniformStateItem> item,
+                                    std::string pass);
+  void addObjectGlobalUniformConcrete(std::string object,
+                                      std::string uniformName,
+                                      std::shared_ptr<AbstractUniformStateItem> item);
+  void addGlobalUniformConcrete( std::string uniformName,
+                                std::shared_ptr<AbstractUniformStateItem> item);
+  void addObjectPassGPUState(std::string object,
+                             GPUState state, std::string pass);
 
   //-------------------
   // Shader Attributes
   //-------------------
 
   // Attributes just as they are in the OpenGL rendering pipeline.
-  static void addShaderAttribute(InterfaceImplementation& self, std::string codeName,
-                                 size_t numComponents, bool normalize, size_t size,
-                                 Interface::DATA_TYPES t);
+  void addShaderAttribute(std::string codeName, size_t numComponents,
+                          bool normalize, size_t size, Interface::DATA_TYPES t);
 
   //-----------------
   // Object metadata
   //-----------------
-  static void addObjectGlobalMetadataConcrete(InterfaceImplementation& self,
-                                                    std::string object,
-                                                    std::string attributeName,
-                                                    std::shared_ptr<AbstractUniformStateItem> item);
-  static void addObjectPassMetadataConcrete(InterfaceImplementation& self, std::string object,
-                                            std::string attributeName,
-                                            std::shared_ptr<AbstractUniformStateItem> item,
-                                            std::string passName);
+  void addObjectGlobalMetadataConcrete(std::string object,
+                                       std::string attributeName,
+                                       std::shared_ptr<AbstractUniformStateItem> item);
+  void addObjectPassMetadataConcrete(std::string object,
+                                     std::string attributeName,
+                                     std::shared_ptr<AbstractUniformStateItem> item,
+                                     std::string passName);
   //-----------------
   // Shader Programs
   //-----------------
 
-  static void addPersistentShader(InterfaceImplementation& self, std::string programName,
-                                  std::vector<std::tuple<std::string, Interface::SHADER_TYPES>> tempShaders);
+  void addPersistentShader(std::string programName,
+                           std::vector<std::tuple<std::string, Interface::SHADER_TYPES>> tempShaders);
 
   //---------
   // Lambdas
   //---------
-  static void addLambdaBeginAllPasses(InterfaceImplementation& self, Interface::PassLambdaFunction fp);
-  static void addLambdaEndAllPasses(InterfaceImplementation& self, Interface::PassLambdaFunction fp);
-  static void addLambdaPrePass(InterfaceImplementation& self, Interface::PassLambdaFunction fp, std::string pass);
-  static void addLambdaPostPass(InterfaceImplementation& self, Interface::PassLambdaFunction fp, std::string pass);
-  static void addLambdaObjectRender(InterfaceImplementation& self, std::string object, Interface::ObjectLambdaFunction fp, std::string pass);
-  static void addLambdaObjectUniforms(InterfaceImplementation& self, std::string object, Interface::ObjectUniformLambdaFunction fp, std::string pass);
+  void addLambdaBeginAllPasses(Interface::PassLambdaFunction fp);
+  void addLambdaEndAllPasses(Interface::PassLambdaFunction fp);
+  void addLambdaPrePass(Interface::PassLambdaFunction fp, std::string pass);
+  void addLambdaPostPass(Interface::PassLambdaFunction fp, std::string pass);
+  void addLambdaObjectRender(std::string object, Interface::ObjectLambdaFunction fp, std::string pass);
+  void addLambdaObjectUniforms(std::string object, Interface::ObjectUniformLambdaFunction fp, std::string pass);
 
 private:
 
@@ -257,15 +228,7 @@ private:
 
 private:
 
-#ifdef SPIRE_USE_STD_THREADS
-  /// \todo Change to boost <url:http://www.boost.org/doc/libs/1_53_0/doc/html/lockfree.html> 
-  ///       Wouldn't have to deal with the limit to message size...
-  typedef CircularFifo<ThreadMessage,256> MessageQueue;
-  MessageQueue    mQueue;
-#endif
-
   Hub&            mHub;
-  bool            mThreaded;
 };
 
 } // namespace CPM_SPIRE_NS

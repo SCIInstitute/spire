@@ -36,10 +36,6 @@
 #include <fstream>
 #include <functional>
 #include <list>
-#ifdef SPIRE_USE_STD_THREADS
-#include <thread>
-#include <atomic>
-#endif
 
 #include "../Interface.h"
 #include "GPUStateManager.h"
@@ -56,8 +52,6 @@ class ShaderAttributeMan;
 class ShaderUniformMan;
 class ShaderProgramMan;
 
-/// Using thread local storage ONLY for logging purposes, nothing else.
-
 /// Central hub for the renderer.
 /// Most managers will reference this class in some way.
 class Hub
@@ -67,23 +61,14 @@ public:
   /// @todo Make context a shared_ptr
   Hub(std::shared_ptr<Context> context,
       const std::vector<std::string>& shaderDirs, 
-      Interface::LogFunction logFn, bool useThread);
+      Interface::LogFunction logFn);
   virtual ~Hub();
 
   /// Definition of what a remote function should accept.
   typedef std::function<void (InterfaceImplementation& impl)> RemoteFunction;
 
   /// One-time initialization of the renderer.
-  /// Called by the rendering thread, or the thread where this Interface class
-  /// was created (called automatically from interface's constructor in the 
-  /// latter case).
-  void oneTimeInitOnThread();
-
-  /// Returns true if the rendering thread is currently running.
-  bool isRendererThreadRunning() const;
-
-  /// Returns true if we are using the threaded version of spire.
-  bool isThreaded() const                         {return mThreaded;}
+  void oneTimeInit();
 
   /// If anything in the scene has changed, then calling this will render
   /// a new frame and swap the buffers. If the scene was not modified, then this
@@ -123,16 +108,6 @@ public:
   /// Retrieves the interface implementation.
   std::shared_ptr<InterfaceImplementation> getInterfaceImpl() {return mInterfaceImpl;}
 
-  /// Terminates the rendering thread. After this call, you will be able to
-  /// re-issue context->makeCurrent() and call doFrame manually.
-  /// killRendererThread WILL block until the rendering thread has finished.
-  /// This is to ensure makeCurrent will not be called again before the thread 
-  /// has terminated.
-  void killRendererThread();
-
-  /// Adds a function to the cross-thread message queue.
-  bool addFunctionToThreadQueue(const RemoteFunction& fun);
-
   //----------------------------------------------------------------------------
   // Concurrent helper functions
   //----------------------------------------------------------------------------
@@ -142,7 +117,7 @@ public:
   bool beginFrame(bool makeContextCurrent);
   void endFrame();
 
-  /// Make our context current on the thread.
+  /// Make context current.
   void makeCurrent();
 
 private:
@@ -160,26 +135,6 @@ private:
   std::vector<std::string>            mShaderDirs;      ///< Shader directories to search.
 
   std::shared_ptr<InterfaceImplementation>  mInterfaceImpl; ///< Interface implementation.
-
-  // Threading variables / functions
-
-  /// Creates a rendering thread. 
-  /// There must not be a rendering thread already running.
-  void createRendererThread();
-
-#ifdef SPIRE_USE_STD_THREADS
-  std::thread             mThread;          ///< The renderer thread.
-  std::atomic<bool>       mThreadKill;      ///< If true, the renderer thread
-                                            ///< will attempt to finish what it
-                                            ///< is doing and terminate.
-  std::atomic<bool>       mThreadRunning;   ///< True if the rendering thread
-                                            ///< is currently running.
-
-  /// Rendering thread
-  void rendererThread();
-#endif
-
-  bool                    mThreaded;        ///< Threaded rendering.
 
   size_t                  mPixScreenWidth;  ///< Actual screen width in pxels.
   size_t                  mPixScreenHeight; ///< Actual screen height in pixels.
