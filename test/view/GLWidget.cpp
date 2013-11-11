@@ -34,14 +34,16 @@
 
 #include "GLWidget.h"
 
-#include "Spire/Core/LambdaInterface.h"
-#include "Spire/Core/ObjectLambda.h"
+#include "namespaces.h"
 
-using namespace Spire;
-using Spire::V4;
-using Spire::V3;
-using Spire::V2;
-using Spire::M44;
+#include "spire/src/LambdaInterface.h"
+#include "spire/src/ObjectLambda.h"
+
+using namespace spire;
+using spire::V4;
+using spire::V3;
+using spire::V2;
+using spire::M44;
 
 // Simple function to handle object transformations so that the GPU does not
 // need to do the same calculation for each vertex.
@@ -99,11 +101,11 @@ GLWidget::GLWidget(const QGLFormat& format) :
 
   // Create a threaded spire renderer.
 #ifdef SPIRE_USE_STD_THREADS
-  mSpire = std::shared_ptr<Spire::Interface>(
-      new Spire::Interface(mContext, shaderSearchDirs, true));
+  mSpire = std::shared_ptr<spire::Interface>(
+      new spire::Interface(mContext, shaderSearchDirs, true));
 #else
-  mSpire = std::shared_ptr<Spire::Interface>(
-      new Spire::Interface(mContext, shaderSearchDirs, false));
+  mSpire = std::shared_ptr<spire::Interface>(
+      new spire::Interface(mContext, shaderSearchDirs, false));
   mTimer = new QTimer(this);
   connect(mTimer, SIGNAL(timeout()), this, SLOT(updateRenderer()));
   mTimer->start(35);
@@ -119,10 +121,10 @@ GLWidget::GLWidget(const QGLFormat& format) :
 void GLWidget::buildScene()
 {
   // Add shader attributes that we will be using.
-  mSpire->addShaderAttribute("aPos",         3,  false,  sizeof(float) * 3,  Spire::Interface::TYPE_FLOAT);
-  mSpire->addShaderAttribute("aNormal",      3,  false,  sizeof(float) * 3,  Spire::Interface::TYPE_FLOAT);
-  mSpire->addShaderAttribute("aColorFloat",  4,  false,  sizeof(float) * 4,  Spire::Interface::TYPE_FLOAT);
-  mSpire->addShaderAttribute("aColor",       4,  true,   sizeof(char) * 4,   Spire::Interface::TYPE_UBYTE);
+  mSpire->addShaderAttribute("aPos",         3,  false,  sizeof(float) * 3,  spire::Interface::TYPE_FLOAT);
+  mSpire->addShaderAttribute("aNormal",      3,  false,  sizeof(float) * 3,  spire::Interface::TYPE_FLOAT);
+  mSpire->addShaderAttribute("aColorFloat",  4,  false,  sizeof(float) * 4,  spire::Interface::TYPE_FLOAT);
+  mSpire->addShaderAttribute("aColor",       4,  true,   sizeof(char) * 4,   spire::Interface::TYPE_UBYTE);
 
   // Simple plane -- complex method of transfering to spire.
   std::vector<float> vboData;
@@ -138,7 +140,7 @@ void GLWidget::buildScene()
   iboData.push_back(1);
   iboData.push_back(2);
   iboData.push_back(3);
-  Spire::Interface::IBO_TYPE iboType = Spire::Interface::IBO_16BIT;
+  spire::Interface::IBO_TYPE iboType = spire::Interface::IBO_16BIT;
   
   uint8_t*  rawBegin;
   size_t    rawSize;
@@ -169,14 +171,14 @@ void GLWidget::buildScene()
 
   // Ensure shader is resident.
   std::string shader1 = "UniformColor";
-  std::vector<std::tuple<std::string, Spire::Interface::SHADER_TYPES>> shaderFiles;
-  shaderFiles.push_back(std::make_pair("UniformColor.vsh", Spire::Interface::VERTEX_SHADER));
-  shaderFiles.push_back(std::make_pair("UniformColor.fsh", Spire::Interface::FRAGMENT_SHADER));
+  std::vector<std::tuple<std::string, spire::Interface::SHADER_TYPES>> shaderFiles;
+  shaderFiles.push_back(std::make_pair("UniformColor.vsh", spire::Interface::VERTEX_SHADER));
+  shaderFiles.push_back(std::make_pair("UniformColor.fsh", spire::Interface::FRAGMENT_SHADER));
 
   mSpire->addPersistentShader(shader1, shaderFiles);
 
   // Build the pass (default pass).
-  mSpire->addPassToObject(obj1, shader1, vbo1, ibo1, Spire::Interface::TRIANGLE_STRIP);
+  mSpire->addPassToObject(obj1, shader1, vbo1, ibo1, spire::Interface::TRIANGLE_STRIP);
 
   M44 xform;
   xform[3] = V4(0.0f, 0.0f, 0.0f, 1.0f);
@@ -187,7 +189,7 @@ void GLWidget::buildScene()
   mSpire->addLambdaObjectUniforms(obj1, lambdaUniformObjTrafs);
 
   // Setup camera
-  M44 proj = glm::perspective(32.0f * (Spire::PI / 180.0f), 3.0f/2.0f, 0.1f, 1350.0f);
+  M44 proj = glm::perspective(32.0f * (spire::PI / 180.0f), 3.0f/2.0f, 0.1f, 1350.0f);
   mSpire->addGlobalUniform("uProjIV", proj);
 }
 

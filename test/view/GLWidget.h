@@ -35,10 +35,10 @@
 #define NOMINMAX
 
 #include <QTimer>
-#include "GLContext.h"
 
-// From spire
-#include "Spire/Interface.h"
+#include "namespaces.h"
+#include "GLContext.h"
+#include "spire/Interface.h"
 
 class GLWidget : public QGLWidget
 {
@@ -62,9 +62,9 @@ protected slots:
 private:
 
   std::shared_ptr<GLContext>            mContext;
-  std::shared_ptr<Spire::Interface>     mSpire;
+  std::shared_ptr<spire::Interface>     mSpire;
   glm::ivec2                            mLastMousePos;
-  Spire::M44                            mCamWorld;
+  spire::M44                            mCamWorld;
 
 #ifndef SPIRE_USE_STD_THREADS
   QTimer*                           mTimer;
