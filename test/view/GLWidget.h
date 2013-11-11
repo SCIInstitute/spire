@@ -65,11 +65,7 @@ private:
   std::shared_ptr<spire::Interface>     mSpire;
   glm::ivec2                            mLastMousePos;
   spire::M44                            mCamWorld;
-
-#ifndef SPIRE_USE_STD_THREADS
-  QTimer*                           mTimer;
-#endif
-
+  QTimer*                               mTimer;
 };
 
 
