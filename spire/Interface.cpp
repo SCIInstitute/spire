@@ -248,6 +248,13 @@ void Interface::addGlobalUniformConcrete(const std::string& uniformName,
 }
 
 //------------------------------------------------------------------------------
+std::shared_ptr<const AbstractUniformStateItem>
+Interface::getGlobalUniformConcrete(const std::string& uniformName)
+{
+  return mHub->getGlobalUniformStateMan().getGlobalUniform(uniformName);
+}
+
+//------------------------------------------------------------------------------
 void Interface::addObjectPassGPUState(const std::string& object, const GPUState& state,
                                       const std::string& pass)
 {
@@ -259,23 +266,6 @@ void Interface::addShaderAttribute(const std::string& codeName, size_t numCompon
                                    bool normalize, size_t size, Interface::DATA_TYPES type)
 {
   mImpl->addShaderAttribute(codeName, numComponents, normalize, size, type);
-}
-
-//------------------------------------------------------------------------------
-void Interface::addObjectGlobalMetadataConcrete(const std::string& object,
-                                                const std::string& attributeName,
-                                                std::shared_ptr<AbstractUniformStateItem> item)
-{
-  mImpl->addObjectGlobalMetadataConcrete(object, attributeName, item);
-}
-
-//------------------------------------------------------------------------------
-void Interface::addObjectPassMetadataConcrete(const std::string& object,
-                                              const std::string& attributeName,
-                                              std::shared_ptr<AbstractUniformStateItem> item,
-                                              const std::string& passName)
-{
-  mImpl->addObjectPassMetadataConcrete(object, attributeName, item, passName);
 }
 
 //------------------------------------------------------------------------------

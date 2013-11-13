@@ -364,25 +364,6 @@ void InterfaceImplementation::addShaderAttribute(std::string codeName,
 }
 
 //------------------------------------------------------------------------------
-void InterfaceImplementation::addObjectGlobalMetadataConcrete(std::string objectName,
-                                                              std::string attributeName,
-                                                              std::shared_ptr<AbstractUniformStateItem> item)
-{
-  std::shared_ptr<SpireObject> obj = mNameToObject.at(objectName);
-  obj->addObjectGlobalMetadata(attributeName, item);
-}
-
-//------------------------------------------------------------------------------
-void InterfaceImplementation::addObjectPassMetadataConcrete(std::string objectName,
-                                                            std::string attributeName,
-                                                            std::shared_ptr<AbstractUniformStateItem> item,
-                                                            std::string passName)
-{
-  std::shared_ptr<SpireObject> obj = mNameToObject.at(objectName);
-  obj->addObjectPassMetadata(passName, attributeName, item);
-}
-
-//------------------------------------------------------------------------------
 void InterfaceImplementation::addPersistentShader(std::string programName,
                                                   std::vector<std::tuple<std::string, Interface::SHADER_TYPES>> tempShaders)
 {

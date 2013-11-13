@@ -583,40 +583,6 @@ TEST_F(InterfaceTestFixture, TestObjectsStructure)
   EXPECT_EQ(false, object1PassDefault->hasPassSpecificUniform("uProjIVObject"));
   EXPECT_EQ(true,  object1PassDefault->hasUniform("uProjIVObject"));
 
-  // Test attributes
-  M44 testUniform;
-  testUniform[3] = V4(1.0f, 1.0f, 1.0f, 1.0f);
-  mSpire->addObjectGlobalMetadata<M44>(obj1, "objectTransform", testUniform);
-  mSpire->addObjectPassMetadata<M44>(obj1, "passTransform", testUniform, pass1);
-
-  auto testMatrixEquality = [](const M44& a, const M44& b) {
-    for (size_t c = 0; c < 4; c++)
-    {
-      for (size_t r = 0; r < 4; r++)
-      {
-        EXPECT_FLOAT_EQ(a[c][r], b[c][r]);
-      }
-    }
-  };
-
-  M44 retUnif;
-  std::shared_ptr<const AbstractUniformStateItem> uniformItem;
-
-  retUnif = object1->getObjectGlobalMetadata("objectTransform")->getData<M44>();
-  testMatrixEquality(retUnif, testUniform);
-
-  EXPECT_THROW(object1->getObjectGlobalMetadata("nonexistant"), std::runtime_error);
-
-  uniformItem = object1->getObjectPassMetadata(pass1, "passTransform");
-  retUnif = uniformItem->getData<M44>();
-  testMatrixEquality(retUnif, testUniform);
-
-  uniformItem = object1->getObjectPassMetadata(pass1, "nonexistant");
-  EXPECT_EQ(nullptr, uniformItem);
-
-  uniformItem = object1->getObjectPassMetadata(SPIRE_DEFAULT_PASS, "objectTransform");
-  EXPECT_EQ(nullptr, uniformItem);
-
   // Perform the frame. If there are any missing shaders we'll know about it
   // here.
   mSpire->doFrame();
@@ -755,8 +721,10 @@ TEST_F(InterfaceTestFixture, TestRenderingWithAttributes)
   // Object spire attributes (used for computing appropriate uniforms).
   M44 xform;
   xform[3] = V4(1.0f, 0.0f, 0.0f, 1.0f);
-  mSpire->addObjectPassMetadata(
-      objectName, std::get<0>(TestCommonAttributes::getObjectToWorldTrafo()), xform);
+  mSpire->addObjectPassUniform(objectName, "uObject", xform);
+
+  M44 inverseViewProjection = iface.getGlobalUniform<M44>(
+      std::get<0>(TestCommonUniforms::getToCameraToProjection()));
 
   // No longer need VBO and IBO (will stay resident in the passes -- when the
   // passes are destroyed, the VBO / IBOs will be destroyed).

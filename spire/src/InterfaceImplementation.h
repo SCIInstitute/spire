@@ -156,16 +156,6 @@ public:
                           bool normalize, size_t size, Interface::DATA_TYPES t);
 
   //-----------------
-  // Object metadata
-  //-----------------
-  void addObjectGlobalMetadataConcrete(std::string object,
-                                       std::string attributeName,
-                                       std::shared_ptr<AbstractUniformStateItem> item);
-  void addObjectPassMetadataConcrete(std::string object,
-                                     std::string attributeName,
-                                     std::shared_ptr<AbstractUniformStateItem> item,
-                                     std::string passName);
-  //-----------------
   // Shader Programs
   //-----------------
 

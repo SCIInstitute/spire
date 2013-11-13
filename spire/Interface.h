@@ -504,6 +504,21 @@ public:
                              const GPUState& state,
                              const std::string& pass = SPIRE_DEFAULT_PASS);
 
+  /// \todo This really wants to be an 'optional' return value instead of a
+  ///       throw... it would be much more useful and type compliant that way.
+  ///       See: boost::optional. Waiting to see if the standard adopts
+  ///       optional.
+  template <class T>
+  T getGlobalUniform(const std::string& uniformName)
+  {
+    std::shared_ptr<const AbstractUniformStateItem> uniformItem
+        = getGlobalUniformConcrete(uniformName);
+    if (uniformItem)
+      return uniformItem->getData<T>();
+    else
+      throw std::runtime_error("Unable to find uniform item.");
+  }
+
   //-------------------
   // Shader Attributes
   //-------------------
@@ -511,39 +526,6 @@ public:
   // Attributes just as they are in the OpenGL rendering pipeline.
   void addShaderAttribute(const std::string& codeName, size_t numComponents,
                           bool normalize, size_t size, Interface::DATA_TYPES t);
-
-  //----------------
-  // Object Metadata
-  //----------------
-  template <typename T>
-  void addObjectGlobalMetadata(const std::string& object,
-                               const std::string& metadataName, T metadata)
-  {
-    addObjectGlobalMetadataConcrete(object, metadataName, 
-                                    std::shared_ptr<AbstractUniformStateItem>(
-                                        new UniformStateItem<T>(metadata)));
-  }
-
-  // Concrete implementation of the above templated function.
-  void addObjectGlobalMetadataConcrete(const std::string& object,
-                                       const std::string& metadataName,
-                                       std::shared_ptr<AbstractUniformStateItem> item);
-
-  template <typename T>
-  void addObjectPassMetadata(const std::string& object,
-                             const std::string& metadataName, T metadata,
-                             const std::string& passName = SPIRE_DEFAULT_PASS)
-  {
-    addObjectPassMetadataConcrete(object, metadataName, 
-                                  std::shared_ptr<AbstractUniformStateItem>(
-                                      new UniformStateItem<T>(metadata)), passName);
-  }
-
-  // Concrete implementation of the above templated function.
-  void addObjectPassMetadataConcrete(const std::string& object,
-                                     const std::string& metadataName,
-                                     std::shared_ptr<AbstractUniformStateItem> item,
-                                     const std::string& passName = SPIRE_DEFAULT_PASS);
 
   //-----------------
   // Shader Programs
@@ -635,6 +617,8 @@ public:
 
 
 protected:
+
+  std::shared_ptr<const AbstractUniformStateItem> getGlobalUniformConcrete(const std::string& uniformName);
 
   std::unique_ptr<Hub>                      mHub;
   std::shared_ptr<InterfaceImplementation>  mImpl;

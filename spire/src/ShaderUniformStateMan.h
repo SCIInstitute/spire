@@ -91,7 +91,7 @@ public:
   /// Retrieves the abstract item representing a global uniform.
   /// An exception is thrown if the global uniform of specified name does not
   /// exist.
-  std::shared_ptr<const AbstractUniformStateItem> getGlobalUninform(const std::string& name);
+  std::shared_ptr<const AbstractUniformStateItem> getGlobalUniform(const std::string& name);
 
 private:
 

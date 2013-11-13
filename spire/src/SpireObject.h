@@ -82,15 +82,6 @@ public:
   /// global uniforms were used to populate the uniform.
   bool hasUniform(const std::string& uniformName) const;
 
-  /// Adds a pass spire attribute.
-  void addMetadata(const std::string& attributeName,
-                   std::shared_ptr<AbstractUniformStateItem> item);
-
-  /// Retrieves a pass spire attribute.
-  /// Returns an empty shared_ptr if no such attribute is found.
-  std::shared_ptr<const AbstractUniformStateItem> getMetadata(
-      const std::string& attribName) const;
-
   /// Add render lambda.
   void addRenderLambda(const Interface::ObjectLambdaFunction& fp);
 
@@ -172,8 +163,6 @@ protected:
   ///       better representation in C++.
   std::unique_ptr<GPUState>             mGPUState; ///< GPU state to set (if any, default is none).
 
-  std::unordered_map<std::string, std::shared_ptr<AbstractUniformStateItem>> mMetadata;
-
   Hub&                                  mHub;     ///< Hub.
 
   /// Lambda callbacks.
@@ -223,25 +212,6 @@ public:
   /// Adds a uniform to the pass.
   void addGlobalUniform(const std::string& uniformName,
                         std::shared_ptr<AbstractUniformStateItem> item);
-
-  /// Adds object metadata to the system. Object metadata does not change
-  /// per-pass.
-  void addObjectGlobalMetadata(const std::string& attributeName,
-                               std::shared_ptr<AbstractUniformStateItem> item);
-
-  /// Retrieves a spire attribute. Can be used in the Lambda callbacks for
-  /// rendering.
-  /// Returns an empty shared_ptr if no such attribute is found.
-  std::shared_ptr<const AbstractUniformStateItem> getObjectGlobalMetadata(
-      const std::string& attribName) const;
-
-  void addObjectPassMetadata(const std::string& passName,
-                                   const std::string& attributeName,
-                                   std::shared_ptr<AbstractUniformStateItem> item);
-
-  std::shared_ptr<const AbstractUniformStateItem> getObjectPassMetadata(
-      const std::string& passName,
-      const std::string& attribName) const;
 
   /// Add GPU state to the pass.
   void addPassGPUState(const std::string& pass,
@@ -308,7 +278,6 @@ protected:
   /// All registered passes.
   std::unordered_map<std::string, ObjectPassInternal>   mPasses;
   std::vector<ObjectGlobalUniformItem>                  mObjectGlobalUniforms;
-  std::unordered_map<std::string, ObjectUniformItem>    mMetadata;
 
   // These maps may actually be more efficient implemented as an array. The map 
   // sizes are small and cache coherency will be more important. Ignoring for 

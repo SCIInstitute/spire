@@ -289,28 +289,6 @@ bool ObjectPass::hasUniform(const std::string& uniformName) const
 }
 
 //------------------------------------------------------------------------------
-void ObjectPass::addMetadata(const std::string& attributeName,
-                             std::shared_ptr<AbstractUniformStateItem> item)
-{
-  mMetadata[attributeName] = item;
-}
-
-//------------------------------------------------------------------------------
-std::shared_ptr<const AbstractUniformStateItem> ObjectPass::getMetadata(
-    const std::string& attribName) const
-{
-  auto it = mMetadata.find(attribName);
-  if (it != mMetadata.end())
-  {
-    return it->second;
-  }
-  else
-  {
-    return std::shared_ptr<AbstractUniformStateItem>(); 
-  }
-}
-
-//------------------------------------------------------------------------------
 void ObjectPass::addRenderLambda(const Interface::ObjectLambdaFunction& fp)
 {
   mRenderLambdas.push_back(fp);
@@ -334,9 +312,6 @@ SpireObject::SpireObject(Hub& hub, const std::string& name) :
     mName(name),
     mHub(hub)
 {
-  // Reserve at least one slot for the object transformation, and one more for
-  // good measure.
-  //mMetadata.reserve(2);
 }
 
 
@@ -432,47 +407,6 @@ void SpireObject::removePass(const std::string& passName)
   std::shared_ptr<ObjectPass> pass = getPassByName(passName);
 
   mPasses.erase(passName);
-}
-
-//------------------------------------------------------------------------------
-void SpireObject::addObjectGlobalMetadata(const std::string& attributeName,
-                                          std::shared_ptr<AbstractUniformStateItem> item)
-{
-  mMetadata[attributeName] = item;
-}
-
-//------------------------------------------------------------------------------
-std::shared_ptr<const AbstractUniformStateItem> SpireObject::getObjectGlobalMetadata(
-    const std::string& attribName) const
-{
-  auto it = mMetadata.find(attribName);
-  if (it != mMetadata.end())
-  {
-    return it->second;
-  }
-  else
-  {
-    // This is the highest we can go looking for attributes. The buck stops here.
-    throw Exception("Unable to find object global attribute: " + attribName);
-  }
-}
-
-//------------------------------------------------------------------------------
-void SpireObject::addObjectPassMetadata(const std::string& passName,
-                                            const std::string& attributeName,
-                                            std::shared_ptr<AbstractUniformStateItem> item)
-{
-  std::shared_ptr<ObjectPass> pass = getPassByName(passName);
-  pass->addMetadata(attributeName, item);
-}
-
-//------------------------------------------------------------------------------
-std::shared_ptr<const AbstractUniformStateItem> SpireObject::getObjectPassMetadata(
-    const std::string& passName,
-    const std::string& attribName) const
-{
-  std::shared_ptr<ObjectPass> pass = getPassByName(passName);
-  return pass->getMetadata(attribName);
 }
 
 //------------------------------------------------------------------------------
