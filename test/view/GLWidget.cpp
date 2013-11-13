@@ -101,7 +101,7 @@ GLWidget::GLWidget(const QGLFormat& format) :
 
   // Create an instance of spire and hook it up to a timer.
   mSpire = std::shared_ptr<spire::Interface>(
-      new spire::Interface(mContext, shaderSearchDirs, false));
+      new spire::Interface(mContext, shaderSearchDirs));
   mTimer = new QTimer(this);
   connect(mTimer, SIGNAL(timeout()), this, SLOT(updateRenderer()));
   mTimer->start(35);
@@ -207,7 +207,7 @@ void GLWidget::closeEvent(QCloseEvent *evt)
 void GLWidget::updateRenderer()
 {
   mContext->makeCurrent();    // Required on windows...
-  mSpire->ntsDoFrame();
+  mSpire->doFrame();
   mContext->swapBuffers();
 }
 
