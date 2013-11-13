@@ -184,8 +184,6 @@ add_library(${CPM_LIB_TARGET_NAME}
   ${Source_GLEW_for_Windows}
   )
 
-add_dependencies(${CPM_LIB_TARGET_NAME} ${CPM_LIBRARIES})
-
 # These libraries likely have no effect in the final build.
 target_link_libraries(
   ${CPM_LIB_TARGET_NAME}
