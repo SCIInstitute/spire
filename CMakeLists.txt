@@ -46,8 +46,8 @@ CPM_AddModule("GLM"
   GIT_REPOSITORY "https://github.com/iauns/cpm-glm"
   GIT_TAG "origin/master"
   USE_EXISTING_VER TRUE
-  EXPORT_MODULE TRUE          # Use EXPORT_MODULE sparingly. We expose GLM's interface
-  )                           # through our own interface, hence why we export it.
+  EXPORT_MODULE TRUE    # Use EXPORT_MODULE sparingly. We expose GLM's interface
+  )                     # through our own interface hence why we export it.
 
 # Additional include directories the parent needs to know about. But ONLY
 # on windows where we require GLEW to function properly.
