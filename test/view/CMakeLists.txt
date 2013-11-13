@@ -107,8 +107,6 @@ add_executable(spireview
   ${MocSource} 
   ${UISource})
 
-add_dependencies(spireview ${CPM_LIBRARIES})
-
 target_link_libraries(spireview 
   ${CPM_LIBRARIES} 
   ${QT_OPENGL_LIBRARY}

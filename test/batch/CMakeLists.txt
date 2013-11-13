@@ -201,8 +201,6 @@ add_executable(spirebatch
   ${SpecificSources}
   ${Source_GLEW_for_Windows})
 
-add_dependencies(spirebatch ${CPM_LIBRARIES})
-
 target_link_libraries(spirebatch 
   gtest
   ${CPM_LIBRARIES}
