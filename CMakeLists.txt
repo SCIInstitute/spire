@@ -38,10 +38,16 @@ else()
   include(${CPM_DIR}/CPM.cmake)
 endif()
 
-# Necessary Externals (to be added as CPM externals)
-# TODO: Auto-download GLM (https://github.com/g-truc/glm.git)
 # TODO: Auto-download GLEW on windows only since the other platforms don't need it.
 #       (https://github.com/nigels-com/glew.git)
+
+# ++ MODULE: GLM
+CPM_AddModule("GLM"
+  GIT_REPOSITORY "https://github.com/iauns/cpm-glm"
+  GIT_TAG "origin/master"
+  USE_EXISTING_VER TRUE
+  EXPORT_MODULE TRUE) # Use EXPORT_MODULE sparingly. We expose GLM's interface
+                      # through our own interface, hence why we export it.
 
 # This call will ensure all include directories and definitions are present
 # in the target. These correspond to the modules that we added above.
@@ -160,7 +166,7 @@ add_definitions(-DEIGEN_INITIALIZE_MATRICES_BY_ZERO)
 #-----------------------------------------------------------------------
 
 # GLM include directory.
-include_directories(SYSTEM "${CMAKE_CURRENT_SOURCE_DIR}/spire/3rdParty/glm" )
+#include_directories(SYSTEM "${CMAKE_CURRENT_SOURCE_DIR}/spire/3rdParty/glm" )
 
 #-----------------------------------------------------------------------
 # Source
@@ -188,6 +194,8 @@ add_library(${CPM_LIB_TARGET_NAME}
   ${Source_Core}
   ${Source_GLEW_for_Windows}
   )
+
+add_dependencies(${CPM_LIB_TARGET_NAME} ${CPM_LIBRARIES})
 
 # These libraries likely have no effect in the final build.
 target_link_libraries(
