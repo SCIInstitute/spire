@@ -46,8 +46,12 @@ CPM_AddModule("GLM"
   GIT_REPOSITORY "https://github.com/iauns/cpm-glm"
   GIT_TAG "origin/master"
   USE_EXISTING_VER TRUE
-  EXPORT_MODULE TRUE) # Use EXPORT_MODULE sparingly. We expose GLM's interface
-                      # through our own interface, hence why we export it.
+  EXPORT_MODULE TRUE          # Use EXPORT_MODULE sparingly. We expose GLM's interface
+  )                           # through our own interface, hence why we export it.
+
+# Additional include directories the parent needs to know about. But ONLY
+# on windows where we require GLEW to function properly.
+CPM_ExportAdditionalIncludeDir("${CMAKE_CURRENT_SOURCE_DIR}/spire/3rdParty")
 
 # This call will ensure all include directories and definitions are present
 # in the target. These correspond to the modules that we added above.
@@ -152,21 +156,6 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 include_directories(SYSTEM
   ${CMAKE_CURRENT_SOURCE_DIR}/spire/3rdParty
   ${OPENGL_INCLUDE_DIRS})
-
-#-----------------------------------------------------------------------
-# Eigen
-#-----------------------------------------------------------------------
-
-# Eigen include directory.
-include_directories(SYSTEM "${CMAKE_CURRENT_SOURCE_DIR}/spire/3rdParty/eigen" )
-add_definitions(-DEIGEN_INITIALIZE_MATRICES_BY_ZERO)
-
-#-----------------------------------------------------------------------
-# GLM
-#-----------------------------------------------------------------------
-
-# GLM include directory.
-#include_directories(SYSTEM "${CMAKE_CURRENT_SOURCE_DIR}/spire/3rdParty/glm" )
 
 #-----------------------------------------------------------------------
 # Source
