@@ -58,7 +58,7 @@ public:
     std::shared_ptr<const AbstractUniformStateItem> uniform =
         mHub.getPassUniformStateMan().getPassUninform(mPass, uniformName);
     if (uniform == nullptr)
-      return mHub.getGlobalUniformStateMan().getGlobalUninform(uniformName)->getData<T>();
+      return mHub.getGlobalUniformStateMan().getGlobalUniform(uniformName)->getData<T>();
     else
       return uniform->getData<T>();
   }
