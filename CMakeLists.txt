@@ -12,9 +12,6 @@ set(CPM_LIB_TARGET_NAME ${CPM_MODULE_NAME})
 
 if ((DEFINED CPM_DIR) AND (DEFINED CPM_UNIQUE_ID) AND (DEFINED CPM_TARGET_NAME))
   set(CPM_LIB_TARGET_NAME ${CPM_TARGET_NAME})
-
-  # We are being built as a sub project. Use the primary project's CPM
-  # so that we can take advantage of possible duplicate module versions.
   set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CPM_DIR})
   include(CPM)
 else()
