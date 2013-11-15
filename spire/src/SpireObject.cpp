@@ -45,8 +45,7 @@ namespace CPM_SPIRE_NS {
 
 //------------------------------------------------------------------------------
 ObjectPass::ObjectPass(
-    Hub& hub,
-    const std::string& passName, const std::string& programName,
+    Hub& hub, const std::string& passName, const std::string& programName,
     std::shared_ptr<VBOObject> vbo, std::shared_ptr<IBOObject> ibo, GLenum primitiveType) :
 
     mName(passName),
@@ -112,23 +111,21 @@ void ObjectPass::renderPass()
 
   // Assign global uniforms, searches through 3 levels in an attempt to find the
   // uniform: object global -> pass global -> and global.
-  std::list<Interface::UnsatisfiedUniform> unsatisfiedGlobalUniforms;
+  std::list<std::string> unsatisfiedGlobalUniforms;
   for (auto it = mUnsatisfiedUniforms.begin(); it != mUnsatisfiedUniforms.end(); ++it)
   {
     bool applied = mHub.getPassUniformStateMan().tryApplyUniform(mName, it->uniformName, it->shaderLocation);
     if (applied == false)
     {
       if (mHub.getGlobalUniformStateMan().applyUniform(it->uniformName, it->shaderLocation) == false)
-        unsatisfiedGlobalUniforms.push_back(
-            Interface::UnsatisfiedUniform(it->uniformName, it->shaderLocation, it->uniformType));
+        unsatisfiedGlobalUniforms.push_back(it->uniformName);
     }
   }
 
   // If we have an unsatisfied uniforms callback, ensure that it is called..
   if (unsatisfiedGlobalUniforms.size() > 0)
   {
-    throw ShaderUniformNotFound("Could not initialize uniform: " 
-                                + unsatisfiedGlobalUniforms.front().uniformName);
+    throw ShaderUniformNotFound("Could not initialize uniform: " + unsatisfiedGlobalUniforms.front());
   }
   
 
