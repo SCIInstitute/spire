@@ -36,60 +36,11 @@
 
 #include "namespaces.h"
 
-#include "spire/src/LambdaInterface.h"
-#include "spire/src/ObjectLambda.h"
-
 using namespace spire;
 using spire::V4;
 using spire::V3;
 using spire::V2;
 using spire::M44;
-
-// Simple function to handle object transformations so that the GPU does not
-// need to do the same calculation for each vertex.
-static void lambdaUniformObjTrafs(ObjectLambdaInterface& iface, 
-                                  std::list<Interface::UnsatisfiedUniform>& unsatisfiedUniforms)
-{
-  // Cache object to world transform.
-  M44 objToWorld = iface.getObjectMetadata<M44>("objToWorld");
-  std::string objectTrafoName = "uObject";
-  std::string objectToViewName = "uViewObject";
-  std::string objectToCamProjName = "uProjIVObject";
-
-  // Loop through the unsatisfied uniforms and see if we can provide any.
-  for (auto it = unsatisfiedUniforms.begin(); it != unsatisfiedUniforms.end(); /*nothing*/ )
-  {
-    if (it->uniformName == objectTrafoName)
-    {
-      LambdaInterface::setUniform<M44>(it->uniformType, it->uniformName,
-                                       it->shaderLocation, objToWorld);
-
-      it = unsatisfiedUniforms.erase(it);
-    }
-    else if (it->uniformName == objectToViewName)
-    {
-      // Grab the inverse view transform.
-      M44 inverseView = glm::affineInverse(
-          iface.getGlobalUniform<M44>("uView"));
-      LambdaInterface::setUniform<M44>(it->uniformType, it->uniformName,
-                                       it->shaderLocation, inverseView * objToWorld);
-
-      it = unsatisfiedUniforms.erase(it);
-    }
-    else if (it->uniformName == objectToCamProjName)
-    {
-      M44 inverseViewProjection = iface.getGlobalUniform<M44>("uProjIV");
-      LambdaInterface::setUniform<M44>(it->uniformType, it->uniformName,
-                                       it->shaderLocation, inverseViewProjection * objToWorld);
-
-      it = unsatisfiedUniforms.erase(it);
-    }
-    else
-    {
-      ++it;
-    }
-  }
-}
 
 //------------------------------------------------------------------------------
 GLWidget::GLWidget(const QGLFormat& format) :
@@ -161,8 +112,8 @@ void GLWidget::buildScene()
   mSpire->addIBO(ibo1, rawIBO, iboType);
 
   // Add object
-  std::string obj1 = "obj1";
-  mSpire->addObject(obj1);
+  mObject1 = "obj1";
+  mSpire->addObject(mObject1);
 
   // Ensure shader is resident.
   std::string shader1 = "UniformColor";
@@ -173,19 +124,17 @@ void GLWidget::buildScene()
   mSpire->addPersistentShader(shader1, shaderFiles);
 
   // Build the pass (default pass).
-  mSpire->addPassToObject(obj1, shader1, vbo1, ibo1, spire::Interface::TRIANGLE_STRIP);
+  mSpire->addPassToObject(mObject1, shader1, vbo1, ibo1, spire::Interface::TRIANGLE_STRIP);
 
   M44 xform;
   xform[3] = V4(0.0f, 0.0f, 0.0f, 1.0f);
-  mSpire->addObjectPassMetadata(obj1, "objToWorld", xform);
+  mSpire->addObjectPassUniform(mObject1, "uColor", V4(1.0f, 0.0f, 0.0f, 1.0f));
 
-  mSpire->addObjectPassUniform(obj1, "uColor", V4(1.0f, 0.0f, 0.0f, 1.0f));
-
-  mSpire->addLambdaObjectUniforms(obj1, lambdaUniformObjTrafs);
-
-  // Setup camera
+  // Setup simple camera
   M44 proj = glm::perspective(32.0f * (spire::PI / 180.0f), 3.0f/2.0f, 0.1f, 1350.0f);
   mSpire->addGlobalUniform("uProjIV", proj);
+
+  mSpire->addObjectGlobalUniform(mObject1, "uProjIVObject", proj * xform);
 }
 
 //------------------------------------------------------------------------------
@@ -207,7 +156,25 @@ void GLWidget::closeEvent(QCloseEvent *evt)
 void GLWidget::updateRenderer()
 {
   mContext->makeCurrent();    // Required on windows...
-  mSpire->doFrame();
+
+  // Do not even attempt to render if the framebuffer is not complete.
+  // This can happen when the rendering window is hidden (in SCIRun5 for
+  // example);
+  if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+    return;
+
+  /// \todo Move this outside of the interface!
+  GL(glClearColor(0.0f, 0.0f, 0.0f, 1.0f));
+  GL(glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT));
+
+  /// \todo Make line width a part of the GPU state.
+  glLineWidth(2.0f);
+  //glEnable(GL_LINE_SMOOTH);
+
+  GPUState defaultGPUState;
+  mSpire->applyGPUState(defaultGPUState, true); // true = force application of state.
+
+  mSpire->renderObject(mObject1);
   mContext->swapBuffers();
 }
 

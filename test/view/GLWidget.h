@@ -66,6 +66,8 @@ private:
   glm::ivec2                            mLastMousePos;
   spire::M44                            mCamWorld;
   QTimer*                               mTimer;
+
+  std::string                           mObject1;
 };
 
 

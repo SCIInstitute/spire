@@ -43,9 +43,10 @@
 
 #include "Context.h"
 
-#include "src/Math.h"  // Necessary in order to communicate vector types.
+#include "src/Math.h"
 #include "src/ShaderUniformStateManTemplates.h"
 #include "src/GPUStateManager.h"
+#include "src/GLInclude.h"
 
 /// \todo The following *really* wants to be a constexpr inside of StuInterface,
 /// when we upgrade to VS 2012, we should also upgrade this.
