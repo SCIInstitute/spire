@@ -281,6 +281,12 @@ void Interface::addObjectPassGPUState(const std::string& object, const GPUState&
 }
 
 //------------------------------------------------------------------------------
+void Interface::applyGPUState(const GPUState& state, bool force)
+{
+  mHub->getGPUStateManager().apply(state, force); // true = force application of state.
+}
+
+//------------------------------------------------------------------------------
 void Interface::addShaderAttribute(const std::string& codeName, size_t numComponents,
                                    bool normalize, size_t size, Interface::DATA_TYPES type)
 {

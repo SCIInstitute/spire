@@ -155,6 +155,10 @@ public:
     TYPE_DOUBLE,    ///< GLdouble - 64-bit floating,        C-Type (double),        Suffix (d)
   };
 
+  // Functions contained in the concurrent interface are not thread safe and
+  // it is unlikely that they ever will be. In most scenarios, you should use
+  // this concurrent interface instead of the threaded interface.
+
   /// Calling this function is not necessary but may make your life.
   /// Here is a brief overview of what this function does:
   /// * Makes the context current if makeContextCurrent == true.
@@ -479,6 +483,9 @@ public:
   void addObjectPassGPUState(const std::string& object,
                              const GPUState& state,
                              const std::string& pass = SPIRE_DEFAULT_PASS);
+
+  /// Apply the given GPU state.
+  void applyGPUState(const GPUState& state, bool force);
 
   /// \todo This really wants to be an 'optional' return value instead of a
   ///       throw... it would be much more useful and type compliant that way.
