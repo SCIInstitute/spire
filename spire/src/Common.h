@@ -41,43 +41,6 @@
 #include "Math.h"
 #include "Log.h"
 
-#define MAX_GL_ERROR_COUNT 10 
-#ifdef SPIRE_DEBUG
-# define GL(stmt)                                                      \
-  do {                                                                 \
-    GLenum glerr;                                                      \
-    unsigned int iCounter = 0;                                         \
-    while((glerr = glGetError()) != GL_NO_ERROR) {                     \
-      std::cerr << "GL error calling" << #stmt << " before line " << __LINE__ << " (" << __FILE__ << "): " << gluErrorString(glerr) << " (" << static_cast<unsigned>(glerr) << ")" << std::endl; \
-      iCounter++;                                                      \
-      if (iCounter > MAX_GL_ERROR_COUNT) break;                        \
-    }                                                                  \
-    stmt;                                                              \
-    iCounter = 0;                                                      \
-    while((glerr = glGetError()) != GL_NO_ERROR) {                     \
-      std::cerr << "'" << #stmt << "' on line " << __LINE__ << " (" << __FILE__ << ") caused GL error: " << gluErrorString(glerr) << " (" << static_cast<unsigned>(glerr) << ")" << std::endl; \
-      iCounter++;                                                      \
-      if (iCounter > MAX_GL_ERROR_COUNT) break;                        \
-    }                                                                  \
-  } while(0)
-
-# define GL_CHECK()                                                       \
-  do {                                                                    \
-    GLenum glerr;                                                         \
-    unsigned int iCounter = 0;                                            \
-    while((glerr = glGetError()) != GL_NO_ERROR) {                        \
-      std::cerr << "GL error before line " << __LINE__ << "("   \
-                << __FILE__ << "): " << glerr << " ("                  \
-                << gluErrorString(glerr) << ")" << std::endl;          \
-      iCounter++;                                                         \
-      if (iCounter > MAX_GL_ERROR_COUNT) break;                           \
-    }                                                                     \
-  } while(0)
-#else
-# define GL(stmt) do { stmt; } while(0)
-# define GL_CHECK() 
-#endif
-
 namespace CPM_SPIRE_NS {
 
 } // namespace CPM_SPIRE_NS
