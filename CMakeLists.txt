@@ -45,6 +45,14 @@ CPM_AddModule("GLM"
   EXPORT_MODULE TRUE    # Use EXPORT_MODULE sparingly. We expose GLM's interface
   )                     # through our own interface hence why we export it.
 
+# ++ MODULE: C++11 implementation of optional
+CPM_AddModule("optional"
+  GIT_REPOSITORY "https://github.com/iauns/cpm-optional"
+  GIT_TAG "origin/master"
+  USE_EXISTING_VER TRUE
+  EXPORT_MODULE TRUE
+  )
+
 # Additional include directories the parent needs to know about. But ONLY
 # on windows where we require GLEW to function properly.
 CPM_ExportAdditionalIncludeDir("${CMAKE_CURRENT_SOURCE_DIR}/spire/3rdParty")
