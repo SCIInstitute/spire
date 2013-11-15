@@ -255,6 +255,26 @@ Interface::getGlobalUniformConcrete(const std::string& uniformName)
 }
 
 //------------------------------------------------------------------------------
+std::shared_ptr<const AbstractUniformStateItem>
+Interface::getObjectPassUniformConcrete(const std::string& object,
+                                        const std::string& uniformName,
+                                        const std::string& pass)
+{
+  std::shared_ptr<SpireObject> obj = getObjectWithName(object);
+  return obj->getPassUniform(pass, uniformName);
+}
+
+//------------------------------------------------------------------------------
+std::shared_ptr<const AbstractUniformStateItem>
+Interface::getObjectGlobalUniformConcrete(const std::string& object,
+                                          const std::string& uniformName)
+{
+  std::shared_ptr<SpireObject> obj = getObjectWithName(object);
+  return obj->getGlobalUniform(uniformName);
+}
+
+
+//------------------------------------------------------------------------------
 void Interface::addObjectPassGPUState(const std::string& object, const GPUState& state,
                                       const std::string& pass)
 {

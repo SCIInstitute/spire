@@ -68,9 +68,14 @@ public:
   /// Adds a local uniform to the pass.
   /// throws std::out_of_range if 'uniformName' is not found in the shader's
   /// uniform list.
-  bool addPassUniform(const std::string uniformName,
+  bool addPassUniform(const std::string& uniformName,
                       std::shared_ptr<AbstractUniformStateItem> item,
                       bool isObjectGlobalUniform);
+
+  /// Returns an empty shared pointer if no item is present (optional would be
+  /// better.
+  std::shared_ptr<const AbstractUniformStateItem>
+  getPassUniform(const std::string& uniformName);
 
   void addGPUState(const GPUState& state);
 
@@ -216,6 +221,12 @@ public:
   /// Add GPU state to the pass.
   void addPassGPUState(const std::string& pass,
                        const GPUState& state);
+
+  std::shared_ptr<const AbstractUniformStateItem>
+      getPassUniform(const std::string& passName, const std::string& uniformName);
+
+  std::shared_ptr<const AbstractUniformStateItem>
+      getGlobalUniform(const std::string& uniformName);
 
   bool hasPassRenderingOrder(const std::vector<std::string>& passes) const;
 

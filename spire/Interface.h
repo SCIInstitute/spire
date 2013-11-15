@@ -507,12 +507,39 @@ public:
   /// \todo This really wants to be an 'optional' return value instead of a
   ///       throw... it would be much more useful and type compliant that way.
   ///       See: boost::optional. Waiting to see if the standard adopts
-  ///       optional.
+  ///       optional. optional will be added to the standard, but probably
+  ///       not in C++14. Looking for alternate implementation of optional.
   template <class T>
   T getGlobalUniform(const std::string& uniformName)
   {
     std::shared_ptr<const AbstractUniformStateItem> uniformItem
         = getGlobalUniformConcrete(uniformName);
+    if (uniformItem)
+      return uniformItem->getData<T>();
+    else
+      throw std::runtime_error("Unable to find uniform item.");
+  }
+
+  /// \todo Want optional.
+  template <class T>
+  T getObjectPassUniform(const std::string& objectName, 
+                         const std::string& uniformName,
+                         const std::string& pass = SPIRE_DEFAULT_PASS)
+  {
+    std::shared_ptr<const AbstractUniformStateItem> uniformItem
+        = getObjectPassUniformConcrete(objectName, uniformName, pass);
+    if (uniformItem)
+      return uniformItem->getData<T>();
+    else
+      throw std::runtime_error("Unable to find uniform item.");
+  }
+
+  template <class T>
+  T getObjectGlobalUniform(const std::string& objectName, 
+                           const std::string& uniformName)
+  {
+    std::shared_ptr<const AbstractUniformStateItem> uniformItem
+        = getObjectGlobalUniformConcrete(objectName, uniformName);
     if (uniformItem)
       return uniformItem->getData<T>();
     else
@@ -618,7 +645,17 @@ public:
 
 protected:
 
-  std::shared_ptr<const AbstractUniformStateItem> getGlobalUniformConcrete(const std::string& uniformName);
+  std::shared_ptr<const AbstractUniformStateItem> 
+      getGlobalUniformConcrete(const std::string& uniformName);
+
+  std::shared_ptr<const AbstractUniformStateItem> 
+      getObjectPassUniformConcrete(
+          const std::string& object, const std::string& uniformName,
+          const std::string& pass);
+
+  std::shared_ptr<const AbstractUniformStateItem>
+      getObjectGlobalUniformConcrete(const std::string& object,
+                                     const std::string& uniformName);
 
   std::unique_ptr<Hub>                      mHub;
   std::shared_ptr<InterfaceImplementation>  mImpl;

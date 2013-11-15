@@ -170,9 +170,9 @@ void ObjectPass::renderPass(ObjectLambdaInterface& lambdaInterface,
 }
 
 //------------------------------------------------------------------------------
-bool ObjectPass::addPassUniform(const std::string uniformName,
-                             std::shared_ptr<AbstractUniformStateItem> item,
-                             bool isObjectGlobalUniform)
+bool ObjectPass::addPassUniform(const std::string& uniformName,
+                                std::shared_ptr<AbstractUniformStateItem> item,
+                                bool isObjectGlobalUniform)
 {
   GLenum uniformGlType;
   GLint uniformLoc;
@@ -251,6 +251,21 @@ bool ObjectPass::addPassUniform(const std::string uniformName,
   }
 
   return true;
+}
+
+//------------------------------------------------------------------------------
+std::shared_ptr<const AbstractUniformStateItem>
+ObjectPass::getPassUniform(const std::string& uniformName)
+{
+  for (auto it = mUniforms.begin(); it != mUniforms.end(); ++it)
+  {
+    if (it->uniformName == uniformName)
+    {
+      return it->item;
+    }
+  }
+
+  return std::shared_ptr<const AbstractUniformStateItem>();
 }
 
 //------------------------------------------------------------------------------
@@ -411,8 +426,8 @@ void SpireObject::removePass(const std::string& passName)
 
 //------------------------------------------------------------------------------
 void SpireObject::addPassUniform(const std::string& passName,
-                               const std::string uniformName,
-                               std::shared_ptr<AbstractUniformStateItem> item)
+                                 const std::string uniformName,
+                                 std::shared_ptr<AbstractUniformStateItem> item)
 {
   // We are going to have a facility similar to UniformStateMan, but we are
   // going to use a more cache-coherent vector. It's unlikely that we ever need
@@ -425,6 +440,19 @@ void SpireObject::addPassUniform(const std::string& passName,
     stream << "This uniform (" << uniformName << ") is not recognized by the shader.";
     throw std::invalid_argument(stream.str());
   }
+}
+
+//------------------------------------------------------------------------------
+std::shared_ptr<const AbstractUniformStateItem>
+SpireObject::getPassUniform(const std::string& passName,
+                            const std::string& uniformName)
+{
+  // We are going to have a facility similar to UniformStateMan, but we are
+  // going to use a more cache-coherent vector. It's unlikely that we ever need
+  // to grow the vector beyond the number of uniforms already present in the
+  // shader.
+  std::shared_ptr<ObjectPass> pass = getPassByName(passName);
+  return pass->getPassUniform(uniformName);
 }
 
 //------------------------------------------------------------------------------
@@ -458,6 +486,20 @@ void SpireObject::addGlobalUniform(const std::string& uniformName,
     if (it->second.objectPass != nullptr)
       it->second.objectPass->addPassUniform(uniformName, item, true);
   }
+}
+
+//------------------------------------------------------------------------------
+std::shared_ptr<const AbstractUniformStateItem>
+SpireObject::getGlobalUniform(const std::string& uniformName)
+{
+  for (auto it = mObjectGlobalUniforms.begin(); it != mObjectGlobalUniforms.end(); ++it)
+  {
+    if (it->uniformName == uniformName)
+    {
+      return it->item;
+    }
+  }
+  return std::shared_ptr<const AbstractUniformStateItem>();
 }
 
 //------------------------------------------------------------------------------
