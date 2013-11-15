@@ -155,29 +155,6 @@ public:
     TYPE_DOUBLE,    ///< GLdouble - 64-bit floating,        C-Type (double),        Suffix (d)
   };
 
-  // Functions contained in the concurrent interface are not thread safe and
-  // it is unlikely that they ever will be. In most scenarios, you should use
-  // this concurrent interface instead of the threaded interface.
-
-  struct UnsatisfiedUniform
-  {
-    UnsatisfiedUniform(const std::string& name, int location, unsigned int type) :
-        uniformName(name),
-        uniformType(type),
-        shaderLocation(location)
-    {}
-
-    std::string                         uniformName;
-    unsigned int                        uniformType;    // Should be: GLenum
-    int                                 shaderLocation; // Should be: GLint
-  };
-
-  /// Callback issued when an object has unsatisfied uniforms. This is an
-  /// oportunity for the function to remove items from the unsatisfied uniforms
-  /// list. Once you have satisfied a particular uniform in the list, you
-  /// should remove it. Otherwise, the rendering will bail on you.
-  typedef std::function<void (std::list<UnsatisfiedUniform>&)> UnsatisfiedUniformCB;
-
   /// Calling this function is not necessary but may make your life.
   /// Here is a brief overview of what this function does:
   /// * Makes the context current if makeContextCurrent == true.
@@ -206,7 +183,6 @@ public:
   ///       This would be the 'unsatisfied uniforms callback'.
   /// \todo Implement
   void renderObject(const std::string& objectName,
-                    const UnsatisfiedUniformCB& cb = nullptr,
                     const std::string& pass = SPIRE_DEFAULT_PASS);
 
   /// Adds a VBO. This VBO can be re-used by any objects in the system.
@@ -588,60 +564,6 @@ public:
   ///                 second is the type of shader.
   void addPersistentShader(const std::string& programName,
                            const std::vector<std::tuple<std::string, SHADER_TYPES>>& shaders);
-
-  //---------
-  // Lambdas
-  //---------
-
-  // The complication in this lambda interface is due to threading.
-  // If at all possible, use the concurrent interface.
-
-  /// \note All lambdas use the push_back semantic. So if you are adding
-  /// rendering lambdas, the first lambda you register will be the first one
-  /// called when rendering.
-
-  // Two types of lambdas to use. One with objects, and one with passes.
-  // The name ObjectLambdaFunction is a little deceptive.
-  // ObjectLambdaFunctions will be called per-pass.
-  typedef std::function<void (LambdaInterface&)> PassLambdaFunction;
-
-  // Lambda function that includes an object as context.
-  typedef std::function<void (ObjectLambdaInterface&)> ObjectLambdaFunction;
-
-  /// These functions help satisfy uniforms that need extra attribute data in
-  /// order to process. These can be used to remove load from the GPU by
-  /// precomputing any number of things.
-  typedef std::function<void (ObjectLambdaInterface&, std::list<UnsatisfiedUniform>&)> 
-      ObjectUniformLambdaFunction;
-
-  /// \todo Remove these functions. They were necessary only for the threaded
-  ///       version of spire.
-  /// The following functions add hooks into the rendering infrastructure.
-  /// @{
-  void addLambdaBeginAllPasses(const PassLambdaFunction& fp);
-  void addLambdaEndAllPasses(const PassLambdaFunction& fp);
-  void addLambdaPrePass(const PassLambdaFunction& fp, const std::string& pass = SPIRE_DEFAULT_PASS);
-  void addLambdaPostPass(const PassLambdaFunction& fp, const std::string& pass = SPIRE_DEFAULT_PASS);
-  /// @}
-  
-  /// Adds per-object hooks for calculating uniforms and performing rendering.
-  /// Both are optional, and you can add as many lambdas as you need.
-  /// @{
-
-  /// If an object rendering lambda is found, then normal rendering does not
-  /// proceed.
-  void addLambdaObjectRender(const std::string& object, const ObjectLambdaFunction& fp, const std::string& pass = SPIRE_DEFAULT_PASS);
-
-  /// Lambda object uniforms are optional and they will not be called if there
-  /// are no unsatisfied uniforms found.
-  void addLambdaObjectUniforms(const std::string& object, const ObjectUniformLambdaFunction& fp, const std::string& pass = SPIRE_DEFAULT_PASS);
-
-  /// @}
-
-  //============================================================================
-  // NOT THREAD SAFE
-  //============================================================================
-
 
 protected:
 

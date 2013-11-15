@@ -59,8 +59,7 @@ public:
       std::shared_ptr<VBOObject> vbo, std::shared_ptr<IBOObject> ibo, GLenum primitiveType);
   virtual ~ObjectPass();
   
-  void renderPass(ObjectLambdaInterface& lambdaInterface,
-                  const Interface::UnsatisfiedUniformCB& cb);
+  void renderPass();
 
   const std::string& getName() const    {return mName;}
   GLenum getPrimitiveType() const       {return mPrimitiveType;}
@@ -86,12 +85,6 @@ public:
   /// Unlike the function above, this will return true whether or not object
   /// global uniforms were used to populate the uniform.
   bool hasUniform(const std::string& uniformName) const;
-
-  /// Add render lambda.
-  void addRenderLambda(const Interface::ObjectLambdaFunction& fp);
-
-  /// Add uniform lambda.
-  void addUniformLambda(const Interface::ObjectUniformLambdaFunction& fp);
 
 protected:
 
@@ -170,12 +163,6 @@ protected:
 
   Hub&                                  mHub;     ///< Hub.
 
-  /// Lambda callbacks.
-  /// @{
-  std::vector<Interface::ObjectUniformLambdaFunction> mUniformLambdas;
-  std::vector<Interface::ObjectLambdaFunction>        mRenderLambdas;
-  /// @}
-  
 };
 
 //------------------------------------------------------------------------------
@@ -233,9 +220,6 @@ public:
   /// \todo Ability to render a single named pass. See github issue #15.
   void renderPass(const std::string& pass);
 
-  /// Render pass with associated unsatisfied uniform callback.
-  void renderPass(const std::string& pass, const Interface::UnsatisfiedUniformCB& cb);
-
   /// Returns the associated pass. Otherwise an empty shared_ptr is returned.
   std::shared_ptr<const ObjectPass> getObjectPassParams(const std::string& passName) const;
 
@@ -245,12 +229,6 @@ public:
   /// Returns true if there exists a object global uniform with the name
   /// 'uniformName'.
   bool hasGlobalUniform(const std::string& uniformName) const;
-
-  /// Adds a render lambda to the given pass.
-  void addPassRenderLambda(const std::string& pass, const Interface::ObjectLambdaFunction& fp);
-
-  /// Adds a uniform lambda to the given pass.
-  void addPassUniformLambda(const std::string& pass, const Interface::ObjectUniformLambdaFunction& fp);
 
 protected:
 

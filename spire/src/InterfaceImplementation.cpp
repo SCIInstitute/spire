@@ -33,8 +33,6 @@
 #include "InterfaceImplementation.h"
 #include "SpireObject.h"
 #include "Exceptions.h"
-#include "LambdaInterface.h"
-#include "ObjectLambda.h"
 
 namespace CPM_SPIRE_NS {
 
@@ -57,19 +55,11 @@ void InterfaceImplementation::clearGLResources()
   mPersistentShaders.clear();
   mVBOMap.clear();
   mIBOMap.clear();
-
-  // Do we want to clear passes? They don't have any associated GL data.
-  //mPasses.clear();
-  //mNameToPass.clear();
-  //mGlobalBeginLambdas.clear();
 }
 
 //------------------------------------------------------------------------------
 void InterfaceImplementation::doAllPasses()
 {
-  /// \todo Call all passes begin lambdas. Used primarily to setup global
-  /// uniforms.
-
   // Do not even attempt to render if the framebuffer is not complete.
   // This can happen when the rendering window is hidden (in SCIRun5 for
   // example);
@@ -100,9 +90,6 @@ void InterfaceImplementation::doAllPasses()
       Log::error() << "Exception: " << e.what() << std::endl;
     }
   }
-
-  /// \todo Call all passes end lambdas. Used primarily to setup global
-  /// uniforms.
 }
 
 //------------------------------------------------------------------------------
@@ -137,18 +124,11 @@ void InterfaceImplementation::doPass(const std::string& passName)
 {
   std::shared_ptr<Pass> pass = mNameToPass.at(passName);
 
-  ///\todo Call pass begin lambdas. Setup global pass specific uniforms.
-
   // Loop over all objects in the pass and render them.
-  /// \todo Need to add some way of ordering the rendered objects, whether it be
-  /// by another structure built into Spire (not for this at all), or some lambda
-  /// callback.
   for (auto it = pass->mNameToObject.begin(); it != pass->mNameToObject.end(); ++it)
   {
     it->second->renderPass(passName);
   }
-
-  ///\todo Call pass end lambda.
 }
 
 //------------------------------------------------------------------------------
@@ -400,52 +380,6 @@ void InterfaceImplementation::addPersistentShader(std::string programName,
   mPersistentShaders.push_back(shader);
 }
 
-//------------------------------------------------------------------------------
-void InterfaceImplementation::addLambdaBeginAllPasses(Interface::PassLambdaFunction fp)
-{
-  mGlobalBeginLambdas.push_back(fp);
-}
-
-//------------------------------------------------------------------------------
-void InterfaceImplementation::addLambdaEndAllPasses(Interface::PassLambdaFunction fp)
-{
-  mGlobalEndLambdas.push_back(fp);
-}
-
-//------------------------------------------------------------------------------
-void InterfaceImplementation::addLambdaPrePass(Interface::PassLambdaFunction fp, std::string pass)
-{
-  auto passIt = mNameToPass.find(pass);
-  if (passIt == mNameToPass.end())
-    throw std::runtime_error("Pass (" + pass + ") does not exist.");
-
-  passIt->second->mPassBeginLambdas.push_back(fp);
-}
-
-//------------------------------------------------------------------------------
-void InterfaceImplementation::addLambdaPostPass(Interface::PassLambdaFunction fp, std::string pass)
-{
-  auto passIt = mNameToPass.find(pass);
-  if (passIt == mNameToPass.end())
-    throw std::runtime_error("Pass (" + pass + ") does not exist.");
-
-  passIt->second->mPassEndLambdas.push_back(fp);
-}
-
-//------------------------------------------------------------------------------
-void InterfaceImplementation::addLambdaObjectRender(std::string object, Interface::ObjectLambdaFunction fp, std::string pass)
-{
-  std::shared_ptr<SpireObject> obj = mNameToObject.at(object);
-  obj->addPassRenderLambda(pass, fp);
-}
-
-//------------------------------------------------------------------------------
-void InterfaceImplementation::addLambdaObjectUniforms(std::string object, 
-                                                      Interface::ObjectUniformLambdaFunction fp, std::string pass)
-{
-  std::shared_ptr<SpireObject> obj = mNameToObject.at(object);
-  obj->addPassUniformLambda(pass, fp);
-}
 
 //------------------------------------------------------------------------------
 GLenum InterfaceImplementation::getGLPrimitive(Interface::PRIMITIVE_TYPES type)

@@ -133,11 +133,10 @@ void Interface::addIBO(const std::string& name,
 
 //------------------------------------------------------------------------------
 void Interface::renderObject(const std::string& objectName,
-                             const UnsatisfiedUniformCB& cb,
                              const std::string& pass)
 {
   std::shared_ptr<SpireObject> obj = getObjectWithName(objectName);
-  obj->renderPass(pass, cb);
+  obj->renderPass(pass);
 }
 
 //------------------------------------------------------------------------------
@@ -304,42 +303,6 @@ void Interface::addPersistentShader(const std::string& programName,
                                     const std::vector<std::tuple<std::string, SHADER_TYPES>>& shaders)
 {
   mImpl->addPersistentShader(programName, shaders);
-}
-
-//------------------------------------------------------------------------------
-void Interface::addLambdaBeginAllPasses(const PassLambdaFunction& fp)
-{
-  mImpl->addLambdaBeginAllPasses(fp);
-}
-
-//------------------------------------------------------------------------------
-void Interface::addLambdaEndAllPasses(const PassLambdaFunction& fp)
-{
-  mImpl->addLambdaEndAllPasses(fp);
-}
-
-//------------------------------------------------------------------------------
-void Interface::addLambdaPrePass(const PassLambdaFunction& fp, const std::string& pass)
-{
-  mImpl->addLambdaPrePass(fp, pass);
-}
-
-//------------------------------------------------------------------------------
-void Interface::addLambdaPostPass(const PassLambdaFunction& fp, const std::string& pass)
-{
-  mImpl->addLambdaPostPass(fp, pass);
-}
-
-//------------------------------------------------------------------------------
-void Interface::addLambdaObjectRender(const std::string& object, const ObjectLambdaFunction& fp, const std::string& pass)
-{
-  mImpl->addLambdaObjectRender(object, fp, pass);
-}
-
-//------------------------------------------------------------------------------
-void Interface::addLambdaObjectUniforms(const std::string& object, const ObjectUniformLambdaFunction& fp, const std::string& pass)
-{
-  mImpl->addLambdaObjectUniforms(object, fp, pass);
 }
 
 

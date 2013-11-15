@@ -43,7 +43,6 @@
 #include <cstdint>
 #include "Common.h"
 
-#include "ObjectLambda.h"
 #include "ThreadMessage.h"
 
 namespace CPM_SPIRE_NS {
@@ -162,16 +161,6 @@ public:
   void addPersistentShader(std::string programName,
                            std::vector<std::tuple<std::string, Interface::SHADER_TYPES>> tempShaders);
 
-  //---------
-  // Lambdas
-  //---------
-  void addLambdaBeginAllPasses(Interface::PassLambdaFunction fp);
-  void addLambdaEndAllPasses(Interface::PassLambdaFunction fp);
-  void addLambdaPrePass(Interface::PassLambdaFunction fp, std::string pass);
-  void addLambdaPostPass(Interface::PassLambdaFunction fp, std::string pass);
-  void addLambdaObjectRender(std::string object, Interface::ObjectLambdaFunction fp, std::string pass);
-  void addLambdaObjectUniforms(std::string object, Interface::ObjectUniformLambdaFunction fp, std::string pass);
-
 private:
 
   struct Pass
@@ -182,9 +171,6 @@ private:
 
     std::string                                                     mName;
     std::unordered_map<std::string, std::shared_ptr<SpireObject>>   mNameToObject;
-
-    std::vector<Interface::PassLambdaFunction>                      mPassBeginLambdas;
-    std::vector<Interface::PassLambdaFunction>                      mPassEndLambdas;
 
     /// \todo Rendering order for the objects?
   };
@@ -205,12 +191,6 @@ private:
   /// List of passes in the order they are meant to be rendered.
   std::list<std::shared_ptr<Pass>>                                mPasses;
   std::unordered_map<std::string, std::shared_ptr<Pass>>          mNameToPass;
-
-  /// Global begin/end lambdas.
-  /// @{
-  std::vector<Interface::PassLambdaFunction>                      mGlobalBeginLambdas;
-  std::vector<Interface::PassLambdaFunction>                      mGlobalEndLambdas;
-  /// @}
 
 private:
 

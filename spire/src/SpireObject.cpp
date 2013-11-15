@@ -36,8 +36,6 @@
 #include "Exceptions.h"
 #include "Hub.h"
 #include "ShaderUniformStateMan.h"
-#include "LambdaInterface.h"
-#include "ObjectLambda.h"
 
 namespace CPM_SPIRE_NS {
 
@@ -87,8 +85,7 @@ ObjectPass::~ObjectPass()
 }
 
 //------------------------------------------------------------------------------
-void ObjectPass::renderPass(ObjectLambdaInterface& lambdaInterface,
-                            const Interface::UnsatisfiedUniformCB& cb)
+void ObjectPass::renderPass()
 {
   GL(glUseProgram(mShader->getProgramID()));
 
@@ -130,37 +127,12 @@ void ObjectPass::renderPass(ObjectLambdaInterface& lambdaInterface,
   // If we have an unsatisfied uniforms callback, ensure that it is called..
   if (unsatisfiedGlobalUniforms.size() > 0)
   {
-    for (auto it = mUniformLambdas.begin(); it != mUniformLambdas.end(); ++it)
-    {
-      (*it)(lambdaInterface, unsatisfiedGlobalUniforms);
-    }
-
-    if (unsatisfiedGlobalUniforms.size() > 0)
-    {
-      if (cb)
-      {
-        cb(unsatisfiedGlobalUniforms);
-      }
-    }
-
-    if (unsatisfiedGlobalUniforms.size() > 0)
-      throw ShaderUniformNotFound("Could not initialize uniform: " 
-                                  + unsatisfiedGlobalUniforms.front().uniformName);
+    throw ShaderUniformNotFound("Could not initialize uniform: " 
+                                + unsatisfiedGlobalUniforms.front().uniformName);
   }
   
 
-  if (mRenderLambdas.size() > 0)
-  {
-    // Execute custom rendering callbacks.
-    for (auto it = mRenderLambdas.begin(); it != mRenderLambdas.end(); ++it)
-    {
-      (*it)(lambdaInterface);
-    }
-  }
-  else
-  {
-    GL(glDrawElements(mPrimitiveType, static_cast<GLsizei>(mIBO->getNumElements()), mIBO->getType(), 0));
-  }
+  GL(glDrawElements(mPrimitiveType, static_cast<GLsizei>(mIBO->getNumElements()), mIBO->getType(), 0));
 
   // We can do away with this once we switch to VAOs.
   attribs.unbindAttributes(mShader);
@@ -301,18 +273,6 @@ bool ObjectPass::hasUniform(const std::string& uniformName) const
       return true;
   }
   return false;
-}
-
-//------------------------------------------------------------------------------
-void ObjectPass::addRenderLambda(const Interface::ObjectLambdaFunction& fp)
-{
-  mRenderLambdas.push_back(fp);
-}
-
-//------------------------------------------------------------------------------
-void ObjectPass::addUniformLambda(const Interface::ObjectUniformLambdaFunction& fp)
-{
-  mUniformLambdas.push_back(fp);
 }
 
 /// \note If we ever implement a remove pass uniform function, be *sure* to
@@ -544,21 +504,12 @@ bool SpireObject::hasGlobalUniform(const std::string& uniformName) const
 //------------------------------------------------------------------------------
 void SpireObject::renderPass(const std::string& passName)
 {
-  renderPass(passName, nullptr);
-}
-
-//------------------------------------------------------------------------------
-void SpireObject::renderPass(const std::string& passName,
-                             const Interface::UnsatisfiedUniformCB& cb)
-{
-  /// \todo Possibly get rid of lambda interfaces.
-  ObjectLambdaInterface lambdaInterface(mHub, passName, *this);
   ObjectPassInternal& internalObjectPass = mPasses[passName];
   std::shared_ptr<ObjectPass> pass = internalObjectPass.objectPass;
 
   // Render the pass
   if (pass != nullptr)
-    pass->renderPass(lambdaInterface, cb);
+    pass->renderPass();
 
   // Now render any associated subpasses.
   if (internalObjectPass.objectSubPasses != nullptr)
@@ -566,22 +517,9 @@ void SpireObject::renderPass(const std::string& passName,
     for (auto it = internalObjectPass.objectSubPasses->begin(); 
          it != internalObjectPass.objectSubPasses->end(); ++it)
     {
-      ObjectLambdaInterface subLambdaInterface(mHub, (*it)->getName(), *this);
-      (*it)->renderPass(subLambdaInterface, cb);
+      (*it)->renderPass();
     }
   }
-}
-
-//------------------------------------------------------------------------------
-void SpireObject::addPassRenderLambda(const std::string& pass, const Interface::ObjectLambdaFunction& fp)
-{
-  getPassByName(pass)->addRenderLambda(fp);
-}
-
-//------------------------------------------------------------------------------
-void SpireObject::addPassUniformLambda(const std::string& pass, const Interface::ObjectUniformLambdaFunction& fp)
-{
-  getPassByName(pass)->addUniformLambda(fp);
 }
 
 } // namespace CPM_SPIRE_NS
