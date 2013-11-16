@@ -416,7 +416,7 @@ TEST_F(InterfaceTestFixture, TestTriangle)
   mSpire->addObjectPassUniform(obj1, "uColor", V4(1.0f, 0.0f, 0.0f, 1.0f), pass1);
 
   beginFrame(mSpire);
-  mSpire->renderObject(obj1);
+  mSpire->renderObject(obj1, pass1);
 
   // Write the resultant png to a temporary directory and compare against
   // the golden image results.
