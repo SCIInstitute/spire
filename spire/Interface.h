@@ -365,46 +365,6 @@ public:
                                             std::vector<uint8_t>& vbo,
                                             std::vector<uint8_t>& ibo);
 
-  /// Adds a geometry stage to the front of the rendering order of the given
-  /// pass on the object (mouthful!). If no other stage is added to the front
-  /// of the object's pass, then this stage will be rendered before any other
-  /// stage when this object is rendered.
-  /// \param object         Name of the object to modify.
-  /// \param program        The program to be executed during this substage.
-  /// \param vboName        The VBO to use for rendering.
-  /// \prama iboName        The IBO to use for rendering.
-  /// \param type           The type of the primitives to be rendered.
-  /// \param pass           Name of the pass to place this stage under.
-  /// \param stage          Optional name for the stage. Can be left empty.
-  /// \todo Implement
-  void addObjectGeomPassToFront(const std::string& object,
-                                const std::string& program,
-                                const std::string& vboName,
-                                const std::string& iboName,
-                                PRIMITIVE_TYPES type,
-                                const std::string& pass = SPIRE_DEFAULT_PASS,
-                                const std::string& stage = "");
-
-  /// Adds a geometry stage to the back of the rendering order of the given
-  /// pass on the object (mouthful!). If no other stage is added to the back
-  /// of the object's pass, then this stage will be rendered after every other
-  /// stage when the object is rendered.
-  /// \param object         Name of the object to modify.
-  /// \param program        The program to be executed during this substage.
-  /// \param vboName        The VBO to use for rendering.
-  /// \prama iboName        The IBO to use for rendering.
-  /// \param type           The type of the primitives to be rendered.
-  /// \param pass           Name of the pass to place this stage under.
-  /// \param stage          Optional name for the stage. Can be left empty.
-  /// \todo Implement
-  void addObjectGeomPassToBack(const std::string& object,
-                               const std::string& program,
-                               const std::string& vboName,
-                               const std::string& iboName,
-                               PRIMITIVE_TYPES type,
-                               const std::string& pass = SPIRE_DEFAULT_PASS,
-                               const std::string& stage = "");
-
   /// Adds a geometry pass to an object given by the identifier 'object'.
   /// Throws an std::out_of_range exception if the object is not found in the 
   /// system. If there already exists a geometry pass, it throws a 'Duplicate' 
