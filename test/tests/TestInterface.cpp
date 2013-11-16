@@ -389,14 +389,6 @@ TEST_F(InterfaceTestFixture, TestTriangle)
   // Build a good pass.
   std::string pass1 = "pass1";
 
-  // Attempt to add a pass to the object without the pass being present in the
-  // system.
-  EXPECT_THROW(mSpire->addPassToObject(obj1, shader1, vbo1, ibo1, Interface::TRIANGLE_STRIP, pass1),
-               std::runtime_error);
-
-  // Add the pass to the system.
-  mSpire->addPassToBack(pass1);
-
   // Now add the object pass. This automatically adds the object to the pass for
   // us. But the ordering within the pass is still arbitrary.
   mSpire->addPassToObject(obj1, shader1, vbo1, ibo1, Interface::TRIANGLE_STRIP, pass1);
@@ -423,7 +415,8 @@ TEST_F(InterfaceTestFixture, TestTriangle)
   EXPECT_THROW(mSpire->addObjectPassUniform(obj1, "uColor", M44(), pass1), ShaderUniformTypeError);
   mSpire->addObjectPassUniform(obj1, "uColor", V4(1.0f, 0.0f, 0.0f, 1.0f), pass1);
 
-  mSpire->doFrame();
+  beginFrame(mSpire);
+  mSpire->renderObject(obj1);
 
   // Write the resultant png to a temporary directory and compare against
   // the golden image results.
@@ -554,26 +547,12 @@ TEST_F(InterfaceTestFixture, TestObjectsStructure)
 
   // Construct another good pass.
   std::string pass1 = "pass1";
-  mSpire->addPassToFront(pass1);
   mSpire->addPassToObject(obj1, shader1, vbo1, ibo1, Interface::TRIANGLE_STRIP, pass1);
 
   // No longer need VBO and IBO (will stay resident in the passes -- when the
   // passes are destroyed, the VBO / IBOs will be destroyed).
   mSpire->removeIBO(ibo1);
   mSpire->removeVBO(vbo1);
-
-  //----------------------------------------------------------------------------
-  // Test Interface structures
-  //----------------------------------------------------------------------------
-  EXPECT_EQ(true, mSpire->hasPass(pass1));
-  EXPECT_EQ(true, mSpire->hasPass(SPIRE_DEFAULT_PASS));
-  EXPECT_EQ(false, mSpire->hasPass("nonexistant"));
-
-  EXPECT_EQ(true, mSpire->isObjectInPass(obj1, pass1));
-  EXPECT_EQ(true, mSpire->isObjectInPass(obj1, SPIRE_DEFAULT_PASS));
-  EXPECT_EQ(false, mSpire->isObjectInPass(obj1, "nonexistant"));
-  EXPECT_EQ(false, mSpire->isObjectInPass("nonexistant", pass1));
-  EXPECT_EQ(false, mSpire->isObjectInPass("nonexistant", SPIRE_DEFAULT_PASS));
 
   // Add pass uniforms for each pass.
   mSpire->addObjectPassUniform(obj1, "uColor", V4(1.0f, 0.0f, 0.0f, 1.0f));    // default pass
@@ -603,7 +582,8 @@ TEST_F(InterfaceTestFixture, TestObjectsStructure)
 
   // Perform the frame. If there are any missing shaders we'll know about it
   // here.
-  mSpire->doFrame();
+  beginFrame(mSpire);
+  mSpire->renderObject(obj1);
 }
 
 //------------------------------------------------------------------------------

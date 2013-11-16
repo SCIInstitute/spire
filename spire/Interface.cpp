@@ -67,12 +67,6 @@ void Interface::terminate()
 //============================================================================
 
 //------------------------------------------------------------------------------
-void Interface::doFrame()
-{
-  mHub->doFrame();
-}
-
-//------------------------------------------------------------------------------
 size_t Interface::getNumObjects() const
 {
   return mImpl->getNumObjects();
@@ -90,19 +84,6 @@ void Interface::clearGLResources()
 {
   mImpl->clearGLResources();
 }
-
-//------------------------------------------------------------------------------
-bool Interface::isObjectInPass(const std::string& object, const std::string& pass) const
-{
-  return mImpl->isObjectInPass(object, pass);
-}
-
-//------------------------------------------------------------------------------
-bool Interface::hasPass(const std::string& pass) const
-{
-  return mImpl->hasPass(pass);
-}
-
 
 //------------------------------------------------------------------------------
 bool Interface::beginFrame(bool makeContextCurrent)
@@ -143,18 +124,6 @@ void Interface::renderObject(const std::string& objectName,
 void Interface::makeCurrent()
 {
   mHub->makeCurrent();
-}
-
-//------------------------------------------------------------------------------
-void Interface::addPassToFront(const std::string& passName)
-{
-  mImpl->addPassToFront(passName);
-}
-
-//------------------------------------------------------------------------------
-void Interface::addPassToBack(const std::string& passName)
-{
-  mImpl->addPassToBack(passName);
 }
 
 //------------------------------------------------------------------------------

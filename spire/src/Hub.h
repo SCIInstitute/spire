@@ -70,11 +70,6 @@ public:
   /// One-time initialization of the renderer.
   void oneTimeInit();
 
-  /// If anything in the scene has changed, then calling this will render
-  /// a new frame and swap the buffers. If the scene was not modified, then this
-  /// function does nothing.
-  void doFrame();
-
   /// Retrieves the GPU state manager.
   GPUStateManager& getGPUStateManager()           {return mGPUStateManager;}
 

@@ -88,7 +88,6 @@ TEST_F(InterfaceTestFixture, TestConcurrentQuad)
   // Build a pass to use. Strictly don't need to do this, as we could just use
   // the default pass. But we are here to test!
   std::string pass1 = "pass1";
-  mSpire->addPassToBack(pass1);
 
   /// \todo We need to test front / back geom pass, not this add pass to
   ///       object business.

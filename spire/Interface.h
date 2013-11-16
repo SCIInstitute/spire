@@ -232,26 +232,6 @@ public:
   void addIBO(const std::string& name, const uint8_t* iboData, size_t iboSize,
               IBO_TYPE type);
 
-  /// Retrieve shader OpenGL ID's for custom rendering.
-
-  /// Retrieve VBO and IBO ID's for custom rendering.
-
-  /// Uniform retrieval.
-
-  /// \todo Remove 'nts' from the names of the functions in the concurrent
-  ///       interface.
-  /// This call will render *only* the SPIRE_DEFAULT_PASS and nothing else.
-  /// It is a barebones and minimal renderer.
-  /// 
-  /// You can call this function every time you want a new frame to be rendered
-  /// unless you are using the threaded renderer. The threaded renderer will 
-  /// call doFrame automatically.
-  /// \note You must call doFrame on the same thread where makeCurrent was issued.
-  ///       If this is not the same thread where Interface was created, ensure
-  ///       a call to context->makeCurrent() is issued before invoking doFrame
-  ///       for the first time.
-  void doFrame();
-
   /// Obtain the current number of objects.
   /// \todo This function nedes to go to the implementation.
   size_t getNumObjects() const;
@@ -266,12 +246,6 @@ public:
   /// and persistent shader objects.
   void clearGLResources();
 
-  /// Returns true if the specified object is in the pass.
-  bool isObjectInPass(const std::string& object, const std::string& pass) const;
-
-  /// Returns true if the pass already exists.
-  bool hasPass(const std::string& pass) const;
-
   /// Makes the rendering context that was passed into spire current on
   /// the thread.
   void makeCurrent();
@@ -279,18 +253,6 @@ public:
   // Terminates spire. This should be called before the OpenGL context is
   // destroyed.
   void terminate();
-
-  //--------
-  // Passes
-  //--------
-
-  /// Adds a pass to the front of the pass list. Passes at the front of the list
-  /// are rendered first.
-  void addPassToFront(const std::string& passName);
-
-  /// Adds a pass to the back of the pass list. Passes at the back of the list
-  /// are rendered last.
-  void addPassToBack(const std::string& passName);
 
   //---------
   // Objects

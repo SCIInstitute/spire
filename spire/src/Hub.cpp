@@ -147,18 +147,6 @@ void Hub::oneTimeInit()
 }
 
 //------------------------------------------------------------------------------
-void Hub::doFrame()
-{
-  // When we get here, it has already been determined that a frame needs to be
-  // redrawn.
-
-  // Question: How do we split up the pipes? Does everything happen in the
-  // stupipe, when we route through the stupipe? It almost appears that it has
-  // to. Should we just build the pipe and see where it leads us to?
-  mInterfaceImpl->doAllPasses();
-}
-
-//------------------------------------------------------------------------------
 bool Hub::beginFrame(bool makeContextCurrent)
 {
   if (makeContextCurrent == true)

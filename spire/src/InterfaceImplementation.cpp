@@ -44,9 +44,7 @@ GLenum getGLPrimitive(Interface::PRIMITIVE_TYPES type);
 //------------------------------------------------------------------------------
 InterfaceImplementation::InterfaceImplementation(Hub& hub) :
     mHub(hub)
-{
-  addPassToBack(SPIRE_DEFAULT_PASS);
-}
+{}
 
 //------------------------------------------------------------------------------
 void InterfaceImplementation::clearGLResources()
@@ -58,100 +56,10 @@ void InterfaceImplementation::clearGLResources()
 }
 
 //------------------------------------------------------------------------------
-void InterfaceImplementation::doAllPasses()
-{
-  // Do not even attempt to render if the framebuffer is not complete.
-  // This can happen when the rendering window is hidden (in SCIRun5 for
-  // example);
-  if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
-    return;
-
-  /// \todo Move this outside of the interface!
-  GL(glClearColor(0.0f, 0.0f, 0.0f, 1.0f));
-  GL(glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT));
-
-  /// \todo Make line width a part of the GPU state.
-  glLineWidth(2.0f);
-  //glEnable(GL_LINE_SMOOTH);
-
-  GPUState defaultGPUState;
-  mHub.getGPUStateManager().apply(defaultGPUState, true); // true = force application of state.
-
-  // Loop through all of the passes.
-  for (auto it = mPasses.begin(); it != mPasses.end(); ++it)
-  {
-    try
-    {
-      doPass((*it)->mName);
-    }
-    catch (std::exception& e)
-    {
-      Log::error() << "Caught exception when rendering pass: " << (*it)->mName << std::endl;
-      Log::error() << "Exception: " << e.what() << std::endl;
-    }
-  }
-}
-
-//------------------------------------------------------------------------------
-bool InterfaceImplementation::hasPass(const std::string& pass) const
-{
-  return (mNameToPass.find(pass) != mNameToPass.end());
-}
-
-//------------------------------------------------------------------------------
 std::shared_ptr<SpireObject>
 InterfaceImplementation::getObjectWithName(const std::string& name) const
 {
   return mNameToObject.at(name);
-}
-
-//------------------------------------------------------------------------------
-bool InterfaceImplementation::isObjectInPass(const std::string& object, const std::string& pass) const
-{
-  if (hasPass(pass))
-  {
-    std::shared_ptr<Pass> passPtr = mNameToPass.at(pass);
-    return (passPtr->mNameToObject.find(object) != passPtr->mNameToObject.end());
-  }
-  else
-  {
-    return false;
-  }
-}
-
-//------------------------------------------------------------------------------
-void InterfaceImplementation::doPass(const std::string& passName)
-{
-  std::shared_ptr<Pass> pass = mNameToPass.at(passName);
-
-  // Loop over all objects in the pass and render them.
-  for (auto it = pass->mNameToObject.begin(); it != pass->mNameToObject.end(); ++it)
-  {
-    it->second->renderPass(passName);
-  }
-}
-
-//------------------------------------------------------------------------------
-void InterfaceImplementation::addPassToFront(std::string passName)
-{
-  // Verify that there is no pass by that name already.
-  if (hasPass(passName) == true)
-    throw std::runtime_error("Pass (" + passName + ") already exists!");
-
-  std::shared_ptr<Pass> pass(new Pass(passName));
-  mPasses.push_back(pass);
-  mNameToPass[passName] = pass;
-}
-
-//------------------------------------------------------------------------------
-void InterfaceImplementation::addPassToBack(std::string passName)
-{
-  if (hasPass(passName) == true)
-    throw std::runtime_error("Pass (" + passName + ") already exists!");
-
-  std::shared_ptr<Pass> pass(new Pass(passName));
-  mPasses.push_front(pass);
-  mNameToPass[passName] = pass;
 }
 
 //------------------------------------------------------------------------------
@@ -179,13 +87,6 @@ void InterfaceImplementation::removeObject(std::string objectName)
 void InterfaceImplementation::removeAllObjects()
 {
   mNameToObject.clear();
-
-  // Clear all objects from all passes. This should clean up any lingering
-  // ponters to the objects.
-  for (auto it = mPasses.begin(); it != mPasses.end(); ++it)
-  {
-    (*it)->mNameToObject.clear();
-  }
 }
 
 //------------------------------------------------------------------------------
@@ -270,23 +171,6 @@ void InterfaceImplementation::addPassToObject(
   std::string responsiblePass = pass;
   if (parentPass.size() > 0)
     responsiblePass = parentPass;
-
-  // Find the responsible pass and add this object to it.
-  auto passIt = mNameToPass.find(responsiblePass);
-  if (passIt != mNameToPass.end())
-  {
-    // Add object to pass if it isn't already part of the pass.
-    auto objectInPass = passIt->second->mNameToObject.find(object);
-    if (objectInPass == passIt->second->mNameToObject.end())
-      passIt->second->mNameToObject[object] = obj;
-  }
-  else
-  {
-    // This pass is NOT a subpass, the non-existance of a global pass must
-    // be an error.
-    Log::error() << "Unable to find global pass and parent pass was not specified.";
-    throw std::runtime_error("Global pass (" + pass + ") does not exist.");
-  }
 
   obj->addPass(pass, program, vbo, ibo, getGLPrimitive(type), parentPass);
 }

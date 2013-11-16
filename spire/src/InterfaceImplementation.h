@@ -67,23 +67,11 @@ public:
   /// Cleans up all GL resources.
   void clearGLResources();
 
-  /// Performs all rendering passes.
-  void doAllPasses();
-
-  /// Performs a rendering pass.
-  void doPass(const std::string& pass);
-
   /// Retrieves number of objects.
   size_t getNumObjects()      {return mNameToObject.size();}
 
-  /// Returns true if the pass already exists.
-  bool hasPass(const std::string& pass) const;
-
   /// Retrieves the object with the specified name.
   std::shared_ptr<SpireObject> getObjectWithName(const std::string& name) const;
-
-  /// Returns true if the object is in the given pass.
-  bool isObjectInPass(const std::string& object, const std::string& pass) const;
 
   /// Retrieves appropriate primitive type GLenum from Interface primitives.
   static GLenum getGLPrimitive(Interface::PRIMITIVE_TYPES type);
@@ -102,13 +90,6 @@ public:
   //============================================================================
   // CALLBACK IMPLEMENTATION -- Called from interface or a derived class.
   //============================================================================
-
-  //--------
-  // Passes
-  //--------
-
-  void addPassToFront(std::string passName);
-  void addPassToBack(std::string passName);
 
   //---------
   // Objects
@@ -163,18 +144,6 @@ public:
 
 private:
 
-  struct Pass
-  {
-    Pass(const std::string& name) :
-        mName(name)
-    {}
-
-    std::string                                                     mName;
-    std::unordered_map<std::string, std::shared_ptr<SpireObject>>   mNameToObject;
-
-    /// \todo Rendering order for the objects?
-  };
-
   /// This unordered map is a 1-1 mapping of object names onto objects.
   std::unordered_map<std::string, std::shared_ptr<SpireObject>>   mNameToObject;
 
@@ -187,10 +156,6 @@ private:
 
   /// IBO names to our representation of an index buffer object.
   std::unordered_map<std::string, std::shared_ptr<IBOObject>>     mIBOMap;
-
-  /// List of passes in the order they are meant to be rendered.
-  std::list<std::shared_ptr<Pass>>                                mPasses;
-  std::unordered_map<std::string, std::shared_ptr<Pass>>          mNameToPass;
 
 private:
 
