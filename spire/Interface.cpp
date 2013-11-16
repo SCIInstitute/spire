@@ -222,6 +222,14 @@ void Interface::removePassFromObject(const std::string& object, const std::strin
 }
 
 //------------------------------------------------------------------------------
+std::vector<Interface::UnsatisfiedUniform> Interface::getUnsatisfiedUniforms(
+    const std::string& object, const std::string& pass)
+{
+  std::shared_ptr<SpireObject> obj = getObjectWithName(object);
+  return obj->getUnsatisfiedUniforms(pass);
+}
+
+//------------------------------------------------------------------------------
 void Interface::addObjectPassUniformConcrete(const std::string& object,
                                              const std::string& uniformName,
                                              std::shared_ptr<AbstractUniformStateItem> item,

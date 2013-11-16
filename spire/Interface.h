@@ -156,6 +156,22 @@ public:
     TYPE_DOUBLE,    ///< GLdouble - 64-bit floating,        C-Type (double),        Suffix (d)
   };
 
+
+  // An unsatisfied uniform. These are calculated by SpireObjects and returned
+  // in the getObjectPassUnsatisfiedUniforms.
+  struct UnsatisfiedUniform
+  {
+    UnsatisfiedUniform(const std::string& name, GLint location, GLenum type) :
+        uniformName(name),
+        uniformType(type),
+        shaderLocation(location)
+    {}
+
+    std::string     uniformName;
+    GLenum          uniformType;
+    GLint           shaderLocation;
+  };
+
   // Functions contained in the concurrent interface are not thread safe and
   // it is unlikely that they ever will be. In most scenarios, you should use
   // this concurrent interface instead of the threaded interface.
@@ -422,6 +438,12 @@ public:
   // Uniforms
   //----------
   
+  /// Retrieves the currently unsatisfied uniforms for the object. Commonly
+  /// used to define what uniforms need to be built for the object on a
+  /// per-frame basis.
+  std::vector<UnsatisfiedUniform> getUnsatisfiedUniforms(
+      const std::string& object, const std::string& pass = SPIRE_DEFAULT_PASS);
+
   /// Associates a uniform value to the specified object's pass. If the uniform
   /// already exists, then its value will be updated if it passes a type check.
   /// Throws an std::out_of_range exception if the object or pass is not found 

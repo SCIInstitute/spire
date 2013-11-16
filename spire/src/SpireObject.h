@@ -86,6 +86,9 @@ public:
   /// global uniforms were used to populate the uniform.
   bool hasUniform(const std::string& uniformName) const;
 
+  /// Get unsatisfied uniforms.
+  std::vector<Interface::UnsatisfiedUniform> getUnsatisfiedUniforms();
+
 protected:
 
   struct UniformItem
@@ -105,21 +108,6 @@ protected:
     bool                                      passSpecific;   ///< If true, global uniforms do not overwrite.
   };
 
-  struct UnsastisfiedUniformItem
-  {
-    UnsastisfiedUniformItem(const std::string& name,
-                            GLint location,
-                            GLenum type) :
-        uniformName(name),
-        uniformType(type),
-        shaderLocation(location)
-    {}
-
-    std::string                         uniformName;
-    GLenum                              uniformType;
-    GLint                               shaderLocation;
-  };
-
   std::string                           mName;      ///< Simple pass name.
   GLenum                                mPrimitiveType;
 
@@ -129,7 +117,7 @@ protected:
   /// uniform state. Otherwise the shader cannot be properly satisfied and a
   /// runtime exception will be thrown.
   /// This list is updated everytime we add or remove elements from mUniforms.
-  std::vector<UnsastisfiedUniformItem>  mUnsatisfiedUniforms;
+  std::vector<Interface::UnsatisfiedUniform>  mUnsatisfiedUniforms;
   std::vector<UniformItem>              mUniforms;  ///< Local uniforms
 
   std::shared_ptr<VBOObject>            mVBO;     ///< ID of VBO to use during pass.
@@ -209,6 +197,9 @@ public:
   /// Returns true if there exists a object global uniform with the name
   /// 'uniformName'.
   bool hasGlobalUniform(const std::string& uniformName) const;
+
+  /// Get unsatisfied uniforms for pass.
+  std::vector<Interface::UnsatisfiedUniform> getUnsatisfiedUniforms(const std::string& pass);
 
 protected:
 

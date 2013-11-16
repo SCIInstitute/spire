@@ -72,9 +72,9 @@ ObjectPass::ObjectPass(
         mShader->getUniforms().getUniformAtIndex(i);
 
     mUnsatisfiedUniforms.push_back(
-        UnsastisfiedUniformItem(uniformData.uniform->codeName, 
-                                uniformData.glUniformLoc,
-                                uniformData.glType));
+        Interface::UnsatisfiedUniform(uniformData.uniform->codeName, 
+                                      uniformData.glUniformLoc,
+                                      uniformData.glType));
   }
 }
 
@@ -272,6 +272,12 @@ bool ObjectPass::hasUniform(const std::string& uniformName) const
   return false;
 }
 
+//------------------------------------------------------------------------------
+std::vector<Interface::UnsatisfiedUniform> ObjectPass::getUnsatisfiedUniforms()
+{
+  return mUnsatisfiedUniforms;
+}
+
 /// \note If we ever implement a remove pass uniform function, be *sure* to
 ///       update the unsatisfied uniforms vector!
 
@@ -397,6 +403,14 @@ void SpireObject::addPassUniform(const std::string& passName,
     stream << "This uniform (" << uniformName << ") is not recognized by the shader.";
     throw std::invalid_argument(stream.str());
   }
+}
+
+//------------------------------------------------------------------------------
+std::vector<Interface::UnsatisfiedUniform>
+SpireObject::getUnsatisfiedUniforms(const std::string& passName)
+{
+  std::shared_ptr<ObjectPass> pass = getPassByName(passName);
+  return pass->getUnsatisfiedUniforms();
 }
 
 //------------------------------------------------------------------------------
