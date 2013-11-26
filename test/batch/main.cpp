@@ -96,6 +96,11 @@ public:
                                 static_cast<GLsizei>(mWidth), static_cast<GLsizei>(mHeight)));
     GL(glFramebufferRenderbufferEXT(GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT,
                                     GL_RENDERBUFFER_EXT, mGLDepthBuffer));
+
+    if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+    {
+      std::cerr << "Unable to generate a complete frame buffer!" << std::endl;
+    }
   }
 
 
