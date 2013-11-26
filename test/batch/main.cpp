@@ -99,6 +99,9 @@ public:
 
     if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
     {
+      std::cout << "Frame buffer index: " << mGLFrameBuffer << std::endl;
+      std::cout << "Depth buffer index: " << mGLDepthBuffer << std::endl;
+      std::cout << "Color texture index: " << mGLColorTexture << std::endl;
       std::cerr << "Unable to generate a complete frame buffer!" << std::endl;
     }
   }

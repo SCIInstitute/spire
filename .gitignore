@@ -1,3 +1,5 @@
 *.so
 bin
+.vagrant
+cookbooks
 CMakeLists.txt.user
