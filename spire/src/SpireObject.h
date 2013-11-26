@@ -59,8 +59,7 @@ public:
       std::shared_ptr<VBOObject> vbo, std::shared_ptr<IBOObject> ibo, GLenum primitiveType);
   virtual ~ObjectPass();
   
-  void renderPass(ObjectLambdaInterface& lambdaInterface,
-                  const Interface::UnsatisfiedUniformCB& cb);
+  void renderPass();
 
   const std::string& getName() const    {return mName;}
   GLenum getPrimitiveType() const       {return mPrimitiveType;}
@@ -68,9 +67,14 @@ public:
   /// Adds a local uniform to the pass.
   /// throws std::out_of_range if 'uniformName' is not found in the shader's
   /// uniform list.
-  bool addPassUniform(const std::string uniformName,
+  bool addPassUniform(const std::string& uniformName,
                       std::shared_ptr<AbstractUniformStateItem> item,
                       bool isObjectGlobalUniform);
+
+  /// Returns an empty shared pointer if no item is present (optional would be
+  /// better.
+  std::shared_ptr<const AbstractUniformStateItem>
+  getPassUniform(const std::string& uniformName);
 
   void addGPUState(const GPUState& state);
 
@@ -82,20 +86,8 @@ public:
   /// global uniforms were used to populate the uniform.
   bool hasUniform(const std::string& uniformName) const;
 
-  /// Adds a pass spire attribute.
-  void addMetadata(const std::string& attributeName,
-                   std::shared_ptr<AbstractUniformStateItem> item);
-
-  /// Retrieves a pass spire attribute.
-  /// Returns an empty shared_ptr if no such attribute is found.
-  std::shared_ptr<const AbstractUniformStateItem> getMetadata(
-      const std::string& attribName) const;
-
-  /// Add render lambda.
-  void addRenderLambda(const Interface::ObjectLambdaFunction& fp);
-
-  /// Add uniform lambda.
-  void addUniformLambda(const Interface::ObjectUniformLambdaFunction& fp);
+  /// Get unsatisfied uniforms.
+  std::vector<Interface::UnsatisfiedUniform> getUnsatisfiedUniforms();
 
 protected:
 
@@ -116,40 +108,6 @@ protected:
     bool                                      passSpecific;   ///< If true, global uniforms do not overwrite.
   };
 
-  struct UnsastisfiedUniformItem
-  {
-    UnsastisfiedUniformItem(const std::string& name,
-                            GLint location,
-                            GLenum type) :
-        uniformName(name),
-        uniformType(type),
-        shaderLocation(location)
-    {}
-
-    std::string                         uniformName;
-    GLenum                              uniformType;
-    GLint                               shaderLocation;
-  };
-
-//  struct ObjectTransformUniform
-//  {
-//    enum ObjectTransformType
-//    {
-//      TRANSFORM_OBJECT,
-//      TRANSFORM_OBJECT_TO_CAMERA,
-//      TRANSFORM_OBJECT_TO_CAMERA_TO_PROJECTION,
-//    };
-//
-//    ObjectTransformUniform(ObjectTransformType type, GLint shaderVarLocation) :
-//        transformType(type),
-//        varLocation(shaderVarLocation)  
-//    {}
-//
-//    ObjectTransformType transformType;
-//    GLint               varLocation;
-//  };
-
-
   std::string                           mName;      ///< Simple pass name.
   GLenum                                mPrimitiveType;
 
@@ -159,9 +117,8 @@ protected:
   /// uniform state. Otherwise the shader cannot be properly satisfied and a
   /// runtime exception will be thrown.
   /// This list is updated everytime we add or remove elements from mUniforms.
-  std::vector<UnsastisfiedUniformItem>  mUnsatisfiedUniforms;
+  std::vector<Interface::UnsatisfiedUniform>  mUnsatisfiedUniforms;
   std::vector<UniformItem>              mUniforms;  ///< Local uniforms
-  //std::vector<ObjectTransformUniform>   mObjectTransformUniforms;
 
   std::shared_ptr<VBOObject>            mVBO;     ///< ID of VBO to use during pass.
   std::shared_ptr<IBOObject>            mIBO;     ///< ID of IBO to use during pass.
@@ -172,16 +129,8 @@ protected:
   ///       better representation in C++.
   std::unique_ptr<GPUState>             mGPUState; ///< GPU state to set (if any, default is none).
 
-  std::unordered_map<std::string, std::shared_ptr<AbstractUniformStateItem>> mMetadata;
-
   Hub&                                  mHub;     ///< Hub.
 
-  /// Lambda callbacks.
-  /// @{
-  std::vector<Interface::ObjectUniformLambdaFunction> mUniformLambdas;
-  std::vector<Interface::ObjectLambdaFunction>        mRenderLambdas;
-  /// @}
-  
 };
 
 //------------------------------------------------------------------------------
@@ -224,36 +173,20 @@ public:
   void addGlobalUniform(const std::string& uniformName,
                         std::shared_ptr<AbstractUniformStateItem> item);
 
-  /// Adds object metadata to the system. Object metadata does not change
-  /// per-pass.
-  void addObjectGlobalMetadata(const std::string& attributeName,
-                               std::shared_ptr<AbstractUniformStateItem> item);
-
-  /// Retrieves a spire attribute. Can be used in the Lambda callbacks for
-  /// rendering.
-  /// Returns an empty shared_ptr if no such attribute is found.
-  std::shared_ptr<const AbstractUniformStateItem> getObjectGlobalMetadata(
-      const std::string& attribName) const;
-
-  void addObjectPassMetadata(const std::string& passName,
-                                   const std::string& attributeName,
-                                   std::shared_ptr<AbstractUniformStateItem> item);
-
-  std::shared_ptr<const AbstractUniformStateItem> getObjectPassMetadata(
-      const std::string& passName,
-      const std::string& attribName) const;
-
   /// Add GPU state to the pass.
   void addPassGPUState(const std::string& pass,
                        const GPUState& state);
+
+  std::shared_ptr<const AbstractUniformStateItem>
+      getPassUniform(const std::string& passName, const std::string& uniformName);
+
+  std::shared_ptr<const AbstractUniformStateItem>
+      getGlobalUniform(const std::string& uniformName);
 
   bool hasPassRenderingOrder(const std::vector<std::string>& passes) const;
 
   /// \todo Ability to render a single named pass. See github issue #15.
   void renderPass(const std::string& pass);
-
-  /// Render pass with associated unsatisfied uniform callback.
-  void renderPass(const std::string& pass, const Interface::UnsatisfiedUniformCB& cb);
 
   /// Returns the associated pass. Otherwise an empty shared_ptr is returned.
   std::shared_ptr<const ObjectPass> getObjectPassParams(const std::string& passName) const;
@@ -265,11 +198,8 @@ public:
   /// 'uniformName'.
   bool hasGlobalUniform(const std::string& uniformName) const;
 
-  /// Adds a render lambda to the given pass.
-  void addPassRenderLambda(const std::string& pass, const Interface::ObjectLambdaFunction& fp);
-
-  /// Adds a uniform lambda to the given pass.
-  void addPassUniformLambda(const std::string& pass, const Interface::ObjectUniformLambdaFunction& fp);
+  /// Get unsatisfied uniforms for pass.
+  std::vector<Interface::UnsatisfiedUniform> getUnsatisfiedUniforms(const std::string& pass);
 
 protected:
 
@@ -308,7 +238,6 @@ protected:
   /// All registered passes.
   std::unordered_map<std::string, ObjectPassInternal>   mPasses;
   std::vector<ObjectGlobalUniformItem>                  mObjectGlobalUniforms;
-  std::unordered_map<std::string, ObjectUniformItem>    mMetadata;
 
   // These maps may actually be more efficient implemented as an array. The map 
   // sizes are small and cache coherency will be more important. Ignoring for 

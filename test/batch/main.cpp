@@ -96,17 +96,24 @@ public:
                                 static_cast<GLsizei>(mWidth), static_cast<GLsizei>(mHeight)));
     GL(glFramebufferRenderbufferEXT(GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT,
                                     GL_RENDERBUFFER_EXT, mGLDepthBuffer));
+
+    if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+    {
+      std::cout << "Frame buffer index: " << mGLFrameBuffer << std::endl;
+      std::cout << "Depth buffer index: " << mGLDepthBuffer << std::endl;
+      std::cout << "Color texture index: " << mGLColorTexture << std::endl;
+      std::cerr << "Unable to generate a complete frame buffer!" << std::endl;
+    }
   }
 
 
-  /// Creates a context if one hasn't already been created and returns it.
-  /// Otherwise, it returns the currently active context.
+  /// Returns current spire context.
   std::shared_ptr<spire::Context> getContext() const override
   {
-    GL(glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, mGLFrameBuffer));
     return std::dynamic_pointer_cast<spire::Context>(mContext);
   }
 
+  /// Writes the FBO to the specified file.
   void writeFBO(const std::string& file) override
   {
     // This function should be called from test code. So we are safe writing
@@ -173,10 +180,10 @@ private:
   {
     std::shared_ptr<BatchContext> ctx(
         BatchContext::Create(width,height,
-                                    static_cast<uint8_t>(colorBits),
-                                    static_cast<uint8_t>(depthBits),
-                                    static_cast<uint8_t>(stencilBits),
-                                    doubleBuffer,visible));
+                             static_cast<uint8_t>(colorBits),
+                             static_cast<uint8_t>(depthBits),
+                             static_cast<uint8_t>(stencilBits),
+                             doubleBuffer,visible));
     if (ctx->isValid() == false)
       throw std::runtime_error("Invalid context generated.");
     ctx->makeCurrent();

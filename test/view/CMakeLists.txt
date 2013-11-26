@@ -11,9 +11,7 @@ set(QT_USE_QTOPENGL TRUE)
 # CMake Options
 #-----------------------------------------------------------------------
 
-option(USE_SCIRUN_INTERFACE "Use the SCIRun interface module." ON)
 option(USE_LOCAL_SPIRE "Will use a local version of spire instead of downloading from its git repo." ON)
-option(USE_LOCAL_SPIRE_SCIRUN "Will use a local version of the spire-scirun module instead of downloading from its git repo." OFF)
 
 #------------------------------------------------------------------------------
 # Required CPM Setup - See: http://github.com/iauns/cpm
@@ -24,11 +22,11 @@ if(NOT GIT_FOUND)
   message(FATAL_ERROR "CPM requires Git.")
 endif()
 if (NOT EXISTS ${CPM_DIR}/CPM.cmake)
+  message(STATUS "Cloning repo (https://github.com/iauns/cpm)")
   execute_process(
     COMMAND "${GIT_EXECUTABLE}" clone https://github.com/iauns/cpm ${CPM_DIR}
     RESULT_VARIABLE error_code
-    OUTPUT_VARIABLE head_sha
-    )
+    OUTPUT_QUIET ERROR_QUIET)
   if(error_code)
     message(FATAL_ERROR "CPM failed to get the hash for HEAD")
   endif()
@@ -36,29 +34,10 @@ endif()
 include(${CPM_DIR}/CPM.cmake)
 
 # ++ MODULE: Spire
-# Include spire first, then the scirun interface. USE_STD_THREADS will be
-# exposed to spire. Threads will be removed from spire in the near future,
-# so this option will go away.
-option(USE_STD_THREADS "Use standard library threads. If turned off, no threading support is available." ON)
 CPM_AddModule("spire"
   GIT_REPOSITORY "https://github.com/SCIInstitute/spire"
-  GIT_TAG "origin/concurrent"
+  GIT_TAG "origin/dev"
   )
-
-# ++ MODULE: Spire SCIRun interface
-if (USE_SCIRUN_INTERFACE)
-  add_definitions(-DUSE_SCIRUN_INTERFACE)
-  # Set various options for spire-scirun. In this case, the shader and
-  # asset directories.
-  set(OUTPUT_SHADER_DIR ${CMAKE_CURRENT_BINARY_DIR}/Shaders)
-  set(OUTPUT_ASSET_DIR ${CMAKE_CURRENT_BINARY_DIR}/Assets)
-  CPM_AddModule("spire_scirun"
-    GIT_REPOSITORY "https://github.com/iauns/spire-scirun"
-    GIT_TAG "origin/master"
-    )
-  set(OUTPUT_SHADER_DIR)
-  set(OUTPUT_ASSET_DIR)
-endif()
 
 CPM_Finish()
 
@@ -100,13 +79,8 @@ add_definitions(${QT_DEFINITIONS})
 #-----------------------------------------------------------------------
 
 set(View_Common_Sources GLContext.cpp GLContext.h MainWindow.cpp MainWindow.h main.cpp)
-if(USE_SCIRUN_INTERFACE)
-  set(View_Specific_Sources GLWidgetSCIRun.cpp GLWidgetSCIRun.h)
-  set(MocHeaders MainWindow.h GLWidgetSCIRun.h)
-else()
-  set(View_Specific_Sources GLWidget.cpp GLWidget.h)
-  set(MocHeaders MainWindow.h GLWidget.h)
-endif()
+set(View_Specific_Sources GLWidget.cpp GLWidget.h)
+set(MocHeaders MainWindow.h GLWidget.h)
 
 set (Forms MainWindow.ui) 
 
@@ -132,8 +106,6 @@ add_executable(spireview
   ${View_Specific_Sources}
   ${MocSource} 
   ${UISource})
-
-add_dependencies(spireview ${CPM_LIBRARIES})
 
 target_link_libraries(spireview 
   ${CPM_LIBRARIES} 

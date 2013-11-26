@@ -58,7 +58,7 @@ public:
     std::shared_ptr<spire::Context> ctx = GlobalTestEnvironment::instance()->getContext();
     ctx->makeCurrent();
     mSpire = std::shared_ptr<spire::Interface>(new spire::Interface(
-        ctx, shaderSearchDirs, false));
+        ctx, shaderSearchDirs));
 
     // Add default attributes.
     addDefaultAttributes();

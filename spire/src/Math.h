@@ -62,11 +62,11 @@
 #define GLM_SWIZZLE
 #define GLM_FORCE_CXX03
 #define GLM_FORCE_RADIANS
-#include <glm/glm/glm.hpp>
-#include <glm/glm/gtc/quaternion.hpp>
-#include <glm/glm/gtc/type_ptr.hpp>
-#include <glm/glm/gtc/matrix_inverse.hpp>
-#include <glm/glm/gtc/matrix_transform.hpp>
+#include <glm/glm.hpp>
+#include <glm/gtc/quaternion.hpp>
+#include <glm/gtc/type_ptr.hpp>
+#include <glm/gtc/matrix_inverse.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 
 namespace CPM_SPIRE_NS {
 

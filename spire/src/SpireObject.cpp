@@ -36,8 +36,6 @@
 #include "Exceptions.h"
 #include "Hub.h"
 #include "ShaderUniformStateMan.h"
-#include "LambdaInterface.h"
-#include "ObjectLambda.h"
 
 namespace CPM_SPIRE_NS {
 
@@ -47,8 +45,7 @@ namespace CPM_SPIRE_NS {
 
 //------------------------------------------------------------------------------
 ObjectPass::ObjectPass(
-    Hub& hub,
-    const std::string& passName, const std::string& programName,
+    Hub& hub, const std::string& passName, const std::string& programName,
     std::shared_ptr<VBOObject> vbo, std::shared_ptr<IBOObject> ibo, GLenum primitiveType) :
 
     mName(passName),
@@ -75,9 +72,9 @@ ObjectPass::ObjectPass(
         mShader->getUniforms().getUniformAtIndex(i);
 
     mUnsatisfiedUniforms.push_back(
-        UnsastisfiedUniformItem(uniformData.uniform->codeName, 
-                                uniformData.glUniformLoc,
-                                uniformData.glType));
+        Interface::UnsatisfiedUniform(uniformData.uniform->codeName, 
+                                      uniformData.glUniformLoc,
+                                      uniformData.glType));
   }
 }
 
@@ -87,8 +84,7 @@ ObjectPass::~ObjectPass()
 }
 
 //------------------------------------------------------------------------------
-void ObjectPass::renderPass(ObjectLambdaInterface& lambdaInterface,
-                            const Interface::UnsatisfiedUniformCB& cb)
+void ObjectPass::renderPass()
 {
   GL(glUseProgram(mShader->getProgramID()));
 
@@ -115,52 +111,25 @@ void ObjectPass::renderPass(ObjectLambdaInterface& lambdaInterface,
 
   // Assign global uniforms, searches through 3 levels in an attempt to find the
   // uniform: object global -> pass global -> and global.
-  std::list<Interface::UnsatisfiedUniform> unsatisfiedGlobalUniforms;
+  std::list<std::string> unsatisfiedGlobalUniforms;
   for (auto it = mUnsatisfiedUniforms.begin(); it != mUnsatisfiedUniforms.end(); ++it)
   {
     bool applied = mHub.getPassUniformStateMan().tryApplyUniform(mName, it->uniformName, it->shaderLocation);
     if (applied == false)
     {
       if (mHub.getGlobalUniformStateMan().applyUniform(it->uniformName, it->shaderLocation) == false)
-        unsatisfiedGlobalUniforms.push_back(
-            Interface::UnsatisfiedUniform(it->uniformName, it->shaderLocation, it->uniformType));
+        unsatisfiedGlobalUniforms.push_back(it->uniformName);
     }
   }
 
   // If we have an unsatisfied uniforms callback, ensure that it is called..
   if (unsatisfiedGlobalUniforms.size() > 0)
   {
-    for (auto it = mUniformLambdas.begin(); it != mUniformLambdas.end(); ++it)
-    {
-      (*it)(lambdaInterface, unsatisfiedGlobalUniforms);
-    }
-
-    if (unsatisfiedGlobalUniforms.size() > 0)
-    {
-      if (cb)
-      {
-        cb(unsatisfiedGlobalUniforms);
-      }
-    }
-
-    if (unsatisfiedGlobalUniforms.size() > 0)
-      throw ShaderUniformNotFound("Could not initialize uniform: " 
-                                  + unsatisfiedGlobalUniforms.front().uniformName);
+    throw ShaderUniformNotFound("Could not initialize uniform: " + unsatisfiedGlobalUniforms.front());
   }
   
 
-  if (mRenderLambdas.size() > 0)
-  {
-    // Execute custom rendering callbacks.
-    for (auto it = mRenderLambdas.begin(); it != mRenderLambdas.end(); ++it)
-    {
-      (*it)(lambdaInterface);
-    }
-  }
-  else
-  {
-    GL(glDrawElements(mPrimitiveType, static_cast<GLsizei>(mIBO->getNumElements()), mIBO->getType(), 0));
-  }
+  GL(glDrawElements(mPrimitiveType, static_cast<GLsizei>(mIBO->getNumElements()), mIBO->getType(), 0));
 
   // We can do away with this once we switch to VAOs.
   attribs.unbindAttributes(mShader);
@@ -170,9 +139,9 @@ void ObjectPass::renderPass(ObjectLambdaInterface& lambdaInterface,
 }
 
 //------------------------------------------------------------------------------
-bool ObjectPass::addPassUniform(const std::string uniformName,
-                             std::shared_ptr<AbstractUniformStateItem> item,
-                             bool isObjectGlobalUniform)
+bool ObjectPass::addPassUniform(const std::string& uniformName,
+                                std::shared_ptr<AbstractUniformStateItem> item,
+                                bool isObjectGlobalUniform)
 {
   GLenum uniformGlType;
   GLint uniformLoc;
@@ -254,6 +223,21 @@ bool ObjectPass::addPassUniform(const std::string uniformName,
 }
 
 //------------------------------------------------------------------------------
+std::shared_ptr<const AbstractUniformStateItem>
+ObjectPass::getPassUniform(const std::string& uniformName)
+{
+  for (auto it = mUniforms.begin(); it != mUniforms.end(); ++it)
+  {
+    if (it->uniformName == uniformName)
+    {
+      return it->item;
+    }
+  }
+
+  return std::shared_ptr<const AbstractUniformStateItem>();
+}
+
+//------------------------------------------------------------------------------
 void ObjectPass::addGPUState(const GPUState& state)
 {
   // This will destroy any prior gpu state.
@@ -289,37 +273,9 @@ bool ObjectPass::hasUniform(const std::string& uniformName) const
 }
 
 //------------------------------------------------------------------------------
-void ObjectPass::addMetadata(const std::string& attributeName,
-                             std::shared_ptr<AbstractUniformStateItem> item)
+std::vector<Interface::UnsatisfiedUniform> ObjectPass::getUnsatisfiedUniforms()
 {
-  mMetadata[attributeName] = item;
-}
-
-//------------------------------------------------------------------------------
-std::shared_ptr<const AbstractUniformStateItem> ObjectPass::getMetadata(
-    const std::string& attribName) const
-{
-  auto it = mMetadata.find(attribName);
-  if (it != mMetadata.end())
-  {
-    return it->second;
-  }
-  else
-  {
-    return std::shared_ptr<AbstractUniformStateItem>(); 
-  }
-}
-
-//------------------------------------------------------------------------------
-void ObjectPass::addRenderLambda(const Interface::ObjectLambdaFunction& fp)
-{
-  mRenderLambdas.push_back(fp);
-}
-
-//------------------------------------------------------------------------------
-void ObjectPass::addUniformLambda(const Interface::ObjectUniformLambdaFunction& fp)
-{
-  mUniformLambdas.push_back(fp);
+  return mUnsatisfiedUniforms;
 }
 
 /// \note If we ever implement a remove pass uniform function, be *sure* to
@@ -334,9 +290,6 @@ SpireObject::SpireObject(Hub& hub, const std::string& name) :
     mName(name),
     mHub(hub)
 {
-  // Reserve at least one slot for the object transformation, and one more for
-  // good measure.
-  //mMetadata.reserve(2);
 }
 
 
@@ -435,50 +388,9 @@ void SpireObject::removePass(const std::string& passName)
 }
 
 //------------------------------------------------------------------------------
-void SpireObject::addObjectGlobalMetadata(const std::string& attributeName,
-                                          std::shared_ptr<AbstractUniformStateItem> item)
-{
-  mMetadata[attributeName] = item;
-}
-
-//------------------------------------------------------------------------------
-std::shared_ptr<const AbstractUniformStateItem> SpireObject::getObjectGlobalMetadata(
-    const std::string& attribName) const
-{
-  auto it = mMetadata.find(attribName);
-  if (it != mMetadata.end())
-  {
-    return it->second;
-  }
-  else
-  {
-    // This is the highest we can go looking for attributes. The buck stops here.
-    throw Exception("Unable to find object global attribute: " + attribName);
-  }
-}
-
-//------------------------------------------------------------------------------
-void SpireObject::addObjectPassMetadata(const std::string& passName,
-                                            const std::string& attributeName,
-                                            std::shared_ptr<AbstractUniformStateItem> item)
-{
-  std::shared_ptr<ObjectPass> pass = getPassByName(passName);
-  pass->addMetadata(attributeName, item);
-}
-
-//------------------------------------------------------------------------------
-std::shared_ptr<const AbstractUniformStateItem> SpireObject::getObjectPassMetadata(
-    const std::string& passName,
-    const std::string& attribName) const
-{
-  std::shared_ptr<ObjectPass> pass = getPassByName(passName);
-  return pass->getMetadata(attribName);
-}
-
-//------------------------------------------------------------------------------
 void SpireObject::addPassUniform(const std::string& passName,
-                               const std::string uniformName,
-                               std::shared_ptr<AbstractUniformStateItem> item)
+                                 const std::string uniformName,
+                                 std::shared_ptr<AbstractUniformStateItem> item)
 {
   // We are going to have a facility similar to UniformStateMan, but we are
   // going to use a more cache-coherent vector. It's unlikely that we ever need
@@ -491,6 +403,27 @@ void SpireObject::addPassUniform(const std::string& passName,
     stream << "This uniform (" << uniformName << ") is not recognized by the shader.";
     throw std::invalid_argument(stream.str());
   }
+}
+
+//------------------------------------------------------------------------------
+std::vector<Interface::UnsatisfiedUniform>
+SpireObject::getUnsatisfiedUniforms(const std::string& passName)
+{
+  std::shared_ptr<ObjectPass> pass = getPassByName(passName);
+  return pass->getUnsatisfiedUniforms();
+}
+
+//------------------------------------------------------------------------------
+std::shared_ptr<const AbstractUniformStateItem>
+SpireObject::getPassUniform(const std::string& passName,
+                            const std::string& uniformName)
+{
+  // We are going to have a facility similar to UniformStateMan, but we are
+  // going to use a more cache-coherent vector. It's unlikely that we ever need
+  // to grow the vector beyond the number of uniforms already present in the
+  // shader.
+  std::shared_ptr<ObjectPass> pass = getPassByName(passName);
+  return pass->getPassUniform(uniformName);
 }
 
 //------------------------------------------------------------------------------
@@ -524,6 +457,20 @@ void SpireObject::addGlobalUniform(const std::string& uniformName,
     if (it->second.objectPass != nullptr)
       it->second.objectPass->addPassUniform(uniformName, item, true);
   }
+}
+
+//------------------------------------------------------------------------------
+std::shared_ptr<const AbstractUniformStateItem>
+SpireObject::getGlobalUniform(const std::string& uniformName)
+{
+  for (auto it = mObjectGlobalUniforms.begin(); it != mObjectGlobalUniforms.end(); ++it)
+  {
+    if (it->uniformName == uniformName)
+    {
+      return it->item;
+    }
+  }
+  return std::shared_ptr<const AbstractUniformStateItem>();
 }
 
 //------------------------------------------------------------------------------
@@ -568,21 +515,12 @@ bool SpireObject::hasGlobalUniform(const std::string& uniformName) const
 //------------------------------------------------------------------------------
 void SpireObject::renderPass(const std::string& passName)
 {
-  renderPass(passName, nullptr);
-}
-
-//------------------------------------------------------------------------------
-void SpireObject::renderPass(const std::string& passName,
-                             const Interface::UnsatisfiedUniformCB& cb)
-{
-  /// \todo Possibly get rid of lambda interfaces.
-  ObjectLambdaInterface lambdaInterface(mHub, passName, *this);
   ObjectPassInternal& internalObjectPass = mPasses[passName];
   std::shared_ptr<ObjectPass> pass = internalObjectPass.objectPass;
 
   // Render the pass
   if (pass != nullptr)
-    pass->renderPass(lambdaInterface, cb);
+    pass->renderPass();
 
   // Now render any associated subpasses.
   if (internalObjectPass.objectSubPasses != nullptr)
@@ -590,22 +528,9 @@ void SpireObject::renderPass(const std::string& passName,
     for (auto it = internalObjectPass.objectSubPasses->begin(); 
          it != internalObjectPass.objectSubPasses->end(); ++it)
     {
-      ObjectLambdaInterface subLambdaInterface(mHub, (*it)->getName(), *this);
-      (*it)->renderPass(subLambdaInterface, cb);
+      (*it)->renderPass();
     }
   }
-}
-
-//------------------------------------------------------------------------------
-void SpireObject::addPassRenderLambda(const std::string& pass, const Interface::ObjectLambdaFunction& fp)
-{
-  getPassByName(pass)->addRenderLambda(fp);
-}
-
-//------------------------------------------------------------------------------
-void SpireObject::addPassUniformLambda(const std::string& pass, const Interface::ObjectUniformLambdaFunction& fp)
-{
-  getPassByName(pass)->addUniformLambda(fp);
 }
 
 } // namespace CPM_SPIRE_NS

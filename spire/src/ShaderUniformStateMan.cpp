@@ -90,7 +90,7 @@ void ShaderUniformStateMan::updateGlobalUniform(const std::string& name,
 }
 
 //------------------------------------------------------------------------------
-std::shared_ptr<const AbstractUniformStateItem> ShaderUniformStateMan::getGlobalUninform(const std::string& name)
+std::shared_ptr<const AbstractUniformStateItem> ShaderUniformStateMan::getGlobalUniform(const std::string& name)
 {
   try
   {

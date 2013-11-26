@@ -36,8 +36,6 @@
 #include "spire/src/Exceptions.h"
 #include "spire/src/SpireObject.h"
 #include "spire/src/FileUtil.h"
-#include "spire/src/LambdaInterface.h"
-#include "spire/src/ObjectLambda.h"
 
 #include "TestCommonUniforms.h"
 #include "TestCommonAttributes.h"
@@ -46,56 +44,6 @@
 using namespace spire;
 
 namespace {
-
-//// Simple function to handle object transformations so that the GPU does not
-//// need to do the same calculation for each vertex.
-//static void lambdaUniformObjTrafs(ObjectLambdaInterface& iface, 
-//                                  std::list<Interface::UnsatisfiedUniform>& unsatisfiedUniforms)
-//{
-//  // Cache object to world transform.
-//  M44 objToWorld = iface.getObjectMetadata<M44>(
-//      std::get<0>(TestCommonAttributes::getObjectToWorldTrafo()));
-//
-//  std::string objectTrafoName = std::get<0>(TestCommonUniforms::getObject());
-//  std::string objectToViewName = std::get<0>(TestCommonUniforms::getObjectToView());
-//  std::string objectToCamProjName = std::get<0>(TestCommonUniforms::getObjectToCameraToProjection());
-//
-//  // Loop through the unsatisfied uniforms and see if we can provide any.
-//  for (auto it = unsatisfiedUniforms.begin(); it != unsatisfiedUniforms.end(); /*nothing*/ )
-//  {
-//    if (it->uniformName == objectTrafoName)
-//    {
-//      LambdaInterface::setUniform<M44>(it->uniformType, it->uniformName,
-//                                       it->shaderLocation, objToWorld);
-//
-//      it = unsatisfiedUniforms.erase(it);
-//    }
-//    else if (it->uniformName == objectToViewName)
-//    {
-//      // Grab the inverse view transform.
-//      M44 inverseView = glm::affineInverse(
-//          iface.getGlobalUniform<M44>(std::get<0>(TestCommonUniforms::getCameraToWorld())));
-//      LambdaInterface::setUniform<M44>(it->uniformType, it->uniformName,
-//                                       it->shaderLocation, inverseView * objToWorld);
-//
-//      it = unsatisfiedUniforms.erase(it);
-//    }
-//    else if (it->uniformName == objectToCamProjName)
-//    {
-//      M44 inverseViewProjection = iface.getGlobalUniform<M44>(
-//          std::get<0>(TestCommonUniforms::getToCameraToProjection()));
-//      LambdaInterface::setUniform<M44>(it->uniformType, it->uniformName,
-//                                       it->shaderLocation, inverseViewProjection * objToWorld);
-//
-//      it = unsatisfiedUniforms.erase(it);
-//    }
-//    else
-//    {
-//      ++it;
-//    }
-//  }
-//}
-
 
 //------------------------------------------------------------------------------
 TEST_F(InterfaceTestFixture, TestConcurrentQuad)
@@ -140,7 +88,6 @@ TEST_F(InterfaceTestFixture, TestConcurrentQuad)
   // Build a pass to use. Strictly don't need to do this, as we could just use
   // the default pass. But we are here to test!
   std::string pass1 = "pass1";
-  mSpire->addPassToBack(pass1);
 
   /// \todo We need to test front / back geom pass, not this add pass to
   ///       object business.
@@ -165,7 +112,7 @@ TEST_F(InterfaceTestFixture, TestConcurrentQuad)
   // Need to test adding various different objects to the scene and attempting
   // to render them.
   mSpire->beginFrame(true);
-  mSpire->renderObject(obj1, nullptr, pass1);  
+  mSpire->renderObject(obj1, pass1);  
   mSpire->endFrame();
 
   // Write the resultant png to a temporary directory and compare against

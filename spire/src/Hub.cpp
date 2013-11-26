@@ -53,7 +53,7 @@ namespace CPM_SPIRE_NS {
 //------------------------------------------------------------------------------
 Hub::Hub(std::shared_ptr<Context> context,
          const std::vector<std::string>& shaderDirs,
-         Interface::LogFunction logFn, bool useThread) :
+         Interface::LogFunction logFn) :
     mLogFun(logFn),
     mContext(context),
     mShaderMan(new ShaderMan(*this)),
@@ -63,12 +63,7 @@ Hub::Hub(std::shared_ptr<Context> context,
     mShaderUniformStateMan(new ShaderUniformStateMan(*this)),
     mPassUniformStateMan(new PassUniformStateMan(*this)),
     mShaderDirs(shaderDirs),
-    mInterfaceImpl(new InterfaceImplementation(*this, useThread)),
-#ifdef SPIRE_USE_STD_THREADS
-    mThreadKill(false),
-    mThreadRunning(false),
-#endif
-    mThreaded(useThread),
+    mInterfaceImpl(new InterfaceImplementation(*this)),
     mPixScreenWidth(640),
     mPixScreenHeight(480)
 {
@@ -77,32 +72,16 @@ Hub::Hub(std::shared_ptr<Context> context,
   workingDir += "/Shaders";
   mShaderDirs.push_back(workingDir);
 
-  if (useThread)
-  {
-#ifdef SPIRE_USE_STD_THREADS
-    createRendererThread();
-#else
-    throw UnsupportedException("Spire compiled without std threads!");
-#endif
-  }
-  else
-  {
-    oneTimeInitOnThread();
-  }
-
+  oneTimeInit();
 }
 
 //------------------------------------------------------------------------------
 Hub::~Hub()
 {
-  if (isRendererThreadRunning())
-  {
-    killRendererThread();
-  }
 }
 
 //------------------------------------------------------------------------------
-void Hub::oneTimeInitOnThread()
+void Hub::oneTimeInit()
 {
   // Construct the logger now that we are on the appropriate thread.
   mLog = std::unique_ptr<Log>(new Log(mLogFun));
@@ -130,21 +109,6 @@ void Hub::oneTimeInitOnThread()
   Log::message() << std::endl << "------------------------------" << std::endl;
   Log::message() << "OpenGL initialization. Running on a " << vendor << " "
                  << renderer << " with OpenGL version " << versionl << std::endl;
-
-#ifdef SPIRE_USE_STD_THREADS
-  Log::message() << "Spire compiled with threading support." << std::endl;
-  if (isRendererThreadRunning())
-  {
-    Log::message() << "** Asynchronous spire on thread " << std::this_thread::get_id() << " **" << std::endl;
-  }
-  else
-  {
-    Log::message() << "** Synchronous spire on parent thread **" << std::endl;
-  }
-#else
-  Log::message() << "Spire compiled without thread support." << std::endl;
-  Log::message() << "** Synchronous spire on parent thread **" << std::endl;
-#endif
 
   GLint tmp;
   Log::debug() << "Hardware specific attributes" << std::endl;
@@ -183,23 +147,10 @@ void Hub::oneTimeInitOnThread()
 }
 
 //------------------------------------------------------------------------------
-void Hub::doFrame()
-{
-  // When we get here, it has already been determined that a frame needs to be
-  // redrawn.
-
-  // Question: How do we split up the pipes? Does everything happen in the
-  // stupipe, when we route through the stupipe? It almost appears that it has
-  // to. Should we just build the pipe and see where it leads us to?
-  mInterfaceImpl->executeQueue();
-  mInterfaceImpl->doAllPasses();
-}
-
-//------------------------------------------------------------------------------
 bool Hub::beginFrame(bool makeContextCurrent)
 {
   if (makeContextCurrent == true)
-    mContext->makeCurrent();
+    makeCurrent();
 
   // Bail if the frame buffer is not complete. One instance where this is a
   // *valid* state is when a window containing the OpenGL scene is hidden.
@@ -223,93 +174,15 @@ bool Hub::beginFrame(bool makeContextCurrent)
 }
 
 //------------------------------------------------------------------------------
+void Hub::makeCurrent()
+{
+  mContext->makeCurrent();
+}
+
+//------------------------------------------------------------------------------
 void Hub::endFrame()
 {
   mContext->swapBuffers();
-}
-
-//------------------------------------------------------------------------------
-bool Hub::isRendererThreadRunning() const
-{
-#ifdef SPIRE_USE_STD_THREADS
-  return mThreadRunning.load();
-#else
-  return false;
-#endif
-}
-
-//------------------------------------------------------------------------------
-void Hub::createRendererThread()
-{
-#ifdef SPIRE_USE_STD_THREADS
-  if (isRendererThreadRunning() == true)
-    throw ThreadException("Cannot create new renderer thread; a renderer "
-                          "thread is currently running.");
-
-  mThread = std::thread(&Hub::rendererThread, this);
-#else
-  throw UnsupportedException("Spire compiled without threading support. "
-                             "Cannot create render thread.");
-#endif
-}
-
-//------------------------------------------------------------------------------
-void Hub::killRendererThread()
-{
-#ifdef SPIRE_USE_STD_THREADS
-  if (isRendererThreadRunning() == false)
-    throw ThreadException("Cannot kill renderer thread; the thread is not "
-                          "currently running.");
-
-  // The following join statement could possibly throw a system_error if
-  // mThread.get_id() == std::thread::id()
-  mThreadKill.store(true);
-  mThread.join();
-#endif
-}
-
-#ifdef SPIRE_USE_STD_THREADS
-//------------------------------------------------------------------------------
-void Hub::rendererThread()
-{
-  mThreadRunning.store(true);
-
-  // Cannot log anything until this is called.
-  oneTimeInitOnThread();
-
-  Log::message() << "Started rendering thread" << std::endl;
-
-  while (mThreadKill.load() == false)
-  {
-    doFrame();
-
-    // Swap buffers manually.
-    mContext->swapBuffers();
-
-    /// @todo Add logic to determine how long we should sleep for...
-    ///       This will be highly dependent on how long it took to render the
-    ///       last frame, and if we are in the middle of compositing the final
-    ///       frame together.
-    std::chrono::milliseconds dur(10);
-    std::this_thread::sleep_for(dur);
-  }
-
-  /// \todo Pass a hub reference into BaseAssetMan and construct an ongoing
-  ///       list of base asset managers. That way we can simply loop through
-  ///       any assets holding graphics resources.
-  mShaderMan->clearHeldAssets();
-  mShaderProgramMan->clearHeldAssets();
-
-  mInterfaceImpl->clearGLResources();
-
-  mThreadRunning.store(false);
-}
-#endif
-
-//------------------------------------------------------------------------------
-bool Hub::addFunctionToThreadQueue(const RemoteFunction& fun)
-{
-  return mInterfaceImpl->addFunctionToQueue(fun);
 }
 
 } // namespace CPM_SPIRE_NS

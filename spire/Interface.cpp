@@ -44,23 +44,22 @@ namespace CPM_SPIRE_NS {
 //------------------------------------------------------------------------------
 Interface::Interface(std::shared_ptr<Context> context,
                      const std::vector<std::string>& shaderDirs,
-                     bool createThread, LogFunction logFP) :
-    mHub(new Hub(context, shaderDirs, logFP, createThread))
+                     LogFunction logFP) :
+    mHub(new Hub(context, shaderDirs, logFP))
 {
+  mImpl = mHub->getInterfaceImpl();
 }
 
 //------------------------------------------------------------------------------
 Interface::~Interface()
 {
+  mImpl.reset();
+  mHub.reset();
 }
 
 //------------------------------------------------------------------------------
 void Interface::terminate()
 {
-  if (mHub->isRendererThreadRunning())
-  {
-    mHub->killRendererThread();
-  }
 }
 
 //============================================================================
@@ -68,46 +67,23 @@ void Interface::terminate()
 //============================================================================
 
 //------------------------------------------------------------------------------
-void Interface::ntsDoFrame()
+size_t Interface::getNumObjects() const
 {
-  if (mHub->isRendererThreadRunning())
-    throw ThreadException("You cannot call doFrame when the renderer is "
-                          "running in a separate thread.");
-
-  mHub->doFrame();
-}
-
-//------------------------------------------------------------------------------
-size_t Interface::ntsGetNumObjects() const
-{
-  return mHub->getInterfaceImpl()->getNumObjects();
+  return mImpl->getNumObjects();
 }
 
 //------------------------------------------------------------------------------
 std::shared_ptr<SpireObject>
-Interface::ntsGetObjectWithName(const std::string& name) const
+Interface::getObjectWithName(const std::string& name) const
 {
-  return mHub->getInterfaceImpl()->getObjectWithName(name);
+  return mImpl->getObjectWithName(name);
 }
 
 //------------------------------------------------------------------------------
-void Interface::ntsClearGLResources()
+void Interface::clearGLResources()
 {
-  mHub->getInterfaceImpl()->clearGLResources();
+  mImpl->clearGLResources();
 }
-
-//------------------------------------------------------------------------------
-bool Interface::ntsIsObjectInPass(const std::string& object, const std::string& pass) const
-{
-  return mHub->getInterfaceImpl()->isObjectInPass(object, pass);
-}
-
-//------------------------------------------------------------------------------
-bool Interface::ntsHasPass(const std::string& pass) const
-{
-  return mHub->getInterfaceImpl()->hasPass(pass);
-}
-
 
 //------------------------------------------------------------------------------
 bool Interface::beginFrame(bool makeContextCurrent)
@@ -126,67 +102,46 @@ void Interface::addVBO(const std::string& name,
                        const uint8_t* vboData, size_t vboSize,
                        const std::vector<std::string>& attribNames)
 {
-  mHub->getInterfaceImpl()->addConcurrentVBO(name, vboData, vboSize, attribNames);
+  mImpl->addConcurrentVBO(name, vboData, vboSize, attribNames);
 }
 
 //------------------------------------------------------------------------------
 void Interface::addIBO(const std::string& name,
                        const uint8_t* iboData, size_t iboSize, IBO_TYPE type)
 {
-  mHub->getInterfaceImpl()->addConcurrentIBO(name, iboData, iboSize, type);
+  mImpl->addConcurrentIBO(name, iboData, iboSize, type);
 }
 
 //------------------------------------------------------------------------------
 void Interface::renderObject(const std::string& objectName,
-                             const UnsatisfiedUniformCB& cb,
                              const std::string& pass)
 {
-  std::shared_ptr<SpireObject> obj = ntsGetObjectWithName(objectName);
-  obj->renderPass(pass, cb);
-}
-
-//============================================================================
-// THREAD-SAFE INTERFACE
-//============================================================================
-
-//------------------------------------------------------------------------------
-void Interface::addPassToFront(const std::string& passName)
-{
-  Hub::RemoteFunction fun =
-      std::bind(InterfaceImplementation::addPassToFront, _1, passName);
-  mHub->addFunctionToThreadQueue(fun);
+  std::shared_ptr<SpireObject> obj = getObjectWithName(objectName);
+  obj->renderPass(pass);
 }
 
 //------------------------------------------------------------------------------
-void Interface::addPassToBack(const std::string& passName)
+void Interface::makeCurrent()
 {
-  Hub::RemoteFunction fun =
-      std::bind(InterfaceImplementation::addPassToBack, _1, passName);
-  mHub->addFunctionToThreadQueue(fun);
+  mHub->makeCurrent();
 }
 
 //------------------------------------------------------------------------------
 void Interface::addObject(const std::string& objectName)
 {
-  Hub::RemoteFunction fun =
-      std::bind(InterfaceImplementation::addObject, _1, objectName);
-  mHub->addFunctionToThreadQueue(fun);
+  mImpl->addObject(objectName);
 }
 
 //------------------------------------------------------------------------------
 void Interface::removeObject(const std::string& objectName)
 {
-  Hub::RemoteFunction fun =
-      std::bind(InterfaceImplementation::removeObject, _1, objectName);
-  mHub->addFunctionToThreadQueue(fun);
+  mImpl->removeObject(objectName);
 }
 
 //------------------------------------------------------------------------------
 void Interface::removeAllObjects()
 {
-  Hub::RemoteFunction fun =
-      std::bind(InterfaceImplementation::removeAllObjects, _1);
-  mHub->addFunctionToThreadQueue(fun);
+  mImpl->removeAllObjects();
 }
 
 //------------------------------------------------------------------------------
@@ -194,17 +149,13 @@ void Interface::addVBO(const std::string& name,
                        std::shared_ptr<std::vector<uint8_t>> vboData,
                        const std::vector<std::string>& attribNames)
 {
-  Hub::RemoteFunction fun =
-      std::bind(InterfaceImplementation::addVBO, _1, name, vboData, attribNames);
-  mHub->addFunctionToThreadQueue(fun);
+  mImpl->addVBO(name, vboData, attribNames);
 }
 
 //------------------------------------------------------------------------------
 void Interface::removeVBO(const std::string& vboName)
 {
-  Hub::RemoteFunction fun =
-      std::bind(InterfaceImplementation::removeVBO, _1, vboName);
-  mHub->addFunctionToThreadQueue(fun);
+  mImpl->removeVBO(vboName);
 }
 
 //------------------------------------------------------------------------------
@@ -212,17 +163,13 @@ void Interface::addIBO(const std::string& name,
                        std::shared_ptr<std::vector<uint8_t>> iboData,
                        IBO_TYPE type)
 {
-  Hub::RemoteFunction fun =
-      std::bind(InterfaceImplementation::addIBO, _1, name, iboData, type);
-  mHub->addFunctionToThreadQueue(fun);
+  mImpl->addIBO(name, iboData, type);
 }
 
 //------------------------------------------------------------------------------
 void Interface::removeIBO(const std::string& iboName)
 {
-  Hub::RemoteFunction fun =
-      std::bind(InterfaceImplementation::removeIBO, _1, iboName);
-  mHub->addFunctionToThreadQueue(fun);
+  mImpl->removeIBO(iboName);
 }
 
 //------------------------------------------------------------------------------
@@ -234,18 +181,21 @@ void Interface::addPassToObject(const std::string& object,
                                 const std::string& pass,
                                 const std::string& parentPass)
 {
-  Hub::RemoteFunction fun =
-      std::bind(InterfaceImplementation::addPassToObject, _1, object, program, 
-                vboName, iboName, type, pass, parentPass);
-  mHub->addFunctionToThreadQueue(fun);
+  mImpl->addPassToObject(object, program, vboName, iboName, type, pass, parentPass);
 }
 
 //------------------------------------------------------------------------------
 void Interface::removePassFromObject(const std::string& object, const std::string& pass)
 {
-  Hub::RemoteFunction fun =
-      std::bind(InterfaceImplementation::removePassFromObject, _1, object, pass);
-  mHub->addFunctionToThreadQueue(fun);
+  mImpl->removePassFromObject(object, pass);
+}
+
+//------------------------------------------------------------------------------
+std::vector<Interface::UnsatisfiedUniform> Interface::getUnsatisfiedUniforms(
+    const std::string& object, const std::string& pass)
+{
+  std::shared_ptr<SpireObject> obj = getObjectWithName(object);
+  return obj->getUnsatisfiedUniforms(pass);
 }
 
 //------------------------------------------------------------------------------
@@ -254,10 +204,7 @@ void Interface::addObjectPassUniformConcrete(const std::string& object,
                                              std::shared_ptr<AbstractUniformStateItem> item,
                                              const std::string& pass)
 {
-  Hub::RemoteFunction fun =
-      std::bind(InterfaceImplementation::addObjectPassUniformConcrete, _1,
-                object, uniformName, item, pass);
-  mHub->addFunctionToThreadQueue(fun);
+  mImpl->addObjectPassUniformConcrete(object, uniformName, item, pass);
 }
 
 
@@ -266,58 +213,61 @@ void Interface::addObjectGlobalUniformConcrete(const std::string& object,
                                                const std::string& uniformName,
                                                std::shared_ptr<AbstractUniformStateItem> item)
 {
-  Hub::RemoteFunction fun =
-      std::bind(InterfaceImplementation::addObjectGlobalUniformConcrete, _1, object, uniformName, item);
-  mHub->addFunctionToThreadQueue(fun);
+  mImpl->addObjectGlobalUniformConcrete(object, uniformName, item);
 }
 
 //------------------------------------------------------------------------------
 void Interface::addGlobalUniformConcrete(const std::string& uniformName,
                                          std::shared_ptr<AbstractUniformStateItem> item)
 {
-  Hub::RemoteFunction fun =
-      std::bind(InterfaceImplementation::addGlobalUniformConcrete, _1, uniformName, item);
-  mHub->addFunctionToThreadQueue(fun);
+  mImpl->addGlobalUniformConcrete(uniformName, item);
 }
+
+//------------------------------------------------------------------------------
+std::shared_ptr<const AbstractUniformStateItem>
+Interface::getGlobalUniformConcrete(const std::string& uniformName)
+{
+  return mHub->getGlobalUniformStateMan().getGlobalUniform(uniformName);
+}
+
+//------------------------------------------------------------------------------
+std::shared_ptr<const AbstractUniformStateItem>
+Interface::getObjectPassUniformConcrete(const std::string& object,
+                                        const std::string& uniformName,
+                                        const std::string& pass)
+{
+  std::shared_ptr<SpireObject> obj = getObjectWithName(object);
+  return obj->getPassUniform(pass, uniformName);
+}
+
+//------------------------------------------------------------------------------
+std::shared_ptr<const AbstractUniformStateItem>
+Interface::getObjectGlobalUniformConcrete(const std::string& object,
+                                          const std::string& uniformName)
+{
+  std::shared_ptr<SpireObject> obj = getObjectWithName(object);
+  return obj->getGlobalUniform(uniformName);
+}
+
 
 //------------------------------------------------------------------------------
 void Interface::addObjectPassGPUState(const std::string& object, const GPUState& state,
                                       const std::string& pass)
 {
-  Hub::RemoteFunction fun =
-      std::bind(InterfaceImplementation::addObjectPassGPUState, _1, object, state, pass);
-  mHub->addFunctionToThreadQueue(fun);
+  mImpl->addObjectPassGPUState(object, state, pass);
+}
+
+//------------------------------------------------------------------------------
+void Interface::applyGPUState(const GPUState& state, bool force)
+{
+  mHub->getGPUStateManager().apply(state, force); // true = force application of state.
 }
 
 //------------------------------------------------------------------------------
 void Interface::addShaderAttribute(const std::string& codeName, size_t numComponents,
                                    bool normalize, size_t size, Interface::DATA_TYPES type)
 {
-  Hub::RemoteFunction fun =
-      std::bind(InterfaceImplementation::addShaderAttribute, _1, codeName, numComponents, 
-                normalize, size, type);
-  mHub->addFunctionToThreadQueue(fun);
-}
-
-//------------------------------------------------------------------------------
-void Interface::addObjectGlobalMetadataConcrete(const std::string& object,
-                                                const std::string& attributeName,
-                                                std::shared_ptr<AbstractUniformStateItem> item)
-{
-  Hub::RemoteFunction fun =
-      std::bind(InterfaceImplementation::addObjectGlobalMetadataConcrete, _1, object, attributeName, item);
-  mHub->addFunctionToThreadQueue(fun);
-}
-
-//------------------------------------------------------------------------------
-void Interface::addObjectPassMetadataConcrete(const std::string& object,
-                                              const std::string& attributeName,
-                                              std::shared_ptr<AbstractUniformStateItem> item,
-                                              const std::string& passName)
-{
-  Hub::RemoteFunction fun =
-      std::bind(InterfaceImplementation::addObjectPassMetadataConcrete, _1, object, attributeName, item, passName);
-  mHub->addFunctionToThreadQueue(fun);
+  mImpl->addShaderAttribute(codeName, numComponents, normalize, size, type);
 }
 
 //------------------------------------------------------------------------------
@@ -335,57 +285,7 @@ void Interface::addPersistentShader(const std::string& programName,
 void Interface::addPersistentShader(const std::string& programName,
                                     const std::vector<std::tuple<std::string, SHADER_TYPES>>& shaders)
 {
-  Hub::RemoteFunction fun =
-      std::bind(InterfaceImplementation::addPersistentShader, _1, programName, shaders);
-  mHub->addFunctionToThreadQueue(fun);
-}
-
-//------------------------------------------------------------------------------
-void Interface::addLambdaBeginAllPasses(const PassLambdaFunction& fp)
-{
-  Hub::RemoteFunction fun =
-      std::bind(InterfaceImplementation::addLambdaBeginAllPasses, _1, fp);
-  mHub->addFunctionToThreadQueue(fun);
-}
-
-//------------------------------------------------------------------------------
-void Interface::addLambdaEndAllPasses(const PassLambdaFunction& fp)
-{
-  Hub::RemoteFunction fun =
-      std::bind(InterfaceImplementation::addLambdaEndAllPasses, _1, fp);
-  mHub->addFunctionToThreadQueue(fun);
-}
-
-//------------------------------------------------------------------------------
-void Interface::addLambdaPrePass(const PassLambdaFunction& fp, const std::string& pass)
-{
-  Hub::RemoteFunction fun =
-      std::bind(InterfaceImplementation::addLambdaPrePass, _1, fp, pass);
-  mHub->addFunctionToThreadQueue(fun);
-}
-
-//------------------------------------------------------------------------------
-void Interface::addLambdaPostPass(const PassLambdaFunction& fp, const std::string& pass)
-{
-  Hub::RemoteFunction fun =
-      std::bind(InterfaceImplementation::addLambdaPostPass, _1, fp, pass);
-  mHub->addFunctionToThreadQueue(fun);
-}
-
-//------------------------------------------------------------------------------
-void Interface::addLambdaObjectRender(const std::string& object, const ObjectLambdaFunction& fp, const std::string& pass)
-{
-  Hub::RemoteFunction fun =
-      std::bind(InterfaceImplementation::addLambdaObjectRender, _1, object ,fp, pass);
-  mHub->addFunctionToThreadQueue(fun);
-}
-
-//------------------------------------------------------------------------------
-void Interface::addLambdaObjectUniforms(const std::string& object, const ObjectUniformLambdaFunction& fp, const std::string& pass)
-{
-  Hub::RemoteFunction fun =
-      std::bind(InterfaceImplementation::addLambdaObjectUniforms, _1, object ,fp, pass);
-  mHub->addFunctionToThreadQueue(fun);
+  mImpl->addPersistentShader(programName, shaders);
 }
 
 

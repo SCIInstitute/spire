@@ -43,9 +43,10 @@
 
 #include "Context.h"
 
-#include "src/Math.h"  // Necessary in order to communicate vector types.
+#include "src/Math.h"
 #include "src/ShaderUniformStateManTemplates.h"
 #include "src/GPUStateManager.h"
+#include "src/GLInclude.h"
 
 /// \todo The following *really* wants to be a constexpr inside of StuInterface,
 /// when we upgrade to VS 2012, we should also upgrade this.
@@ -57,6 +58,7 @@ class Hub;
 class HubThread;
 class LambdaInterface;
 class ObjectLambdaInterface;
+class InterfaceImplementation;
 class SpireObject;
 
 /// Interface to the renderer.
@@ -93,7 +95,7 @@ public:
   //          LogFunction logFP = LogFunction());
   Interface(std::shared_ptr<Context> context, 
             const std::vector<std::string>& shaderDirs,
-            bool createThread, LogFunction logFP = LogFunction());
+            LogFunction logFP = LogFunction());
   virtual ~Interface();
 
 
@@ -154,32 +156,25 @@ public:
     TYPE_DOUBLE,    ///< GLdouble - 64-bit floating,        C-Type (double),        Suffix (d)
   };
 
-  //============================================================================
-  // CONCURRENT INTERFACE
-  //============================================================================
 
-  // Functions contained in the concurrent interface are not thread safe and
-  // it is unlikely that they ever will be. In most scenarios, you should use
-  // this concurrent interface instead of the threaded interface.
-
+  // An unsatisfied uniform. These are calculated by SpireObjects and returned
+  // in the getObjectPassUnsatisfiedUniforms.
   struct UnsatisfiedUniform
   {
-    UnsatisfiedUniform(const std::string& name, int location, unsigned int type) :
+    UnsatisfiedUniform(const std::string& name, GLint location, GLenum type) :
         uniformName(name),
         uniformType(type),
         shaderLocation(location)
     {}
 
-    std::string                         uniformName;
-    unsigned int                        uniformType;    // Should be: GLenum
-    int                                 shaderLocation; // Should be: GLint
+    std::string     uniformName;
+    GLenum          uniformType;
+    GLint           shaderLocation;
   };
 
-  /// Callback issued when an object has unsatisfied uniforms. This is an
-  /// oportunity for the function to remove items from the unsatisfied uniforms
-  /// list. Once you have satisfied a particular uniform in the list, you
-  /// should remove it. Otherwise, the rendering will bail on you.
-  typedef std::function<void (std::list<UnsatisfiedUniform>&)> UnsatisfiedUniformCB;
+  // Functions contained in the concurrent interface are not thread safe and
+  // it is unlikely that they ever will be. In most scenarios, you should use
+  // this concurrent interface instead of the threaded interface.
 
   /// Calling this function is not necessary but may make your life.
   /// Here is a brief overview of what this function does:
@@ -209,7 +204,6 @@ public:
   ///       This would be the 'unsatisfied uniforms callback'.
   /// \todo Implement
   void renderObject(const std::string& objectName,
-                    const UnsatisfiedUniformCB& cb = nullptr,
                     const std::string& pass = SPIRE_DEFAULT_PASS);
 
   /// Adds a VBO. This VBO can be re-used by any objects in the system.
@@ -238,78 +232,27 @@ public:
   void addIBO(const std::string& name, const uint8_t* iboData, size_t iboSize,
               IBO_TYPE type);
 
-  /// Retrieve shader OpenGL ID's for custom rendering.
-
-  /// Retrieve VBO and IBO ID's for custom rendering.
-
-  /// Uniform retrieval.
-
-  /// \todo Remove 'nts' from the names of the functions in the concurrent
-  ///       interface.
-  /// This call will render *only* the SPIRE_DEFAULT_PASS and nothing else.
-  /// It is a barebones and minimal renderer.
-  /// 
-  /// You can call this function every time you want a new frame to be rendered
-  /// unless you are using the threaded renderer. The threaded renderer will 
-  /// call doFrame automatically.
-  /// \note You must call doFrame on the same thread where makeCurrent was issued.
-  ///       If this is not the same thread where Interface was created, ensure
-  ///       a call to context->makeCurrent() is issued before invoking doFrame
-  ///       for the first time.
-  void ntsDoFrame();
-
   /// Obtain the current number of objects.
   /// \todo This function nedes to go to the implementation.
-  size_t ntsGetNumObjects() const;
+  size_t getNumObjects() const;
 
   /// Obtain the object associated with 'name'.
   /// throws std::range_error if the object is not found.
-  std::shared_ptr<SpireObject> ntsGetObjectWithName(const std::string& name) const;
+  std::shared_ptr<SpireObject> getObjectWithName(const std::string& name) const;
 
   /// Cleans up all GL resources.
   /// Should ONLY be called from the rendering thread.
   /// In our case, this amounts to disposing of all of our objects and VBO/IBOs
   /// and persistent shader objects.
-  void ntsClearGLResources();
+  void clearGLResources();
 
-  /// Returns true if the specified object is in the pass.
-  bool ntsIsObjectInPass(const std::string& object, const std::string& pass) const;
+  /// Makes the rendering context that was passed into spire current on
+  /// the thread.
+  void makeCurrent();
 
-  /// Returns true if the pass already exists.
-  bool ntsHasPass(const std::string& pass) const;
-
-  //============================================================================
-  // THREAD SAFE - Remember, the same thread should always be calling spire.
-  //============================================================================
-
-  // All thread safe functions can be called from the concurrent interface.
-  // Additionally, when compiled without threading support, these functions
-  // will be executed immediately 
-
-
-  /// Terminates spire. If running 'threaded' then this will join with the 
-  /// spire thread before returning. This should be called before the OpenGL
-  /// context is destroyed.
-  /// There is no mutex lock in this function, it should only be called by one
-  /// thread.
+  // Terminates spire. This should be called before the OpenGL context is
+  // destroyed.
   void terminate();
-
-  //--------
-  // Passes
-  //--------
-
-  // The default pass (SPIRE_DEFAULT_PASS) is always present.
-
-  /// \todo Consider removal of manual passes from the system. There will be
-  ///       no way of rendering these passes in the 'threaded' environment.
-
-  /// Adds a pass to the front of the pass list. Passes at the front of the list
-  /// are rendered first.
-  void addPassToFront(const std::string& passName);
-
-  /// Adds a pass to the back of the pass list. Passes at the back of the list
-  /// are rendered last.
-  void addPassToBack(const std::string& passName);
 
   //---------
   // Objects
@@ -384,46 +327,6 @@ public:
                                             std::vector<uint8_t>& vbo,
                                             std::vector<uint8_t>& ibo);
 
-  /// Adds a geometry stage to the front of the rendering order of the given
-  /// pass on the object (mouthful!). If no other stage is added to the front
-  /// of the object's pass, then this stage will be rendered before any other
-  /// stage when this object is rendered.
-  /// \param object         Name of the object to modify.
-  /// \param program        The program to be executed during this substage.
-  /// \param vboName        The VBO to use for rendering.
-  /// \prama iboName        The IBO to use for rendering.
-  /// \param type           The type of the primitives to be rendered.
-  /// \param pass           Name of the pass to place this stage under.
-  /// \param stage          Optional name for the stage. Can be left empty.
-  /// \todo Implement
-  void addObjectGeomPassToFront(const std::string& object,
-                                const std::string& program,
-                                const std::string& vboName,
-                                const std::string& iboName,
-                                PRIMITIVE_TYPES type,
-                                const std::string& pass = SPIRE_DEFAULT_PASS,
-                                const std::string& stage = "");
-
-  /// Adds a geometry stage to the back of the rendering order of the given
-  /// pass on the object (mouthful!). If no other stage is added to the back
-  /// of the object's pass, then this stage will be rendered after every other
-  /// stage when the object is rendered.
-  /// \param object         Name of the object to modify.
-  /// \param program        The program to be executed during this substage.
-  /// \param vboName        The VBO to use for rendering.
-  /// \prama iboName        The IBO to use for rendering.
-  /// \param type           The type of the primitives to be rendered.
-  /// \param pass           Name of the pass to place this stage under.
-  /// \param stage          Optional name for the stage. Can be left empty.
-  /// \todo Implement
-  void addObjectGeomPassToBack(const std::string& object,
-                               const std::string& program,
-                               const std::string& vboName,
-                               const std::string& iboName,
-                               PRIMITIVE_TYPES type,
-                               const std::string& pass = SPIRE_DEFAULT_PASS,
-                               const std::string& stage = "");
-
   /// Adds a geometry pass to an object given by the identifier 'object'.
   /// Throws an std::out_of_range exception if the object is not found in the 
   /// system. If there already exists a geometry pass, it throws a 'Duplicate' 
@@ -457,6 +360,12 @@ public:
   // Uniforms
   //----------
   
+  /// Retrieves the currently unsatisfied uniforms for the object. Commonly
+  /// used to define what uniforms need to be built for the object on a
+  /// per-frame basis.
+  std::vector<UnsatisfiedUniform> getUnsatisfiedUniforms(
+      const std::string& object, const std::string& pass = SPIRE_DEFAULT_PASS);
+
   /// Associates a uniform value to the specified object's pass. If the uniform
   /// already exists, then its value will be updated if it passes a type check.
   /// Throws an std::out_of_range exception if the object or pass is not found 
@@ -520,6 +429,51 @@ public:
                              const GPUState& state,
                              const std::string& pass = SPIRE_DEFAULT_PASS);
 
+  /// Apply the given GPU state.
+  void applyGPUState(const GPUState& state, bool force);
+
+  /// \todo This really wants to be an 'optional' return value instead of a
+  ///       throw... it would be much more useful and type compliant that way.
+  ///       See: boost::optional. Waiting to see if the standard adopts
+  ///       optional. optional will be added to the standard, but probably
+  ///       not in C++14. Looking for alternate implementation of optional.
+  template <class T>
+  T getGlobalUniform(const std::string& uniformName)
+  {
+    std::shared_ptr<const AbstractUniformStateItem> uniformItem
+        = getGlobalUniformConcrete(uniformName);
+    if (uniformItem)
+      return uniformItem->getData<T>();
+    else
+      throw std::runtime_error("Unable to find uniform item.");
+  }
+
+  /// \todo Want optional.
+  template <class T>
+  T getObjectPassUniform(const std::string& objectName, 
+                         const std::string& uniformName,
+                         const std::string& pass = SPIRE_DEFAULT_PASS)
+  {
+    std::shared_ptr<const AbstractUniformStateItem> uniformItem
+        = getObjectPassUniformConcrete(objectName, uniformName, pass);
+    if (uniformItem)
+      return uniformItem->getData<T>();
+    else
+      throw std::runtime_error("Unable to find uniform item.");
+  }
+
+  template <class T>
+  T getObjectGlobalUniform(const std::string& objectName, 
+                           const std::string& uniformName)
+  {
+    std::shared_ptr<const AbstractUniformStateItem> uniformItem
+        = getObjectGlobalUniformConcrete(objectName, uniformName);
+    if (uniformItem)
+      return uniformItem->getData<T>();
+    else
+      throw std::runtime_error("Unable to find uniform item.");
+  }
+
   //-------------------
   // Shader Attributes
   //-------------------
@@ -527,39 +481,6 @@ public:
   // Attributes just as they are in the OpenGL rendering pipeline.
   void addShaderAttribute(const std::string& codeName, size_t numComponents,
                           bool normalize, size_t size, Interface::DATA_TYPES t);
-
-  //----------------
-  // Object Metadata
-  //----------------
-  template <typename T>
-  void addObjectGlobalMetadata(const std::string& object,
-                               const std::string& metadataName, T metadata)
-  {
-    addObjectGlobalMetadataConcrete(object, metadataName, 
-                                    std::shared_ptr<AbstractUniformStateItem>(
-                                        new UniformStateItem<T>(metadata)));
-  }
-
-  // Concrete implementation of the above templated function.
-  void addObjectGlobalMetadataConcrete(const std::string& object,
-                                       const std::string& metadataName,
-                                       std::shared_ptr<AbstractUniformStateItem> item);
-
-  template <typename T>
-  void addObjectPassMetadata(const std::string& object,
-                             const std::string& metadataName, T metadata,
-                             const std::string& passName = SPIRE_DEFAULT_PASS)
-  {
-    addObjectPassMetadataConcrete(object, metadataName, 
-                                  std::shared_ptr<AbstractUniformStateItem>(
-                                      new UniformStateItem<T>(metadata)), passName);
-  }
-
-  // Concrete implementation of the above templated function.
-  void addObjectPassMetadataConcrete(const std::string& object,
-                                     const std::string& metadataName,
-                                     std::shared_ptr<AbstractUniformStateItem> item,
-                                     const std::string& passName = SPIRE_DEFAULT_PASS);
 
   //-----------------
   // Shader Programs
@@ -596,63 +517,22 @@ public:
   void addPersistentShader(const std::string& programName,
                            const std::vector<std::tuple<std::string, SHADER_TYPES>>& shaders);
 
-  //---------
-  // Lambdas
-  //---------
-
-  // The complication in this lambda interface is due to threading.
-  // If at all possible, use the concurrent interface.
-
-  /// \note All lambdas use the push_back semantic. So if you are adding
-  /// rendering lambdas, the first lambda you register will be the first one
-  /// called when rendering.
-
-  // Two types of lambdas to use. One with objects, and one with passes.
-  // The name ObjectLambdaFunction is a little deceptive.
-  // ObjectLambdaFunctions will be called per-pass.
-  typedef std::function<void (LambdaInterface&)> PassLambdaFunction;
-
-  // Lambda function that includes an object as context.
-  typedef std::function<void (ObjectLambdaInterface&)> ObjectLambdaFunction;
-
-  /// These functions help satisfy uniforms that need extra attribute data in
-  /// order to process. These can be used to remove load from the GPU by
-  /// precomputing any number of things.
-  typedef std::function<void (ObjectLambdaInterface&, std::list<UnsatisfiedUniform>&)> 
-      ObjectUniformLambdaFunction;
-
-  /// \todo Remove these functions. They were necessary only for the threaded
-  ///       version of spire.
-  /// The following functions add hooks into the rendering infrastructure.
-  /// @{
-  void addLambdaBeginAllPasses(const PassLambdaFunction& fp);
-  void addLambdaEndAllPasses(const PassLambdaFunction& fp);
-  void addLambdaPrePass(const PassLambdaFunction& fp, const std::string& pass = SPIRE_DEFAULT_PASS);
-  void addLambdaPostPass(const PassLambdaFunction& fp, const std::string& pass = SPIRE_DEFAULT_PASS);
-  /// @}
-  
-  /// Adds per-object hooks for calculating uniforms and performing rendering.
-  /// Both are optional, and you can add as many lambdas as you need.
-  /// @{
-
-  /// If an object rendering lambda is found, then normal rendering does not
-  /// proceed.
-  void addLambdaObjectRender(const std::string& object, const ObjectLambdaFunction& fp, const std::string& pass = SPIRE_DEFAULT_PASS);
-
-  /// Lambda object uniforms are optional and they will not be called if there
-  /// are no unsatisfied uniforms found.
-  void addLambdaObjectUniforms(const std::string& object, const ObjectUniformLambdaFunction& fp, const std::string& pass = SPIRE_DEFAULT_PASS);
-
-  /// @}
-
-  //============================================================================
-  // NOT THREAD SAFE
-  //============================================================================
-
-
 protected:
 
-  std::unique_ptr<Hub>      mHub;   ///< Rendering hub.
+  std::shared_ptr<const AbstractUniformStateItem> 
+      getGlobalUniformConcrete(const std::string& uniformName);
+
+  std::shared_ptr<const AbstractUniformStateItem> 
+      getObjectPassUniformConcrete(
+          const std::string& object, const std::string& uniformName,
+          const std::string& pass);
+
+  std::shared_ptr<const AbstractUniformStateItem>
+      getObjectGlobalUniformConcrete(const std::string& object,
+                                     const std::string& uniformName);
+
+  std::unique_ptr<Hub>                      mHub;
+  std::shared_ptr<InterfaceImplementation>  mImpl;
 
 };
 

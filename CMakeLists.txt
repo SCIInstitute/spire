@@ -12,9 +12,6 @@ set(CPM_LIB_TARGET_NAME ${CPM_MODULE_NAME})
 
 if ((DEFINED CPM_DIR) AND (DEFINED CPM_UNIQUE_ID) AND (DEFINED CPM_TARGET_NAME))
   set(CPM_LIB_TARGET_NAME ${CPM_TARGET_NAME})
-
-  # We are being built as a sub project. Use the primary project's CPM
-  # so that we can take advantage of possible duplicate module versions.
   set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CPM_DIR})
   include(CPM)
 else()
@@ -25,12 +22,11 @@ else()
     message(FATAL_ERROR "CPM requires Git.")
   endif()
   if (NOT EXISTS ${CPM_DIR}/CPM.cmake)
-    message("Cloning CPM")
+    message(STATUS "Cloning repo (https://github.com/iauns/cpm)")
     execute_process(
       COMMAND "${GIT_EXECUTABLE}" clone https://github.com/iauns/cpm ${CPM_DIR}
       RESULT_VARIABLE error_code
-      OUTPUT_VARIABLE head_sha
-      )
+      OUTPUT_QUIET ERROR_QUIET)
     if(error_code)
       message(FATAL_ERROR "CPM failed to get the hash for HEAD")
     endif()
@@ -38,10 +34,28 @@ else()
   include(${CPM_DIR}/CPM.cmake)
 endif()
 
-# Necessary Externals (to be added as CPM externals)
-# TODO: Auto-download GLM (https://github.com/g-truc/glm.git)
 # TODO: Auto-download GLEW on windows only since the other platforms don't need it.
 #       (https://github.com/nigels-com/glew.git)
+
+# ++ MODULE: GLM
+CPM_AddModule("GLM"
+  GIT_REPOSITORY "https://github.com/iauns/cpm-glm"
+  GIT_TAG "origin/master"
+  USE_EXISTING_VER TRUE
+  EXPORT_MODULE TRUE    # Use EXPORT_MODULE sparingly. We expose GLM's interface
+  )                     # through our own interface hence why we export it.
+
+## ++ MODULE: C++11 implementation of optional
+#CPM_AddModule("optional"
+#  GIT_REPOSITORY "https://github.com/iauns/cpm-optional"
+#  GIT_TAG "origin/master"
+#  USE_EXISTING_VER TRUE
+#  EXPORT_MODULE TRUE
+#  )
+
+# Additional include directories the parent needs to know about. But ONLY
+# on windows where we require GLEW to function properly.
+CPM_ExportAdditionalIncludeDir("${CMAKE_CURRENT_SOURCE_DIR}/spire/3rdParty")
 
 # This call will ensure all include directories and definitions are present
 # in the target. These correspond to the modules that we added above.
@@ -51,18 +65,9 @@ CPM_InitModule(${CPM_MODULE_NAME})
 # CMake Build Options
 #-----------------------------------------------------------------------
 
-if(WIN32)
-  option(USE_STD_THREADS "Use standard library threads. If turned off, no threading support is available." OFF)
-else()
-  option(USE_STD_THREADS "Use standard library threads. If turned off, no threading support is available." ON)
-endif()
 option(USE_GOOGLE_PERF "Use google perf tools to profile Spire." OFF)
 option(USE_CORE_PROFILE_3 "Use OpenGL core profile 3.2 (supported by most macs)." OFF)
 option(USE_CORE_PROFILE_4 "Use OpenGL core profile 4.1 (supported by mac 10.9)." OFF)
-
-if(USE_STD_THREADS)
-  add_definitions(-DSPIRE_USE_STD_THREADS)
-endif()
 
 if(CMAKE_BUILD_TYPE MATCHES DEBUG)
   add_definitions(-DSPIRE_DEBUG)
@@ -155,21 +160,6 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 include_directories(SYSTEM
   ${CMAKE_CURRENT_SOURCE_DIR}/spire/3rdParty
   ${OPENGL_INCLUDE_DIRS})
-
-#-----------------------------------------------------------------------
-# Eigen
-#-----------------------------------------------------------------------
-
-# Eigen include directory.
-include_directories(SYSTEM "${CMAKE_CURRENT_SOURCE_DIR}/spire/3rdParty/eigen" )
-add_definitions(-DEIGEN_INITIALIZE_MATRICES_BY_ZERO)
-
-#-----------------------------------------------------------------------
-# GLM
-#-----------------------------------------------------------------------
-
-# GLM include directory.
-include_directories(SYSTEM "${CMAKE_CURRENT_SOURCE_DIR}/spire/3rdParty/glm" )
 
 #-----------------------------------------------------------------------
 # Source

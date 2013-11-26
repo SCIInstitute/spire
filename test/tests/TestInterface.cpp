@@ -36,8 +36,6 @@
 #include "spire/src/Exceptions.h"
 #include "spire/src/SpireObject.h"
 #include "spire/src/FileUtil.h"
-#include "spire/src/LambdaInterface.h"
-#include "spire/src/ObjectLambda.h"
 
 #include "TestCommonUniforms.h"
 #include "TestCommonAttributes.h"
@@ -47,54 +45,77 @@ using namespace spire;
 
 namespace {
 
-// Simple function to handle object transformations so that the GPU does not
-// need to do the same calculation for each vertex.
-static void lambdaUniformObjTrafs(ObjectLambdaInterface& iface, 
-                                  std::list<Interface::UnsatisfiedUniform>& unsatisfiedUniforms)
+void beginFrame(std::shared_ptr<spire::Interface> spire)
 {
-  // Cache object to world transform.
-  M44 objToWorld = iface.getObjectMetadata<M44>(
-      std::get<0>(TestCommonAttributes::getObjectToWorldTrafo()));
-
-  std::string objectTrafoName = std::get<0>(TestCommonUniforms::getObject());
-  std::string objectToViewName = std::get<0>(TestCommonUniforms::getObjectToView());
-  std::string objectToCamProjName = std::get<0>(TestCommonUniforms::getObjectToCameraToProjection());
-
-  // Loop through the unsatisfied uniforms and see if we can provide any.
-  for (auto it = unsatisfiedUniforms.begin(); it != unsatisfiedUniforms.end(); /*nothing*/ )
+  // Do not even attempt to render if the framebuffer is not complete.
+  // This can happen when the rendering window is hidden (in SCIRun5 for
+  // example);
+  if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
   {
-    if (it->uniformName == objectTrafoName)
-    {
-      LambdaInterface::setUniform<M44>(it->uniformType, it->uniformName,
-                                       it->shaderLocation, objToWorld);
-
-      it = unsatisfiedUniforms.erase(it);
-    }
-    else if (it->uniformName == objectToViewName)
-    {
-      // Grab the inverse view transform.
-      M44 inverseView = glm::affineInverse(
-          iface.getGlobalUniform<M44>(std::get<0>(TestCommonUniforms::getCameraToWorld())));
-      LambdaInterface::setUniform<M44>(it->uniformType, it->uniformName,
-                                       it->shaderLocation, inverseView * objToWorld);
-
-      it = unsatisfiedUniforms.erase(it);
-    }
-    else if (it->uniformName == objectToCamProjName)
-    {
-      M44 inverseViewProjection = iface.getGlobalUniform<M44>(
-          std::get<0>(TestCommonUniforms::getToCameraToProjection()));
-      LambdaInterface::setUniform<M44>(it->uniformType, it->uniformName,
-                                       it->shaderLocation, inverseViewProjection * objToWorld);
-
-      it = unsatisfiedUniforms.erase(it);
-    }
-    else
-    {
-      ++it;
-    }
+    std::cerr << "Frame buffer incomplete!" << std::endl;
+    return;
   }
+
+  /// \todo Move this outside of the interface!
+  GL(glClearColor(0.0f, 0.0f, 0.0f, 1.0f));
+  GL(glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT));
+
+  /// \todo Make line width a part of the GPU state.
+  glLineWidth(2.0f);
+  //glEnable(GL_LINE_SMOOTH);
+
+  GPUState defaultGPUState;
+  spire->applyGPUState(defaultGPUState, true); // true = force application of state.
 }
+
+//// Simple function to handle object transformations so that the GPU does not
+//// need to do the same calculation for each vertex.
+//static void lambdaUniformObjTrafs(ObjectLambdaInterface& iface, 
+//                                  std::list<Interface::UnsatisfiedUniform>& unsatisfiedUniforms)
+//{
+//  // Cache object to world transform.
+//  M44 objToWorld = iface.getObjectMetadata<M44>(
+//      std::get<0>(TestCommonAttributes::getObjectToWorldTrafo()));
+//
+//  std::string objectTrafoName = std::get<0>(TestCommonUniforms::getObject());
+//  std::string objectToViewName = std::get<0>(TestCommonUniforms::getObjectToView());
+//  std::string objectToCamProjName = std::get<0>(TestCommonUniforms::getObjectToCameraToProjection());
+//
+//  // Loop through the unsatisfied uniforms and see if we can provide any.
+//  for (auto it = unsatisfiedUniforms.begin(); it != unsatisfiedUniforms.end(); /*nothing*/ )
+//  {
+//    if (it->uniformName == objectTrafoName)
+//    {
+//      LambdaInterface::setUniform<M44>(it->uniformType, it->uniformName,
+//                                       it->shaderLocation, objToWorld);
+//
+//      it = unsatisfiedUniforms.erase(it);
+//    }
+//    else if (it->uniformName == objectToViewName)
+//    {
+//      // Grab the inverse view transform.
+//      M44 inverseView = glm::affineInverse(
+//          iface.getGlobalUniform<M44>(std::get<0>(TestCommonUniforms::getCameraToWorld())));
+//      LambdaInterface::setUniform<M44>(it->uniformType, it->uniformName,
+//                                       it->shaderLocation, inverseView * objToWorld);
+//
+//      it = unsatisfiedUniforms.erase(it);
+//    }
+//    else if (it->uniformName == objectToCamProjName)
+//    {
+//      M44 inverseViewProjection = iface.getGlobalUniform<M44>(
+//          std::get<0>(TestCommonUniforms::getToCameraToProjection()));
+//      LambdaInterface::setUniform<M44>(it->uniformType, it->uniformName,
+//                                       it->shaderLocation, inverseViewProjection * objToWorld);
+//
+//      it = unsatisfiedUniforms.erase(it);
+//    }
+//    else
+//    {
+//      ++it;
+//    }
+//  }
+//}
 
 //------------------------------------------------------------------------------
 TEST(InterfaceTests, TestSR5AssetLoader)
@@ -220,26 +241,26 @@ TEST_F(InterfaceTestFixture, TestPublicInterface)
   // We have a fresh instance of spire.
   mSpire->addObject(obj1);
   EXPECT_THROW(mSpire->addObject(obj1), Duplicate);
-  EXPECT_EQ(1, mSpire->ntsGetNumObjects());
+  EXPECT_EQ(1, mSpire->getNumObjects());
 
   // Add a new obj2.
   mSpire->addObject(obj2);
   EXPECT_THROW(mSpire->addObject(obj1), Duplicate);
   EXPECT_THROW(mSpire->addObject(obj2), Duplicate);
-  EXPECT_EQ(2, mSpire->ntsGetNumObjects());
+  EXPECT_EQ(2, mSpire->getNumObjects());
 
   // Remove and re-add object 1.
   mSpire->removeObject(obj1);
-  EXPECT_EQ(1, mSpire->ntsGetNumObjects());
+  EXPECT_EQ(1, mSpire->getNumObjects());
   mSpire->addObject(obj1);
-  EXPECT_EQ(2, mSpire->ntsGetNumObjects());
+  EXPECT_EQ(2, mSpire->getNumObjects());
 
   // Add a new obj3.
   mSpire->addObject(obj3);
   EXPECT_THROW(mSpire->addObject(obj1), Duplicate);
   EXPECT_THROW(mSpire->addObject(obj2), Duplicate);
   EXPECT_THROW(mSpire->addObject(obj3), Duplicate);
-  EXPECT_EQ(3, mSpire->ntsGetNumObjects());
+  EXPECT_EQ(3, mSpire->getNumObjects());
 }
 
 //------------------------------------------------------------------------------
@@ -371,14 +392,6 @@ TEST_F(InterfaceTestFixture, TestTriangle)
   // Build a good pass.
   std::string pass1 = "pass1";
 
-  // Attempt to add a pass to the object without the pass being present in the
-  // system.
-  EXPECT_THROW(mSpire->addPassToObject(obj1, shader1, vbo1, ibo1, Interface::TRIANGLE_STRIP, pass1),
-               std::runtime_error);
-
-  // Add the pass to the system.
-  mSpire->addPassToBack(pass1);
-
   // Now add the object pass. This automatically adds the object to the pass for
   // us. But the ordering within the pass is still arbitrary.
   mSpire->addPassToObject(obj1, shader1, vbo1, ibo1, Interface::TRIANGLE_STRIP, pass1);
@@ -405,7 +418,8 @@ TEST_F(InterfaceTestFixture, TestTriangle)
   EXPECT_THROW(mSpire->addObjectPassUniform(obj1, "uColor", M44(), pass1), ShaderUniformTypeError);
   mSpire->addObjectPassUniform(obj1, "uColor", V4(1.0f, 0.0f, 0.0f, 1.0f), pass1);
 
-  mSpire->ntsDoFrame();
+  beginFrame(mSpire);
+  mSpire->renderObject(obj1, pass1);
 
   // Write the resultant png to a temporary directory and compare against
   // the golden image results.
@@ -536,26 +550,12 @@ TEST_F(InterfaceTestFixture, TestObjectsStructure)
 
   // Construct another good pass.
   std::string pass1 = "pass1";
-  mSpire->addPassToFront(pass1);
   mSpire->addPassToObject(obj1, shader1, vbo1, ibo1, Interface::TRIANGLE_STRIP, pass1);
 
   // No longer need VBO and IBO (will stay resident in the passes -- when the
   // passes are destroyed, the VBO / IBOs will be destroyed).
   mSpire->removeIBO(ibo1);
   mSpire->removeVBO(vbo1);
-
-  //----------------------------------------------------------------------------
-  // Test Interface structures
-  //----------------------------------------------------------------------------
-  EXPECT_EQ(true, mSpire->ntsHasPass(pass1));
-  EXPECT_EQ(true, mSpire->ntsHasPass(SPIRE_DEFAULT_PASS));
-  EXPECT_EQ(false, mSpire->ntsHasPass("nonexistant"));
-
-  EXPECT_EQ(true, mSpire->ntsIsObjectInPass(obj1, pass1));
-  EXPECT_EQ(true, mSpire->ntsIsObjectInPass(obj1, SPIRE_DEFAULT_PASS));
-  EXPECT_EQ(false, mSpire->ntsIsObjectInPass(obj1, "nonexistant"));
-  EXPECT_EQ(false, mSpire->ntsIsObjectInPass("nonexistant", pass1));
-  EXPECT_EQ(false, mSpire->ntsIsObjectInPass("nonexistant", SPIRE_DEFAULT_PASS));
 
   // Add pass uniforms for each pass.
   mSpire->addObjectPassUniform(obj1, "uColor", V4(1.0f, 0.0f, 0.0f, 1.0f));    // default pass
@@ -564,7 +564,7 @@ TEST_F(InterfaceTestFixture, TestObjectsStructure)
   //----------------------------------------------------------------------------
   // Test SpireObject structures
   //----------------------------------------------------------------------------
-  std::shared_ptr<const SpireObject> object1 = mSpire->ntsGetObjectWithName(obj1);
+  std::shared_ptr<const SpireObject> object1 = mSpire->getObjectWithName(obj1);
   std::shared_ptr<const ObjectPass> object1Pass1 = object1->getObjectPassParams(pass1);
   std::shared_ptr<const ObjectPass> object1PassDefault = object1->getObjectPassParams(SPIRE_DEFAULT_PASS);
 
@@ -583,43 +583,10 @@ TEST_F(InterfaceTestFixture, TestObjectsStructure)
   EXPECT_EQ(false, object1PassDefault->hasPassSpecificUniform("uProjIVObject"));
   EXPECT_EQ(true,  object1PassDefault->hasUniform("uProjIVObject"));
 
-  // Test attributes
-  M44 testUniform;
-  testUniform[3] = V4(1.0f, 1.0f, 1.0f, 1.0f);
-  mSpire->addObjectGlobalMetadata<M44>(obj1, "objectTransform", testUniform);
-  mSpire->addObjectPassMetadata<M44>(obj1, "passTransform", testUniform, pass1);
-
-  auto testMatrixEquality = [](const M44& a, const M44& b) {
-    for (size_t c = 0; c < 4; c++)
-    {
-      for (size_t r = 0; r < 4; r++)
-      {
-        EXPECT_FLOAT_EQ(a[c][r], b[c][r]);
-      }
-    }
-  };
-
-  M44 retUnif;
-  std::shared_ptr<const AbstractUniformStateItem> uniformItem;
-
-  retUnif = object1->getObjectGlobalMetadata("objectTransform")->getData<M44>();
-  testMatrixEquality(retUnif, testUniform);
-
-  EXPECT_THROW(object1->getObjectGlobalMetadata("nonexistant"), std::runtime_error);
-
-  uniformItem = object1->getObjectPassMetadata(pass1, "passTransform");
-  retUnif = uniformItem->getData<M44>();
-  testMatrixEquality(retUnif, testUniform);
-
-  uniformItem = object1->getObjectPassMetadata(pass1, "nonexistant");
-  EXPECT_EQ(nullptr, uniformItem);
-
-  uniformItem = object1->getObjectPassMetadata(SPIRE_DEFAULT_PASS, "objectTransform");
-  EXPECT_EQ(nullptr, uniformItem);
-
   // Perform the frame. If there are any missing shaders we'll know about it
   // here.
-  mSpire->ntsDoFrame();
+  beginFrame(mSpire);
+  mSpire->renderObject(obj1);
 }
 
 //------------------------------------------------------------------------------
@@ -657,18 +624,23 @@ TEST_F(InterfaceTestFixture, TestRenderingWithSR5Object)
   mSpire->addObject(objectName);
   mSpire->addPassToObject(objectName, shaderName, vboName, iboName, 
                           Interface::TRIANGLE_STRIP);
-  mSpire->addLambdaObjectUniforms(objectName, lambdaUniformObjTrafs);
   
   // Object pass uniforms (can be set at a global level)
   mSpire->addObjectPassUniform(objectName, "uColor", V4(1.0f, 0.0f, 0.0f, 1.0f));    // default pass
   mSpire->addObjectGlobalUniform(objectName, "uProjIVObject", mCamera->getWorldToProjection());
+
+//      M44 inverseViewProjection = iface.getGlobalUniform<M44>(
+//          std::get<0>(TestCommonUniforms::getToCameraToProjection()));
+//      LambdaInterface::setUniform<M44>(it->uniformType, it->uniformName,
+//                                       it->shaderLocation, inverseViewProjection * objToWorld);
 
   // No longer need VBO and IBO (will stay resident in the passes -- when the
   // passes are destroyed, the VBO / IBOs will be destroyed).
   mSpire->removeIBO(iboName);
   mSpire->removeVBO(vboName);
 
-  mSpire->ntsDoFrame();
+  beginFrame(mSpire);
+  mSpire->renderObject(objectName);
 
   // Write the resultant png to a temporary directory and compare against
   // the golden image results.
@@ -744,7 +716,6 @@ TEST_F(InterfaceTestFixture, TestRenderingWithAttributes)
   mSpire->addObject(objectName);
   mSpire->addPassToObject(objectName, shaderName, vboName, iboName, 
                           Interface::TRIANGLE_STRIP);
-  mSpire->addLambdaObjectUniforms(objectName, lambdaUniformObjTrafs);
   
   // Object pass uniforms (can be set at a global level)
   mSpire->addObjectPassUniform(objectName, "uAmbientColor", V4(0.1f, 0.1f, 0.1f, 1.0f));
@@ -755,8 +726,9 @@ TEST_F(InterfaceTestFixture, TestRenderingWithAttributes)
   // Object spire attributes (used for computing appropriate uniforms).
   M44 xform;
   xform[3] = V4(1.0f, 0.0f, 0.0f, 1.0f);
-  mSpire->addObjectPassMetadata(
-      objectName, std::get<0>(TestCommonAttributes::getObjectToWorldTrafo()), xform);
+  mSpire->addObjectPassUniform(objectName, "uObject", xform);
+  mSpire->addObjectGlobalUniform(objectName, "uProjIVObject",
+                                 mCamera->getWorldToProjection() * xform);
 
   // No longer need VBO and IBO (will stay resident in the passes -- when the
   // passes are destroyed, the VBO / IBOs will be destroyed).
@@ -769,7 +741,8 @@ TEST_F(InterfaceTestFixture, TestRenderingWithAttributes)
   // Setup camera uniforms.
   mCamera->setCommonUniforms(mSpire);
 
-  mSpire->ntsDoFrame();
+  beginFrame(mSpire);
+  mSpire->renderObject(objectName);
 
   // Write the resultant png to a temporary directory and compare against
   // the golden image results.
@@ -875,18 +848,19 @@ TEST_F(InterfaceTestFixture, TestRenderingWithOutOfOrderAttributes)
   mSpire->addObjectPassUniform(obj1, "uDiffuseColor", V4(0.0f, 0.8f, 0.0f, 1.0f));
   mSpire->addObjectPassUniform(obj1, "uSpecularColor", V4(0.0f, 0.0f, 0.0f, 1.0f));
   mSpire->addObjectPassUniform(obj1, "uSpecularPower", 16.0f);
-  mSpire->addLambdaObjectUniforms(obj1, lambdaUniformObjTrafs);
 
   M44 xform;
   xform[3] = V4(0.0f, 0.0f, 0.0f, 1.0f);
-  mSpire->addObjectPassMetadata(
-      obj1, std::get<0>(TestCommonAttributes::getObjectToWorldTrafo()), xform);
+  mSpire->addObjectGlobalUniform(obj1, "uObject", xform);
+  mSpire->addObjectGlobalUniform(obj1, "uProjIVObject", 
+                                 mCamera->getWorldToProjection() * xform);
 
   // Setup uniforms unrelated to our object.
   mSpire->addGlobalUniform("uLightDirWorld", V3(0.0f, 0.0f, 1.0f));
   mCamera->setCommonUniforms(mSpire);
 
-  mSpire->ntsDoFrame();
+  beginFrame(mSpire);
+  mSpire->renderObject(obj1);
 
   // Write the resultant png to a temporary directory and compare against
   // the golden image results.

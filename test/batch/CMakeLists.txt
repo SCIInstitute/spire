@@ -26,18 +26,17 @@ if(NOT GIT_FOUND)
   message(FATAL_ERROR "CPM requires Git.")
 endif()
 if (NOT EXISTS ${CPM_DIR}/CPM.cmake)
+  message(STATUS "Cloning repo (https://github.com/iauns/cpm)")
   execute_process(
     COMMAND "${GIT_EXECUTABLE}" clone https://github.com/iauns/cpm ${CPM_DIR}
     RESULT_VARIABLE error_code
-    OUTPUT_VARIABLE head_sha
-    )
+    OUTPUT_QUIET ERROR_QUIET)
   if(error_code)
     message(FATAL_ERROR "CPM failed to get the hash for HEAD")
   endif()
 endif()
 include(${CPM_DIR}/CPM.cmake)
 
-option(USE_STD_THREADS "Always leave off. Will remove in the future once spire is concurrent." OFF)
 CPM_AddModule("spire" SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../..")
 
 CPM_Finish()
@@ -53,17 +52,11 @@ find_package(OpenGL REQUIRED)
 
 set(REGRESSION_DATA_DIR "${BASE_TESTS_DIR}/RegressionData")
 
-if(EXISTS "${REGRESSION_DATA_DIR}" AND IS_DIRECTORY "${REGRESSION_DATA_DIR}")
-  message(STATUS "Updating regression data")
-  execute_process(COMMAND ${GIT_EXECUTABLE} pull
-    WORKING_DIRECTORY ${REGRESSION_DATA_DIR}
-    RESULT_VARIABLE git_result)
-else()
-  message(STATUS "Downloading regression data")
-  execute_process(COMMAND ${GIT_EXECUTABLE} clone git://github.com/SCIInstitute/SpireRegression ${REGRESSION_DATA_DIR}
-    WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
-    RESULT_VARIABLE git_result)
-endif()
+CPM_EnsureRepoIsCurrent(
+  TARGET_DIR ${REGRESSION_DATA_DIR}
+  GIT_REPOSITORY "git://github.com/SCIInstitute/SpireRegression"
+  GIT_TAG "origin/master"
+  )
 
 #-----------------------------------------------------------------------
 # Regression directory setup
@@ -200,8 +193,6 @@ add_executable(spirebatch
   ${TestSources}
   ${SpecificSources}
   ${Source_GLEW_for_Windows})
-
-add_dependencies(spirebatch ${CPM_LIBRARIES})
 
 target_link_libraries(spirebatch 
   gtest
