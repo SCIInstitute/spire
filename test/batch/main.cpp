@@ -180,10 +180,10 @@ private:
   {
     std::shared_ptr<BatchContext> ctx(
         BatchContext::Create(width,height,
-                                    static_cast<uint8_t>(colorBits),
-                                    static_cast<uint8_t>(depthBits),
-                                    static_cast<uint8_t>(stencilBits),
-                                    doubleBuffer,visible));
+                             static_cast<uint8_t>(colorBits),
+                             static_cast<uint8_t>(depthBits),
+                             static_cast<uint8_t>(stencilBits),
+                             doubleBuffer,visible));
     if (ctx->isValid() == false)
       throw std::runtime_error("Invalid context generated.");
     ctx->makeCurrent();
