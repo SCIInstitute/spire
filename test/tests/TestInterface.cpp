@@ -51,7 +51,10 @@ void beginFrame(std::shared_ptr<spire::Interface> spire)
   // This can happen when the rendering window is hidden (in SCIRun5 for
   // example);
   if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+  {
+    std::cerr << "Frame buffer incomplete!" << std::endl;
     return;
+  }
 
   /// \todo Move this outside of the interface!
   GL(glClearColor(0.0f, 0.0f, 0.0f, 1.0f));
