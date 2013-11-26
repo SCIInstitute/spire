@@ -18,4 +18,4 @@ script: mkdir bin && cd bin && cmake -DUSE_OS_MESA=ON ../test/batch && make && .
 branches:
   only:
     - master
-    - concurrent
+    - dev
