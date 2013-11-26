@@ -103,7 +103,6 @@ public:
   /// Otherwise, it returns the currently active context.
   std::shared_ptr<spire::Context> getContext() const override
   {
-    GL(glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, mGLFrameBuffer));
     return std::dynamic_pointer_cast<spire::Context>(mContext);
   }
 
