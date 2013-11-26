@@ -99,13 +99,13 @@ public:
   }
 
 
-  /// Creates a context if one hasn't already been created and returns it.
-  /// Otherwise, it returns the currently active context.
+  /// Returns current spire context.
   std::shared_ptr<spire::Context> getContext() const override
   {
     return std::dynamic_pointer_cast<spire::Context>(mContext);
   }
 
+  /// Writes the FBO to the specified file.
   void writeFBO(const std::string& file) override
   {
     // This function should be called from test code. So we are safe writing
