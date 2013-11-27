@@ -188,6 +188,11 @@ add_library(${CPM_LIB_TARGET_NAME}
   ${Source_GLEW_for_Windows}
   )
 
+# Make sure we don't link against OpenGL libraries if using OSMesa
+if (USE_OS_MESA)
+  set(OPENGL_LIBRARIES)
+endif()
+
 # These libraries likely have no effect in the final build.
 target_link_libraries(
   ${CPM_LIB_TARGET_NAME}
