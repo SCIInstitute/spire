@@ -48,7 +48,6 @@ std::string findFileInDirs(const std::string& file,
 bool fileExists(const std::string& strFileName);
 std::vector<std::string> getSubDirList(const std::string& dir);
 std::string getCurrentWorkingDir();
-bool getTempDirectory(std::string& path);
 
 } // namespace CPM_SPIRE_NS
 
