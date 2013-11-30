@@ -35,7 +35,7 @@
 #include <cstddef>
 
 // Any ubiquitous header files.
-#include "GLInclude.h"
+#include <gl-platform/GLPlatform.hpp>
 
 #include "../Interface.h"
 #include "Math.h"

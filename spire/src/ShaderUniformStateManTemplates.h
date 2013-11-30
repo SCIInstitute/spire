@@ -36,9 +36,9 @@
 #include <sstream>
 #include <vector>
 #include <stdexcept>
+#include <gl-platform/GLPlatform.hpp>
 #include "Math.h"
 #include "GLMathUtil.h"
-#include "GLInclude.h"
 
 namespace CPM_SPIRE_NS {
 
