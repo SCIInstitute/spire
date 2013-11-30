@@ -45,6 +45,11 @@ CPM_AddModule("GLM"
   EXPORT_MODULE TRUE    # Use EXPORT_MODULE sparingly. We expose GLM's interface
   )                     # through our own interface hence why we export it.
 
+CPM_AddModule("gl_platform"
+  GIT_REPOSITORY "https://github.com/iauns/cpm-gl-platform.git"
+  GIT_TAG "1.1.1"
+  EXPORT_MODULE TRUE)
+
 ## ++ MODULE: C++11 implementation of optional
 #CPM_AddModule("optional"
 #  GIT_REPOSITORY "https://github.com/iauns/cpm-optional"
