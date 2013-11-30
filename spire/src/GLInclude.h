@@ -77,7 +77,6 @@
 
   #include <OpenGL/gl.h>
   #include <OpenGL/glext.h>
-  #include <OpenGL/glu.h>
   #if defined(USE_CORE_PROFILE_3) || defined(USE_CORE_PROFILE_4)
     // Currently mac places gl4 specific definitions in the gl3 header. Change
     // when they update this.
@@ -102,7 +101,6 @@
   #define GL_GLEXT_PROTOTYPES
   #include <GL/gl.h>
   #include <GL/glext.h>
-  #include <GL/glu.h>
   #include <GL/glx.h>
 #elif defined(SPIRE_USING_IOS)
 
@@ -142,14 +140,14 @@
     GLenum glerr;                                                      \
     unsigned int iCounter = 0;                                         \
     while((glerr = glGetError()) != GL_NO_ERROR) {                     \
-      std::cerr << "GL error calling" << #stmt << " before line " << __LINE__ << " (" << __FILE__ << "): " << gluErrorString(glerr) << " (" << static_cast<unsigned>(glerr) << ")" << std::endl; \
+      std::cerr << "GL error calling" << #stmt << " before line " << __LINE__ << " (" << __FILE__ << "): " << static_cast<unsigned>(glerr) << std::endl; \
       iCounter++;                                                      \
       if (iCounter > MAX_GL_ERROR_COUNT) break;                        \
     }                                                                  \
     stmt;                                                              \
     iCounter = 0;                                                      \
     while((glerr = glGetError()) != GL_NO_ERROR) {                     \
-      std::cerr << "'" << #stmt << "' on line " << __LINE__ << " (" << __FILE__ << ") caused GL error: " << gluErrorString(glerr) << " (" << static_cast<unsigned>(glerr) << ")" << std::endl; \
+      std::cerr << "'" << #stmt << "' on line " << __LINE__ << " (" << __FILE__ << ") caused GL error: " << static_cast<unsigned>(glerr) << std::endl; \
       iCounter++;                                                      \
       if (iCounter > MAX_GL_ERROR_COUNT) break;                        \
     }                                                                  \
@@ -160,9 +158,9 @@
     GLenum glerr;                                                         \
     unsigned int iCounter = 0;                                            \
     while((glerr = glGetError()) != GL_NO_ERROR) {                        \
-      std::cerr << "GL error before line " << __LINE__ << "("   \
-                << __FILE__ << "): " << glerr << " ("                  \
-                << gluErrorString(glerr) << ")" << std::endl;          \
+      std::cerr << "GL error before line " << __LINE__ << "("             \
+                << __FILE__ << "): " << glerr                             \
+                << std::endl;                                             \
       iCounter++;                                                         \
       if (iCounter > MAX_GL_ERROR_COUNT) break;                           \
     }                                                                     \
