@@ -37,14 +37,23 @@ if (NOT EXISTS ${CPM_DIR}/CPM.cmake)
 endif()
 include(${CPM_DIR}/CPM.cmake)
 
+# ++ MODULE: Our spire module
+#    Be sure this module comes before batch_testing. Batch testing will
+#    attempt to load the spire module if it does not already exist.
 CPM_AddModule("spire" SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../..")
 
-CPM_Finish()
+# ++ MODULE: OpenGL Batch Testing
+CPM_AddModule("batch_testing"
+  GIT_REPOSITORY "https://github.com/iauns/cpm-gl-batch-testing"
+  GIT_TAG "1.0.1")
 
-#-----------------------------------------------------------------------
-# Configure OpenGL
-#-----------------------------------------------------------------------
-find_package(OpenGL REQUIRED)
+# ++ EXTERNAL-MODULE: Google Test
+CPM_AddModule("google_test"
+  GIT_REPOSITORY "https://github.com/iauns/cpm-google-test"
+  GIT_TAG "1.0.0"
+  USE_EXISTING_VER TRUE)
+
+CPM_Finish()
 
 #-----------------------------------------------------------------------
 # Grab Regression Data From GitHub
@@ -128,21 +137,6 @@ else()
 endif ()
 
 #-----------------------------------------------------------------------
-# External dependencies
-#-----------------------------------------------------------------------
-
-# Note: we need to add gtest before we set strict warnings, but after we define
-# C++11 settings.
-
-# Gtest
-add_definitions(-DGTEST_USE_OWN_TR1_TUPLE=1)
-add_subdirectory(${BASE_TESTS_DIR}/3rdParty/gtest ${CMAKE_CURRENT_BINARY_DIR}/gtest)
-include_directories(SYSTEM ${BASE_TESTS_DIR}/3rdParty/gtest/include)
-
-# CImg
-INCLUDE_DIRECTORIES(SYSTEM "${CMAKE_CURRENT_SOURCE_DIR}/3rdParty/CImg" )
-
-#-----------------------------------------------------------------------
 # Setup strict warnings and werror
 #-----------------------------------------------------------------------
 
@@ -157,8 +151,6 @@ endif()
 # Setup spire test sources. Even though this is a batch renderer, this is
 # a good test of concept.
 set(CommonSources
-  BatchContext.cpp
-  BatchContext.h
   main.cpp)
 
 file(GLOB TestSources
