@@ -29,7 +29,8 @@
 /// \author James Hughes
 /// \date   February 2013
 
-#include "GlobalTestEnvironment.h"
+#include <batch-testing/GlobalGTestEnv.hpp>
+#include <batch-testing/SpireTestFixture.hpp>
 #include "namespaces.h"
 
 #include "spire/src/Common.h"
@@ -39,15 +40,17 @@
 
 #include "TestCommonUniforms.h"
 #include "TestCommonAttributes.h"
-#include "CommonTestFixtures.h"
+#include "TestCamera.h"
 
 using namespace spire;
+using namespace CPM_BATCH_TESTING_NS;
 
 namespace {
 
 //------------------------------------------------------------------------------
-TEST_F(InterfaceTestFixture, TestConcurrentQuad)
+TEST_F(SpireTestFixture, TestConcurrentQuad)
 {
+  std::unique_ptr<TestCamera> myCamera = std::unique_ptr<TestCamera>(new TestCamera);
   std::vector<float> vboData = 
   {
     -1.0f,  1.0f,  0.0f,
@@ -105,50 +108,22 @@ TEST_F(InterfaceTestFixture, TestConcurrentQuad)
   // Test global uniforms -- test run-time type validation.
   // Setup camera so that it can be passed to the Uniform Color shader.
   // Camera has been setup in the test fixture.
-  mSpire->addGlobalUniform("uProjIVObject", mCamera->getWorldToProjection());
+  mSpire->addGlobalUniform("uProjIVObject", myCamera->getWorldToProjection());
   mSpire->addObjectPassUniform(obj1, "uColor", V4(1.0f, 0.0f, 0.0f, 1.0f), pass1);
 
   // Perform the rendering of JUST the object that we created.
   // Need to test adding various different objects to the scene and attempting
   // to render them.
-  mSpire->beginFrame(true);
+  beginFrame();
   mSpire->renderObject(obj1, pass1);  
   mSpire->endFrame();
 
-  // Write the resultant png to a temporary directory and compare against
-  // the golden image results.
-#ifdef TEST_OUTPUT_IMAGES
-  std::string thisImage       = "concurrentQuad.png";
-  std::string comparisonImage = "stuTriangle.png";
-
-  std::string targetImage = TEST_IMAGE_OUTPUT_DIR;
-  targetImage += "/" + thisImage;
-  GlobalTestEnvironment::instance()->writeFBO(targetImage);
-
-  EXPECT_TRUE(spire::fileExists(targetImage)) << "Failed to write output image! " << targetImage;
-
-#ifdef TEST_PERCEPTUAL_COMPARE
-  // Perform the perceptual comparison using the given regression directory.
-  std::string compImage = TEST_IMAGE_COMPARE_DIR;
-  compImage += "/" + comparisonImage;
-
-  ASSERT_TRUE(spire::fileExists(compImage)) << "Failed to find comparison image! " << compImage;
-  // Test using perceptula comparison program that the user has provided
-  // (hopefully).
-  std::string command = TEST_PERCEPTUAL_COMPARE_BINARY;
-  command += " -threshold 50 ";
-  command += targetImage + " " + compImage;
-
-  // Usually the return code of std::system is implementation specific. But the
-  // majority of systems end up returning the exit code of the program.
-  if (std::system(command.c_str()) != 0)
-  {
-    // The images are NOT the same. Alert the user.
-    FAIL() << "Perceptual compare of " << thisImage << " failed.";
-  }
-#endif
-
-#endif
+  compareFBOWithExistingFile(
+      "concurrentQuad.png",
+      TEST_IMAGE_OUTPUT_DIR,
+      TEST_IMAGE_COMPARE_DIR,
+      TEST_PERCEPTUAL_COMPARE_BINARY,
+      50);
 }
 
 

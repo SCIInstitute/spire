@@ -29,7 +29,8 @@
 /// \author James Hughes
 /// \date   February 2013
 
-#include "GlobalTestEnvironment.h"
+#include <batch-testing/GlobalGTestEnv.hpp>
+#include <batch-testing/SpireTestFixture.hpp>
 #include "namespaces.h"
 
 #include "spire/src/Common.h"
@@ -39,86 +40,15 @@
 
 #include "TestCommonUniforms.h"
 #include "TestCommonAttributes.h"
-#include "CommonTestFixtures.h"
+#include "TestCamera.h"
 
 using namespace spire;
+using namespace CPM_BATCH_TESTING_NS;
 
 namespace {
 
-void beginFrame(std::shared_ptr<spire::Interface> spire)
-{
-  // Do not even attempt to render if the framebuffer is not complete.
-  // This can happen when the rendering window is hidden (in SCIRun5 for
-  // example);
-  if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
-  {
-    std::cerr << "Frame buffer incomplete!" << std::endl;
-    return;
-  }
-
-  /// \todo Move this outside of the interface!
-  GL(glClearColor(0.0f, 0.0f, 0.0f, 1.0f));
-  GL(glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT));
-
-  /// \todo Make line width a part of the GPU state.
-  glLineWidth(2.0f);
-  //glEnable(GL_LINE_SMOOTH);
-
-  GPUState defaultGPUState;
-  spire->applyGPUState(defaultGPUState, true); // true = force application of state.
-}
-
-//// Simple function to handle object transformations so that the GPU does not
-//// need to do the same calculation for each vertex.
-//static void lambdaUniformObjTrafs(ObjectLambdaInterface& iface, 
-//                                  std::list<Interface::UnsatisfiedUniform>& unsatisfiedUniforms)
-//{
-//  // Cache object to world transform.
-//  M44 objToWorld = iface.getObjectMetadata<M44>(
-//      std::get<0>(TestCommonAttributes::getObjectToWorldTrafo()));
-//
-//  std::string objectTrafoName = std::get<0>(TestCommonUniforms::getObject());
-//  std::string objectToViewName = std::get<0>(TestCommonUniforms::getObjectToView());
-//  std::string objectToCamProjName = std::get<0>(TestCommonUniforms::getObjectToCameraToProjection());
-//
-//  // Loop through the unsatisfied uniforms and see if we can provide any.
-//  for (auto it = unsatisfiedUniforms.begin(); it != unsatisfiedUniforms.end(); /*nothing*/ )
-//  {
-//    if (it->uniformName == objectTrafoName)
-//    {
-//      LambdaInterface::setUniform<M44>(it->uniformType, it->uniformName,
-//                                       it->shaderLocation, objToWorld);
-//
-//      it = unsatisfiedUniforms.erase(it);
-//    }
-//    else if (it->uniformName == objectToViewName)
-//    {
-//      // Grab the inverse view transform.
-//      M44 inverseView = glm::affineInverse(
-//          iface.getGlobalUniform<M44>(std::get<0>(TestCommonUniforms::getCameraToWorld())));
-//      LambdaInterface::setUniform<M44>(it->uniformType, it->uniformName,
-//                                       it->shaderLocation, inverseView * objToWorld);
-//
-//      it = unsatisfiedUniforms.erase(it);
-//    }
-//    else if (it->uniformName == objectToCamProjName)
-//    {
-//      M44 inverseViewProjection = iface.getGlobalUniform<M44>(
-//          std::get<0>(TestCommonUniforms::getToCameraToProjection()));
-//      LambdaInterface::setUniform<M44>(it->uniformType, it->uniformName,
-//                                       it->shaderLocation, inverseViewProjection * objToWorld);
-//
-//      it = unsatisfiedUniforms.erase(it);
-//    }
-//    else
-//    {
-//      ++it;
-//    }
-//  }
-//}
-
 //------------------------------------------------------------------------------
-TEST(InterfaceTests, TestSR5AssetLoader)
+TEST(SpireNoFixtureTests, TestSR5AssetLoader)
 {
   std::ostringstream sRaw;
 
@@ -226,7 +156,7 @@ TEST(InterfaceTests, TestSR5AssetLoader)
 }
 
 //------------------------------------------------------------------------------
-TEST_F(InterfaceTestFixture, TestPublicInterface)
+TEST_F(SpireTestFixture, TestPublicInterface)
 {
   // This test is contrived and won't yield that much knowledge if you are 
   // attempting to learn the system.
@@ -264,8 +194,9 @@ TEST_F(InterfaceTestFixture, TestPublicInterface)
 }
 
 //------------------------------------------------------------------------------
-TEST_F(InterfaceTestFixture, TestTriangle)
+TEST_F(SpireTestFixture, TestTriangle)
 {
+  std::unique_ptr<TestCamera> myCamera = std::unique_ptr<TestCamera>(new TestCamera);
   // Test the rendering of a triangle.
 
   // Call Interface's doFrame manually. Then, since we are single threaded,
@@ -410,7 +341,7 @@ TEST_F(InterfaceTestFixture, TestTriangle)
   // Test global uniforms -- test run-time type validation.
   // Setup camera so that it can be passed to the Uniform Color shader.
   // Camera has been setup in the test fixture.
-  mSpire->addGlobalUniform("uProjIVObject", mCamera->getWorldToProjection());
+  mSpire->addGlobalUniform("uProjIVObject", myCamera->getWorldToProjection());
   EXPECT_THROW(mSpire->addGlobalUniform("uProjIVObject", V3(0.0f, 0.0f, 0.0f)), ShaderUniformTypeError);
 
   // Add color to the pass (which will lookup the type via the shader).
@@ -418,44 +349,15 @@ TEST_F(InterfaceTestFixture, TestTriangle)
   EXPECT_THROW(mSpire->addObjectPassUniform(obj1, "uColor", M44(), pass1), ShaderUniformTypeError);
   mSpire->addObjectPassUniform(obj1, "uColor", V4(1.0f, 0.0f, 0.0f, 1.0f), pass1);
 
-  beginFrame(mSpire);
+  beginFrame();
   mSpire->renderObject(obj1, pass1);
 
-  // Write the resultant png to a temporary directory and compare against
-  // the golden image results.
-  /// \todo Look into using boost filesystem (but it isn't header-only). 
-
-#ifdef TEST_OUTPUT_IMAGES
-  std::string imageName = "stuTriangle.png";
-
-  std::string targetImage = TEST_IMAGE_OUTPUT_DIR;
-  targetImage += "/" + imageName;
-  GlobalTestEnvironment::instance()->writeFBO(targetImage);
-
-  EXPECT_TRUE(spire::fileExists(targetImage)) << "Failed to write output image! " << targetImage;
-
-#ifdef TEST_PERCEPTUAL_COMPARE
-  // Perform the perceptual comparison using the given regression directory.
-  std::string compImage = TEST_IMAGE_COMPARE_DIR;
-  compImage += "/" + imageName;
-
-  ASSERT_TRUE(spire::fileExists(compImage)) << "Failed to find comparison image! " << compImage;
-  // Test using perceptula comparison program that the user has provided
-  // (hopefully).
-  std::string command = TEST_PERCEPTUAL_COMPARE_BINARY;
-  command += " -threshold 50 ";
-  command += targetImage + " " + compImage;
-
-  // Usually the return code of std::system is implementation specific. But the
-  // majority of systems end up returning the exit code of the program.
-  if (std::system(command.c_str()) != 0)
-  {
-    // The images are NOT the same. Alert the user.
-    FAIL() << "Perceptual compare of " << imageName << " failed.";
-  }
-#endif
-
-#endif
+  compareFBOWithExistingFile(
+      "stuTriangle.png",
+      TEST_IMAGE_OUTPUT_DIR,
+      TEST_IMAGE_COMPARE_DIR,
+      TEST_PERCEPTUAL_COMPARE_BINARY,
+      50);
 
   // Attempt to set global uniform value that is at odds with information found
   // in the uniform manager (should induce a type error).
@@ -477,8 +379,10 @@ TEST_F(InterfaceTestFixture, TestTriangle)
 }
 
 //------------------------------------------------------------------------------
-TEST_F(InterfaceTestFixture, TestObjectsStructure)
+TEST_F(SpireTestFixture, TestObjectsStructure)
 {
+  std::unique_ptr<TestCamera> myCamera = std::unique_ptr<TestCamera>(new TestCamera);
+
   // Test various functions in Object and ObjectPass.
   std::vector<float> vboData = 
   {
@@ -546,7 +450,7 @@ TEST_F(InterfaceTestFixture, TestObjectsStructure)
 
   // Add a uniform *before* we add the next pass to ensure it gets properly
   // propogated to the new pass.
-  mSpire->addObjectGlobalUniform(obj1, "uProjIVObject", mCamera->getWorldToProjection());
+  mSpire->addObjectGlobalUniform(obj1, "uProjIVObject", myCamera->getWorldToProjection());
 
   // Construct another good pass.
   std::string pass1 = "pass1";
@@ -585,13 +489,14 @@ TEST_F(InterfaceTestFixture, TestObjectsStructure)
 
   // Perform the frame. If there are any missing shaders we'll know about it
   // here.
-  beginFrame(mSpire);
+  beginFrame();
   mSpire->renderObject(obj1);
 }
 
 //------------------------------------------------------------------------------
-TEST_F(InterfaceTestFixture, TestRenderingWithSR5Object)
+TEST_F(SpireTestFixture, TestRenderingWithSR5Object)
 {
+  std::unique_ptr<TestCamera> myCamera = std::unique_ptr<TestCamera>(new TestCamera);
   // This test demonstrates a quick and dirty renderer using
   // attributes and lambdas. Spire knows nothing about the objects, but allows
   // sufficient flexibility that it is possible to do many things.
@@ -627,7 +532,7 @@ TEST_F(InterfaceTestFixture, TestRenderingWithSR5Object)
   
   // Object pass uniforms (can be set at a global level)
   mSpire->addObjectPassUniform(objectName, "uColor", V4(1.0f, 0.0f, 0.0f, 1.0f));    // default pass
-  mSpire->addObjectGlobalUniform(objectName, "uProjIVObject", mCamera->getWorldToProjection());
+  mSpire->addObjectGlobalUniform(objectName, "uProjIVObject", myCamera->getWorldToProjection());
 
 //      M44 inverseViewProjection = iface.getGlobalUniform<M44>(
 //          std::get<0>(TestCommonUniforms::getToCameraToProjection()));
@@ -639,51 +544,23 @@ TEST_F(InterfaceTestFixture, TestRenderingWithSR5Object)
   mSpire->removeIBO(iboName);
   mSpire->removeVBO(vboName);
 
-  beginFrame(mSpire);
+  beginFrame();
   mSpire->renderObject(objectName);
 
-  // Write the resultant png to a temporary directory and compare against
-  // the golden image results.
-  /// \todo Look into using boost filesystem (but it isn't header-only). 
-
-#ifdef TEST_OUTPUT_IMAGES
-  std::string imageName = "objectTest.png";
-
-  std::string targetImage = TEST_IMAGE_OUTPUT_DIR;
-  targetImage += "/" + imageName;
-  GlobalTestEnvironment::instance()->writeFBO(targetImage);
-
-  EXPECT_TRUE(spire::fileExists(targetImage)) << "Failed to write output image! " << targetImage;
-
-#ifdef TEST_PERCEPTUAL_COMPARE
-  // Perform the perceptual comparison using the given regression directory.
-  std::string compImage = TEST_IMAGE_COMPARE_DIR;
-  compImage += "/" + imageName;
-
-  ASSERT_TRUE(spire::fileExists(compImage)) << "Failed to find comparison image! " << compImage;
-  // Test using perceptula comparison program that the user has provided
-  // (hopefully).
-  std::string command = TEST_PERCEPTUAL_COMPARE_BINARY;
-  command += " -threshold 50 ";
-  command += targetImage + " " + compImage;
-
-  // Usually the return code of std::system is implementation specific. But the
-  // majority of systems end up returning the exit code of the program.
-  if (std::system(command.c_str()) != 0)
-  {
-    // The images are NOT the same. Alert the user.
-    FAIL() << "Perceptual compare of " << imageName << " failed.";
-  }
-#endif
-
-#endif
-
+  compareFBOWithExistingFile(
+      "objectTest.png",
+      TEST_IMAGE_OUTPUT_DIR,
+      TEST_IMAGE_COMPARE_DIR,
+      TEST_PERCEPTUAL_COMPARE_BINARY,
+      50);
 }
 
 
 //------------------------------------------------------------------------------
-TEST_F(InterfaceTestFixture, TestRenderingWithAttributes)
+TEST_F(SpireTestFixture, TestRenderingWithAttributes)
 {
+  std::unique_ptr<TestCamera> myCamera = std::unique_ptr<TestCamera>(new TestCamera);
+
   // This test demonstrates a quick and dirty renderer usin
   // attributes and lambdas. Spire knows nothing about the objects, but allows
   // sufficient flexibility that it is possible to do many things.
@@ -728,7 +605,7 @@ TEST_F(InterfaceTestFixture, TestRenderingWithAttributes)
   xform[3] = V4(1.0f, 0.0f, 0.0f, 1.0f);
   mSpire->addObjectPassUniform(objectName, "uObject", xform);
   mSpire->addObjectGlobalUniform(objectName, "uProjIVObject",
-                                 mCamera->getWorldToProjection() * xform);
+                                 myCamera->getWorldToProjection() * xform);
 
   // No longer need VBO and IBO (will stay resident in the passes -- when the
   // passes are destroyed, the VBO / IBOs will be destroyed).
@@ -739,53 +616,24 @@ TEST_F(InterfaceTestFixture, TestRenderingWithAttributes)
   mSpire->addGlobalUniform("uLightDirWorld", V3(1.0f, 0.0f, 0.0f));
 
   // Setup camera uniforms.
-  mCamera->setCommonUniforms(mSpire);
+  myCamera->setCommonUniforms(mSpire);
 
-  beginFrame(mSpire);
+  beginFrame();
   mSpire->renderObject(objectName);
 
-  // Write the resultant png to a temporary directory and compare against
-  // the golden image results.
-  /// \todo Look into using boost filesystem (but it isn't header-only). 
-
-#ifdef TEST_OUTPUT_IMAGES
-  std::string imageName = "attributeTest.png";
-
-  std::string targetImage = TEST_IMAGE_OUTPUT_DIR;
-  targetImage += "/" + imageName;
-  GlobalTestEnvironment::instance()->writeFBO(targetImage);
-
-  EXPECT_TRUE(spire::fileExists(targetImage)) << "Failed to write output image! " << targetImage;
-
-#ifdef TEST_PERCEPTUAL_COMPARE
-  // Perform the perceptual comparison using the given regression directory.
-  std::string compImage = TEST_IMAGE_COMPARE_DIR;
-  compImage += "/" + imageName;
-
-  ASSERT_TRUE(spire::fileExists(compImage)) << "Failed to find comparison image! " << compImage;
-  // Test using perceptula comparison program that the user has provided
-  // (hopefully).
-  std::string command = TEST_PERCEPTUAL_COMPARE_BINARY;
-  command += " -threshold 2000 "; // 0.7% of a 640 x 480 image.
-  command += targetImage + " " + compImage;
-
-  // Usually the return code of std::system is implementation specific. But the
-  // majority of systems end up returning the exit code of the program.
-  if (std::system(command.c_str()) != 0)
-  {
-    // The images are NOT the same. Alert the user.
-    FAIL() << "Perceptual compare of " << imageName << " failed.";
-  }
-#endif
-
-#endif
-
+  compareFBOWithExistingFile(
+      "attributeTest.png",
+      TEST_IMAGE_OUTPUT_DIR,
+      TEST_IMAGE_COMPARE_DIR,
+      TEST_PERCEPTUAL_COMPARE_BINARY,
+      50);
 }
 
 //------------------------------------------------------------------------------
-TEST_F(InterfaceTestFixture, TestRenderingWithOutOfOrderAttributes)
+TEST_F(SpireTestFixture, TestRenderingWithOutOfOrderAttributes)
 {
-  std::string testFileName = "orderOfAttributes.png";
+  std::unique_ptr<TestCamera> myCamera = std::unique_ptr<TestCamera>(new TestCamera);
+
   // Test the rendering of a phong shaded quad with out of order attributes.
   // aFieldData is unused in the phong shader.
 
@@ -853,48 +701,21 @@ TEST_F(InterfaceTestFixture, TestRenderingWithOutOfOrderAttributes)
   xform[3] = V4(0.0f, 0.0f, 0.0f, 1.0f);
   mSpire->addObjectGlobalUniform(obj1, "uObject", xform);
   mSpire->addObjectGlobalUniform(obj1, "uProjIVObject", 
-                                 mCamera->getWorldToProjection() * xform);
+                                 myCamera->getWorldToProjection() * xform);
 
   // Setup uniforms unrelated to our object.
   mSpire->addGlobalUniform("uLightDirWorld", V3(0.0f, 0.0f, 1.0f));
-  mCamera->setCommonUniforms(mSpire);
+  myCamera->setCommonUniforms(mSpire);
 
-  beginFrame(mSpire);
+  beginFrame();
   mSpire->renderObject(obj1);
 
-  // Write the resultant png to a temporary directory and compare against
-  // the golden image results.
-  /// \todo Look into using boost filesystem (but it isn't header-only). 
-
-#ifdef TEST_OUTPUT_IMAGES
-  std::string targetImage = TEST_IMAGE_OUTPUT_DIR;
-  targetImage += "/" + testFileName ;
-  GlobalTestEnvironment::instance()->writeFBO(targetImage);
-
-  EXPECT_TRUE(spire::fileExists(targetImage)) << "Failed to write output image! " << targetImage;
-
-#ifdef TEST_PERCEPTUAL_COMPARE
-  // Perform the perceptual comparison using the given regression directory.
-  std::string compImage = TEST_IMAGE_COMPARE_DIR;
-  compImage += "/" + testFileName ;
-
-  ASSERT_TRUE(spire::fileExists(compImage)) << "Failed to find comparison image! " << compImage;
-  // Test using perceptula comparison program that the user has provided
-  // (hopefully).
-  std::string command = TEST_PERCEPTUAL_COMPARE_BINARY;
-  command += " -threshold 50 ";
-  command += targetImage + " " + compImage;
-
-  // Usually the return code of std::system is implementation specific. But the
-  // majority of systems end up returning the exit code of the program.
-  if (std::system(command.c_str()) != 0)
-  {
-    // The images are NOT the same. Alert the user.
-    FAIL() << "Perceptual compare of " << testFileName << " failed.";
-  }
-#endif
-
-#endif
+  compareFBOWithExistingFile(
+      "orderOfAttributes.png",
+      TEST_IMAGE_OUTPUT_DIR,
+      TEST_IMAGE_COMPARE_DIR,
+      TEST_PERCEPTUAL_COMPARE_BINARY,
+      50);
 }
 
 }

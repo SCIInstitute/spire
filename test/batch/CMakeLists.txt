@@ -11,11 +11,30 @@ project(SpireBatchRenderer)
 # Base tests directory.
 set (BASE_TESTS_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../tests)
 
+# If 'ON', This flag informs cpm-gl-batch-context that it should link against
+# the OSMesa software rendering library.
 option(USE_OS_MESA "Use an OS mesa context." OFF)
 if (USE_OS_MESA)
   add_definitions(-DUSE_OS_MESA)
   set(MESA_LIBRARIES "OSMesa32")
 endif()
+
+#-----------------------------------------------------------------------
+# Compiler settings
+#-----------------------------------------------------------------------
+
+if (CMAKE_BUILD_TYPE MATCHES DEBUG)
+  add_definitions(-DSPIRE_DEBUG)
+endif()
+
+if (UNIX)
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+  if (APPLE)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libc++")
+    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -stdlib=libc++")
+  endif ()
+endif ()
+
 
 #------------------------------------------------------------------------------
 # Required CPM Setup - See: http://github.com/iauns/cpm
@@ -66,7 +85,7 @@ set(REGRESSION_DATA_DIR "${BASE_TESTS_DIR}/RegressionData")
 
 CPM_EnsureRepoIsCurrent(
   TARGET_DIR ${REGRESSION_DATA_DIR}
-  GIT_REPOSITORY "git://github.com/SCIInstitute/SpireRegression"
+  GIT_REPOSITORY "https://github.com/SCIInstitute/SpireRegression"
   GIT_TAG "origin/master"
   )
 
@@ -80,64 +99,6 @@ add_definitions(-DTEST_IMAGE_OUTPUT_DIR="${REGRESSION_DATA_DIR}/Output")
 add_definitions(-DTEST_IMAGE_COMPARE_DIR="${REGRESSION_DATA_DIR}/Verified")
 add_definitions(-DTEST_PERCEPTUAL_COMPARE)
 add_definitions(-DTEST_PERCEPTUAL_COMPARE_BINARY="perceptualdiff")
-
-#-----------------------------------------------------------------------
-# Compiler settings
-#-----------------------------------------------------------------------
-
-if (CMAKE_BUILD_TYPE MATCHES DEBUG)
-  add_definitions(-DSPIRE_DEBUG)
-endif()
-
-if (UNIX)
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
-
-  if (APPLE)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libc++")
-    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -stdlib=libc++")
-
-    # Find necessary apple libraries (cocoa).
-    FIND_LIBRARY(COCOA_LIBRARY Cocoa)
-    set(OS_SPECIFIC_LIBS ${COCOA_LIBRARY})
-
-    # Apple specific sources
-    set (SpecificSources
-      CGLContext.cpp
-      CGLContext.h
-      NSContext.mm
-      NSContext.h
-      )
-  else ()
-    # Linux specific sources
-    if (USE_OS_MESA)
-      set (SpecificSources
-        OSMesaContext.cpp
-        OSMesaContext.h
-        )
-    else()
-      set (SpecificSources
-        GLXContext.cpp
-        GLXContext.h
-        )
-    endif()
-  endif ()
-else()
-  if (WIN32)
-    # Since we are building a static library, we need to define GLEW_STATIC
-    # <url:http://glew.sourceforge.net/install.html#^define the GLEW_STATIC>
-    add_definitions(-DGLEW_STATIC)
-
-    # GLEW include directories and source.
-    include_directories(SYSTEM ${CMAKE_CURRENT_SOURCE_DIR}/3rdParty/glew/include)
-    set(Source_GLEW_for_Windows 3rdParty/glew/src/glew.c)
-
-    # Windows specific sources
-    set (SpecificSources
-      WGLContext.cpp
-      WGLContext.h
-      )
-  endif(WIN32)
-endif ()
 
 #-----------------------------------------------------------------------
 # Setup strict warnings and werror

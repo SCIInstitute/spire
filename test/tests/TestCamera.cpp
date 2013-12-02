@@ -29,9 +29,12 @@
 /// \author James Hughes
 /// \date   March 2013
 
-#include "GlobalTestEnvironment.h"
+#include <batch-testing/GlobalGTestEnv.hpp>
+#include <batch-testing/SpireTestFixture.hpp>
 #include "TestCamera.h"
 #include "TestCommonUniforms.h"
+
+using namespace CPM_BATCH_TESTING_NS;
 
 //------------------------------------------------------------------------------
 TestCamera::TestCamera() :
@@ -60,8 +63,8 @@ void TestCamera::setAsPerspective()
 {
   mPerspective = true;
 
-  float aspect = static_cast<float>(GlobalTestEnvironment::instance()->getScreenWidth()) / 
-                 static_cast<float>(GlobalTestEnvironment::instance()->getScreenHeight());
+  float aspect = static_cast<float>(GlobalTestEnvironment::instance()->getBatchEnvironment()->getScreenWidth()) / 
+                 static_cast<float>(GlobalTestEnvironment::instance()->getBatchEnvironment()->getScreenHeight());
   mP = glm::perspective(mFOV, aspect, mZNear, mZFar);
 }
 
