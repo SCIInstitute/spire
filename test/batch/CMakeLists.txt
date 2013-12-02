@@ -40,12 +40,15 @@ include(${CPM_DIR}/CPM.cmake)
 # ++ MODULE: Our spire module
 #    Be sure this module comes before batch_testing. Batch testing will
 #    attempt to load the spire module if it does not already exist.
-CPM_AddModule("spire" SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../..")
+CPM_AddModule("spire"
+  SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../.."
+  SOURCE_GHOST_GIT_REPO "https://github.com/SCIInstitute/spire"
+  SOURCE_GHOST_GIT_TAG "origin/master")
 
 # ++ MODULE: OpenGL Batch Testing
 CPM_AddModule("batch_testing"
   GIT_REPOSITORY "https://github.com/iauns/cpm-gl-batch-testing"
-  GIT_TAG "1.0.1")
+  GIT_TAG "1.0.2")
 
 # ++ EXTERNAL-MODULE: Google Test
 CPM_AddModule("google_test"
