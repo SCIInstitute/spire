@@ -8,10 +8,15 @@ find_package(OpenGL REQUIRED)
 set(QT_USE_QTOPENGL TRUE)
 
 #-----------------------------------------------------------------------
-# CMake Options
+# Compiler settings (C++11)
 #-----------------------------------------------------------------------
-
-option(USE_LOCAL_SPIRE "Will use a local version of spire instead of downloading from its git repo." ON)
+if (UNIX)
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+  if (APPLE)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libc++")
+    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -stdlib=libc++")
+  endif ()
+endif ()
 
 #------------------------------------------------------------------------------
 # Required CPM Setup - See: http://github.com/iauns/cpm
@@ -35,9 +40,9 @@ include(${CPM_DIR}/CPM.cmake)
 
 # ++ MODULE: Spire
 CPM_AddModule("spire"
-  GIT_REPOSITORY "https://github.com/SCIInstitute/spire"
-  GIT_TAG "origin/dev"
-  )
+  SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../.."
+  SOURCE_GHOST_GIT_REPO "https://github.com/SCIInstitute/spire"
+  SOURCE_GHOST_GIT_TAG "origin/master")
 
 CPM_Finish()
 
@@ -62,13 +67,13 @@ include_directories("${CMAKE_CURRENT_BINARY_DIR}")
 # Find and configure Qt
 #-----------------------------------------------------------------------
 
-set(QT_MIN_VERSION "4.8.0")
+set(QT_MIN_VERSION "4.7.0")
 find_package(Qt4 REQUIRED)
 
 if (QT_FOUND)
   include_directories(SYSTEM "${QT_INCLUDE_DIR}")
 else ()
-  message(FATAL_ERROR "QT 4.8 or greater is required to build Spire Viewer")
+  message(FATAL_ERROR "QT 4.7 or greater is required to build Spire Viewer")
 endif ()
 
 include(${QT_USE_FILE})

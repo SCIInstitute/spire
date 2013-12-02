@@ -42,11 +42,7 @@ MainWindow::MainWindow(QWidget *parent) :
   QGLFormat fmt;
   fmt.setAlpha(true);
   fmt.setRgba(true);
-#ifdef USE_SCIRUN_INTERFACE
-  mGLWidget = new SCIRun::Gui::GLWidget(fmt);
-#else
   mGLWidget = new GLWidget(fmt);
-#endif
 
   setCentralWidget(mGLWidget);
 }

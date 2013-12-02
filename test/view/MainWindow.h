@@ -35,11 +35,7 @@
 #include <QDialog>
 #include <QMainWindow>
 
-#ifdef USE_SCIRUN_INTERFACE
-#include "GLWidgetSCIRun.h"
-#else
 #include "GLWidget.h"
-#endif
 
 class MyGLFrame;
 
@@ -59,13 +55,8 @@ protected:
   void closeEvent(QCloseEvent *evt);
 
 private:
-  Ui::MainWindow *ui;
-  
-#ifdef USE_SCIRUN_INTERFACE
-  SCIRun::Gui::GLWidget*      mGLWidget;
-#else
-  GLWidget*                   mGLWidget;
-#endif
+  Ui::MainWindow*     ui;
+  GLWidget*           mGLWidget;
 };
 
 #endif // TOOLS_VIEW_MAINWINDOW_H
