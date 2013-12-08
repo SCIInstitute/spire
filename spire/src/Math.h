@@ -59,8 +59,6 @@
 // GLM
 // We want swizzling, but not C++11 swizzling. That type of swizzling messes up
 // vector displays in debuggers.
-#define GLM_FORCE_CXX03
-#define GLM_FORCE_RADIANS
 #include <glm/glm.hpp>
 #include <glm/gtc/quaternion.hpp>
 #include <glm/gtc/type_ptr.hpp>
