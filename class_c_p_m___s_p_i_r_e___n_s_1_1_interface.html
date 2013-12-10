@@ -295,7 +295,7 @@ std::shared_ptr<br class="typebreak"/>
 </div>
 <div class="memdoc">
 <p>See: <a href="http://www.opengl.org/wiki/Primitive">http://www.opengl.org/wiki/Primitive</a> </p>
-<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000005">Todo:</a></b></dt><dd>Add patch tesselation primitives. </dd></dl>
+<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000004">Todo:</a></b></dt><dd>Add patch tesselation primitives. </dd></dl>
 
 </div>
 </div>
@@ -310,7 +310,7 @@ std::shared_ptr<br class="typebreak"/>
 </div>
 <div class="memdoc">
 <p>Generally not needed at this stage. </p>
-<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000004">Todo:</a></b></dt><dd><p class="startdd">Add supported OpenGL version to spire. This will allow us to determine what shaders we should us. </p>
+<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000003">Todo:</a></b></dt><dd><p class="startdd">Add supported OpenGL version to spire. This will allow us to determine what shaders we should us. </p>
 <p class="enddd">See glProvokingVertex for possible flat shading implementations instead of using a geometry shader. </p>
 </dd></dl>
 
@@ -356,7 +356,6 @@ std::shared_ptr<br class="typebreak"/>
   </table>
   </dd>
 </dl>
-<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000003">Todo:</a></b></dt><dd>Re-enabled shared_ptr context when SCIRun5 adopts C++11. </dd></dl>
 
 </div>
 </div>
@@ -883,7 +882,7 @@ std::shared_ptr<br class="typebreak"/>
       </table>
 </div>
 <div class="memdoc">
-<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000009">Todo:</a></b></dt><dd>This really wants to be an 'optional' return value instead of a throw... it would be much more useful and type compliant that way. See: boost::optional. Waiting to see if the standard adopts optional. optional will be added to the standard, but probably not in C++14. Looking for alternate implementation of optional. </dd></dl>
+<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000008">Todo:</a></b></dt><dd>This really wants to be an 'optional' return value instead of a throw... it would be much more useful and type compliant that way. See: boost::optional. Waiting to see if the standard adopts optional. optional will be added to the standard, but probably not in C++14. Looking for alternate implementation of optional. </dd></dl>
 
 </div>
 </div>
@@ -901,7 +900,7 @@ std::shared_ptr<br class="typebreak"/>
 </div>
 <div class="memdoc">
 <p>Obtain the current number of objects. </p>
-<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000007">Todo:</a></b></dt><dd>This function nedes to go to the implementation. </dd></dl>
+<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000006">Todo:</a></b></dt><dd>This function nedes to go to the implementation. </dd></dl>
 
 </div>
 </div>
@@ -935,7 +934,7 @@ std::shared_ptr<br class="typebreak"/>
       </table>
 </div>
 <div class="memdoc">
-<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000010">Todo:</a></b></dt><dd>Want optional. </dd></dl>
+<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000009">Todo:</a></b></dt><dd>Want optional. </dd></dl>
 
 </div>
 </div>
@@ -1017,7 +1016,7 @@ std::shared_ptr<br class="typebreak"/>
 <div class="memdoc">
 <p>Loads an asset file and populates the given vectors with vbo and ibo data. In the future, we should expand this to include other asset types. Always uses 16bit IBOs and 32bit per component position / normal in the vbo. </p>
 <dl class="return"><dt><b>Returns:</b></dt><dd>Returns the number of triangles read into ibo. </dd></dl>
-<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000008">Todo:</a></b></dt><dd>This should be moved into SCI-Run appspecific. It doesn't belong in spire. </dd></dl>
+<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000007">Todo:</a></b></dt><dd>This should be moved into SCI-Run appspecific. It doesn't belong in spire. </dd></dl>
 <dl class="todo"><dt><b><a class="el" href="todo.html#_todo000001">Todo:</a></b></dt><dd>Use more appropriate I/O exception. </dd></dl>
 
 </div>
@@ -1135,7 +1134,7 @@ std::shared_ptr<br class="typebreak"/>
 </div>
 <div class="memdoc">
 <p>Renders an object given a specific pass. </p>
-<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000006">Todo:</a></b></dt><dd><p class="startdd">Should we allow extra uniforms to be passed in, or should we stick with the callback function for finding uniforms? Possibly add the callback to this render call so it is clear what is happening with regards to the world transformation. We had to set state with lambdas when we were using the threaded interface, but we don't need to do that here. This would be the 'unsatisfied uniforms callback'. </p>
+<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000005">Todo:</a></b></dt><dd><p class="startdd">Should we allow extra uniforms to be passed in, or should we stick with the callback function for finding uniforms? Possibly add the callback to this render call so it is clear what is happening with regards to the world transformation. We had to set state with lambdas when we were using the threaded interface, but we don't need to do that here. This would be the 'unsatisfied uniforms callback'. </p>
 <p class="enddd">Implement </p>
 </dd></dl>
 
@@ -1149,7 +1148,7 @@ std::shared_ptr<br class="typebreak"/>
 
 
 <hr class="footer"/><address class="footer"><small>
-Generated on Tue Dec 10 2013 02:11:34 for Spire by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Tue Dec 10 2013 02:17:01 for Spire by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.7.6.1
 </small></address>
