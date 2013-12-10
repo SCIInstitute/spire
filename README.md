@@ -14,5 +14,8 @@ Usage
 
 ### Interface
 
+* See
+[documentation](http://sciinstitute.github.io/spire/class_c_p_m___s_p_i_r_e___n_s_1_1_interface.html).
+
 ### Context
 
