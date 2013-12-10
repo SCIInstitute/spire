@@ -10,7 +10,7 @@ before_install:
 - sudo apt-get install libosmesa6-dev
 - if [ "$CXX" = "g++" ]; then sudo apt-get install -qq g++-4.8; fi
 - if [ "$CXX" = "g++" ]; then export CXX="g++-4.8" CC="gcc-4.8"; fi
-script: mkdir bin && cd bin && cmake -DUSE_OS_MESA=ON ../test/batch && make && ./spirebatch
+script: mkdir bin && cd bin && cmake -DUSE_OS_MESA=ON ../test/batch && make && ./spirebatch && cd ..
 after_success:
 - sudo apt-get --no-install-recommends install doxygen
 - git clone https://github.com/iauns/travis-doxy-helper ./doxy-helper
