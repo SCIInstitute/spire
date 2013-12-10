@@ -40,7 +40,6 @@
 #include <functional>
 #include <memory>
 
-// CPM includes
 #include <gl-platform/GLPlatform.hpp>
 
 #include "Context.h"
