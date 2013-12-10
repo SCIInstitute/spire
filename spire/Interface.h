@@ -87,9 +87,7 @@ public:
   ///                       to manage time allocation and only use cycles
   ///                       when there is something to do.
   /// \param  logFP         The logging function to use when logging rendering
-  ///                       messages. Remember, this function will be called
-  ///                       from the rendering thread; so it will need to 
-  ///                       communicate the messages in a thread-safe manner.
+  ///                       messages.
   Interface(std::shared_ptr<Context> context, 
             const std::vector<std::string>& shaderDirs,
             LogFunction logFP = LogFunction());
