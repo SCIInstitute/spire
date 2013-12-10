@@ -90,9 +90,6 @@ public:
   ///                       messages. Remember, this function will be called
   ///                       from the rendering thread; so it will need to 
   ///                       communicate the messages in a thread-safe manner.
-  /// @todo Re-enabled shared_ptr context when SCIRun5 adopts C++11.
-  //Interface(std::shared_ptr<Context> context, bool createThread, 
-  //          LogFunction logFP = LogFunction());
   Interface(std::shared_ptr<Context> context, 
             const std::vector<std::string>& shaderDirs,
             LogFunction logFP = LogFunction());
