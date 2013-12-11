@@ -39,7 +39,7 @@
 #include <queue>
 #include <cstdint>
 #include <memory>
-#ifndef SPIRE_USING_WIN
+#ifndef _WIN32
 #include <chrono>
 #else
   #if (_MSC_VER >= 1700)
