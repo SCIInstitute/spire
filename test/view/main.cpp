@@ -34,10 +34,6 @@
 
 int main(int argc, char *argv[])
 {
-#if defined(SPIRE_USING_LINUX)
-  XInitThreads();
-#endif
-
   QApplication a(argc, argv);
   MainWindow w;
   w.show();
