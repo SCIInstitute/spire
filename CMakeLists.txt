@@ -47,7 +47,7 @@ CPM_AddModule("GLM"
 
 CPM_AddModule("gl_platform"
   GIT_REPOSITORY "https://github.com/iauns/cpm-gl-platform.git"
-  GIT_TAG "1.2.0"
+  GIT_TAG "1.3.0"
   EXPORT_MODULE TRUE
   USE_EXISTING_VER TRUE)
 
