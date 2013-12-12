@@ -35,11 +35,11 @@
 // For windows...
 #define NOMINMAX
 
-#include <QtOpenGL/QGLWidget>
-
 // Include spire interface.
 #include "namespaces.h"
 #include "spire/Interface.h"
+
+#include <QtOpenGL/QGLWidget>
 
 /// Context that will be sent to spire.
 class GLContext : public spire::Context
