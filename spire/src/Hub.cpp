@@ -89,14 +89,8 @@ void Hub::oneTimeInit()
   // OpenGL initialization
   mContext->makeCurrent();
 
-#ifdef _WIN32
-  GLenum err = glewInit();
-  if (GLEW_OK != err)
-  {
-    Log::error() << "GLEW init failed!" << std::endl;
-    throw GLError("GLEW failed to initialize.");
-  }
-#endif
+  // Any GL platform specific initialization.
+  CPM_GL_PLATFORM_NS::glPlatformInit();
 
   // Initialize OpenGL
   GL(glClearColor(0.0, 0.0, 0.0, 1.0));

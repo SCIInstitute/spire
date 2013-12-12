@@ -57,6 +57,9 @@ GLWidget::GLWidget(const QGLFormat& format) :
   connect(mTimer, SIGNAL(timeout()), this, SLOT(updateRenderer()));
   mTimer->start(35);
 
+  // Any GL platform specific initialization.
+  CPM_GL_PLATFORM_NS::glPlatformInit();
+
   buildScene();
 
   // We must disable auto buffer swap on the 'paintEvent'.
