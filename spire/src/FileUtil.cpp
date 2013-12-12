@@ -40,7 +40,7 @@
 #include "Log.h"
 #include "FileUtil.h"
 
-#ifndef SPIRE_USING_WIN
+#ifndef _WIN32
   #include <wchar.h>
   #include <sys/stat.h>
   #include <regex.h>
@@ -164,7 +164,7 @@ std::vector<std::string> getSubDirList(const std::string& dir)
   std::vector<std::string> subDirs;
   std::string rootdir;
 
-#ifdef SPIRE_USING_WIN
+#ifdef _WIN32
   std::stringstream s;
   if (dir == "")
   {

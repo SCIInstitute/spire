@@ -43,7 +43,7 @@
 #include "ShaderProgramMan.h"
 #include "ShaderUniformStateMan.h"
 
-#ifdef SPIRE_USING_WIN
+#ifdef _WIN32
   // Disable warning: 'this' used in a base member initializer list warning.
   #pragma warning(disable:4355)
 #endif
@@ -89,7 +89,7 @@ void Hub::oneTimeInit()
   // OpenGL initialization
   mContext->makeCurrent();
 
-#ifdef SPIRE_USING_WIN
+#ifdef _WIN32
   GLenum err = glewInit();
   if (GLEW_OK != err)
   {
