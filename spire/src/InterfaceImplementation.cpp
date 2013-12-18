@@ -34,6 +34,15 @@
 #include "SpireObject.h"
 #include "Exceptions.h"
 
+/// Remove types as we move away from making spire a one-stop-shop for OpenGL.
+/// Spire will only solve one uinque problem in terms of gathering shaders
+/// and rendering objects with the appropriate uniforms.
+
+#ifndef USE_OPENGL_ES
+  #define GL_HALF_FLOAT_OES GL_FLOAT
+#endif
+
+
 namespace CPM_SPIRE_NS {
 
 // Simple static function to convert from PRIMITIVE_TYPES to GL types.
