@@ -88,7 +88,7 @@ endif()
 # OpenGL configuration
 #-----------------------------------------------------------------------
 
-if(NOT DEFINED IOS)
+if(NOT DEFINED IOS AND NOT EMSCRIPTEN)
   find_package(OpenGL REQUIRED)
 endif()
 
