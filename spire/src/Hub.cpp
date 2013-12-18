@@ -147,14 +147,12 @@ bool Hub::beginFrame(bool makeContextCurrent)
   if (makeContextCurrent == true)
     makeCurrent();
 
-#ifndef EMSCRIPTEN
   // Bail if the frame buffer is not complete. One instance where this is a
   // *valid* state is when a window containing the OpenGL scene is hidden.
   // The framebuffer will be invalid in this instance, but we can still render
   // later once the window is unhidden.
   if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
     return false;
-#endif
 
   /// \todo Move this outside of the interface!
   GL(glClearColor(0.0f, 0.0f, 0.0f, 1.0f));
