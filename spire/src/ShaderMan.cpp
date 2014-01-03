@@ -105,6 +105,9 @@ ShaderAsset::ShaderAsset(Hub& hub, const std::string& filename,
   }
 
 #ifdef SPIRE_OPENGL_ES_2
+  // The following is too specific for spire. The interface needs to be
+  // generalized to allow users to specify any number of additional
+  // sources for one shader.
   const size_t numShaderSources = 2;
   const char* cFileContents[numShaderSources] = 
     {"#define OPENGL_ES\n#define OPENGL_ES_2\n", fileContents.c_str()};
