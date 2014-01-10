@@ -174,9 +174,6 @@ void GLWidget::updateRenderer()
   glLineWidth(2.0f);
   //glEnable(GL_LINE_SMOOTH);
 
-  GPUState defaultGPUState;
-  mSpire->applyGPUState(defaultGPUState, true); // true = force application of state.
-
   mSpire->renderObject(mObject1);
   mContext->swapBuffers();
 }

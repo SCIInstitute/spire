@@ -124,8 +124,6 @@ public:
                                       std::shared_ptr<AbstractUniformStateItem> item);
   void addGlobalUniformConcrete( std::string uniformName,
                                 std::shared_ptr<AbstractUniformStateItem> item);
-  void addObjectPassGPUState(std::string object,
-                             GPUState state, std::string pass);
 
   //-------------------
   // Shader Attributes

@@ -76,8 +76,6 @@ public:
   std::shared_ptr<const AbstractUniformStateItem>
   getPassUniform(const std::string& uniformName);
 
-  void addGPUState(const GPUState& state);
-
   /// This function will *not* return true if the uniform was added via the
   /// global object uniforms.
   bool hasPassSpecificUniform(const std::string& uniformName) const;
@@ -125,10 +123,6 @@ protected:
 
   std::shared_ptr<ShaderProgramAsset>   mShader;  ///< Shader to be used when rendering this pass.
 
-  /// \todo I'm using a unique_ptr like 'Maybe' is used in haskell. Look into a
-  ///       better representation in C++.
-  std::unique_ptr<GPUState>             mGPUState; ///< GPU state to set (if any, default is none).
-
   Hub&                                  mHub;     ///< Hub.
 
 };
@@ -172,10 +166,6 @@ public:
   /// Adds a uniform to the pass.
   void addGlobalUniform(const std::string& uniformName,
                         std::shared_ptr<AbstractUniformStateItem> item);
-
-  /// Add GPU state to the pass.
-  void addPassGPUState(const std::string& pass,
-                       const GPUState& state);
 
   std::shared_ptr<const AbstractUniformStateItem>
       getPassUniform(const std::string& passName, const std::string& uniformName);

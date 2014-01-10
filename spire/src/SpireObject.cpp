@@ -98,9 +98,9 @@ void ObjectPass::renderPass()
   const ShaderAttributeCollection& attribs = mVBO->getAttributeCollection();
   attribs.bindAttributes(mShader);
 
-  GPUState priorGPUState = mHub.getGPUStateManager().getState(); // Do NOT store a reference to the state...
-  if (mGPUState != nullptr)
-    mHub.getGPUStateManager().apply(*mGPUState);
+  //GPUState priorGPUState = mHub.getGPUStateManager().getState(); // Do NOT store a reference to the state...
+  //if (mGPUState != nullptr)
+  //  mHub.getGPUStateManager().apply(*mGPUState);
 
   // Assign pass local uniforms.
   for (auto it = mUniforms.begin(); it != mUniforms.end(); ++it)
@@ -134,8 +134,8 @@ void ObjectPass::renderPass()
   // We can do away with this once we switch to VAOs.
   attribs.unbindAttributes(mShader);
 
-  if (mGPUState != nullptr)
-    mHub.getGPUStateManager().apply(priorGPUState);
+  //if (mGPUState != nullptr)
+  //  mHub.getGPUStateManager().apply(priorGPUState);
 }
 
 //------------------------------------------------------------------------------
@@ -235,13 +235,6 @@ ObjectPass::getPassUniform(const std::string& uniformName)
   }
 
   return std::shared_ptr<const AbstractUniformStateItem>();
-}
-
-//------------------------------------------------------------------------------
-void ObjectPass::addGPUState(const GPUState& state)
-{
-  // This will destroy any prior gpu state.
-  mGPUState = std::unique_ptr<GPUState>(new GPUState(state));
 }
 
 //------------------------------------------------------------------------------
@@ -471,13 +464,6 @@ SpireObject::getGlobalUniform(const std::string& uniformName)
     }
   }
   return std::shared_ptr<const AbstractUniformStateItem>();
-}
-
-//------------------------------------------------------------------------------
-void SpireObject::addPassGPUState(const std::string& passName, const GPUState& state)
-{
-  std::shared_ptr<ObjectPass> pass = getPassByName(passName);
-  pass->addGPUState(state);
 }
 
 //------------------------------------------------------------------------------

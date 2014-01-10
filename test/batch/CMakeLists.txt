@@ -67,7 +67,7 @@ CPM_AddModule("spire"
 # ++ MODULE: OpenGL Batch Testing
 CPM_AddModule("batch_testing"
   GIT_REPOSITORY "https://github.com/iauns/cpm-gl-batch-testing"
-  GIT_TAG "1.0.4")
+  GIT_TAG "1.1.0")
 
 # ++ EXTERNAL-MODULE: Google Test
 CPM_AddModule("google_test"

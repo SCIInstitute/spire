@@ -162,9 +162,6 @@ bool Hub::beginFrame(bool makeContextCurrent)
   //glLineWidth(2.0f);
   ////glEnable(GL_LINE_SMOOTH);
 
-  GPUState defaultGPUState;
-  getGPUStateManager().apply(defaultGPUState, true); // true = force application of state.
-
   return true;
 }
 

@@ -46,7 +46,6 @@
 
 #include "src/Math.h"
 #include "src/ShaderUniformStateManTemplates.h"
-#include "src/GPUStateManager.h"
 
 /// \todo The following *really* wants to be a constexpr inside of StuInterface,
 /// when we upgrade to VS 2012, we should also upgrade this.
@@ -416,16 +415,6 @@ public:
   /// Concrete implementation of the above templated function
   void addGlobalUniformConcrete(const std::string& uniformName,
                                 std::shared_ptr<AbstractUniformStateItem> item);
-
-  /// GPU state that will be applied directly before the object is rendered.
-  /// Note: The default GPU state is consists of the default GPUState 
-  ///       constructor.
-  void addObjectPassGPUState(const std::string& object,
-                             const GPUState& state,
-                             const std::string& pass = SPIRE_DEFAULT_PASS);
-
-  /// Apply the given GPU state.
-  void applyGPUState(const GPUState& state, bool force);
 
   /// \todo This really wants to be an 'optional' return value instead of a
   ///       throw... it would be much more useful and type compliant that way.

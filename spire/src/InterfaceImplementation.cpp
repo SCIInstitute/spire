@@ -220,15 +220,6 @@ void InterfaceImplementation::addGlobalUniformConcrete(std::string uniformName,
 }
 
 //------------------------------------------------------------------------------
-void InterfaceImplementation::addObjectPassGPUState(std::string object,
-                                                    GPUState state, 
-                                                    std::string pass)
-{
-  std::shared_ptr<SpireObject> obj = mNameToObject.at(object);
-  obj->addPassGPUState(pass, state);
-}
-
-//------------------------------------------------------------------------------
 void InterfaceImplementation::addShaderAttribute(std::string codeName,
                                                  size_t numComponents, bool normalize, size_t size,
                                                  Interface::DATA_TYPES t)

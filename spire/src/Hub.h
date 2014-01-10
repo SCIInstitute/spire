@@ -38,7 +38,6 @@
 #include <list>
 
 #include "../Interface.h"
-#include "GPUStateManager.h"
 #include "ShaderUniformStateMan.h"  // We want the interface to see this (to retrieve global uniforms).
 #include "PassUniformStateMan.h"
 
@@ -69,9 +68,6 @@ public:
 
   /// One-time initialization of the renderer.
   void oneTimeInit();
-
-  /// Retrieves the GPU state manager.
-  GPUStateManager& getGPUStateManager()           {return mGPUStateManager;}
 
   /// Retrieves shader manager.
   ShaderMan& getShaderManager()                   {return *mShaderMan;}
@@ -126,7 +122,6 @@ private:
   std::unique_ptr<ShaderUniformMan>   mShaderUniforms;  ///< Shader attribute manager.
   std::unique_ptr<ShaderUniformStateMan> mShaderUniformStateMan; ///< Uniform state manager.
   std::unique_ptr<PassUniformStateMan>mPassUniformStateMan;///< Shader manager for pass'.
-  GPUStateManager                     mGPUStateManager; ///< GPU state manager.
   std::vector<std::string>            mShaderDirs;      ///< Shader directories to search.
 
   std::shared_ptr<InterfaceImplementation>  mInterfaceImpl; ///< Interface implementation.
