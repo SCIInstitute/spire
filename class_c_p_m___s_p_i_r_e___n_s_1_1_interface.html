@@ -167,10 +167,6 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="af6a5defe6a09ec00cb90ab73536ac5ef"></a><!-- doxytag: member="CPM_SPIRE_NS::Interface::addGlobalUniformConcrete" ref="af6a5defe6a09ec00cb90ab73536ac5ef" args="(const std::string &amp;uniformName, std::shared_ptr&lt; AbstractUniformStateItem &gt; item)" -->
 void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_p_m___s_p_i_r_e___n_s_1_1_interface.html#af6a5defe6a09ec00cb90ab73536ac5ef">addGlobalUniformConcrete</a> (const std::string &amp;uniformName, std::shared_ptr&lt; AbstractUniformStateItem &gt; item)</td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Concrete implementation of the above templated function. <br/></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_p_m___s_p_i_r_e___n_s_1_1_interface.html#a770f2111d69db018c264482afda08696">addObjectPassGPUState</a> (const std::string &amp;object, const GPUState &amp;state, const std::string &amp;pass=SPIRE_DEFAULT_PASS)</td></tr>
-<tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a55669699ffb919f30f83d172f58e7693"></a><!-- doxytag: member="CPM_SPIRE_NS::Interface::applyGPUState" ref="a55669699ffb919f30f83d172f58e7693" args="(const GPUState &amp;state, bool force)" -->
-void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_c_p_m___s_p_i_r_e___n_s_1_1_interface.html#a55669699ffb919f30f83d172f58e7693">applyGPUState</a> (const GPUState &amp;state, bool force)</td></tr>
-<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Apply the given GPU state. <br/></td></tr>
 <tr><td class="memTemplParams" colspan="2">template&lt;class T &gt; </td></tr>
 <tr><td class="memTemplItemLeft" align="right" valign="top">T&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="class_c_p_m___s_p_i_r_e___n_s_1_1_interface.html#a781aeca6aa7c02775bc77302ee6f00ea">getGlobalUniform</a> (const std::string &amp;uniformName)</td></tr>
 <tr><td class="memTemplParams" colspan="2">template&lt;class T &gt; </td></tr>
@@ -509,40 +505,6 @@ std::shared_ptr<br class="typebreak"/>
 </div>
 <div class="memdoc">
 <p>Adds a uniform that will be consumed regardless of the pass. Pass uniforms take precedence over pass global uniforms. </p>
-
-</div>
-</div>
-<a class="anchor" id="a770f2111d69db018c264482afda08696"></a><!-- doxytag: member="CPM_SPIRE_NS::Interface::addObjectPassGPUState" ref="a770f2111d69db018c264482afda08696" args="(const std::string &amp;object, const GPUState &amp;state, const std::string &amp;pass=SPIRE_DEFAULT_PASS)" -->
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">void <a class="el" href="class_c_p_m___s_p_i_r_e___n_s_1_1_interface.html#a770f2111d69db018c264482afda08696">addObjectPassGPUState</a> </td>
-          <td>(</td>
-          <td class="paramtype">const std::string &amp;&#160;</td>
-          <td class="paramname"><em>object</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const GPUState &amp;&#160;</td>
-          <td class="paramname"><em>state</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const std::string &amp;&#160;</td>
-          <td class="paramname"><em>pass</em> = <code>SPIRE_DEFAULT_PASS</code>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div>
-<div class="memdoc">
-<p>GPU state that will be applied directly before the object is rendered. Note: The default GPU state is consists of the default GPUState constructor. </p>
 
 </div>
 </div>
@@ -1148,7 +1110,7 @@ std::shared_ptr<br class="typebreak"/>
 
 
 <hr class="footer"/><address class="footer"><small>
-Generated on Fri Jan 3 2014 20:18:45 for Spire by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Fri Jan 10 2014 01:45:59 for Spire by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.7.6.1
 </small></address>
