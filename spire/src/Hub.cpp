@@ -91,53 +91,6 @@ void Hub::oneTimeInit()
 
   // Any GL platform specific initialization.
   CPM_GL_PLATFORM_NS::glPlatformInit();
-
-  // Initialize OpenGL
-  GL(glClearColor(0.0, 0.0, 0.0, 1.0));
-
-  const GLubyte* vendor     = glGetString(GL_VENDOR);
-  const GLubyte* renderer   = glGetString(GL_RENDERER);
-  const GLubyte* versionl   = glGetString(GL_VERSION);
-  GL_CHECK();
-
-  Log::message() << std::endl << "------------------------------" << std::endl;
-  Log::message() << "OpenGL initialization. Running on a " << vendor << " "
-                 << renderer << " with OpenGL version " << versionl << std::endl;
-
-  GLint tmp;
-  Log::debug() << "Hardware specific attributes" << std::endl;
-  Log::debug() << "+Programmable:" << std::endl;
-
-#ifdef SPIRE_OPENGL_ES_2
-  GL(glGetIntegerv(GL_MAX_VERTEX_TEXTURE_IMAGE_UNITS, &tmp));
-  Log::debug() << "  Vertex texture units: " << tmp << std::endl;
-
-  GL(glGetIntegerv(GL_MAX_TEXTURE_IMAGE_UNITS, &tmp));
-  Log::debug() << "  Fragment texture units: " << tmp << std::endl;
-
-  GL(glGetIntegerv(GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS, &tmp));
-  Log::debug() << "  Combined texture units: " << tmp << std::endl;
-#else
-  GL(glGetIntegerv(GL_MAX_TEXTURE_UNITS, &tmp));
-  Log::debug() << "  Texture Units: " << tmp << std::endl;
-
-  Log::debug() << "+Fixed function (transient):" << std::endl;
-  GL(glGetIntegerv(GL_MAX_MODELVIEW_STACK_DEPTH, &tmp));
-  Log::debug() << "  Model view stack depth: " << tmp << std::endl;
-
-  GL(glGetIntegerv(GL_MAX_PROJECTION_STACK_DEPTH, &tmp));
-  Log::debug() << "  Projection stack depth: " << tmp << std::endl;
-
-  GL(glGetIntegerv(GL_MAX_TEXTURE_STACK_DEPTH, &tmp));
-  Log::debug() << "  Texture stack depth: " << tmp << std::endl;
-#endif
-    
-  /// TODO: Add GPU memory checks using GL_NVX_gpu_memory_info for NVIDIA
-  ///       and GL_ATI_meminfo for ATI.
-
-  // Pulled from Tuvok
-  //const bool bOpenGLSO12     = atof((const char*)versionl) >= 1.2;
-  //const bool bOpenGLSO20     = atof((const char*)versionl) >= 2.0;
 }
 
 /// \todo Hub::beginFrame needs to be removed in the future.
