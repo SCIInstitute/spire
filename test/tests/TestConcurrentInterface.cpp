@@ -114,9 +114,8 @@ TEST_F(SpireTestFixture, TestConcurrentQuad)
   // Perform the rendering of JUST the object that we created.
   // Need to test adding various different objects to the scene and attempting
   // to render them.
-  beginFrame();
+  beginFrame();   // From SpireTestFixture.
   mSpire->renderObject(obj1, pass1);  
-  mSpire->endFrame();
 
   compareFBOWithExistingFile(
       "concurrentQuad.png",

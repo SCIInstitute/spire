@@ -99,15 +99,6 @@ public:
   /// Retrieves the interface implementation.
   std::shared_ptr<InterfaceImplementation> getInterfaceImpl() {return mInterfaceImpl;}
 
-  //----------------------------------------------------------------------------
-  // Concurrent helper functions
-  //----------------------------------------------------------------------------
-  // Some of these functions may need to be moved into interface implementation.
-  // At least those that don't require access to the context (both begin and
-  // end frame require access to the graphics context).
-  bool beginFrame(bool makeContextCurrent);
-  void endFrame();
-
   /// Make context current.
   void makeCurrent();
 

@@ -170,24 +170,6 @@ public:
   // it is unlikely that they ever will be. In most scenarios, you should use
   // this concurrent interface instead of the threaded interface.
 
-  /// Calling this function is not necessary but may make your life.
-  /// Here is a brief overview of what this function does:
-  /// * Makes the context current if makeContextCurrent == true.
-  /// * Checks the frame buffer status is complete (returns false if not).
-  /// * Clears the depth buffer and color buffer (color buffer is cleared to 
-  ///   [0,0,0,1]).
-  /// * Sets a default GPU state by applying a fresh instance of the GPUState
-  ///   class.
-  /// You don't need to use this function. Just ensure that that the context
-  /// which you passed into spire is current when you call into Spire.
-  bool beginFrame(bool makeContextCurrent = true);
-
-  /// This function just calls mContext->swapBuffers(). Nothing else.
-  /// Call this as the complement to beginFrame when you are finished.
-  /// Or don't call it and replace its functionality with something more
-  /// appropriate for your needs.
-  void endFrame();
-
   /// Renders an object given a specific pass.
   /// \todo Should we allow extra uniforms to be passed in, or should we stick
   ///       with the callback function for finding uniforms? Possibly add

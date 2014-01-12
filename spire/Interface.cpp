@@ -86,18 +86,6 @@ void Interface::clearGLResources()
 }
 
 //------------------------------------------------------------------------------
-bool Interface::beginFrame(bool makeContextCurrent)
-{
-  return mHub->beginFrame(makeContextCurrent);
-}
-
-//------------------------------------------------------------------------------
-void Interface::endFrame()
-{
-  mHub->endFrame();
-}
-
-//------------------------------------------------------------------------------
 void Interface::addVBO(const std::string& name,
                        const uint8_t* vboData, size_t vboSize,
                        const std::vector<std::string>& attribNames)
