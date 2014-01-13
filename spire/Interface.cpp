@@ -44,9 +44,16 @@ namespace CPM_SPIRE_NS {
 //------------------------------------------------------------------------------
 Interface::Interface(std::shared_ptr<Context> context,
                      const std::vector<std::string>& shaderDirs,
-                     LogFunction logFP) :
-    mHub(new Hub(context, shaderDirs, logFP))
+                     LogFunction logFP)
 {
+  // OpenGL initialization
+  context->makeCurrent();
+
+  // Any GL platform specific initialization.
+  CPM_GL_PLATFORM_NS::glPlatformInit();
+
+  // Generate the Hub after platform specific initialization.
+  mHub = std::unique_ptr<Hub>(new Hub(context, shaderDirs, logFP));
   mImpl = mHub->getInterfaceImpl();
 }
 

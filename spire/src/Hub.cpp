@@ -85,12 +85,6 @@ void Hub::oneTimeInit()
 {
   // Construct the logger now that we are on the appropriate thread.
   mLog = std::unique_ptr<Log>(new Log(mLogFun));
-
-  // OpenGL initialization
-  mContext->makeCurrent();
-
-  // Any GL platform specific initialization.
-  CPM_GL_PLATFORM_NS::glPlatformInit();
 }
 
 //------------------------------------------------------------------------------
