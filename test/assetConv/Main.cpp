@@ -38,8 +38,7 @@
 #include <fstream>
 #include <boost/filesystem.hpp>
 
-// Include vector library.
-#include "../../spire/src/Math.h"
+#include <glm/glm.hpp>
 
 // Devil image library.
 #include <IL/il.h>

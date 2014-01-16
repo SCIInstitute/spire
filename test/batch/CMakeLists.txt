@@ -5,7 +5,6 @@ else()
   cmake_minimum_required(VERSION 2.8.7 FATAL_ERROR)
 endif()
 
-include(ExternalProject)
 project(SpireBatchRenderer)
 
 # Base tests directory.
