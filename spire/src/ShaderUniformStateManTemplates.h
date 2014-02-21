@@ -324,9 +324,9 @@ template <>
 class UniformStateItem<SpireSampler1D_NoRAII> : public AbstractUniformStateItem
 {
 public:
-  typedef GLuint Type;
+  typedef SpireSampler1D_NoRAII Type;
 
-  UniformStateItem(const Type& in) : mData(in) {}
+  UniformStateItem(const Type& in) : mData(in.samplerBuffer) {}
 
   UNIFORM_TYPE getGLType() const override
   {
@@ -336,13 +336,13 @@ public:
   std::string asString() const override
   {
     std::stringstream stream;
-    stream << "1D Sampler ID - (" << mData << ")";
+    stream << "1D Sampler ID - (" << mData.samplerBuffer << ")";
     return stream.str();
   }
 
   const void* getRawData() const override
   {
-    return &mData;
+    return &mData.samplerBuffer;
   }
 
 private:
@@ -353,9 +353,9 @@ template <>
 class UniformStateItem<SpireSampler2D_NoRAII> : public AbstractUniformStateItem
 {
 public:
-  typedef GLuint Type;
+  typedef SpireSampler2D_NoRAII Type;
 
-  UniformStateItem(const Type& in) : mData(in) {}
+  UniformStateItem(const Type& in) : mData(in.samplerBuffer) {}
 
   UNIFORM_TYPE getGLType() const override
   {
@@ -365,13 +365,13 @@ public:
   std::string asString() const override
   {
     std::stringstream stream;
-    stream << "2D Sampler ID - (" << mData << ")";
+    stream << "2D Sampler ID - (" << mData.samplerBuffer << ")";
     return stream.str();
   }
 
   const void* getRawData() const override
   {
-    return &mData;
+    return &mData.samplerBuffer;
   }
 
 private:
@@ -382,9 +382,9 @@ template <>
 class UniformStateItem<SpireSampler3D_NoRAII> : public AbstractUniformStateItem
 {
 public:
-  typedef GLuint Type;
+  typedef SpireSampler3D_NoRAII Type;
 
-  UniformStateItem(const Type& in) : mData(in) {}
+  UniformStateItem(const Type& in) : mData(in.samplerBuffer) {}
 
   UNIFORM_TYPE getGLType() const override
   {
@@ -394,13 +394,13 @@ public:
   std::string asString() const override
   {
     std::stringstream stream;
-    stream << "3D Sampler ID - (" << mData << ")";
+    stream << "3D Sampler ID - (" << mData.samplerBuffer << ")";
     return stream.str();
   }
 
   const void* getRawData() const override
   {
-    return &mData;
+    return &mData.samplerBuffer;
   }
 
 private:
