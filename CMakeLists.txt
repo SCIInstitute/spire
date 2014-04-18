@@ -92,7 +92,7 @@ if(UNIX)
         "${CMAKE_CXX_FLAGS} -stdlib=libc++ -Wall -Wextra -Wconversion -Wshadow -Wunreachable-code")
     else()
       set (CMAKE_CXX_FLAGS 
-        "${CMAKE_CXX_FLAGS} -stdlib=libc++ -Wall -Wextra -Werror -Wconversion -Wshadow -Wunreachable-code")
+        "${CMAKE_CXX_FLAGS} -stdlib=libc++ -Wall -Wextra -Wconversion -Wshadow -Wunreachable-code")
     endif()
 
   else(APPLE)
